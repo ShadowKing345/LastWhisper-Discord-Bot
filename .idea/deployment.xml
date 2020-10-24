@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="shadowking@85.214.22.63:21388 key (project level)">
+    <serverData>
+      <paths name="shadowking@85.214.22.63:21388 key (project level)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/LastWhisperBot" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

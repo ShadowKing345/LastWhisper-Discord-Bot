@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0d8b24d3-8d38-4f12-b200-27c7a46623c9" name="shadowking@85.214.22.63:21388 key (project level)" url="">
+        <fileTransfer rootFolder="/home/shadowking" accessType="SFTP" host="85.214.22.63" port="21388" sshConfigId="5bf215da-1e2e-4003-aed5-f0c4621b04c3" sshConfig="shadowking@85.214.22.63:21388 key" keyPair="true" />
+      </webServer>
+    </option>
+  </component>
+</project>
