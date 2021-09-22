@@ -1,5 +1,5 @@
 version: "2"
 services:
   bot:
-    container: bot
+    container_name: bot
     build: .

@@ -1,6 +1,6 @@
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { readCommands } from "./commands/commands";
+import { readCommands } from "./commands";
 import dotenv from "dotenv";
 dotenv.config()
 
