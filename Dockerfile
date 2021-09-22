@@ -1,13 +1,11 @@
 FROM node:16
-WORKDIR /usr/src/app
 
-COPY package.json .
-COPY package-lock.json .
+WORKDIR /usr/app
 
-RUN npm install
+COPY ["package.json", "package-lock.json", "./"]
+
+RUN npm install --quiet
 
 COPY . .
 
 RUN npm run build
-
-CMD ["npm", "start"]
