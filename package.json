@@ -1,0 +1,40 @@
+{
+  "name": "lastwhisper-discord-bot",
+  "version": "1.0.0",
+  "description": "NodeJS version of the Last Whisper guild Discord Bot.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc -b .",
+    "register-commands": "node dist/register-commands.js",
+    "dev-register-commands": "ts-node src/register-commands.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShadowKing345/LastWhisper-Discord-Bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/ShadowKing345/LastWhisper-Discord-Bot/issues"
+  },
+  "homepage": "https://github.com/ShadowKing345/LastWhisper-Discord-Bot#readme",
+  "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "dayjs": "^1.10.7",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.1.0",
+    "dotenv": "^10.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.1",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.2.1",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.4.3"
+  }
+}
