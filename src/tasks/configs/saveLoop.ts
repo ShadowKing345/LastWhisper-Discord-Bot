@@ -1,5 +1,5 @@
 import Client from "../../Client";
-import { Task } from "../Task";
+import { Task } from "..";
 
 async function loop(client: Client) {
   if (!client.isReady()) return;

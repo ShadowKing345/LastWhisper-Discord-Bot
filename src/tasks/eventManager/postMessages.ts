@@ -1,6 +1,6 @@
 import Client from "../../Client";
 import { postEventRemindersLoop } from "../../modules/evenManager";
-import { Task } from "../Task";
+import { Task } from "..";
 
 async function loop(client: Client) {
   if (!client.isReady()) return;

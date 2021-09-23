@@ -1,10 +1,22 @@
-import { Task } from "../tasks/Task";
 import { readdir } from "fs/promises";
 import path from "path";
 import fs from "fs";
 import Client from "../Client";
+import { Awaited } from "discord.js";
 
-export async function readTasks(callback: (module: Task) => void) {
+class Task {
+  name: string;
+  timeout: number;
+  run: (client: Client) => Awaited<void>;
+
+  constructor(name: string, timeout: number, run: (client: Client) => Awaited<void>) {
+    this.name = name;
+    this.timeout = timeout;
+    this.run = run;
+  }
+}
+
+async function readTasks(callback: (module: Task) => void) {
   const relativePath: string = __dirname;
   const folders = await readdir(relativePath);
 
@@ -30,3 +42,5 @@ export default async (client: Client) => {
     client.tasks.set(module.name, interval);
   });
 }
+
+export { Task, readTasks };
