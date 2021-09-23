@@ -2,7 +2,7 @@ import { DefaultConfig, EventObj } from "../objects/eventManager";
 import dayjs from "dayjs";
 import CustomParseFormat from "dayjs/plugin/customParseFormat";
 import AdvancedFormat from "dayjs/plugin/advancedFormat";
-import { CommandInteraction, Message, MessageEmbed, PartialMessage, TextChannel } from "discord.js";
+import { CommandInteraction, Message, MessageEmbed, TextChannel } from "discord.js";
 import Client from "../Client";
 
 const moduleName = "eventManager";
@@ -64,8 +64,8 @@ function parseMessage(messageId: string, content: string, config: DefaultConfig)
   return event;
 }
 
-function getConfig(client: Client, guildId: string): DefaultConfig {
-  var config: DefaultConfig | null = client.configs.getConfig(moduleName, guildId) as DefaultConfig | null;
+async function getConfig(client: Client, guildId: string): Promise<DefaultConfig> {
+  var config: DefaultConfig | null = await client.configs.getConfig(moduleName, guildId) as DefaultConfig | null;
   if (!config) {
     config = new DefaultConfig();
     client.configs.setConfig(moduleName, guildId, config);
@@ -77,7 +77,7 @@ function getConfig(client: Client, guildId: string): DefaultConfig {
 async function messageCreateListener(message: Message) {
   if (message.author.id === message.client.application?.id) return;
   if (!message.guildId) return;
-  const config: DefaultConfig = getConfig(message.client as Client, message.guildId);
+  const config: DefaultConfig = await getConfig(message.client as Client, message.guildId);
 
   if (!config.listenerChannelId || message.channelId !== config.listenerChannelId) return;
 
@@ -92,10 +92,10 @@ async function messageCreateListener(message: Message) {
   } catch (error) { console.error(error); }
 }
 
-async function messageUpdateListener(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) {
+async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
   if (newMessage.author?.id === newMessage.client.application?.id) return;
   if (!oldMessage.guildId) return;
-  const config: DefaultConfig = getConfig(oldMessage.client as Client, oldMessage.guildId);
+  const config: DefaultConfig = await getConfig(oldMessage.client as Client, oldMessage.guildId);
 
   if (!config.listenerChannelId || oldMessage.channelId !== config.listenerChannelId) return;
   const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
@@ -120,10 +120,10 @@ async function messageUpdateListener(oldMessage: Message | PartialMessage, newMe
   } catch (error) { console.error(error); }
 }
 
-async function messageDeleteListener(message: Message | PartialMessage) {
+async function messageDeleteListener(message: Message) {
   if (message.author?.id === message.client.application?.id) return;
   if (!message.guildId) return;
-  const config: DefaultConfig = getConfig(message.client as Client, message.guildId);
+  const config: DefaultConfig = await getConfig(message.client as Client, message.guildId);
 
   if (!config.listenerChannelId || message.channelId !== config.listenerChannelId) return;
   if (!config.events.find(event => event.messageId === message.id)) return;
@@ -133,7 +133,7 @@ async function messageDeleteListener(message: Message | PartialMessage) {
 
 async function postEventRemindersLoop(client: Client) {
   const now: dayjs.Dayjs = dayjs();
-  const configs: { [guildId: string]: DefaultConfig } = client.configs.getConfigs(moduleName);
+  const configs: { [guildId: string]: DefaultConfig } = await client.configs.getConfigs(moduleName);
 
   for (const [_, config] of Object.entries(configs)) {
     try {
@@ -172,7 +172,7 @@ async function postEventRemindersLoop(client: Client) {
 }
 
 async function event(interaction: CommandInteraction) {
-  let config: DefaultConfig | null = (interaction.client as Client).configs.getConfig<DefaultConfig>(moduleName, interaction.guildId);
+  let config: DefaultConfig | null = await (interaction.client as Client).configs.getConfig<DefaultConfig>(moduleName, interaction.guildId);
 
   if (!config) {
     config = new DefaultConfig();

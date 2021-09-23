@@ -6,7 +6,7 @@ import { DefaultConfigs } from "../objects/mangerUtils";
 const moduleName = "managerUtils";
 
 async function getLoggingChannel(client: Client, guildId: string) {
-  let config: DefaultConfigs | null = client.configs.getConfig<DefaultConfigs>(moduleName, guildId);
+  let config: DefaultConfigs | null = await client.configs.getConfig<DefaultConfigs>(moduleName, guildId);
 
   if (!config) {
     config = new DefaultConfigs();
