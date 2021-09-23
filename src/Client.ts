@@ -6,13 +6,12 @@ class Client extends DiscordClient {
   commands: Collection<string, Command>;
   tasks: Collection<string, NodeJS.Timer>;
   configs: ConfigManager;
-  constructor(args: ClientOptions, configRelativePath: string) {
+  constructor(args: ClientOptions) {
     super(args);
     this.commands = new Collection();
     this.tasks = new Collection();
 
-    this.configs = new ConfigManager(configRelativePath);
-    this.configs.loadConfigs();
+    this.configs = new ConfigManager();
   }
 }
 
