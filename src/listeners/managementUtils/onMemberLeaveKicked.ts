@@ -4,6 +4,7 @@ import { onMemberLeave } from "../../modules/managerUtils";
 import { Listener } from "..";
 
 async function listen(member: GuildMember | PartialGuildMember) {
+  if (member.partial) await member.fetch();
   await onMemberLeave(member as GuildMember);
 }
 

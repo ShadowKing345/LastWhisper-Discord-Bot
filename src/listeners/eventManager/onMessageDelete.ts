@@ -4,7 +4,8 @@ import { messageDeleteListener } from "../../modules/evenManager";
 import { Listener } from "..";
 
 async function listen(message: Message | PartialMessage) {
-  await messageDeleteListener(message);
+  if(message.partial) await message.fetch();
+  await messageDeleteListener(message as Message);
 }
 
 export default new Listener((client: Client) => client.on("messageDelete", listen));
