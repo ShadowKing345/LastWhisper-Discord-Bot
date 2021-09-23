@@ -3,6 +3,3 @@ services:
   bot:
     build: .
     command: npm run start
-    volumes:
-      - .:/usr/app/
-      - /usr/app/node_modules
