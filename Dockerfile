@@ -4,7 +4,7 @@ WORKDIR /usr/app
 
 COPY ["package.json", "package-lock.json", "./"]
 
-RUN npm install
+RUN npm i --production=true --quiet
 
 COPY . .
 
