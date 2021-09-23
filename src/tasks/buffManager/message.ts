@@ -1,6 +1,6 @@
 import Client from "../../Client";
 import { postDailyMessage } from "../../modules/buffManager";
-import { Task } from "../Task";
+import { Task } from "..";
 
 async function loop(client: Client) {
   if (!client.isReady()) return;
