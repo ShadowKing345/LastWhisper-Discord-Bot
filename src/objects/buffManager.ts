@@ -38,7 +38,7 @@ class MessageSettings {
   }
 }
 
-class DefaultConfig {
+class DefaultConfigs {
   messageSettings: MessageSettings;
   days: Day[];
   weeks: Week[];
@@ -50,4 +50,4 @@ class DefaultConfig {
   }
 }
 
-export { DefaultConfig, Week, Day, MessageSettings };
+export { DefaultConfigs, Week, Day, MessageSettings };
