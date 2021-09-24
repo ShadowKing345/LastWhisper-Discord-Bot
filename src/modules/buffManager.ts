@@ -59,7 +59,7 @@ async function postBuff(interaction: CommandInteraction, date: dayjs.Dayjs, titl
   if (!config.weeks.length) { await interaction.reply({ content: "Sorry, there are not weeks set.", ephemeral: true }); return; }
 
   const week = config.weeks[date.week() % config.weeks.length];
-  const day = config.days.find(day => day.id === week.days[date.day()]);
+  const day = config.days.find(day => day.id === week.days[date.day() - 1]);
 
   if (!day) {
     await interaction.reply({ content: `Sorry, but the buff with id ${week.days[date.day()]} does not actually exist!\nKindly contact your FC admin/manager to fix this issue.`, ephemeral: true });
@@ -82,30 +82,31 @@ async function postWeeksBuffs(interaction: CommandInteraction, date: dayjs.Dayjs
 
 async function postDailyMessage(client: Client) {
   const configs: {
-    [guildId: string]: DefaultConfigs } = await client.configs.getConfigs(moduleName);
+    [guildId: string]: DefaultConfigs
+  } = await client.configs.getConfigs(moduleName);
 
-    for(const [guildId, guildConfig] of Object.entries(configs)) {
-      try {
-        const config: MessageSettings = guildConfig.messageSettings;
-  if (!config.channelId || !config.hour) continue;
-  const now = dayjs();
-  if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
-  if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
+  for (const [guildId, guildConfig] of Object.entries(configs)) {
+    try {
+      const config: MessageSettings = guildConfig.messageSettings;
+      if (!config.channelId || !config.hour) continue;
+      const now = dayjs();
+      if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
+      if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
 
-  const channel: TextChannel | null = await client.channels.fetch(config.channelId) as TextChannel | null;
+      const channel: TextChannel | null = await client.channels.fetch(config.channelId) as TextChannel | null;
 
-  if (!channel) { console.warn(`Invalid posting channel for ${guildId}`); continue; }
+      if (!channel) { console.warn(`Invalid posting channel for ${guildId}`); continue; }
 
-  const week: Week = guildConfig.weeks[now.week() % guildConfig.weeks.length];
-  const day: Day | undefined = guildConfig.days.find(day => day.id === week.days[now.day()]);
+      const week: Week = guildConfig.weeks[now.week() % guildConfig.weeks.length];
+      const day: Day | undefined = guildConfig.days.find(day => day.id === week.days[now.day()]);
 
-  if (!day) { console.warn(`Invalid day id for guild ${guildId}`); continue; }
+      if (!day) { console.warn(`Invalid day id for guild ${guildId}`); continue; }
 
-  await channel.send({ embeds: [createDayEmbed(config.buffMessage, day, now)] });
+      await channel.send({ embeds: [createDayEmbed(config.buffMessage, day, now)] });
 
-  if (!config.dow || config.dow !== now.day()) continue;
-  await channel.send({ embeds: [createWeekEmbed(config.weekMessage, week, guildConfig.days, now)] });
-} catch (error) { console.log(error); }
+      if (!config.dow || config.dow !== now.day() - 1) continue;
+      await channel.send({ embeds: [createWeekEmbed(config.weekMessage, week, guildConfig.days, now)] });
+    } catch (error) { console.log(error); }
   }
 }
 
