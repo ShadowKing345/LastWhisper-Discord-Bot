@@ -47,8 +47,10 @@ async function onReady(client: Client) {
       for (const reaction of message.reactions.cache.values()) {
         await reaction.users.fetch();
         for (const user of reaction.users.cache.values()) {
-          const member: GuildMember | null = await guild.members.fetch(user.id);
-          if (member) await alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+          try {
+            const member: GuildMember | null = await guild.members.fetch(user.id);
+            if (member) await alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+          } catch (error) { console.error(error); }
         }
       }
 
@@ -78,6 +80,8 @@ async function onReactionAdd(messageReaction: MessageReaction, user: User) {
 
   const config: DefaultConfigs = await getConfig(messageReaction.client as Client, guild.id);
   await alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+
+  await messageReaction.remove();
 }
 
 export { onMemberJoin, onReactionAdd, onReady };
