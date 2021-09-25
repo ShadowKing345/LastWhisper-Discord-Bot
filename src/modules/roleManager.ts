@@ -17,18 +17,18 @@ async function getConfig(client: Client, guildId: string): Promise<DefaultConfig
 }
 
 async function alterMembersRoles(member: GuildMember, newMemberRoleId: string, memberRoleId: string) {
-  if (memberRoleId) {
+  if (!member.roles.cache.has(newMemberRoleId)) return;
+
+  if (!member.roles.cache.has(memberRoleId)) {
     const memberRole: Role | null = await member.guild.roles.fetch(memberRoleId);
     if (memberRole) {
       await member.roles.add(memberRole);
     }
   }
 
-  if (newMemberRoleId) {
-    const newMemberRole: Role | null = await member.guild.roles.fetch(newMemberRoleId);
-    if (newMemberRole) {
-      await member.roles.remove([newMemberRole]);
-    }
+  const newMemberRole: Role | null = await member.guild.roles.fetch(newMemberRoleId);
+  if (newMemberRole) {
+    await member.roles.remove([newMemberRole]);
   }
 }
 
@@ -43,6 +43,8 @@ async function onReady(client: Client) {
     const guild: Guild | null = await client.guilds.fetch(guildId);
     if (!guild) continue;
 
+    const filter = (reaction: MessageReaction, _: User) => config.reactionMessageIds.includes(reaction.message.id);
+
     for (const message of messages) {
       for (const reaction of message.reactions.cache.values()) {
         await reaction.users.fetch();
@@ -55,6 +57,7 @@ async function onReady(client: Client) {
       }
 
       await message.reactions.removeAll();
+      message.createReactionCollector({ filter: filter }).on("collect", onReactionAdd);
     }
   }
 }
