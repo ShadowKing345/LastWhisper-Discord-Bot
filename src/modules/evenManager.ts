@@ -40,7 +40,7 @@ function parseMessage(messageId: string, content: string, config: DefaultConfig)
           break;
         }
 
-        // Checks if it is a hammer time.
+        // Checks if it's hammer time.
         const matchedResult = content.match(hammerRegex);
 
         if (!matchedResult) break;
