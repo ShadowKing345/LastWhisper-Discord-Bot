@@ -59,7 +59,7 @@ async function postBuff(interaction: CommandInteraction, date: dayjs.Dayjs, titl
   if (!config.weeks.length) { await interaction.reply({ content: "Sorry, there are not weeks set.", ephemeral: true }); return; }
 
   const week = config.weeks[date.week() % config.weeks.length];
-  const day = config.days.find(day => day.id === week.days[date.day() - 1]);
+  const day = config.days.find(day => day.id === week.days[date.day()]);
 
   if (!day) {
     await interaction.reply({ content: `Sorry, but the buff with id ${week.days[date.day()]} does not actually exist!\nKindly contact your FC admin/manager to fix this issue.`, ephemeral: true });
@@ -104,7 +104,7 @@ async function postDailyMessage(client: Client) {
 
       await channel.send({ embeds: [createDayEmbed(config.buffMessage, day, now)] });
 
-      if (!config.dow || config.dow !== now.day() - 1) continue;
+      if (!config.dow || config.dow !== now.day()) continue;
       await channel.send({ embeds: [createWeekEmbed(config.weekMessage, week, guildConfig.days, now)] });
     } catch (error) { console.log(error); }
   }
