@@ -2,6 +2,7 @@ import { DefaultConfig, EventObj } from "../objects/eventManager";
 import dayjs from "dayjs";
 import CustomParseFormat from "dayjs/plugin/customParseFormat";
 import AdvancedFormat from "dayjs/plugin/advancedFormat";
+import Duration from "dayjs/plugin/duration";
 import { CommandInteraction, Message, MessageEmbed, TextChannel } from "discord.js";
 import Client from "../Client";
 
@@ -9,6 +10,7 @@ const moduleName = "eventManager";
 
 dayjs.extend(CustomParseFormat);
 dayjs.extend(AdvancedFormat);
+dayjs.extend(Duration);
 
 function chunk(array: [], chunkSize: number) {
   var R = [];
@@ -86,6 +88,7 @@ async function messageCreateListener(message: Message) {
     if (event.isValid()) {
       config.events.push(event);
       await message.react("✅");
+      await (message.client as Client).configs.setConfig(moduleName, message.guildId, config);
     } else {
       await message.react("❎");
     }
@@ -114,6 +117,7 @@ async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
       oldEvent.dateTime = newEvent.dateTime;
       oldEvent.additional = newEvent.additional;
       await newMessage.react("✅");
+      await (newMessage.client as Client).configs.setConfig(moduleName, newMessage.guildId, config);
     } else {
       await newMessage.react("❎");
     }
@@ -129,13 +133,19 @@ async function messageDeleteListener(message: Message) {
   if (!config.events.find(event => event.messageId === message.id)) return;
 
   config.events.splice(config.events.findIndex(event => event.messageId === message.id), 1);
+  await (message.client as Client).configs.setConfig(moduleName, message.guildId, config);
+}
+
+function parseTriggerDuration(triggerTime: string) {
+  const hold = dayjs(triggerTime, "HH:mm", true);
+  return dayjs.duration({ hours: hold.hour(), minutes: hold.minute() });
 }
 
 async function postEventRemindersLoop(client: Client) {
   const now: dayjs.Dayjs = dayjs();
   const configs: { [guildId: string]: DefaultConfig } = await client.configs.getConfigs(moduleName);
 
-  for (const [_, config] of Object.entries(configs)) {
+  for (const [guildId, config] of Object.entries(configs)) {
     try {
       if (!config.events.length) continue;
       if (!config.postingChannelId) continue;
@@ -145,18 +155,16 @@ async function postEventRemindersLoop(client: Client) {
 
       for (const trigger of config.reminders) {
         if (!trigger.timeDelta) continue;
-        const triggerTime: dayjs.Dayjs = dayjs(trigger.timeDelta, "HH:mm", true);
+        const triggerTime = parseTriggerDuration(trigger.timeDelta);
         for (const event of config.events) {
-          const eventTime: dayjs.Dayjs = dayjs(event.dateTime);
+          const eventTime = dayjs(event.dateTime);
           if (!now.isSame(eventTime, "date")) continue;
-          console.log("date check passed");
-          if (eventTime.diff(triggerTime, "minutes") === 0) {
-            console.log("time difference check passed");
+          if (eventTime.diff(now, "minutes") === triggerTime.asMinutes()) {
             const messageValues: { [key: string]: string } = {
-              everyone: "@everyone",
-              eventName: event.name,
-              hourDiff: triggerTime.hour.toString(),
-              minuteDiff: triggerTime.minute.toString()
+              "%everyone%": "@everyone",
+              "%eventName%": event.name,
+              "%hourDiff%": triggerTime.hours().toString(),
+              "%minuteDiff%": triggerTime.minutes().toString()
             };
 
             await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
@@ -164,9 +172,14 @@ async function postEventRemindersLoop(client: Client) {
         }
       }
 
+      const before = config.events.length;
+
       for (const past of config.events.filter(event => now.isAfter(dayjs(event.dateTime)))) {
         config.events.splice(config.events.indexOf(past), 1);
       }
+
+      if (before !== config.events.length)
+        await client.configs.setConfig(moduleName, guildId, config);
     } catch (error) { console.error(error); }
   }
 }
