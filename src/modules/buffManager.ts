@@ -12,7 +12,7 @@ dayjs.extend(cusomParseFormat);
 
 const moduleName = "buffManager";
 
-const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbed {
   return new MessageEmbed()
