@@ -1,10 +1,10 @@
 import Client from "../../Client";
 import { postDailyMessage } from "../../modules/buffManager";
-import { Task } from "..";
+import { Task, waitTillReady } from "..";
 
 async function loop(client: Client) {
-  if (!client.isReady()) return;
+  await waitTillReady(client);
   await postDailyMessage(client);
 }
 
-export default new Task("buffManager_dailyMessage_Loop", 60000, loop);
+export default new Task("buffManager_dailyMessage_Loop", 60000, loop, true);

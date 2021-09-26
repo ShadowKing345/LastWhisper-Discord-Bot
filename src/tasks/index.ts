@@ -2,18 +2,25 @@ import { readdir } from "fs/promises";
 import path from "path";
 import fs from "fs";
 import Client from "../Client";
-import { Awaited } from "discord.js";
+import { Awaited, Client as DiscordClient } from "discord.js";
 
 class Task {
   name: string;
   timeout: number;
   run: (client: Client) => Awaited<void>;
+  onReady: boolean;
 
-  constructor(name: string, timeout: number, run: (client: Client) => Awaited<void>) {
+  constructor(name: string, timeout: number, run: (client: Client) => Awaited<void>, onReady: boolean = false) {
     this.name = name;
     this.timeout = timeout;
     this.run = run;
+    this.onReady = onReady;
   }
+}
+
+async function waitTillReady(client: DiscordClient, checkAgainTime: number = 500) {
+  while (!client.isReady)
+    await new Promise(resolve => setTimeout(resolve, checkAgainTime));
 }
 
 async function readTasks(callback: (module: Task) => void) {
@@ -35,12 +42,15 @@ async function readTasks(callback: (module: Task) => void) {
 }
 
 export default async (client: Client) => {
-  if (!client) return;
-
   await readTasks((module: Task) => {
-    const interval: NodeJS.Timer = setInterval(module.run, module.timeout, client);
-    client.tasks.set(module.name, interval);
+    client.tasks.set(module.name, module);
   });
+
+
+  for (const task of client.tasks.values()) {
+    setInterval(task.run, task.timeout, client);
+    task.run(client);
+  }
 }
 
-export { Task, readTasks };
+export { Task, readTasks, waitTillReady };
