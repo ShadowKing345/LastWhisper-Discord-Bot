@@ -1,6 +1,6 @@
 {
   "name": "lastwhisper-discord-bot",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "NodeJS version of the Last Whisper guild Discord Bot.",
   "main": "dist/index.js",
   "scripts": {
