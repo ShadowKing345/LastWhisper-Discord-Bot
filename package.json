@@ -2,7 +2,7 @@
   "name": "lastwhisper-discord-bot",
   "version": "1.0.1",
   "description": "NodeJS version of the Last Whisper guild Discord Bot.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
