@@ -1,4 +1,4 @@
-import { DefaultConfig, EventObj } from "../objects/eventManager";
+import { DefaultConfig, EventObj, Tags } from "../objects/eventManager";
 import dayjs from "dayjs";
 import CustomParseFormat from "dayjs/plugin/customParseFormat";
 import AdvancedFormat from "dayjs/plugin/advancedFormat";
@@ -12,31 +12,33 @@ dayjs.extend(CustomParseFormat);
 dayjs.extend(AdvancedFormat);
 dayjs.extend(Duration);
 
-function chunk(array: [], chunkSize: number) {
-  var R = [];
-  for (var i = 0; i < array.length; i += chunkSize)
-    R.push(array.slice(i, i + chunkSize));
-  return R;
+function getDict(array: [string], tags: [string]) {
+  const r: { [key: string]: string } = {};
+  tags.forEach(t => {
+    const keyIndex = array.indexOf(t);
+    if (keyIndex + 1 >= array.length) return;
+    r[array[keyIndex]] = array[keyIndex + 1];
+  });
+  return r;
 }
 
-function parseMessage(messageId: string, content: string, config: DefaultConfig): EventObj {
+function parseMessage(messageId: string, content: string, matchTags: [string], re: RegExp, tags: Tags, dateTimeFormat: Array<string>): EventObj {
   const event = new EventObj(messageId);
   const hammerRegex: RegExp = /\:(.*?)\:/
-  let re = new RegExp(config.delimiterPattern);
 
-  const patternSplit: [] = content.split(re).filter(line => line.trim()).map(entry => entry.trim()) as [];
-  const splittedContent: { [key: string]: string } = Object.fromEntries(chunk(patternSplit, 2));
+  const patternSplit: [string] = content.split(re).map(l => l.replace("\n", "").trim()) as [string];
+  const splittedContent: { [key: string]: string } = getDict(patternSplit, matchTags);
 
   for (const [key, content] of Object.entries(splittedContent)) {
     switch (key) {
-      case config.tags.announcement:
+      case tags.announcement:
         event.name = content;
         break;
-      case config.tags.description:
+      case tags.description:
         event.description = content;
         break;
-      case config.tags.dateTime:
-        let date: dayjs.Dayjs = dayjs(content, config.dateTimeFormat, true);
+      case tags.dateTime:
+        let date: dayjs.Dayjs = dayjs(content, dateTimeFormat, true);
         if (date.isValid()) {
           event.dateTime = date.format();
           break;
@@ -57,7 +59,7 @@ function parseMessage(messageId: string, content: string, config: DefaultConfig)
 
         break;
       default:
-        if (key in config.tags.exclusionList) continue;
+        if (key in tags.exclusionList) continue;
         event.additional[key] = content;
         break;
     }
@@ -82,8 +84,12 @@ async function messageCreateListener(message: Message) {
   const config: DefaultConfig = await getConfig(message.client as Client, message.guildId);
 
   if (!config.listenerChannelId || message.channelId !== config.listenerChannelId) return;
+  const [l, r] = config.delimiterCharacters;
+  const matchTags: [string] = message.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g"))?.map(l => l.trim()) as [string];
+  const re: RegExp = new RegExp(`${l}(.*?)${r}`);
+  if (!matchTags.includes(config.tags.announcement)) return;
 
-  const event: EventObj = parseMessage(message.id, message.content, config);
+  const event: EventObj = parseMessage(message.id, message.content, matchTags, re, config.tags, config.dateTimeFormat);
   try {
     if (event.isValid()) {
       config.events.push(event);
@@ -104,7 +110,11 @@ async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
   const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
   if (!oldEvent) return;
 
-  const newEvent = parseMessage(newMessage.id, (newMessage as Message).content, config);
+  const [l, r] = config.delimiterCharacters;
+  const matchTags: [string] = newMessage.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g"))?.map(l => l.trim()) as [string];
+  const re: RegExp = new RegExp(`${l}(.*?)${r}`);
+
+  const newEvent = parseMessage(newMessage.id, (newMessage as Message).content, matchTags, re, config.tags, config.dateTimeFormat);
 
   try {
     const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
