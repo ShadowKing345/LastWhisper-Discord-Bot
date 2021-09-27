@@ -81,15 +81,13 @@ async function postWeeksBuffs(interaction: CommandInteraction, date: dayjs.Dayjs
 }
 
 async function postDailyMessage(client: Client) {
-  const configs: {
-    [guildId: string]: DefaultConfigs
-  } = await client.configs.getConfigs(moduleName);
+  const configs: { [guildId: string]: DefaultConfigs } = await client.configs.getConfigs(moduleName);
+  const now: dayjs.Dayjs = dayjs();
 
   for (const [guildId, guildConfig] of Object.entries(configs)) {
     try {
       const config: MessageSettings = guildConfig.messageSettings;
       if (!config.channelId || !config.hour) continue;
-      const now = dayjs();
       if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
       if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
 
@@ -104,8 +102,9 @@ async function postDailyMessage(client: Client) {
 
       await channel.send({ embeds: [createDayEmbed(config.buffMessage, day, now)] });
 
-      if (!config.dow || config.dow !== now.day()) continue;
-      await channel.send({ embeds: [createWeekEmbed(config.weekMessage, week, guildConfig.days, now)] });
+
+      if (config.dow && config.dow === now.day())
+        await channel.send({ embeds: [createWeekEmbed(config.weekMessage, week, guildConfig.days, now)] });
     } catch (error) { console.log(error); }
   }
 }
