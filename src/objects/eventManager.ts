@@ -45,16 +45,16 @@ class Tags {
 class DefaultConfig {
   listenerChannelId: string;
   postingChannelId: string;
-  delimiterPattern: string;
+  delimiterCharacters: [string, string];
   tags: Tags;
-  dateTimeFormat: string[];
+  dateTimeFormat: Array<string>;
   events: EventObj[];
   reminders: ReminderTrigger[];
 
-  constructor(listenerChannelId: string = "", postingChannelId: string = "", delimiterPattern: string = "", tags: Tags = new Tags(), dateTimeFormat: string[] = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
+  constructor(listenerChannelId: string = "", postingChannelId: string = "", delimiterCharacters: [string, string] = ["\[", "\]"], tags: Tags = new Tags(), dateTimeFormat: Array<string> = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
     this.listenerChannelId = listenerChannelId;
     this.postingChannelId = postingChannelId;
-    this.delimiterPattern = delimiterPattern;
+    this.delimiterCharacters = delimiterCharacters;
     this.tags = tags;
     this.dateTimeFormat = dateTimeFormat;
     this.events = events;
