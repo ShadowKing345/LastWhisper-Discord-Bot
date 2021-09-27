@@ -2,4 +2,9 @@ version: "2"
 services:
   bot:
     build: .
-    command: npm run start
+    environment:
+      TZ: "Europe/Berlin"
+    command: >
+      sh -c "ln -snf /usr/share/zomeinfo/$TZ /etc/localtime &&
+      echo $TZ > /etc/timezone &&
+      npm run start"

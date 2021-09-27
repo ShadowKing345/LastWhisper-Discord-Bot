@@ -5,8 +5,9 @@ import tasksSetup from "./tasks";
 import listenersSetup from "./listeners";
 import permissionsSetup from "./permissionManager";
 import dotenv from "dotenv";
-
 dotenv.config();
+
+console.log(`Current Timezone is set to ${process.env.TZ}`);
 
 const client: Client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 
