@@ -16,9 +16,9 @@ class Week {
   title: string;
   days: Array<string>;
 
-  constructor(title: string, monday: string, tuesday: string, wednesday: string, thursday: string, firday: string, saturday: string, sunday: string) {
+  constructor(title: string, monday: string, tuesday: string, wednesday: string, thursday: string, friday: string, saturday: string, sunday: string) {
     this.title = title;
-    this.days = [monday, tuesday, wednesday, thursday, firday, saturday, sunday];
+    this.days = [monday, tuesday, wednesday, thursday, friday, saturday, sunday];
   }
 }
 
