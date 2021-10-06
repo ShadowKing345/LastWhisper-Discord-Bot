@@ -1,14 +1,14 @@
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import advancedFormat from "dayjs/plugin/advancedFormat";
-import cusomParseFormat from "dayjs/plugin/customParseFormat";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { CommandInteraction, MessageEmbed, TextChannel } from "discord.js";
 import Client from "../Client";
 import { Day, DefaultConfigs, MessageSettings, Week } from "../objects/buffManager";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(advancedFormat);
-dayjs.extend(cusomParseFormat);
+dayjs.extend(customParseFormat);
 
 const moduleName = "buffManager";
 

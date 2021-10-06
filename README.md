@@ -1,4 +1,4 @@
-Please be aware that this branch is a large work in progress as discord.py is no longer being supported actively (thanks Discord), so majority of the readme will be for the docker branch.
+Please be aware that this branch is a large work in progress as discord.py is no longer being supported actively (thanks Discord), so the majority of the readme will be for the docker branch.
 
 # LastWhisper-Discord-Bot
 This is the code for the discord bot of The Last Whisper Free Company in the game Final Fantasy XIV.

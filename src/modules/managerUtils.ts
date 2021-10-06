@@ -68,7 +68,7 @@ async function onMemberBanned(ban: GuildBan) {
 
     await loggingChannel.send({ embeds: [embed] });
   } else {
-    await loggingChannel.send("A ban somehow occured but no logs about it could be found!");
+    await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
   }
 }
 

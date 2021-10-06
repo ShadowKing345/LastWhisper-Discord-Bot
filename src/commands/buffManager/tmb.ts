@@ -7,7 +7,7 @@ import { postBuff } from "../../modules/buffManager";
 
 const command = new SlashCommandBuilder()
   .setName("tomorrows_buff")
-  .setDescription("Displays the buff for tommorow.");
+  .setDescription("Displays the buff for tomorrow.");
 
 async function run(interaction: CommandInteraction) {
   await postBuff(interaction, dayjs().add(1, "day"), "Tomorrow's Buff Shall Be:");

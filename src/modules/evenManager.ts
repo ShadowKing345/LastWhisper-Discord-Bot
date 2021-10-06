@@ -27,9 +27,9 @@ function parseMessage(messageId: string, content: string, matchTags: [string], r
   const hammerRegex: RegExp = /\:(.*?)\:/
 
   const patternSplit: [string] = content.split(re).map(l => l.replace("\n", "").trim()) as [string];
-  const splittedContent: { [key: string]: string } = getDict(patternSplit, matchTags);
+  const splitContent: { [key: string]: string } = getDict(patternSplit, matchTags);
 
-  for (const [key, content] of Object.entries(splittedContent)) {
+  for (const [key, content] of Object.entries(splitContent)) {
     switch (key) {
       case tags.announcement:
         event.name = content;

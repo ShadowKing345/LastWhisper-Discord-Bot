@@ -34,5 +34,5 @@ class DefaultConfigs {
 }
 
 export default async function(client: Client) {
-  //todo: figgure out and finish.
+  //todo: figure out and finish.
 }
