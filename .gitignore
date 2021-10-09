@@ -2,6 +2,3 @@
 dist
 node_modules
 .env
-
-src/guildConfigs.json
-guildConfigs.json
