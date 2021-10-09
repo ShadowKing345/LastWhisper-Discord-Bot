@@ -167,6 +167,7 @@ async function postEventRemindersLoop(client: Client) {
     const alteredConfigs = [];
 
     for (const config of configs) {
+        if(!client.guilds.cache.has(config.guildId)) continue;
         try {
             if (config.events.length > 0 && config.postingChannelId) {
                 const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId) as TextChannel | null;

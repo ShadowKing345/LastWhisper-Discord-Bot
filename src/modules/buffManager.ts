@@ -131,6 +131,7 @@ class BuffManager extends Module {
         const now: dayjs.Dayjs = dayjs();
 
         for (const guildConfig of configs) {
+            if(!client.guilds.cache.has(guildConfig.guildId)) continue;
             try {
                 const config: MessageSettings = guildConfig.messageSettings as MessageSettings;
                 if (!config.channelId || !config.hour) continue;
