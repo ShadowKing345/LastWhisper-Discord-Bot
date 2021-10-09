@@ -77,12 +77,12 @@ class BuffManager extends Module {
     static async tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[BuffManagerConfig | null, boolean]> {
         const config: BuffManagerConfig = await Model.findOne({guildId: guildId}) ?? await Model.create({guildId: guildId});
 
-        if (!config.days.length) {
+        if (config.days.length <= 0) {
             await interaction.reply({content: "Sorry, there are not buffs set.", ephemeral: true});
             return [null, false];
         }
 
-        if (!config.weeks.length) {
+        if (config.weeks.length <= 0) {
             await interaction.reply({content: "Sorry, there are not weeks set.", ephemeral: true});
             return [null, false];
         }
