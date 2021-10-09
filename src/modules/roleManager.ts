@@ -45,7 +45,7 @@ async function onReady(client: Client) {
                 for (const user of reaction.users.cache.values()) {
                     try {
                         const member: GuildMember | null = await guild.members.fetch(user.id);
-                        if (member) await this.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+                        if (member) await alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
                     } catch (error) {
                         console.error(error);
                     }
@@ -53,7 +53,7 @@ async function onReady(client: Client) {
             }
 
             await message.reactions.removeAll();
-            message.createReactionCollector({filter: filter}).on("collect", this.onReactionAdd);
+            message.createReactionCollector({filter: filter}).on("collect", onReactionAdd);
         }
     }
 }
@@ -80,8 +80,8 @@ async function onReactionAdd(messageReaction: MessageReaction, user: User) {
         return;
     }
 
-    const config: RoleManagerConfig = await this.getConfig(messageReaction.client as Client, guild.id);
-    await this.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+    const config: RoleManagerConfig = await getConfig(messageReaction.client as Client, guild.id);
+    await alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
 
     await messageReaction.remove();
 }
