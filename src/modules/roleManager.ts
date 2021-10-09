@@ -29,6 +29,7 @@ async function onReady(client: Client) {
     const configs: Array<RoleManagerConfig> = await Model.find({});
 
     for (const config of configs) {
+        if(!client.guilds.cache.has(config.guildId)) continue;
         if (!config.reactionListeningChannel || !config.reactionMessageIds.length) continue;
         const messages: Message[] | void = await fetchMessages(client, config.guildId, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
 
