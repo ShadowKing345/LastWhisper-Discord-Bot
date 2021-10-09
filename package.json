@@ -4,10 +4,10 @@
   "description": "NodeJS version of the Last Whisper guild Discord Bot.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node --experimental-specifier-resolution=node dist/index.js",
     "dev": "nodemon src/index.ts --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\"",
     "build": "tsc -b .",
-    "register-commands": "node dist/register-commands.js",
+    "register-commands": "node --experimental-specifier-resolution=node dist/register-commands.js",
     "dev-register-commands": "node --experimental-specifier-resolution=node --loader ts-node/esm src/register-commands.ts"
   },
   "repository": {
