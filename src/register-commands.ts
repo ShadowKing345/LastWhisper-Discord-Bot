@@ -1,16 +1,19 @@
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { readCommands } from "./commands";
+import {REST} from "@discordjs/rest";
+import {Routes} from "discord-api-types/v9";
 import dotenv from "dotenv";
+import {readModules} from "./modules";
+
 dotenv.config()
 
-const rest = new REST({ version: "9" }).setToken(process.env.TOKEN as string);
+const rest = new REST({version: "9"}).setToken(process.env.TOKEN as string);
 
 (async () => {
-  try {
-    const commands: object[] = [];
-    await readCommands(module => { (module.command && module.command.toJSON) && commands.push(module.command.toJSON()) });
-    await rest.put(Routes.applicationCommands(process.env.CLIENTID as string), { body: commands });
-    console.log("Successfully registered application commands.");
-  } catch (error) { console.error(error); }
+    try {
+        const commands: {}[] = [];
+        await readModules(module => module.commands.forEach(command => commands.push(command.command.toJSON())));
+        await rest.put(Routes.applicationCommands(process.env.CLIENT_ID as string), {body: commands});
+        console.log("Successfully registered application commands.");
+    } catch (error) {
+        console.error(error);
+    }
 })()
