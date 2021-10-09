@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import mongoose, {SchemaDefinitionProperty} from "mongoose";
 
 class Day {
   id: string;
@@ -38,16 +39,28 @@ class MessageSettings {
   }
 }
 
-class DefaultConfigs {
-  messageSettings: MessageSettings;
-  days: Day[];
-  weeks: Week[];
-
-  constructor(messageSettings: MessageSettings = new MessageSettings(), days: Day[] = [], weeks: Week[] = []) {
-    this.messageSettings = messageSettings;
-    this.days = days;
-    this.weeks = weeks;
-  }
+interface BuffManagerConfig {
+  guildId: string,
+  messageSettings: SchemaDefinitionProperty<MessageSettings> | undefined;
+  days: [Day];
+  weeks: [Week];
 }
 
-export { DefaultConfigs, Week, Day, MessageSettings };
+const schema = new mongoose.Schema<BuffManagerConfig>({
+  guildId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  messageSettings: {
+    type: Object,
+    default: new MessageSettings
+  },
+  days: Array,
+  weeks: Array
+});
+
+const Model = mongoose.model<BuffManagerConfig>("BuffManager", schema);
+
+export default Model;
+export { BuffManagerConfig, Week, Day, MessageSettings };
