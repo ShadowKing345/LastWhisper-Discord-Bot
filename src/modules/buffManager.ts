@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import {CommandInteraction, MessageEmbed, TextChannel} from "discord.js";
+import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
 import Model, {BuffManagerConfig, Day, MessageSettings, Week} from "../objects/BuffManager";
 import {Module} from "../classes/Module";
@@ -103,7 +103,11 @@ async function postDailyMessage(client: Client) {
             if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
             if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
 
-            const channel: TextChannel | null = await client.channels.fetch(config.channelId) as TextChannel | null;
+            const guild: Guild | null = await client.guilds.fetch(guildConfig.guildId);
+            if(!guild) return;
+            if(!guild.channels.cache.has(config.channelId)) return;
+
+            const channel: TextChannel | null = await guild.channels.fetch(config.channelId) as TextChannel | null;
 
             if (!channel) {
                 console.warn(`Invalid posting channel for ${guildConfig.guildId}`);
