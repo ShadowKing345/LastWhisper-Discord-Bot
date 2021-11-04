@@ -132,12 +132,9 @@ async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
             await reaction.users.remove(oldMessage.client.user?.id);
 
         if (newEvent.isValid()) {
-            oldEvent.name = newEvent.name;
-            oldEvent.description = newEvent.description;
-            oldEvent.dateTime = newEvent.dateTime;
-            oldEvent.additional = newEvent.additional;
             await newMessage.react("✅");
-            config.save().catch(err => console.log(err));
+            config.events[config.events.indexOf(oldEvent)] = newEvent;
+            await config.save();
         } else {
             await newMessage.react("❎");
         }
@@ -155,7 +152,7 @@ async function messageDeleteListener(message: Message) {
     if (!config.events.find(event => event.messageId === message.id)) return;
 
     config.events.splice(config.events.findIndex(event => event.messageId === message.id), 1);
-    config.save().catch(err => console.error(err));
+    await config.save();
 }
 
 
