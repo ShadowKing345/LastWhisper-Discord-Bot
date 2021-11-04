@@ -6,6 +6,7 @@ import Client from "../classes/Client";
 import {Interaction} from "discord.js";
 import {Module} from "../classes/Module";
 import Command from "../classes/Command";
+import Listener from "../classes/Listener";
 
 async function readModules(callback: (module: Module) => void) {
     const relativePath: string = path.dirname(fileURLToPath(import.meta.url));
@@ -17,6 +18,16 @@ async function readModules(callback: (module: Module) => void) {
         const imported = (await import(filePath)).default;
         if (imported instanceof Module)
             callback(imported);
+    }
+}
+
+async function runEvent(listeners: Listener[], ...args) {
+    for (let i = 0; i < listeners.length; i++) {
+        try {
+            await listeners[i].run(...args);
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
 
@@ -43,7 +54,23 @@ export default async (client: Client) => {
             setInterval(task.run, task.timeout, client);
             task.run(client);
         });
-        module.listeners.forEach(({run}) => run(client));
+        module.listeners.forEach(listener => {
+            let collection: Listener[] = client.moduleListeners.get(listener.event) ?? [];
+
+            collection.push(listener);
+            client.moduleListeners.set(listener.event, collection);
+        });
+    });
+
+    client.moduleListeners.forEach((listener, event) => {
+        switch (event) {
+            case "ready":
+                client.once(event, async () => runEvent(listener, client));
+                break;
+            default:
+                client.on(event, async (...args) => runEvent(listener, ...args));
+                break;
+        }
     });
 }
 
