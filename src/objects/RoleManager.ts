@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 interface RoleManagerConfig {
-  guildId: string;
+  _id: string;
   newUserRoleId: string;
   memberRoleId: string;
   reactionMessageIds: Array<string>;
@@ -9,11 +9,7 @@ interface RoleManagerConfig {
 }
 
 const schema = new mongoose.Schema<RoleManagerConfig>({
-  guildId: {
-    type: String,
-    unique: true,
-    required: true
-  },
+  _id: String,
   newUserRoleId: String,
   memberRoleId: String,
   reactionMessageIds: Array,

@@ -45,10 +45,10 @@ class Tags {
 }
 
 interface EventManagerConfig {
-    guildId: string;
+    _id: string;
     listenerChannelId: string;
     postingChannelId: string;
-    delimiterCharacters: SchemaDefinitionProperty<[string, string]>;
+    delimiterCharacters: SchemaDefinitionProperty<string[]>;
     tags: SchemaDefinitionProperty<Tags> | undefined;
     dateTimeFormat: SchemaDefinitionProperty<[string]>;
     events: EventObj[];
@@ -56,11 +56,7 @@ interface EventManagerConfig {
 }
 
 const schema = new mongoose.Schema<EventManagerConfig>({
-    guildId: {
-        type: String,
-        unique: true,
-        required: true
-    },
+    _id: String,
     listenerChannelId: {type: String, default: ""},
     postingChannelId: {type: String, default: ""},
     delimiterCharacters: {

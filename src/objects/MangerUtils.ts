@@ -1,17 +1,13 @@
 import mongoose from "mongoose";
 
 interface ManagerUtilConfig {
-  guildId: string;
+  _id: string;
   loggingChannel: string;
   clearChannelBlacklist: Array<string>;
 }
 
 const schema = new mongoose.Schema<ManagerUtilConfig>({
-  guildId: {
-    type: String,
-    unique: true,
-    true: true
-  },
+  _id: String,
   loggingChannel: String,
   clearChannelBlacklist:Array
 });

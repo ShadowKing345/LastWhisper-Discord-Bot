@@ -40,18 +40,14 @@ class MessageSettings {
 }
 
 interface BuffManagerConfig {
-  guildId: string,
+  _id: string,
   messageSettings: SchemaDefinitionProperty<MessageSettings> | undefined;
   days: [Day];
   weeks: [Week];
 }
 
 const schema = new mongoose.Schema<BuffManagerConfig>({
-  guildId: {
-    type: String,
-    required: true,
-    unique: true
-  },
+  _id: String,
   messageSettings: {
     type: Object,
     default: new MessageSettings
