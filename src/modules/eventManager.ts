@@ -70,7 +70,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
                 break;
 
             default:
-                if (key in tags.exclusionList) continue;
+                if (!tags.exclusionList.every(e => e !== key)) continue;
                 event.additional[key] = content;
                 break;
         }
