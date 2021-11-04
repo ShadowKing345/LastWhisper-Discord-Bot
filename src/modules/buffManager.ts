@@ -104,8 +104,8 @@ async function postDailyMessage(client: Client) {
             if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
 
             const guild: Guild | null = await client.guilds.fetch(guildConfig._id);
-            if(!guild) return;
-            if(!guild.channels.cache.has(config.channelId)) return;
+            if (!guild) return;
+            if (!guild.channels.cache.has(config.channelId)) return;
 
             const channel: TextChannel | null = await guild.channels.fetch(config.channelId) as TextChannel | null;
 
@@ -139,11 +139,7 @@ class BuffManager extends Module {
 
         this.commands = [
             new Command(new SlashCommandBuilder()
-                    .setName("next_weeks_buff")
-                    .setDescription("Displays the buffs for next week"),
-                async interaction => await postWeeksBuffs(interaction, dayjs().add(1, "week"), "The Buffs For Next Week Shall Be:")),
-            new Command(new SlashCommandBuilder()
-                    .setName("today_buff")
+                    .setName("todays_buff")
                     .setDescription("Displays the buff for the day."),
                 async interaction => await postBuff(interaction, dayjs(), "Today's Buff Shall Be:")),
             new Command(new SlashCommandBuilder()
@@ -154,7 +150,11 @@ class BuffManager extends Module {
             new Command(new SlashCommandBuilder()
                     .setName("this_weeks_buff")
                     .setDescription("Displays the buffs for the week"),
-                async interaction => await postWeeksBuffs(interaction, dayjs(), "The Buffs For The Week Shall Be:"))
+                async interaction => await postWeeksBuffs(interaction, dayjs(), "The Buffs For The Week Shall Be:")),
+            new Command(new SlashCommandBuilder()
+                    .setName("next_weeks_buff")
+                    .setDescription("Displays the buffs for next week"),
+                async interaction => await postWeeksBuffs(interaction, dayjs().add(1, "week"), "The Buffs For Next Week Shall Be:"))
         ];
 
         this.tasks = [
