@@ -105,14 +105,15 @@ async function messageCreateListener(message: Message) {
         } else {
             await message.react("❎");
         }
-    } catch (error) {
-        console.error(error);
+    } catch (e) {
+        console.error(e);
     }
 }
 
 async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
     if (newMessage.author?.id === newMessage.client.application?.id) return;
     if (!oldMessage.guildId) return;
+
     const config = await getConfig(oldMessage.guildId);
 
     if (!config.listenerChannelId || oldMessage.channelId !== config.listenerChannelId) return;
