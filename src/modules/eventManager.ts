@@ -17,7 +17,7 @@ dayjs.extend(AdvancedFormat);
 dayjs.extend(Duration);
 
 
-function getDict(array: [string], tags: [string]) {
+function getDict(array: string[], tags: string[]) {
     const r: { [key: string]: string } = {};
     tags.forEach(t => {
         const keyIndex = array.indexOf(t);
@@ -28,11 +28,11 @@ function getDict(array: [string], tags: [string]) {
 }
 
 
-function parseMessage(messageId: string, content: string, matchTags: [string], re: RegExp, tags: Tags, dateTimeFormat: Array<string>): EventObj {
+function parseMessage(messageId: string, content: string, matchTags: string[], re: RegExp, tags: Tags, dateTimeFormat: string[]): EventObj {
     const event = new EventObj(messageId);
     const hammerRegex: RegExp = /:(.*?):/
 
-    const patternSplit: [string] = content.split(re).map(l => l.replace("\n", "").trim()) as [string];
+    const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim());
     const splitContent: { [key: string]: string } = getDict(patternSplit, matchTags);
 
     for (const [key, content] of Object.entries(splitContent)) {
@@ -89,9 +89,9 @@ async function messageCreateListener(message: Message) {
     const config = await getConfig(message.guildId);
 
     if (!config.listenerChannelId || message.channelId !== config.listenerChannelId) return;
-    const [l, r] = config.delimiterCharacters as [string, string];
-    const matchTags: [string] = message.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g"))?.map(l => l.trim()) as [string];
-    const re: RegExp = new RegExp(`${l}(.*?)${r}`);
+    const [l, r]: string[] = config.delimiterCharacters as string[];
+    const matchTags: string[] = (message.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
+
     if (!matchTags.includes((config.tags as Tags).announcement)) return;
 
     const event: EventObj = parseMessage(message.id, message.content, matchTags, re, config.tags as Tags, config.dateTimeFormat as []);
@@ -118,10 +118,10 @@ async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
     if (!oldEvent) return;
 
     const [l, r] = config.delimiterCharacters as [string, string];
-    const matchTags: [string] = newMessage.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g"))?.map(l => l.trim()) as [string];
+    const matchTags: string[] = newMessage.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g"))?.map(l => l.trim());
     const re: RegExp = new RegExp(`${l}(.*?)${r}`);
 
-    const newEvent = parseMessage(newMessage.id, (newMessage as Message).content, matchTags, re, config.tags as Tags, config.dateTimeFormat as []);
+    const newEvent = parseMessage(newMessage.id, newMessage.content, matchTags, re, config.tags as Tags, config.dateTimeFormat as string[]);
 
     try {
         const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
