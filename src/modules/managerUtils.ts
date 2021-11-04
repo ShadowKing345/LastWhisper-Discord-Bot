@@ -5,7 +5,7 @@ import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";
 
 async function getConfig(guildId: string): Promise<ManagerUtilConfig> {
-    return await Model.findOne({guildId: guildId}) ?? await Model.create({guildId: guildId});
+    return await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
 }
 
 async function getLoggingChannel(client: Client, guildId: string): Promise<TextChannel | null> {
