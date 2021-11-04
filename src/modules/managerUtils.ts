@@ -1,14 +1,5 @@
 import dayjs from "dayjs";
-import {
-    Channel,
-    Client,
-    GuildAuditLogsEntry,
-    GuildBan,
-    GuildMember,
-    MessageEmbed,
-    TextChannel,
-    User
-} from "discord.js";
+import {Channel, Client, GuildAuditLogsEntry, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
 import Model, {ManagerUtilConfig} from "../objects/MangerUtils";
 import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";
@@ -87,11 +78,11 @@ class ManagerUtils extends Module {
         super("ManagerUtils");
 
         this.listeners = [
-            new Listener(client => client.on("guildBanAdd", onMemberBanned)),
-            new Listener(client => client.on("guildMemberRemove", async member => {
+            new Listener(`${this.name}#OnGuildBanAdd`, "guildBanAdd", onMemberBanned),
+            new Listener(`${this.name}#OnGuildMemberRemove`, "guildMemberRemove", async member => {
                 if (member.partial) await member.fetch();
-                await onMemberLeave(member as GuildMember)
-            }))
+                await onMemberLeave(member as GuildMember);
+            })
         ];
     }
 }
