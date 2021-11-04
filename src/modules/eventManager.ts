@@ -212,7 +212,14 @@ async function postEventRemindersLoop(client: Client) {
 async function event(interaction: CommandInteraction) {
     const config = await getConfig(interaction.guildId);
 
+
     const embed: MessageEmbed = new MessageEmbed().setColor("RANDOM");
+
+    if (config.events.length <= 0) {
+        embed.addField("Notice", "There are no upcoming events!");
+        await interaction.reply({embeds: [embed]});
+        return;
+    }
 
     const index = interaction.options.getInteger("index");
     if (index !== null) {
@@ -230,12 +237,8 @@ async function event(interaction: CommandInteraction) {
     } else {
         embed.setTitle("Upcoming Events");
 
-        if (config.events.length > 0) {
-            for (const [index, event] of config.events.entries()) {
-                embed.addField(`Index ${index}:`, `${event.name}\n**Begins: <t:${dayjs(event.dateTime).unix()}:R>**`, false);
-            }
-        } else {
-            embed.addField("Notice", "There are no upcoming events!");
+        for (const [index, event] of config.events.entries()) {
+            embed.addField(`Index ${index}:`, `${event.name}\n**Begins: <t:${dayjs(event.dateTime).unix()}:R>**`, false);
         }
     }
     await interaction.reply({embeds: [embed]});
