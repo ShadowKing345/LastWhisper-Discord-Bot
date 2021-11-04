@@ -255,24 +255,24 @@ class EventManager extends Module {
         ];
 
         this.listeners = [
-            new Listener(client => client.on("messageCreate", messageCreateListener)),
-            new Listener(client => client.on("messageUpdate", async (oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) => {
+            new Listener(`${this.name}#OnMessageCreate`, "messageCreate", messageCreateListener),
+            new Listener(`${this.name}#OnMessageUpdate`, "messageUpdate", async (oldMessage, newMessage) => {
                 if (oldMessage.partial) await oldMessage.fetch();
                 if (newMessage.partial) await newMessage.fetch();
                 await messageUpdateListener(oldMessage as Message, newMessage as Message);
-            })),
-            new Listener(client => client.on("messageDelete", async (message: Message | PartialMessage) => {
+            }),
+            new Listener(`${this.name}#OnMessageDelete`, "messageDelete", async (message) => {
                 if (message.partial) await message.fetch();
                 await messageDeleteListener(message as Message);
-            })),
-            new Listener(client => client.once("ready", async () => {
-                const configs: { [guildId: string]: EventManagerConfig } = {};
+            }),
+            new Listener(`${this.name}#OnReady`, "ready", async (client) => {
+                const configs: EventManagerConfig[] = await Model.find({});
 
-                for (const [guildId, config] of Object.entries(configs)) {
+                for (const config of configs) {
                     if (!config.listenerChannelId || !config.events.length) continue;
-                    fetchMessages(client, guildId, config.listenerChannelId, config.events.map(event => event.messageId)).catch(error => console.error(error));
+                    await fetchMessages(client, config._id, config.listenerChannelId, config.events.map(event => event.messageId));
                 }
-            }))
+            })
         ];
 
         this.tasks = [

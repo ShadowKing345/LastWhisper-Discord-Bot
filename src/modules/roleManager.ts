@@ -92,11 +92,11 @@ class RoleManager extends Module {
         super("RoleManager");
 
         this.listeners = [
-            new Listener(client => client.on("guildMemberAdd", async member => {
+            new Listener(`${this.name}#OnGuildMemberAdd`, "guildMemberAdd", async member => {
                 if (member.partial) await member.fetch();
                 await onMemberJoin(member as GuildMember);
-            })),
-            new Listener(client => client.on("ready", async () => await onReady(client)))
+            }),
+            new Listener(`${this.name}#OnReady`, "ready", async (client) => await onReady(client))
         ];
     }
 }
