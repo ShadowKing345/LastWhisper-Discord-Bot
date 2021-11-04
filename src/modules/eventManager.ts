@@ -94,6 +94,8 @@ async function messageCreateListener(message: Message) {
 
     if (!matchTags.includes((config.tags as Tags).announcement)) return;
 
+    const re: RegExp = new RegExp(`${l}(.*?)${r}`);
+
     const event: EventObj = parseMessage(message.id, message.content, matchTags, re, config.tags as Tags, config.dateTimeFormat as []);
     try {
         if (event.isValid()) {
