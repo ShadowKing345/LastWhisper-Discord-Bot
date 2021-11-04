@@ -3,7 +3,7 @@ import {Routes} from "discord-api-types/v9";
 import dotenv from "dotenv";
 import {readModules} from "./modules";
 
-dotenv.config()
+dotenv.config();
 
 const rest = new REST({version: "9"}).setToken(process.env.TOKEN as string);
 
