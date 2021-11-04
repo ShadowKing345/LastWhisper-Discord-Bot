@@ -6,7 +6,7 @@ import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";
 
 async function getConfig(client: Client, guildId: string): Promise<RoleManagerConfig> {
-    return await Model.findOne({guildId: guildId}) ?? await Model.create({guildId: guildId});
+    return await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
 }
 
 async function alterMembersRoles(member: GuildMember, newMemberRoleId: string, memberRoleId: string) {
@@ -29,12 +29,12 @@ async function onReady(client: Client) {
     const configs: Array<RoleManagerConfig> = await Model.find({});
 
     for (const config of configs) {
-        if(!client.guilds.cache.has(config.guildId)) continue;
+        if (!client.guilds.cache.has(config._id)) continue;
         if (!config.reactionListeningChannel || !config.reactionMessageIds.length) continue;
-        const messages: Message[] | void = await fetchMessages(client, config.guildId, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
+        const messages: Message[] | void = await fetchMessages(client, config._id, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
 
         if (!messages) continue;
-        const guild: Guild | null = await client.guilds.fetch(config.guildId);
+        const guild: Guild | null = await client.guilds.fetch(config._id);
         if (!guild) continue;
 
         const filter = (reaction: MessageReaction, _: User) => config.reactionMessageIds.includes(reaction.message.id);

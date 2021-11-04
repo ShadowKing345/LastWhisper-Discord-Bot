@@ -80,7 +80,7 @@ function parseMessage(messageId: string, content: string, matchTags: [string], r
 }
 
 async function getConfig(guildId: string) {
-    return await Model.findOne({guildId: guildId}) ?? await Model.create({guildId: guildId});
+    return await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
 }
 
 async function messageCreateListener(message: Message) {
@@ -167,8 +167,8 @@ async function postEventRemindersLoop(client: Client) {
     const alteredConfigs = [];
 
     for (const config of configs) {
-        if(!client.guilds.cache.has(config.guildId)) continue;
         try {
+            if (!client.guilds.cache.has(config._id)) continue;
             if (config.events.length > 0 && config.postingChannelId) {
                 const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId) as TextChannel | null;
                 if (!postingChannel) continue;

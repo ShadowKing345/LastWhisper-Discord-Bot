@@ -40,7 +40,7 @@ function createWeekEmbed(title: string, week: Week, days: Day[], date: dayjs.Day
 }
 
 async function tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[BuffManagerConfig | null, boolean]> {
-    const config: BuffManagerConfig = await Model.findOne({guildId: guildId}) ?? await Model.create({guildId: guildId});
+    const config: BuffManagerConfig = await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
 
     if (config.days.length <= 0) {
         await interaction.reply({content: "Sorry, there are not buffs set.", ephemeral: true});
@@ -96,21 +96,21 @@ async function postDailyMessage(client: Client) {
     const now: dayjs.Dayjs = dayjs();
 
     for (const guildConfig of configs) {
-        if (!client.guilds.cache.has(guildConfig.guildId)) continue;
+        if (!client.guilds.cache.has(guildConfig._id)) continue;
         try {
             const config: MessageSettings = guildConfig.messageSettings as MessageSettings;
             if (!config.channelId || !config.hour) continue;
             if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
             if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
 
-            const guild: Guild | null = await client.guilds.fetch(guildConfig.guildId);
+            const guild: Guild | null = await client.guilds.fetch(guildConfig._id);
             if(!guild) return;
             if(!guild.channels.cache.has(config.channelId)) return;
 
             const channel: TextChannel | null = await guild.channels.fetch(config.channelId) as TextChannel | null;
 
             if (!channel) {
-                console.warn(`Invalid posting channel for ${guildConfig.guildId}`);
+                console.warn(`Invalid posting channel for ${guildConfig._id}`);
                 continue;
             }
 
@@ -118,7 +118,7 @@ async function postDailyMessage(client: Client) {
             const day: Day | undefined = guildConfig.days.find(day => day.id === week.days[now.day()]);
 
             if (!day) {
-                console.warn(`Invalid day id for guild ${guildConfig.guildId}`);
+                console.warn(`Invalid day id for guild ${guildConfig._id}`);
                 continue;
             }
 
