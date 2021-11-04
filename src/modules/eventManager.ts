@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import CustomParseFormat from "dayjs/plugin/customParseFormat";
 import AdvancedFormat from "dayjs/plugin/advancedFormat";
 import Duration from "dayjs/plugin/duration";
-import {CommandInteraction, Message, MessageEmbed, PartialMessage, TextChannel} from "discord.js";
+import {CommandInteraction, Message, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
 import {Module} from "../classes/Module";
 import Command from "../classes/Command";
