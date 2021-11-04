@@ -1,9 +1,13 @@
-import Client from "./Client";
+import {ClientEvents} from "discord.js";
 
 export default class Listener {
-    run: (client: Client) => void;
+    name: string;
+    event: Exclude<string | symbol, keyof ClientEvents>;
+    run: (...args) => void;
 
-    constructor(run: (client: Client) => void) {
+    constructor(name: string, event: Exclude<string | symbol, keyof ClientEvents>, run: (...args) => void) {
+        this.name = name;
+        this.event = event;
         this.run = run;
     }
 }
