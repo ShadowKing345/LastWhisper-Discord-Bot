@@ -1,12 +1,14 @@
-import {Client as DiscordClient, ClientOptions, Collection} from "discord.js";
+import {Client as DiscordClient, ClientEvents, ClientOptions, Collection} from "discord.js";
 import ConfigManager from "../config-manager";
 import {Module} from "./Module";
 import Command from "./Command";
 import Task from "./Task";
+import Listener from "./Listener";
 
 class Client extends DiscordClient {
     modules: Collection<string, Module>
     commands: Collection<string, Command>;
+    moduleListeners: Collection<Exclude<string | symbol, keyof ClientEvents>, Listener[]>;
     tasks: Collection<string, Task>;
     configs: ConfigManager;
 
@@ -16,6 +18,7 @@ class Client extends DiscordClient {
         this.tasks = new Collection<string, Task>();
         this.modules = new Collection<string, Module>();
         this.configs = new ConfigManager();
+        this.moduleListeners = new Collection<Exclude<string | symbol, keyof ClientEvents>, Listener[]>();
     }
 }
 
