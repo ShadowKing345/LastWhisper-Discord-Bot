@@ -50,7 +50,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
                 if (dateTimeFormat.length > 0) {
                     date = dayjs(content, dateTimeFormat, true);
                     if (date.isValid()) {
-                        event.dateTime = date.format();
+                        event.dateTime = date.toDate();
                         break;
                     }
                 }
@@ -66,7 +66,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
 
                 date = dayjs.unix(number);
                 if (!date.isValid()) break;
-                event.dateTime = date.format();
+                event.dateTime = date.toDate();
                 break;
 
             default:

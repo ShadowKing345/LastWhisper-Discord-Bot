@@ -14,10 +14,10 @@ class EventObj {
     messageId: string;
     name: string;
     description: string;
-    dateTime: string;
+    dateTime: Date;
     additional: { [key: string]: string };
 
-    constructor(messageId: string, name: string = "", description: string = "", dateTime: string = "", additional: { [key: string]: string } = {}) {
+    constructor(messageId: string, name: string = "", description: string = "", dateTime: Date = null, additional: { [key: string]: string } = {}) {
         this.messageId = messageId;
         this.name = name;
         this.description = description;
@@ -26,7 +26,7 @@ class EventObj {
     }
 
     isValid(): boolean {
-        return this.name != "" && this.description != "" && this.dateTime != "";
+        return this.name != "" && this.description != "" && this.dateTime != null;
     }
 }
 
