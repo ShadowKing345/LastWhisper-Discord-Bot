@@ -71,7 +71,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
 
             default:
                 if (!tags.exclusionList.every(e => e !== key)) continue;
-                event.additional[key] = content;
+                event.additional.push([key, content]);
                 break;
         }
     }
@@ -227,7 +227,7 @@ async function event(interaction: CommandInteraction) {
         embed.setTitle(event.name);
         embed.setDescription(event.description);
 
-        for (const [key, value] of Object.entries(event.additional)) {
+        for (const [key, value] of event.additional) {
             embed.addField(key, value, false);
         }
 

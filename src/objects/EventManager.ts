@@ -15,9 +15,9 @@ class EventObj {
     name: string;
     description: string;
     dateTime: Date;
-    additional: { [key: string]: string };
+    additional: [string, string][];
 
-    constructor(messageId: string, name: string = "", description: string = "", dateTime: Date = null, additional: { [key: string]: string } = {}) {
+    constructor(messageId: string, name: string = "", description: string = "", dateTime: Date = null, additional: [string, string][] = []) {
         this.messageId = messageId;
         this.name = name;
         this.description = description;
