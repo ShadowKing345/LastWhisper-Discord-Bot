@@ -35,20 +35,20 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
     const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim());
     const splitContent: { [key: string]: string } = getDict(patternSplit, matchTags);
 
-    for (const [key, content] of Object.entries(splitContent)) {
+    for (const [key, value] of Object.entries(splitContent)) {
         switch (key) {
             case tags.announcement:
-                event.name = content;
+                event.name = value;
                 break;
 
             case tags.description:
-                event.description = content;
+                event.description = value;
                 break;
 
             case tags.dateTime:
                 let date: dayjs.Dayjs;
                 if (dateTimeFormat.length > 0) {
-                    date = dayjs(content, dateTimeFormat, true);
+                    date = dayjs(value, dateTimeFormat, true);
                     if (date.isValid()) {
                         event.dateTime = date.toDate();
                         break;
@@ -56,7 +56,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
                 }
 
                 // Checks if it's hammer time.
-                const matchedResult = content.match(hammerRegex);
+                const matchedResult = value.match(hammerRegex);
 
                 if (!matchedResult) break;
                 const unixTimeStr = matchedResult[1];
@@ -71,7 +71,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
 
             default:
                 if (!tags.exclusionList.every(e => e !== key)) continue;
-                event.additional.push([key, content]);
+                event.additional.push([key, value]);
                 break;
         }
     }
