@@ -17,13 +17,14 @@ dayjs.extend(AdvancedFormat);
 dayjs.extend(Duration);
 
 
-function getDict(array: string[], tags: string[]) {
-    const r: { [key: string]: string } = {};
-    tags.forEach(t => {
-        const keyIndex = array.indexOf(t);
-        if (keyIndex + 1 >= array.length) return;
-        r[array[keyIndex]] = array[keyIndex + 1];
-    });
+function splitChunk(array: string[]) : [string, string][] {
+    const r: [string, string][] = [];
+
+    for (let i = 0; i < array.length; i += 2) {
+        let temp = array.slice(i, i + 1);
+        r.push([temp[0], temp[1]]);
+    }
+
     return r;
 }
 
@@ -33,9 +34,8 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
     const hammerRegex: RegExp = /:(.*?):/
 
     const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim());
-    const splitContent: { [key: string]: string } = getDict(patternSplit, matchTags);
 
-    for (const [key, value] of Object.entries(splitContent)) {
+    for (const [key, value] of splitChunk(patternSplit)) {
         switch (key) {
             case tags.announcement:
                 event.name = value;
