@@ -8,7 +8,8 @@
     "dev": "nodemon src/index.ts --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\"",
     "build": "tsc -b .",
     "register-commands": "node --experimental-specifier-resolution=node dist/register-commands.js",
-    "dev-register-commands": "node --experimental-specifier-resolution=node --loader ts-node/esm src/register-commands.ts"
+    "dev-register-commands": "node --experimental-specifier-resolution=node --loader ts-node/esm src/register-commands.ts",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,10 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "jest": "^27.3.1",
     "nodemon": "^2.0.12",
+    "ts-jest": "^27.0.7",
     "ts-node": "^10.2.1"
   },
   "type": "module"
