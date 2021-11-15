@@ -1,5 +1,4 @@
 import path from "path";
-import {fileURLToPath} from "url";
 import {readdir} from "fs/promises";
 import fs from "fs";
 import Client from "../classes/Client";
@@ -8,8 +7,8 @@ import {Module} from "../classes/Module";
 import Command from "../classes/Command";
 import Listener from "../classes/Listener";
 
-async function readModules(callback: (module: Module) => void) {
-    const relativePath: string = path.dirname(fileURLToPath(import.meta.url));
+async function readModules(callback: (module: Module) => void, folderPath: string = "src/modules") {
+    const relativePath: string = folderPath;
 
     for (const item of await readdir(relativePath)) {
         const filePath = path.resolve(path.join(relativePath, item));
