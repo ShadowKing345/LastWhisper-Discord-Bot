@@ -2,10 +2,10 @@ FROM node:16-alpine
 
 WORKDIR /usr/app
 
-COPY ["package.json", "package-lock.json", "./"]
+COPY ["package.json", "yarn.lock", "./"]
 
-RUN npm i --production=true --quiet
+RUN yarn
 
-COPY . .
+COPY ["src/", "tsconfig.json", "./"]
 
-RUN npm run build
+RUN yarn run build
