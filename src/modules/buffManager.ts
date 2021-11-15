@@ -24,7 +24,7 @@ function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbe
 }
 
 function createWeekEmbed(title: string, week: Week, days: Day[], date: dayjs.Dayjs): MessageEmbed {
-    const _days = week.days.map((dayId, index) => {
+    const _days = week.days.array.map((dayId, index) => {
         const dow: string = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][index];
         const day: Day = days.find(entry => entry.id === dayId) || new Day("No Buff Found", "")
 
@@ -65,7 +65,7 @@ async function postBuff(interaction: CommandInteraction, date: dayjs.Dayjs, titl
     if (!flag) return;
 
     const week = config.weeks[date.week() % config.weeks.length];
-    const day = config.days.find(day => day.id === week.days[date.day()]);
+    const day = config.days.find(day => day.id === week.days.array[date.day()]);
 
     if (!day) {
         await interaction.reply({
