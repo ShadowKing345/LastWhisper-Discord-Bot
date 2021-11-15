@@ -13,8 +13,7 @@ client.once("ready", () => {
     console.log("Ready!");
 });
 
-(async () => {
-    await client.configs.loadConfigs();
-    await moduleSetup(client);
-    await client.login(process.env.TOKEN);
-})()
+client.configs.loadConfigs()
+    .then(() => moduleSetup(client))
+    .then(() => client.login(process.env.TOKEN))
+    .catch(err => console.error(err));
