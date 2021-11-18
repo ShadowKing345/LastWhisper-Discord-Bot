@@ -25,7 +25,7 @@ class EventObj {
         this.additional = additional;
     }
 
-    isValid(): boolean {
+    get isValid(): boolean {
         return this.name != "" && this.description != "" && this.dateTime != null;
     }
 }
