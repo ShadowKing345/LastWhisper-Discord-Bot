@@ -1,8 +1,5 @@
 import Model, {EventManagerConfig, EventObj, Tags} from "../objects/EventManager";
 import dayjs from "dayjs";
-import CustomParseFormat from "dayjs/plugin/customParseFormat";
-import AdvancedFormat from "dayjs/plugin/advancedFormat";
-import Duration from "dayjs/plugin/duration";
 import {CommandInteraction, Message, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
 import {Module} from "../classes/Module";
@@ -12,12 +9,7 @@ import Listener from "../classes/Listener";
 import {fetchMessages} from "../utils";
 import Task from "../classes/Task";
 
-dayjs.extend(CustomParseFormat);
-dayjs.extend(AdvancedFormat);
-dayjs.extend(Duration);
-
-
-function splitChunk(array: string[]) : [string, string][] {
+function splitChunk(array: string[]): [string, string][] {
     const r: [string, string][] = [];
 
     for (let i = 0; i < array.length; i += 2) {

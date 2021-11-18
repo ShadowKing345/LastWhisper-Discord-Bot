@@ -1,7 +1,4 @@
 import dayjs from "dayjs";
-import weekOfYear from "dayjs/plugin/weekOfYear";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import customParseFormat from "dayjs/plugin/customParseFormat";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
 import Model, {BuffManagerConfig, Day, MessageSettings, Week} from "../objects/BuffManager";
@@ -9,10 +6,6 @@ import {Module} from "../classes/Module";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import Command from "../classes/Command";
 import Task from "../classes/Task";
-
-dayjs.extend(weekOfYear);
-dayjs.extend(advancedFormat);
-dayjs.extend(customParseFormat);
 
 function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbed {
     return new MessageEmbed()
