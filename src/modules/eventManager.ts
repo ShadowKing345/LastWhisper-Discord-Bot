@@ -80,7 +80,7 @@ async function getConfig(guildId: string) {
     return await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
 }
 
-async function messageCreateListener(message: Message) {
+async function createEvent(message: Message) {
     if (message.author.id === message.client.application?.id) return;
     if (!message.guildId) return;
     const config = await getConfig(message.guildId);
@@ -105,7 +105,7 @@ async function messageCreateListener(message: Message) {
     }
 }
 
-async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
+async function updateEvent(oldMessage: Message, newMessage: Message) {
     if (newMessage.author?.id === newMessage.client.application?.id) return;
     if (!oldMessage.guildId) return;
 
@@ -134,7 +134,7 @@ async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
     }
 }
 
-async function messageDeleteListener(message: Message) {
+async function deleteEvent(message: Message) {
     if (message.author?.id === message.client.application?.id) return;
     if (!message.guildId) return;
     const config = await getConfig(message.guildId);
