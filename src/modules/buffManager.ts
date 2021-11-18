@@ -7,6 +7,7 @@ import {Module} from "../classes/Module";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import Command from "../classes/Command";
 import Task from "../classes/Task";
+import {DaysToArray} from "../utils";
 
 function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbed {
     return new MessageEmbed()
@@ -18,7 +19,7 @@ function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbe
 }
 
 function createWeekEmbed(title: string, week: Week, days: Day[], date: dayjs.Dayjs): MessageEmbed {
-    const _days = week.days.array.map((dayId, index) => {
+    const _days = DaysToArray(week.days).map((dayId, index) => {
         const dow: string = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][index];
         const day: Day = days.find(entry => entry.id === dayId) || new Day("No Buff Found", "")
 
@@ -59,7 +60,7 @@ async function postBuff(interaction: CommandInteraction, date: dayjs.Dayjs, titl
     if (!flag) return;
 
     const week = config.weeks[date.week() % config.weeks.length];
-    const day = config.days.find(day => day.id === week.days.array[date.day()]);
+    const day = config.days.find(day => day.id === DaysToArray(week.days)[date.day()]);
 
     if (!day) {
         await interaction.reply({

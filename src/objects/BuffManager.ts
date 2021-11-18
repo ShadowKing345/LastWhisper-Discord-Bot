@@ -31,48 +31,6 @@ class Days {
         this.saturday = saturday
         this.sunday = sunday
     }
-
-    getDay(day: string): string | null {
-        switch (day) {
-            case "monday":
-                return this.monday;
-            case "tuesday":
-                return this.tuesday;
-            case "wednesday":
-                return this.wednesday;
-            case "thursday":
-                return this.thursday;
-            case "friday":
-                return this.friday;
-            case "saturday":
-                return this.saturday;
-            case "sunday":
-                return this.sunday;
-        }
-    }
-
-    getDayInt(day: number): string | null {
-        switch (day) {
-            case 1:
-                return this.monday;
-            case 2:
-                return this.tuesday;
-            case 3:
-                return this.wednesday;
-            case 4:
-                return this.thursday;
-            case 5:
-                return this.friday;
-            case 6:
-                return this.saturday;
-            case 0:
-                return this.sunday;
-        }
-    }
-
-    get array() {
-        return [this.sunday, this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday, this.sunday];
-    }
 }
 
 class Week {
@@ -108,4 +66,4 @@ interface BuffManagerConfig {
     weeks: [Week];
 }
 
-export {BuffManagerConfig, Week, Day, MessageSettings};
+export {BuffManagerConfig, Week, Days, Day, MessageSettings};

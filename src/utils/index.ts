@@ -1,4 +1,5 @@
 import {Channel, Client, Guild, Message, TextChannel} from "discord.js";
+import {Days} from "../objects/BuffManager";
 
 async function fetchMessages(client: Client, guildId: string, channelId: string, messageIds: string[]): Promise<Message[]> {
     const result: Message[] = [];
@@ -18,4 +19,8 @@ async function fetchMessages(client: Client, guildId: string, channelId: string,
     return result;
 }
 
-export {fetchMessages}
+function DaysToArray(days: Days): string[] {
+    return [days.sunday, days.monday, days.tuesday, days.wednesday, days.thursday, days.friday]
+}
+
+export {fetchMessages, DaysToArray}
