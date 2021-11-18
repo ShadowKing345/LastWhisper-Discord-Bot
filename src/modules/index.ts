@@ -1,6 +1,3 @@
-import path from "path";
-import {readdir} from "fs/promises";
-import fs from "fs";
 import Client from "../classes/Client";
 import {Interaction} from "discord.js";
 import {Module} from "../classes/Module";
@@ -16,9 +13,11 @@ import BuffModule from "./buffManager";
 export {EventModule, RoleModule, ManagerUtilsModule, BuffModule};
 export const Modules = [EventModule, RoleModule, ManagerUtilsModule, BuffModule];
 
-        const imported = (await import(filePath)).default;
-        if (imported instanceof Module)
-            callback(imported);
+// endregion
+
+function readModules(callback: (module: Module) => void) {
+    for (let module of Modules) {
+        callback(module);
     }
 }
 
@@ -47,7 +46,7 @@ export default async (client: Client) => {
         }
     });
 
-    await readModules((module: Module) => {
+    readModules(module => {
         client.modules.set(module.name, module);
         module.commands.forEach(command => client.commands.set(command.command.name, command));
         module.tasks.forEach(task => {

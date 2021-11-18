@@ -10,7 +10,7 @@ const rest = new REST({version: "9"}).setToken(process.env.TOKEN as string);
 (async () => {
     try {
         const commands: {}[] = [];
-        await readModules(module => module.commands.forEach(command => commands.push(command.command.toJSON())));
+        readModules(module => module.commands.forEach(command => commands.push(command.command.toJSON())));
         await rest.put(Routes.applicationCommands(process.env.CLIENT_ID as string), {body: commands});
         console.log("Successfully registered application commands.");
     } catch (error) {
