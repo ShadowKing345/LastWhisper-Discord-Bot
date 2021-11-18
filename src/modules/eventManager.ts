@@ -249,15 +249,15 @@ class EventManager extends Module {
         ];
 
         this.listeners = [
-            new Listener(`${this.name}#OnMessageCreate`, "messageCreate", messageCreateListener),
+            new Listener(`${this.name}#OnMessageCreate`, "messageCreate", createEvent),
             new Listener(`${this.name}#OnMessageUpdate`, "messageUpdate", async (oldMessage, newMessage) => {
                 if (oldMessage.partial) await oldMessage.fetch();
                 if (newMessage.partial) await newMessage.fetch();
-                await messageUpdateListener(oldMessage as Message, newMessage as Message);
+                await updateEvent(oldMessage as Message, newMessage as Message);
             }),
             new Listener(`${this.name}#OnMessageDelete`, "messageDelete", async (message) => {
                 if (message.partial) await message.fetch();
-                await messageDeleteListener(message as Message);
+                await deleteEvent(message as Message);
             }),
             new Listener(`${this.name}#OnReady`, "ready", async (client) => {
                 const configs: EventManagerConfig[] = await Model.find({});
