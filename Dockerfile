@@ -2,7 +2,7 @@ FROM node:16-alpine
 
 WORKDIR /usr/app
 
-COPY ["package.json", "yarn.lock", "tsconfig.json", "./"]
+COPY ["package.json", "yarn.lock", ".env", "tsconfig.json", "./"]
 
 RUN yarn
 
