@@ -203,7 +203,6 @@ async function postEventRemindersLoop(client: Client) {
 async function event(interaction: CommandInteraction) {
     const config = await getConfig(interaction.guildId);
 
-
     const embed: MessageEmbed = new MessageEmbed().setColor("RANDOM");
 
     if (config.events.length <= 0) {
@@ -280,3 +279,13 @@ class EventManager extends Module {
 }
 
 export default new EventManager();
+export {
+    parseMessage,
+    splitChunk,
+    getConfig,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    event,
+    postEventRemindersLoop
+};
