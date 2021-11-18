@@ -7,12 +7,14 @@ import {Module} from "../classes/Module";
 import Command from "../classes/Command";
 import Listener from "../classes/Listener";
 
-async function readModules(callback: (module: Module) => void, folderPath: string = "src/modules") {
-    const relativePath: string = folderPath;
+// region Module Export
+import EventModule from "./eventManager";
+import RoleModule from "./roleManager";
+import ManagerUtilsModule from "./managerUtils";
+import BuffModule from "./buffManager";
 
-    for (const item of await readdir(relativePath)) {
-        const filePath = path.resolve(path.join(relativePath, item));
-        if (!fs.lstatSync(filePath).isFile()) continue;
+export {EventModule, RoleModule, ManagerUtilsModule, BuffModule};
+export const Modules = [EventModule, RoleModule, ManagerUtilsModule, BuffModule];
 
         const imported = (await import(filePath)).default;
         if (imported instanceof Module)
