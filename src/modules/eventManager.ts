@@ -75,6 +75,8 @@ function parseMessage(messageId: string, content: string, config: EventManagerCo
 }
 
 async function getConfig(guildId: string) {
+    if (guildId == null || !guildId.trim()) throw new ReferenceError("guildId cannot be null nor empty.");
+
     return await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
 }
 
