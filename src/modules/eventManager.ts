@@ -14,7 +14,7 @@ function splitChunk(array: string[]): [string, string][] {
     const r: [string, string][] = [];
 
     for (let i = 0; i < array.length; i += 2) {
-        let temp = array.slice(i, i + 1);
+        let temp = array.slice(i, i + 2);
         r.push([temp[0], temp[1]]);
     }
 
