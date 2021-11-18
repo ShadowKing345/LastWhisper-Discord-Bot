@@ -1,13 +1,13 @@
 {
   "name": "lastwhisper-discord-bot",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "NodeJS version of the Last Whisper guild Discord Bot.",
-  "main": "dist/index.js",
+  "main": "build/index.js",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node dist/index.js",
+    "start": "node --experimental-specifier-resolution=node build/index.js",
     "dev": "nodemon src/index.ts --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\"",
     "build": "tsc -b .",
-    "register-commands": "node --experimental-specifier-resolution=node dist/register-commands.js",
+    "register-commands": "node --experimental-specifier-resolution=node build/register-commands.js",
     "dev-register-commands": "node --experimental-specifier-resolution=node --loader ts-node/esm src/register-commands.ts",
     "test": "jest"
   },
