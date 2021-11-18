@@ -28,7 +28,7 @@ function parseMessage(messageId: string, content: string, config: EventManagerCo
     const [l, r] = config.delimiterCharacters as [string, string];
     const re: RegExp = new RegExp(`${l}(.*?)${r}`);
 
-    const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim());
+    const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim()).filter(l => l);
 
     for (const [key, value] of splitChunk(patternSplit)) {
         switch (key) {
