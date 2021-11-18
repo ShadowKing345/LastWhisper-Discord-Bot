@@ -93,7 +93,7 @@ async function createEvent(message: Message) {
 
     const event: EventObj = parseMessage(message.id, message.content, config);
     try {
-        if (event.isValid()) {
+        if (event.isValid) {
             config.events.push(event);
             await message.react("✅");
             config.save().catch(err => console.log(err));
@@ -122,7 +122,7 @@ async function updateEvent(oldMessage: Message, newMessage: Message) {
         if (reaction)
             await reaction.users.remove(oldMessage.client.user?.id);
 
-        if (newEvent.isValid()) {
+        if (newEvent.isValid) {
             await newMessage.react("✅");
             config.events[config.events.indexOf(oldEvent)] = newEvent;
             await config.save();
