@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import {Channel, Client, GuildAuditLogsEntry, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
-import Model, {ManagerUtilConfig} from "../objects/MangerUtils";
+import {ManagerUtilConfig} from "../objects/MangerUtils";
+import Model from "../models/ManagerUtils";
 import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";
 

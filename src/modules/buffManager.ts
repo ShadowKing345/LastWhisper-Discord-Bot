@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
-import Model, {BuffManagerConfig, Day, MessageSettings, Week} from "../objects/BuffManager";
+import {BuffManagerConfig, Day, MessageSettings, Week} from "../objects/BuffManager";
+import Model from "../models/BuffManager";
 import {Module} from "../classes/Module";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import Command from "../classes/Command";

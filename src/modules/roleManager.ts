@@ -1,6 +1,7 @@
 import {Guild, GuildMember, Message, MessageReaction, Role, User} from "discord.js";
 import Client from "../classes/Client";
-import Model, {RoleManagerConfig} from "../objects/RoleManager";
+import {RoleManagerConfig} from "../objects/RoleManager";
+import Model from "../models/RoleManager";
 import {fetchMessages} from "../utils";
 import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";
