@@ -22,26 +22,28 @@ function splitChunk(array: string[]): [string, string][] {
 }
 
 
-function parseMessage(messageId: string, content: string, matchTags: string[], re: RegExp, tags: Tags, dateTimeFormat: string[]): EventObj {
+function parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
     const event = new EventObj(messageId);
     const hammerRegex: RegExp = /:(.*?):/
+    const [l, r] = config.delimiterCharacters as [string, string];
+    const re: RegExp = new RegExp(`${l}(.*?)${r}`);
 
     const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim());
 
     for (const [key, value] of splitChunk(patternSplit)) {
         switch (key) {
-            case tags.announcement:
+            case config.tags.announcement:
                 event.name = value;
                 break;
 
-            case tags.description:
+            case config.tags.description:
                 event.description = value;
                 break;
 
-            case tags.dateTime:
+            case config.tags.dateTime:
                 let date: dayjs.Dayjs;
-                if (dateTimeFormat.length > 0) {
-                    date = dayjs(value, dateTimeFormat, true);
+                if (config.dateTimeFormat.length > 0) {
+                    date = dayjs(value, config.dateTimeFormat, true);
                     if (date.isValid()) {
                         event.dateTime = date.toDate();
                         break;
@@ -63,7 +65,7 @@ function parseMessage(messageId: string, content: string, matchTags: string[], r
                 break;
 
             default:
-                if (!tags.exclusionList.every(e => e !== key)) continue;
+                if (!config.tags.exclusionList.every(e => e !== key)) continue;
                 event.additional.push([key, value]);
                 break;
         }
@@ -87,9 +89,7 @@ async function messageCreateListener(message: Message) {
 
     if (!matchTags.includes((config.tags as Tags).announcement)) return;
 
-    const re: RegExp = new RegExp(`${l}(.*?)${r}`);
-
-    const event: EventObj = parseMessage(message.id, message.content, matchTags, re, config.tags as Tags, config.dateTimeFormat as []);
+    const event: EventObj = parseMessage(message.id, message.content, config);
     try {
         if (event.isValid()) {
             config.events.push(event);
@@ -113,11 +113,7 @@ async function messageUpdateListener(oldMessage: Message, newMessage: Message) {
     const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
     if (!oldEvent) return;
 
-    const [l, r] = config.delimiterCharacters as [string, string];
-    const matchTags: string[] = newMessage.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g"))?.map(l => l.trim());
-    const re: RegExp = new RegExp(`${l}(.*?)${r}`);
-
-    const newEvent = parseMessage(newMessage.id, newMessage.content, matchTags, re, config.tags as Tags, config.dateTimeFormat as string[]);
+    const newEvent = parseMessage(newMessage.id, newMessage.content, config);
 
     try {
         const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
