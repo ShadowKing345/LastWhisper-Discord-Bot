@@ -1,5 +1,5 @@
 import {v4 as uuid} from "uuid";
-import mongoose, {SchemaDefinitionProperty} from "mongoose";
+import {SchemaDefinitionProperty} from "mongoose";
 
 class Day {
     id: string;
@@ -108,17 +108,4 @@ interface BuffManagerConfig {
     weeks: [Week];
 }
 
-const schema = new mongoose.Schema<BuffManagerConfig>({
-    _id: String,
-    messageSettings: {
-        type: Object,
-        default: new MessageSettings
-    },
-    days: Array,
-    weeks: Array
-});
-
-const Model = mongoose.model<BuffManagerConfig>("BuffManager", schema);
-
-export default Model;
 export {BuffManagerConfig, Week, Day, MessageSettings};

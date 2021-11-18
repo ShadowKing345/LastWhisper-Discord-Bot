@@ -1,4 +1,4 @@
-import mongoose, {SchemaDefinitionProperty} from "mongoose";
+import {SchemaDefinitionProperty} from "mongoose";
 
 class ReminderTrigger {
     message: string;
@@ -55,24 +55,4 @@ interface EventManagerConfig {
     reminders: ReminderTrigger[];
 }
 
-const schema = new mongoose.Schema<EventManagerConfig>({
-    _id: String,
-    listenerChannelId: {type: String, default: ""},
-    postingChannelId: {type: String, default: ""},
-    delimiterCharacters: {
-        type: Array,
-        default: ["\\[", "\\]"]
-    },
-    tags: {
-        type: Object,
-        default: new Tags
-    },
-    dateTimeFormat: {type: Array},
-    events: Array,
-    reminders: Array
-});
-
-const Model = mongoose.model<EventManagerConfig>("EventManager", schema);
-
-export default Model;
 export {ReminderTrigger, EventObj, EventManagerConfig, Tags};
