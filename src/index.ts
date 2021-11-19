@@ -10,7 +10,6 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 
 dotenv.config();
 
-// Adding extensions to the days module... I think?
 dayjs.extend(duration);
 dayjs.extend(weekOfYear);
 dayjs.extend(advancedFormat);
