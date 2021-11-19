@@ -152,7 +152,7 @@ function parseTriggerDuration(triggerTime: string) {
     return dayjs.duration({hours: hold.hour(), minutes: hold.minute()});
 }
 
-async function postEventRemindersLoop(client: Client) {
+async function reminderLoop(client: Client) {
     const now: dayjs.Dayjs = dayjs();
     const configs = await Model.find({});
     const alteredConfigs = [];
@@ -271,7 +271,7 @@ class EventManager extends Module {
         this.tasks = [
             new Task("eventManager_postMessageLoop", 60000, async client => {
                 await Task.waitTillReady(client);
-                await postEventRemindersLoop(client);
+                await reminderLoop(client);
             })
         ];
     }
@@ -287,5 +287,5 @@ export {
     updateEvent,
     deleteEvent,
     event,
-    postEventRemindersLoop
+    reminderLoop
 };
