@@ -9,9 +9,9 @@ import Command from "../classes/Command";
 import Task from "../classes/Task";
 import {DaysToArray} from "../utils";
 
-function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs, colorOverwrite: ColorResolvable = "RANDOM"): MessageEmbed {
+function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs, colorOverride: ColorResolvable = "RANDOM"): MessageEmbed {
     return new MessageEmbed()
-        .setColor(colorOverwrite)
+        .setColor(colorOverride)
         .setTitle(title)
         .setDescription(day.text)
         .setThumbnail(day.imageUrl)
