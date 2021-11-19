@@ -1,7 +1,7 @@
-import {Channel, Client, Guild, Message, TextChannel} from "discord.js";
+import {Channel, Client, Guild, Message, Snowflake, TextChannel} from "discord.js";
 import {Days} from "../objects/BuffManager";
 
-async function fetchMessages(client: Client, guildId: string, channelId: string, messageIds: string[]): Promise<Message[]> {
+async function fetchMessages(client: Client, guildId: Snowflake, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
     const result: Message[] = [];
 
     const guild: Guild | null = await client.guilds.fetch(guildId);
