@@ -162,3 +162,4 @@ class BuffManager extends Module {
 }
 
 export default new BuffManager();
+export {createDayEmbed, createWeekEmbed, postBuff, postWeeksBuffs, postDailyMessage};
