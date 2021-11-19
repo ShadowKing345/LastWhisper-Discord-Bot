@@ -6,7 +6,7 @@ class Day {
     text: string;
     imageUrl: string;
 
-    constructor(text: string, imageUrl: string) {
+    constructor(text: string = "", imageUrl: string = "") {
         this.id = uuid();
         this.text = text;
         this.imageUrl = imageUrl;
