@@ -79,3 +79,35 @@ describe("Acquiring configs", () => {
     it("Empty Id, Should Throw", () => expect(getConfig("")).rejects.toBeInstanceOf(ReferenceError))
     it("Null Id, Should Throw", () => expect(getConfig(null)).rejects.toBeInstanceOf(ReferenceError));
 });
+
+describe("Create Event", () => {
+   it.todo("Correct Message");
+   it.todo("Incorrect Message");
+   it.todo("Null Message");
+});
+
+describe("Update Event", () => {
+   it.todo("Correct Id, Correct Message");
+   it.todo("Correct Id, Incorrect Message");
+   it.todo("Correct Id, Null Message");
+   it.todo("Incorrect Id, Correct Message");
+   it.todo("Incorrect Id, Incorrect Message");
+   it.todo("Incorrect Id, Null Message");
+});
+
+describe("Delete Event", () => {
+   it.todo("Correct Id");
+   it.todo("Incorrect Id");
+   it.todo("Null Id");
+});
+
+describe("Reminder Loop", () => {
+   it.todo("Work on testing idea.")
+});
+
+describe("Event Command", () => {
+    it.todo("Number Index, Inside Range");
+    it.todo("Number Index, Outside Range");
+    it.todo("Null Index");
+    it.todo("No Events");
+});
