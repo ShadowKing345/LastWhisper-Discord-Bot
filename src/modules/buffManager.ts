@@ -110,7 +110,7 @@ async function postDailyMessage(client: Client) {
             }
 
             const week: Week = guildConfig.weeks[now.week() % guildConfig.weeks.length];
-            const day: Day | undefined = guildConfig.days.find(day => day.id === week.days[now.day()]);
+            const day: Day | undefined = guildConfig.days.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
             if (!day) {
                 console.warn(`Invalid day id for guild ${guildConfig._id}`);
