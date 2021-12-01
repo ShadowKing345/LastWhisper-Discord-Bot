@@ -79,8 +79,8 @@ async function createEvent(message: Message) {
 
     if (config.listenerChannelId !== message.channelId) return;
     const [l, r]: string[] = config.delimiterCharacters as string[];
-    const matchTags: string[] = (message.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
 
+    const matchTags: string[] = (message.content?.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
     if (!matchTags.includes((config.tags as Tags).announcement)) return;
 
     const event: EventObj = parseMessage(message.id, message.content, config);
