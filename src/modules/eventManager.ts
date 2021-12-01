@@ -10,27 +10,19 @@ import Listener from "../classes/Listener";
 import {fetchMessages} from "../utils";
 import Task from "../classes/Task";
 
-function splitChunk(array: string[]): [string, string][] {
-    const r: [string, string][] = [];
-
-    for (let i = 0; i < array.length; i += 2) {
-        let temp = array.slice(i, i + 2);
-        r.push([temp[0], temp[1]]);
-    }
-
-    return r;
-}
-
-
 function parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
     const event = new EventObj(messageId);
-    const hammerRegex: RegExp = /:(.*?):/
+    const hammerRegex: RegExp = /<.*:(\d+):.*>/
     const [l, r] = config.delimiterCharacters as [string, string];
-    const re: RegExp = new RegExp(`${l}(.*?)${r}`);
+    const re: RegExp = new RegExp(`${l}(.*)${r}([^${l}]*)`, "gm");
 
-    const patternSplit: string[] = content.split(re).map(l => l.replace("\n", "").trim()).filter(l => l);
+    const patternSplit: [string | null, string | null][] = (content?.match(re) ?? []).map(l => {
+        re.lastIndex = 0;
+        let match = re.exec(l);
+        return match ? [match[1].trim(), match[2].trim()] : [null, null];
+    });
 
-    for (const [key, value] of splitChunk(patternSplit)) {
+    for (const [key, value] of patternSplit) {
         switch (key) {
             case config.tags.announcement:
                 event.name = value;
