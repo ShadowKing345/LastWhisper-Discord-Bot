@@ -272,7 +272,6 @@ class EventManager extends Module {
 export default new EventManager();
 export {
     parseMessage,
-    splitChunk,
     getConfig,
     createEvent,
     updateEvent,
