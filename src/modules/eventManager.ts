@@ -77,7 +77,7 @@ async function createEvent(message: Message) {
     if (!message.guildId) return;
     const config = await getConfig(message.guildId);
 
-    if (!config.listenerChannelId || message.channelId !== config.listenerChannelId) return;
+    if (config.listenerChannelId !== message.channelId) return;
     const [l, r]: string[] = config.delimiterCharacters as string[];
     const matchTags: string[] = (message.content.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
 
