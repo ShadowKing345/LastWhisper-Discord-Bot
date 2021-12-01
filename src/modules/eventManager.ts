@@ -98,7 +98,6 @@ async function createEvent(message: Message) {
 }
 
 async function updateEvent(oldMessage: Message, newMessage: Message) {
-    if (newMessage.author?.id === newMessage.client.application?.id) return;
     if (!oldMessage.guildId) return;
 
     const config = await getConfig(oldMessage.guildId);
