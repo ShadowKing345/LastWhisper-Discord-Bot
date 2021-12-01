@@ -88,7 +88,7 @@ async function createEvent(message: Message) {
         if (event.isValid) {
             config.events.push(event);
             await message.react("✅");
-            config.save().catch(err => console.log(err));
+            config.save().catch(err => console.error(err));
         } else {
             await message.react("❎");
         }
