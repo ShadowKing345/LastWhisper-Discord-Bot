@@ -102,7 +102,7 @@ async function updateEvent(oldMessage: Message, newMessage: Message) {
 
     const config = await getConfig(oldMessage.guildId);
 
-    if (!config.listenerChannelId || oldMessage.channelId !== config.listenerChannelId) return;
+    if (config.listenerChannelId !== oldMessage.channelId) return;
     const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
     if (!oldEvent) return;
 
