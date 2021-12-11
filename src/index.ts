@@ -8,13 +8,16 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
-dotenv.config();
+export function preInit() {
+    dotenv.config();
 
-dayjs.extend(duration);
-dayjs.extend(weekOfYear);
-dayjs.extend(advancedFormat);
-dayjs.extend(customParseFormat);
+    dayjs.extend(duration);
+    dayjs.extend(weekOfYear);
+    dayjs.extend(advancedFormat);
+    dayjs.extend(customParseFormat);
+}
 
+preInit();
 console.log(`Current Timezone is set to ${process.env.TZ}`);
 
 const client: Client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
