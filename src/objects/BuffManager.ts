@@ -59,11 +59,18 @@ class MessageSettings {
     }
 }
 
-interface BuffManagerConfig {
-    _id: string,
-    messageSettings: SchemaDefinitionProperty<MessageSettings> | undefined;
-    days: [Day];
-    weeks: [Week];
+class BuffManagerConfig {
+    _id: string;
+    messageSettings: SchemaDefinitionProperty<MessageSettings> | null;
+    days: Day[];
+    weeks: Week[];
+
+    constructor(id: string = "", messageSettings: MessageSettings = null, days: Day[] = [], weeks: Week[] = []) {
+        this._id = id;
+        this.messageSettings = messageSettings;
+        this.days = days;
+        this.weeks = weeks;
+    }
 }
 
 export {BuffManagerConfig, Week, Days, Day, MessageSettings};
