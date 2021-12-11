@@ -275,5 +275,6 @@ export {
     updateEvent,
     deleteEvent,
     event,
-    reminderLoop
+    reminderLoop,
+    parseTriggerDuration
 };
