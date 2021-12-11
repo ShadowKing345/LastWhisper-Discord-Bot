@@ -1,10 +1,19 @@
 import {REST} from "@discordjs/rest";
 import {Routes} from "discord-api-types/v9";
-import dotenv from "dotenv";
 import {readModules} from "./modules";
+import dotenv from "dotenv";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
 dotenv.config();
 
+dayjs.extend(duration);
+dayjs.extend(weekOfYear);
+dayjs.extend(advancedFormat);
+dayjs.extend(customParseFormat);
 const rest = new REST({version: "9"}).setToken(process.env.TOKEN as string);
 
 (async () => {
