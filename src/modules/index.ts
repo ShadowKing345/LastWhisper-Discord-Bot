@@ -32,17 +32,23 @@ async function runEvent(listeners: Listener[], ...args) {
 }
 
 export default async (client: Client) => {
-    client.on("interactionCreate", async (interaction: Interaction) => {
-        if (!interaction.isCommand()) return;
+    client.on("interactionCreate", (interaction: Interaction) => {
+        if (interaction.isButton()) {
+            console.log(interaction.customId)
+            interaction.reply({content: "yolo", ephemeral: true});
+        }
 
-        const command: Command | undefined = (interaction.client as Client).commands.get(interaction.commandName);
-        if (!command) return;
+        if (interaction.isCommand()) {
+            const command: Command | undefined = (interaction.client as Client).commands.get(interaction.commandName);
+            if (!command) return;
 
-        try {
-            await command.run(interaction);
-        } catch (error) {
-            console.error(error);
-            await interaction.reply({content: "There was an error while executing this command!", ephemeral: true});
+            command.run(interaction).catch(err => {
+                console.error(err);
+                return interaction.reply({
+                    content: "There was an error while executing this command!",
+                    ephemeral: true
+                });
+            });
         }
     });
 
