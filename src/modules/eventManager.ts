@@ -213,7 +213,7 @@ async function event(interaction: CommandInteraction) {
         }
 
         const time: number = dayjs(event.dateTime).unix();
-        embed.addField("Time remaining:", `<t:${time}:R>`, false);
+        embed.addField("Time Remaining:", `<t:${time}:R>`, false);
         embed.addField("Set For:", `<t:${time}:f>`, false);
     } else {
         embed.setTitle("Upcoming Events");
