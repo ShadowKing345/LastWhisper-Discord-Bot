@@ -126,11 +126,9 @@ async function updateEvent(oldMessage: Message, newMessage: Message) {
 }
 
 async function deleteEvent(message: Message) {
-    if (message.author?.id === message.client.application?.id) return;
     if (!message.guildId) return;
     const config = await getConfig(message.guildId);
 
-    if (!config.listenerChannelId || message.channelId !== config.listenerChannelId) return;
     if (!config.events.find(event => event.messageId === message.id)) return;
 
     config.events.splice(config.events.findIndex(event => event.messageId === message.id), 1);
