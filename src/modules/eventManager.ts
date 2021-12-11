@@ -106,7 +106,7 @@ async function updateEvent(oldMessage: Message, newMessage: Message) {
     const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
     if (!oldEvent) return;
 
-    const newEvent = parseMessage(newMessage.id, newMessage.content, config);
+    const newEvent = parseMessage(oldMessage.id, newMessage.content, config);
 
     try {
         const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
