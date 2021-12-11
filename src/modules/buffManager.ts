@@ -90,19 +90,16 @@ async function postDailyMessage(client: Client) {
     const configs: BuffManagerConfig[] = await Model.find({});
     const now: dayjs.Dayjs = dayjs();
 
-    for (const guildConfig of configs) {
-        if (!client.guilds.cache.has(guildConfig._id)) continue;
+    for (const config of configs) {
+        const guild: Guild | null = await client.guilds.fetch(config._id);
+        if (!guild) continue;
         try {
             const config: MessageSettings = guildConfig.messageSettings as MessageSettings;
             if (!config.channelId || !config.hour) continue;
             if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
             if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
 
-            const guild: Guild | null = await client.guilds.fetch(guildConfig._id);
-            if (!guild) return;
-            if (!guild.channels.cache.has(config.channelId)) return;
-
-            const channel: TextChannel | null = await guild.channels.fetch(config.channelId) as TextChannel | null;
+            const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
 
             if (!channel) {
                 console.warn(`Invalid posting channel for ${guildConfig._id}`);
