@@ -1,10 +1,22 @@
-import {Guild, GuildMember, Message, MessageReaction, Role, User} from "discord.js";
+import {
+    CommandInteraction,
+    Guild,
+    GuildMember,
+    Message,
+    MessageActionRow,
+    MessageButton,
+    MessageReaction,
+    Role,
+    User
+} from "discord.js";
 import Client from "../classes/Client";
 import {RoleManagerConfig} from "../objects/RoleManager";
 import Model from "../models/RoleManager";
 import {fetchMessages} from "../utils";
 import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";
+import Command from "../classes/Command";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
 async function getConfig(client: Client, guildId: string): Promise<RoleManagerConfig> {
     return await Model.findOne({_id: guildId}) ?? await Model.create({_id: guildId});
@@ -87,6 +99,13 @@ async function onReactionAdd(messageReaction: MessageReaction, user: User) {
     await messageReaction.remove();
 }
 
+async function sendButtons(interaction: CommandInteraction) {
+    await interaction.reply({
+        content: "yolo",
+        components: [new MessageActionRow().addComponents(new MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]
+    });
+}
+
 class RoleManager extends Module {
 
     constructor() {
@@ -98,6 +117,13 @@ class RoleManager extends Module {
                 await onMemberJoin(member as GuildMember);
             }),
             new Listener(`${this.name}#OnReady`, "ready", async (client) => await onReady(client))
+        ];
+
+        this.commands = [
+            new Command(new SlashCommandBuilder()
+                    .setName("gen_role_chooser")
+                    .setDescription("Displays the buff for the day."),
+                sendButtons),
         ];
     }
 }
