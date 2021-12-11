@@ -94,31 +94,31 @@ async function postDailyMessage(client: Client) {
         const guild: Guild | null = await client.guilds.fetch(config._id);
         if (!guild) continue;
         try {
-            const config: MessageSettings = guildConfig.messageSettings as MessageSettings;
-            if (!config.channelId || !config.hour) continue;
-            if (!now.isSame(dayjs(config.hour, "HH:mm", true), "minute")) continue;
-            if (!guildConfig.days.length || !guildConfig.weeks.length) continue;
+            const messageSettings: MessageSettings = config.messageSettings as MessageSettings;
+            if (!messageSettings.channelId || !messageSettings.hour) continue;
+            if (!now.isSame(dayjs(messageSettings.hour, "HH:mm", true), "minute")) continue;
+            if (!config.days.length || !config.weeks.length) continue;
 
             const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
 
             if (!channel) {
-                console.warn(`Invalid posting channel for ${guildConfig._id}`);
+                console.warn(`Invalid posting channel for ${config._id}`);
                 continue;
             }
 
-            const week: Week = guildConfig.weeks[now.week() % guildConfig.weeks.length];
-            const day: Day | undefined = guildConfig.days.find(day => day.id === DaysToArray(week.days)[now.day()]);
+            const week: Week = config.weeks[now.week() % config.weeks.length];
+            const day: Day | undefined = config.days.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
             if (!day) {
-                console.warn(`Invalid day id for guild ${guildConfig._id}`);
+                console.warn(`Invalid day id for guild ${config._id}`);
                 continue;
             }
 
-            await channel.send({embeds: [createDayEmbed(config.buffMessage, day, now)]});
+            await channel.send({embeds: [createDayEmbed(messageSettings.buffMessage, day, now)]});
 
 
-            if (config.dow && config.dow === now.day())
-                await channel.send({embeds: [createWeekEmbed(config.weekMessage, week, guildConfig.days, now)]});
+            if (messageSettings.dow && messageSettings.dow === now.day())
+                await channel.send({embeds: [createWeekEmbed(messageSettings.weekMessage, week, config.days, now)]});
         } catch (error) {
             console.log(error);
         }
