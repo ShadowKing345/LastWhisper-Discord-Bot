@@ -18,8 +18,8 @@ function parseMessage(messageId: string, content: string, config: EventManagerCo
 
     const patternSplit: [string | null, string | null][] = (content?.match(re) ?? []).map(l => {
         re.lastIndex = 0;
-        let match = re.exec(l);
-        return match ? [match[1].trim(), match[2].trim()] : [null, null];
+        let match = re.exec(l).slice(1, 3) ?? [null, null];
+        return [match[0]?.trim(), match[1]?.trim()];
     });
 
     for (const [key, value] of patternSplit) {
