@@ -43,7 +43,7 @@ function parseMessage(messageId: string, content: string, config: EventManagerCo
                 }
 
                 // Checks if it's hammer time.
-                const matchedResult = value.match(hammerRegex);
+                const matchedResult = value?.match(hammerRegex);
 
                 if (!matchedResult) break;
                 const unixTimeStr = matchedResult[1];
