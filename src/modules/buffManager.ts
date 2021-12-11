@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {ColorResolvable, CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
+import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
 import {BuffManagerConfig, Day, MessageSettings, Week} from "../objects/BuffManager";
 import Model from "../models/BuffManager";
@@ -9,9 +9,9 @@ import Command from "../classes/Command";
 import Task from "../classes/Task";
 import {DaysToArray} from "../utils";
 
-function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs, colorOverride: ColorResolvable = "RANDOM"): MessageEmbed {
+function createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbed {
     return new MessageEmbed()
-        .setColor(colorOverride)
+        .setColor("RANDOM")
         .setTitle(title)
         .setDescription(day.text)
         .setThumbnail(day.imageUrl)
