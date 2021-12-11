@@ -1,25 +1,14 @@
 {
   "compilerOptions": {
-    "module": "es2020",
-    "target": "es2017",
+    "module": "ES2020",
+    "target": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "outDir": "build",
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "rootDir": "src",
     "removeComments": true,
-    "incremental": true,
-    "importHelpers": true
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules/**/*",
-    "*.config.js",
-    ".idea/**/*"
-  ]
+    "importHelpers": true,
+  }
 }
