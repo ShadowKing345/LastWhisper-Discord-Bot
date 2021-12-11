@@ -187,7 +187,8 @@ async function reminderLoop(client: Client) {
         }
     }
 
-    Model.bulkSave(alteredConfigs).catch(err => console.error(err));
+    if (alteredConfigs.length > 0)
+        Model.bulkSave(alteredConfigs).catch(err => console.error(err));
 }
 
 async function event(interaction: CommandInteraction) {
