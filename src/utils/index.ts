@@ -20,7 +20,7 @@ async function fetchMessages(client: Client, guildId: Snowflake, channelId: Snow
 }
 
 function DaysToArray(days: Days): string[] {
-    return [days.sunday, days.monday, days.tuesday, days.wednesday, days.thursday, days.friday]
+    return [days.sunday, days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday]
 }
 
 export {fetchMessages, DaysToArray}
