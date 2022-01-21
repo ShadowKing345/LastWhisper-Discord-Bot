@@ -1,6 +1,6 @@
 .idea
 build
 node_modules
-.env
+src/resources/appConfigs.json
 Todo
 tsconfig.tsbuildinfo
