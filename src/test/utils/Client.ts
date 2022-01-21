@@ -1,4 +1,4 @@
-import BaseClient from "../../src/classes/Client"
+import BaseClient from "../../code/classes/Client"
 import {Channel, ChannelManager, Guild, GuildManager, Intents} from "discord.js";
 
 export default class Client extends BaseClient {

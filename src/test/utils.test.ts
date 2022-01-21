@@ -1,4 +1,4 @@
-import {fetchMessages} from "../src/utils";
+import {fetchMessages} from "../code/utils";
 import {Channel, Client, Guild, Message, TextChannel} from "discord.js";
 
 describe("Fetch Messages", () => {

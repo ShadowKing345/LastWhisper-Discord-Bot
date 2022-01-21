@@ -1,5 +1,5 @@
-import {createDayEmbed, postBuff, postDailyMessage} from "../../src/modules/buffManager";
-import {BuffManagerConfig, Day, MessageSettings, Week} from "../../src/objects/BuffManager";
+import {createDayEmbed, postBuff, postDailyMessage} from "../../code/modules/buffManager";
+import {BuffManagerConfig, Day, MessageSettings, Week} from "../../code/objects/BuffManager";
 import dayjs, {Dayjs} from "dayjs";
 import {Channel, CommandInteraction, Guild, Message, MessageEmbed, TextChannel} from "discord.js";
 import weekOfYear from "dayjs/plugin/weekOfYear";

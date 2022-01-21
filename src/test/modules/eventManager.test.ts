@@ -7,8 +7,8 @@ import {
     parseTriggerDuration,
     reminderLoop,
     updateEvent
-} from "../../src/modules/eventManager"
-import {EventManagerConfig, EventObj, ReminderTrigger, Tags} from "../../src/objects/EventManager";
+} from "../../code/modules/eventManager"
+import {EventManagerConfig, EventObj, ReminderTrigger, Tags} from "../../code/objects/EventManager";
 import {Channel, CommandInteraction, EmbedField, Guild, Message, MessageReaction, TextChannel,} from "discord.js";
 import Client from "../utils/Client";
 

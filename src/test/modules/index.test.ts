@@ -1,4 +1,4 @@
-import {Modules, readModules} from "../../src/modules";
+import {Modules, readModules} from "../../code/modules";
 
 describe("Read Modules", () => {
     it("Iterates through each module.", () => {
