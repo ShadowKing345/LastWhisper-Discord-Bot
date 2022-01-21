@@ -9,6 +9,7 @@ import EventModule from "./eventManager";
 import RoleModule from "./roleManager";
 import ManagerUtilsModule from "./managerUtils";
 import BuffModule from "./buffManager";
+import GardeningModule from "./gardeningModule";
 import {SlashCommandBuilder} from "@discordjs/builders";
 
 export {EventModule, RoleModule, ManagerUtilsModule, BuffModule, GardeningModule};
