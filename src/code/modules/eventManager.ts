@@ -1,5 +1,5 @@
 import {EventManagerConfig, EventObj, Tags} from "../objects/EventManager";
-import Model from "../models/EventManager";
+import Model from "../schema/EventManager";
 import dayjs from "dayjs";
 import {CommandInteraction, Guild, Message, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
@@ -148,8 +148,9 @@ async function reminderLoop(client: Client) {
 
     for (const config of configs) {
         try {
+            if (!client.guilds.cache.has(config._id)) continue;
             let postingGuild: Guild = await client.guilds.fetch(config._id);
-            if(!postingGuild) continue;
+            if (!postingGuild) continue;
             if (config.events.length > 0 && config.postingChannelId) {
                 const postingChannel: TextChannel | null = await postingGuild.channels.fetch(config.postingChannelId) as TextChannel | null;
                 if (!postingChannel) continue;

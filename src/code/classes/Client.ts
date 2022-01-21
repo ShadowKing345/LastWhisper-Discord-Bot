@@ -1,5 +1,5 @@
 import {Client as DiscordClient, ClientEvents, ClientOptions, Collection} from "discord.js";
-import ConfigManager from "../config-manager";
+import ConfigManager from "../configManager";
 import {Module} from "./Module";
 import Command from "./Command";
 import Task from "./Task";

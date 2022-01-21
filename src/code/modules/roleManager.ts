@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 import Client from "../classes/Client";
 import {RoleManagerConfig} from "../objects/RoleManager";
-import Model from "../models/RoleManager";
+import Model from "../schema/RoleManager";
 import {fetchMessages} from "../utils";
 import {Module} from "../classes/Module";
 import Listener from "../classes/Listener";

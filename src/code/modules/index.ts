@@ -9,9 +9,10 @@ import EventModule from "./eventManager";
 import RoleModule from "./roleManager";
 import ManagerUtilsModule from "./managerUtils";
 import BuffModule from "./buffManager";
+import {SlashCommandBuilder} from "@discordjs/builders";
 
-export {EventModule, RoleModule, ManagerUtilsModule, BuffModule};
-export const Modules = [EventModule, RoleModule, ManagerUtilsModule, BuffModule];
+export {EventModule, RoleModule, ManagerUtilsModule, BuffModule, GardeningModule};
+export const Modules = [EventModule, RoleModule, ManagerUtilsModule, BuffModule, new GardeningModule()];
 
 // endregion
 

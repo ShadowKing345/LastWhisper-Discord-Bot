@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import Client from "../classes/Client";
 import {BuffManagerConfig, Day, MessageSettings, Week} from "../objects/BuffManager";
-import Model from "../models/BuffManager";
+import Model from "../schema/BuffManager";
 import {Module} from "../classes/Module";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import Command from "../classes/Command";
@@ -91,6 +91,7 @@ async function postDailyMessage(client: Client) {
     const now: dayjs.Dayjs = dayjs();
 
     for (const config of configs) {
+        if (!client.guilds.cache.has(config._id)) continue;
         const guild: Guild | null = await client.guilds.fetch(config._id);
         if (!guild) continue;
         try {
