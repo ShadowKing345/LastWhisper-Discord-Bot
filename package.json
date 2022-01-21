@@ -15,8 +15,14 @@
     "type": "git",
     "url": "git+https://github.com/ShadowKing345/LastWhisper-Discord-Bot.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Discord Bot",
+    "Discord",
+    "Bot",
+    "Typescript",
+    "Final Fantasy XIV"
+  ],
+  "author": "Shadowking124",
   "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://github.com/ShadowKing345/LastWhisper-Discord-Bot/issues"
