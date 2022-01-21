@@ -55,7 +55,11 @@ export default async (client: Client) => {
 
     readModules(module => {
         client.modules.set(module.name, module);
-        module.commands.forEach(command => client.commands.set(command.command.name, command));
+        module.commands.forEach((command, index, array) => {
+            command.command = typeof command.command === "function" ? command.command(new SlashCommandBuilder()) : command.command;
+            array[index] = command;
+            client.commands.set((command.command as SlashCommandBuilder).name, command);
+        });
         module.tasks.forEach(task => {
             client.tasks.set(task.name, task);
             setInterval(task.run, task.timeout, client);
