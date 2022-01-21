@@ -28,7 +28,6 @@
     "dayjs": "^1.10.7",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.2.0",
-    "dotenv": "^10.0.0",
     "mongoose": "^6.0.7",
     "uuid": "^8.3.2"
   },
