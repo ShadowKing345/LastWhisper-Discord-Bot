@@ -1,10 +1,5 @@
 version: "2"
 services:
   bot:
-    build: .
-    environment:
-      TZ: "Europe/Berlin"
-    command: >
-      sh -c "ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &&
-      echo $TZ > /etc/timezone &&
-      npm run start"
+    build: ./
+    command: yarn start

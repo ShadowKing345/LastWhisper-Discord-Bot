@@ -4,9 +4,6 @@ WORKDIR /usr/app
 
 COPY ["package.json", "yarn.lock", "./"]
 
-RUN yarn
+RUN yarn install --production
 
-COPY [".env", "tsconfig.json", "./"]
-COPY src src
-
-RUN yarn run build
+COPY ["build", "./"]
