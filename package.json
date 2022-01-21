@@ -1,8 +1,7 @@
 {
   "name": "lastwhisper-discord-bot",
-  "version": "2.2.2",
-  "description": "NodeJS version of the Last Whisper guild Discord Bot.",
-  "main": "build/index.js",
+  "version": "3.0.0",
+  "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
   "scripts": {
     "start": "node --experimental-specifier-resolution=node build/index.js",
     "register-commands": "node --experimental-specifier-resolution=node build/register-commands.js",
