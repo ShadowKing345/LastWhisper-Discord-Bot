@@ -3,11 +3,11 @@
   "version": "3.0.0",
   "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node build/index.js",
-    "register-commands": "node --experimental-specifier-resolution=node build/register-commands.js",
-    "build": "tsc -b .",
-    "dev": "nodemon src/index.ts --exec \"node --experimental-specifier-resolution=node --loader ts-node/esm\"",
-    "dev-register-commands": "node --experimental-specifier-resolution=node --loader ts-node/esm src/register-commands.ts",
+    "start": "node build/code/app.js",
+    "dev": "nodemon src/code/app.ts",
+    "register-commands": "node build/code/register-commands.js",
+    "dev-register-commands": "USEGUILD=true ts-node src/code/commandRegistration/registerCommands.ts",
+    "build": "gulp",
     "test": "TZ=UTC jest"
   },
   "repository": {
