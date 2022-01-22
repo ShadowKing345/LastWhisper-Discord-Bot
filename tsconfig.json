@@ -3,9 +3,10 @@
     "module": "commonjs",
     "target": "ES2020",
     "esModuleInterop": true,
+    "outDir": "build"
   },
   "include": [
-    "src/code/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules"
