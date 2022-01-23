@@ -16,7 +16,7 @@ export class ManagerUtilsConfigRepository {
 
     public async save(config: ManagerUtilsConfig): Promise<ManagerUtilsConfig> {
         await this.validate();
-        let result = await this.collection.findOneAndReplace({_id: config._id}, config, {upsert: true});
+        let result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
 
         return result.ok ? config : null;
     }

@@ -9,15 +9,15 @@ export class ManagerUtilsConfigService {
     }
 
     public async findOne(id: string): Promise<ManagerUtilsConfig> {
-        return this.repo.findOne({_id: id});
+        return this.repo.findOne({guildId: id});
     }
 
     public async findOneOrCreate(id: string): Promise<ManagerUtilsConfig> {
-        let result = await this.repo.findOne({_id: id})
+        let result = await this.repo.findOne({guildId: id})
         if (result) return result;
 
         result = new ManagerUtilsConfig();
-        result._id = id;
+        result.guildId = id;
 
         return await this.repo.save(result);
     }

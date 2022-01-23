@@ -1,5 +1,5 @@
 export class ManagerUtilsConfig {
-  public _id: string;
+  public guildId: string;
   public loggingChannel: string;
   public clearChannelBlacklist: string[];
 }
