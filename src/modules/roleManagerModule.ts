@@ -25,13 +25,8 @@ export class RoleManagerModule extends ModuleBase {
 
         this._moduleName = "RoleManager";
         this._listeners = [
-            {
-                event: "guildMemberAdd", run: async member => {
-                    if (member.partial) await member.fetch();
-                    await this.onMemberJoin(member as GuildMember);
-                }
-            },
-            {event: "ready", run: async (client) => await this.onReady(client)}
+            {event: "guildMemberAdd", run: this.onMemberJoin},
+            {event: "ready", run: this.onReady}
         ];
 
         this._commands = [
@@ -65,7 +60,7 @@ export class RoleManagerModule extends ModuleBase {
     }
 
     private async onReady(client: Client) {
-        const configs: Array<RoleManagerConfig> = await this.service.getAll();
+        const configs: RoleManagerConfig[] = await this.service.getAll();
 
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId)) continue;
@@ -97,15 +92,17 @@ export class RoleManagerModule extends ModuleBase {
         }
     }
 
-    private async onMemberJoin(member: GuildMember) {
+    private async onMemberJoin(_, member: GuildMember) {
+        if (member.partial) await member.fetch();
         const config: RoleManagerConfig = await this.getConfig(member.guild.id);
 
         if (!config.newUserRoleId) return;
 
         const newMemberRole: Role | null = await member.guild.roles.fetch(config.newUserRoleId);
 
-        if (newMemberRole)
+        if (newMemberRole) {
             await member.roles.add([newMemberRole], "Bot added.");
+        }
     }
 
     private async onReactionAdd(messageReaction: MessageReaction, user: User) {

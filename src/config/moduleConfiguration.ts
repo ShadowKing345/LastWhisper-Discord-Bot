@@ -18,10 +18,10 @@ export const loadedModules: ModuleBase[] = [
     Container.get(RoleManagerModule)
 ];
 
-async function runEvent(listeners: Listener[], ...args) {
+async function runEvent(listeners: Listener[], client: Client, ...args) {
     for (let i = 0; i < listeners.length; i++) {
         try {
-            await listeners[i].run(...args);
+            await listeners[i].run(client, ...args);
         } catch (e) {
             console.error(e);
         }
@@ -77,10 +77,10 @@ export function loadModules(client: Client) {
     client.moduleListeners.forEach((listener, event) => {
         switch (event) {
             case "ready":
-                client.once(event, async () => runEvent(listener, client));
+                client.once(event, async (...args) => runEvent(listener, client, ...args));
                 break;
             default:
-                client.on(event, async () => runEvent(listener, client));
+                client.on(event, async (...args) => runEvent(listener, client, ...args));
                 break;
         }
     });

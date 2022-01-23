@@ -1,6 +1,7 @@
 import {ClientEvents} from "discord.js";
+import {Client} from "./client";
 
 export class Listener {
-    public event: Exclude<string | symbol, keyof ClientEvents>;
-    public run: (...args) => void;
+    public event: keyof ClientEvents;
+    public run: (client: Client, ...args) => Awaited<void>;
 }

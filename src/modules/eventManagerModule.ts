@@ -27,16 +27,16 @@ export class EventManagerModule extends ModuleBase {
         this._listeners = [
             {event: "messageCreate", run: this.createEvent},
             {
-                event: "messageUpdate", run: async (oldMessage, newMessage) => {
+                event: "messageUpdate", run: async (_, oldMessage: Message, newMessage: Message) => {
                     if (oldMessage.partial) await oldMessage.fetch();
                     if (newMessage.partial) await newMessage.fetch();
-                    await this.updateEvent(oldMessage as Message, newMessage as Message);
+                    await this.updateEvent(oldMessage, newMessage);
                 }
             },
             {
-                event: "messageDelete", run: async (message) => {
+                event: "messageDelete", run: async (_, message: Message) => {
                     if (message.partial) await message.fetch();
-                    await this.deleteEvent(message as Message);
+                    await this.deleteEvent(message);
                 }
             },
             {
@@ -124,7 +124,7 @@ export class EventManagerModule extends ModuleBase {
         return this.service.findOneOrCreate(guildId);
     }
 
-    private async createEvent(message: Message) {
+    private async createEvent(_, message: Message) {
         if (message.author.id === message.client.application?.id) return;
         if (!message.guildId) return;
         const config = await this.getConfig(message.guildId);
