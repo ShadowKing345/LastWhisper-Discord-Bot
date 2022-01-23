@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {Client, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
+import {Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
 import {ManagerUtilsConfig} from "../models/mangerUtils";
 import {ModuleBase} from "../classes/moduleBase";
 import {ManagerUtilsConfigService} from "../services/managerUtilsConfigService";
@@ -13,12 +13,14 @@ export class ManagerUtilsModule extends ModuleBase {
 
         this._moduleName = "ManagerUtils";
         this._listeners = [
-            {event: "guildBanAdd", run: this.onMemberBanned},
             {
-                event: "guildMemberRemove", run: async member => {
-                    console.log("Guild member was removed.");
-                    if (member.partial) await member.fetch();
-                    await this.onMemberLeave(member as GuildMember);
+                event: "guildBanAdd", run: async (_, member) => {
+                    await this.onMemberBanned(member);
+                }
+            },
+            {
+                event: "guildMemberRemove", run: async (client, member) => {
+                    await this.onMemberRemoved(member);
                 }
             }
         ];
@@ -28,16 +30,18 @@ export class ManagerUtilsModule extends ModuleBase {
         return this.service.findOneOrCreate(guildId);
     }
 
-    private async getLoggingChannel(client: Client, guildId: string): Promise<TextChannel | null> {
-        const config: ManagerUtilsConfig = await this.getConfig(guildId);
+    private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
+        const config: ManagerUtilsConfig = await this.getConfig(guild.id);
 
-        if (!config.loggingChannel) return null;
-        const loggingChannel = await client.channels.fetch(config.loggingChannel);
-        return loggingChannel && typeof loggingChannel === typeof TextChannel ? loggingChannel as TextChannel : null;
+        if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
+            return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
+        }
+
+        return null;
     }
 
-    private async onMemberLeave(member: GuildMember) {
-        const loggingChannel: TextChannel | null = await this.getLoggingChannel(member.client, member.guild.id);
+    private async onMemberRemoved(member: GuildMember) {
+        const loggingChannel: TextChannel | null = await this.getLoggingChannel(member.guild);
         if (!loggingChannel) return;
 
         const kickedData = (await member.guild.fetchAuditLogs({
@@ -65,7 +69,7 @@ export class ManagerUtilsModule extends ModuleBase {
     }
 
     private async onMemberBanned(ban: GuildBan) {
-        const loggingChannel: TextChannel | null = await this.getLoggingChannel(ban.client, ban.guild.id);
+        const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel) return;
 
         const banLogs = (await ban.guild.fetchAuditLogs({limit: 1, type: "MEMBER_BAN_ADD"})).entries.first();
