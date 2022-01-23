@@ -7,17 +7,18 @@ const eventManagerModule_1 = require("../modules/eventManagerModule");
 const gardeningModule_1 = require("../modules/gardeningModule");
 const managerUtilsModule_1 = require("../modules/managerUtilsModule");
 const roleManagerModule_1 = require("../modules/roleManagerModule");
+const typedi_1 = require("typedi");
 exports.loadedModules = [
-    new buffManagerModule_1.BuffManagerModule(),
-    new eventManagerModule_1.EventManagerModule(),
-    new gardeningModule_1.GardeningModule(),
-    new managerUtilsModule_1.ManagerUtilsModule(),
-    new roleManagerModule_1.RoleManagerModule()
+    typedi_1.Container.get(buffManagerModule_1.BuffManagerModule),
+    typedi_1.Container.get(eventManagerModule_1.EventManagerModule),
+    typedi_1.Container.get(gardeningModule_1.GardeningModule),
+    typedi_1.Container.get(managerUtilsModule_1.ManagerUtilsModule),
+    typedi_1.Container.get(roleManagerModule_1.RoleManagerModule)
 ];
-async function runEvent(listeners, ...args) {
+async function runEvent(listeners, client, ...args) {
     for (let i = 0; i < listeners.length; i++) {
         try {
-            await listeners[i].run(...args);
+            await listeners[i].run(client, ...args);
         }
         catch (e) {
             console.error(e);
@@ -66,10 +67,10 @@ function loadModules(client) {
     client.moduleListeners.forEach((listener, event) => {
         switch (event) {
             case "ready":
-                client.once(event, async () => runEvent(listener, client));
+                client.once(event, async (...args) => runEvent(listener, client, ...args));
                 break;
             default:
-                client.on(event, async () => runEvent(listener, client));
+                client.on(event, async (...args) => runEvent(listener, client, ...args));
                 break;
         }
     });

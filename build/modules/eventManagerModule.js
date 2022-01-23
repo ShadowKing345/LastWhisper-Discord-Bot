@@ -1,7 +1,17 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var EventManagerModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventManagerModule = void 0;
 const eventManager_1 = require("../models/eventManager");
@@ -11,10 +21,11 @@ const utils_1 = require("../utils");
 const moduleBase_1 = require("../classes/moduleBase");
 const task_1 = require("../classes/task");
 const eventManagerConfigService_1 = require("../services/eventManagerConfigService");
-class EventManagerModule extends moduleBase_1.ModuleBase {
-    constructor() {
+const typedi_1 = require("typedi");
+let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends moduleBase_1.ModuleBase {
+    constructor(service) {
         super();
-        this.service = new eventManagerConfigService_1.EventManagerConfigService();
+        this.service = service;
         this._moduleName = "EventManager";
         this._commands = [
             {
@@ -28,7 +39,7 @@ class EventManagerModule extends moduleBase_1.ModuleBase {
         this._listeners = [
             { event: "messageCreate", run: this.createEvent },
             {
-                event: "messageUpdate", run: async (oldMessage, newMessage) => {
+                event: "messageUpdate", run: async (_, oldMessage, newMessage) => {
                     if (oldMessage.partial)
                         await oldMessage.fetch();
                     if (newMessage.partial)
@@ -37,7 +48,7 @@ class EventManagerModule extends moduleBase_1.ModuleBase {
                 }
             },
             {
-                event: "messageDelete", run: async (message) => {
+                event: "messageDelete", run: async (_, message) => {
                     if (message.partial)
                         await message.fetch();
                     await this.deleteEvent(message);
@@ -119,7 +130,7 @@ class EventManagerModule extends moduleBase_1.ModuleBase {
             throw new ReferenceError("guildId cannot be null nor empty.");
         return this.service.findOneOrCreate(guildId);
     }
-    async createEvent(message) {
+    async createEvent(_, message) {
         if (message.author.id === message.client.application?.id)
             return;
         if (!message.guildId)
@@ -182,7 +193,7 @@ class EventManagerModule extends moduleBase_1.ModuleBase {
         config.events.splice(config.events.findIndex(event => event.messageId === message.id), 1);
         await this.service.update(config);
     }
-    parseTriggerDuration(triggerTime) {
+    static parseTriggerDuration(triggerTime) {
         const hold = (0, dayjs_1.default)(triggerTime, "HH:mm", true);
         return dayjs_1.default.duration({ hours: hold.hour(), minutes: hold.minute() });
     }
@@ -204,7 +215,7 @@ class EventManagerModule extends moduleBase_1.ModuleBase {
                     for (const trigger of config.reminders) {
                         if (!trigger.timeDelta)
                             continue;
-                        const triggerTime = this.parseTriggerDuration(trigger.timeDelta);
+                        const triggerTime = EventManagerModule_1.parseTriggerDuration(trigger.timeDelta);
                         for (const event of config.events) {
                             const eventTime = (0, dayjs_1.default)(event.dateTime);
                             if (!now.isSame(eventTime, "date"))
@@ -263,5 +274,9 @@ class EventManagerModule extends moduleBase_1.ModuleBase {
         }
         await interaction.reply({ embeds: [embed] });
     }
-}
+};
+EventManagerModule = EventManagerModule_1 = __decorate([
+    (0, typedi_1.Service)(),
+    __metadata("design:paramtypes", [eventManagerConfigService_1.EventManagerConfigService])
+], EventManagerModule);
 exports.EventManagerModule = EventManagerModule;

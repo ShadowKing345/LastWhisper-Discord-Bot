@@ -1,7 +1,17 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var BuffManagerModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BuffManagerModule = void 0;
 const moduleBase_1 = require("../classes/moduleBase");
@@ -11,11 +21,12 @@ const discord_js_1 = require("discord.js");
 const utils_1 = require("../utils");
 const task_1 = require("../classes/task");
 const buffManagerConfigService_1 = require("../services/buffManagerConfigService");
-class BuffManagerModule extends moduleBase_1.ModuleBase {
-    constructor() {
+const typedi_1 = require("typedi");
+let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends moduleBase_1.ModuleBase {
+    constructor(service) {
         super();
+        this.service = service;
         this._moduleName = "BuffManager";
-        this.service = new buffManagerConfigService_1.BuffManagerConfigService();
         this._commands = [
             {
                 command: new builders_1.SlashCommandBuilder().setName("todays_buff").setDescription("Displays the buff for the day."),
@@ -95,7 +106,7 @@ class BuffManagerModule extends moduleBase_1.ModuleBase {
             });
             return;
         }
-        await interaction.reply({ embeds: [BuffManagerModule.createDayEmbed(title, day, date)] });
+        await interaction.reply({ embeds: [BuffManagerModule_1.createDayEmbed(title, day, date)] });
     }
     async postWeeksBuffs(interaction, date, title) {
         if (!interaction.guildId) {
@@ -106,7 +117,7 @@ class BuffManagerModule extends moduleBase_1.ModuleBase {
         if (!flag)
             return;
         const week = config.weeks[date.week() % config.weeks.length];
-        await interaction.reply({ embeds: [BuffManagerModule.createWeekEmbed(title, week, config.days, date)] });
+        await interaction.reply({ embeds: [BuffManagerModule_1.createWeekEmbed(title, week, config.days, date)] });
     }
     async postDailyMessage(client) {
         const configs = await this.service.getAll();
@@ -136,14 +147,18 @@ class BuffManagerModule extends moduleBase_1.ModuleBase {
                     console.warn(`Invalid day id for guild ${config.guildId}`);
                     continue;
                 }
-                await channel.send({ embeds: [BuffManagerModule.createDayEmbed(messageSettings.buffMessage, day, now)] });
+                await channel.send({ embeds: [BuffManagerModule_1.createDayEmbed(messageSettings.buffMessage, day, now)] });
                 if (messageSettings.dow && messageSettings.dow === now.day())
-                    await channel.send({ embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.days, now)] });
+                    await channel.send({ embeds: [BuffManagerModule_1.createWeekEmbed(messageSettings.weekMessage, week, config.days, now)] });
             }
             catch (error) {
                 console.log(error);
             }
         }
     }
-}
+};
+BuffManagerModule = BuffManagerModule_1 = __decorate([
+    (0, typedi_1.Service)(),
+    __metadata("design:paramtypes", [buffManagerConfigService_1.BuffManagerConfigService])
+], BuffManagerModule);
 exports.BuffManagerModule = BuffManagerModule;

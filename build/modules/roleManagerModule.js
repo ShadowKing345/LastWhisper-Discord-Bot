@@ -1,4 +1,14 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var RoleManagerModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleManagerModule = void 0;
 const discord_js_1 = require("discord.js");
@@ -6,34 +16,29 @@ const utils_1 = require("../utils");
 const builders_1 = require("@discordjs/builders");
 const moduleBase_1 = require("../classes/moduleBase");
 const roleManagerConfigService_1 = require("../services/roleManagerConfigService");
-class RoleManagerModule extends moduleBase_1.ModuleBase {
-    constructor() {
+const typedi_1 = require("typedi");
+let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends moduleBase_1.ModuleBase {
+    constructor(service) {
         super();
-        this.service = new roleManagerConfigService_1.RoleManagerConfigService();
+        this.service = service;
         this._moduleName = "RoleManager";
         this._listeners = [
-            {
-                event: "guildMemberAdd", run: async (member) => {
-                    if (member.partial)
-                        await member.fetch();
-                    await this.onMemberJoin(member);
-                }
-            },
-            { event: "ready", run: async (client) => await this.onReady(client) }
+            { event: "guildMemberAdd", run: this.onMemberJoin },
+            { event: "ready", run: this.onReady }
         ];
         this._commands = [
             {
                 command: new builders_1.SlashCommandBuilder()
                     .setName("gen_role_chooser")
                     .setDescription("Displays the buff for the day."),
-                run: this.sendButtons
+                run: RoleManagerModule_1.sendButtons
             }
         ];
     }
     async getConfig(guildId) {
         return this.service.findOneOrCreate(guildId);
     }
-    async alterMembersRoles(member, newMemberRoleId, memberRoleId) {
+    static async alterMembersRoles(member, newMemberRoleId, memberRoleId) {
         if (!member.roles.cache.has(newMemberRoleId))
             return;
         if (!member.roles.cache.has(memberRoleId)) {
@@ -68,7 +73,7 @@ class RoleManagerModule extends moduleBase_1.ModuleBase {
                         try {
                             const member = await guild.members.fetch(user.id);
                             if (member)
-                                await this.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+                                await RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
                         }
                         catch (error) {
                             console.error(error);
@@ -80,13 +85,16 @@ class RoleManagerModule extends moduleBase_1.ModuleBase {
             }
         }
     }
-    async onMemberJoin(member) {
+    async onMemberJoin(_, member) {
+        if (member.partial)
+            await member.fetch();
         const config = await this.getConfig(member.guild.id);
         if (!config.newUserRoleId)
             return;
         const newMemberRole = await member.guild.roles.fetch(config.newUserRoleId);
-        if (newMemberRole)
+        if (newMemberRole) {
             await member.roles.add([newMemberRole], "Bot added.");
+        }
     }
     async onReactionAdd(messageReaction, user) {
         if (user.bot)
@@ -100,14 +108,18 @@ class RoleManagerModule extends moduleBase_1.ModuleBase {
             return;
         }
         const config = await this.getConfig(guild.id);
-        await this.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+        await RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
         await messageReaction.remove();
     }
-    async sendButtons(interaction) {
+    static async sendButtons(interaction) {
         await interaction.reply({
             content: "yolo",
             components: [new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]
         });
     }
-}
+};
+RoleManagerModule = RoleManagerModule_1 = __decorate([
+    (0, typedi_1.Service)(),
+    __metadata("design:paramtypes", [roleManagerConfigService_1.RoleManagerConfigService])
+], RoleManagerModule);
 exports.RoleManagerModule = RoleManagerModule;

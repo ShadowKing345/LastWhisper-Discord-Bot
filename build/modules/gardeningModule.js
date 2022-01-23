@@ -1,7 +1,17 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var GardeningModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GardeningModule = void 0;
 const gardeningConfigModel_1 = require("../models/gardeningConfigModel");
@@ -9,10 +19,11 @@ const dayjs_1 = __importDefault(require("dayjs"));
 const moduleBase_1 = require("../classes/moduleBase");
 const task_1 = require("../classes/task");
 const gardeningConfigService_1 = require("../services/gardeningConfigService");
-class GardeningModule extends moduleBase_1.ModuleBase {
-    constructor() {
+const typedi_1 = require("typedi");
+let GardeningModule = GardeningModule_1 = class GardeningModule extends moduleBase_1.ModuleBase {
+    constructor(service) {
         super();
-        this.service = new gardeningConfigService_1.GardeningConfigService();
+        this.service = service;
         this._moduleName = "GardeningModule";
         this._commands = [
             {
@@ -83,7 +94,7 @@ class GardeningModule extends moduleBase_1.ModuleBase {
         return [plot, plot.slots[slotNum]];
     }
     async register(interaction, config, player, plant, duration, reason, plotNum, slotNum) {
-        let valid = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+        let valid = await GardeningModule_1.validatePlotAndSlot(interaction, config, plotNum, slotNum);
         if (!valid)
             return;
         let [plot, slot] = valid;
@@ -98,7 +109,7 @@ class GardeningModule extends moduleBase_1.ModuleBase {
         return interaction.reply({ content: "Reservation has been created." });
     }
     async cancel(interaction, config, player, plant, plotNum, slotNum) {
-        let valid = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+        let valid = await GardeningModule_1.validatePlotAndSlot(interaction, config, plotNum, slotNum);
         if (!valid)
             return;
         let [plot, slot] = valid;
@@ -152,20 +163,20 @@ class GardeningModule extends moduleBase_1.ModuleBase {
             if (slotNum !== null) {
                 if (slotNum >= plot.slots.length)
                     return interaction.reply({ content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}` });
-                text += GardeningModule.printPlotInfo(plot, plotNum);
-                text += GardeningModule.printSlotInfo(plot.slots[slotNum], slotNum, 1);
+                text += GardeningModule_1.printPlotInfo(plot, plotNum);
+                text += GardeningModule_1.printSlotInfo(plot.slots[slotNum], slotNum, 1);
             }
             else {
-                text += GardeningModule.printPlotInfo(plot, plotNum, true);
+                text += GardeningModule_1.printPlotInfo(plot, plotNum, true);
             }
         }
         else {
             for (let plotNum = 0; plotNum < config.plots.length; plotNum++) {
                 const plot = config.plots[plotNum];
-                text += GardeningModule.printPlotInfo(plot, plotNum, !showDetailed);
+                text += GardeningModule_1.printPlotInfo(plot, plotNum, !showDetailed);
                 if (showDetailed) {
                     for (let slotNum = 0; slotNum < plot.slots.length; slotNum++) {
-                        text += GardeningModule.printSlotInfo(plot.slots[slotNum], slotNum, 1);
+                        text += GardeningModule_1.printSlotInfo(plot.slots[slotNum], slotNum, 1);
                     }
                 }
             }
@@ -199,5 +210,9 @@ class GardeningModule extends moduleBase_1.ModuleBase {
             this.service.update(config).catch(err => console.error(err));
         }
     }
-}
+};
+GardeningModule = GardeningModule_1 = __decorate([
+    (0, typedi_1.Service)(),
+    __metadata("design:paramtypes", [gardeningConfigService_1.GardeningConfigService])
+], GardeningModule);
 exports.GardeningModule = GardeningModule;

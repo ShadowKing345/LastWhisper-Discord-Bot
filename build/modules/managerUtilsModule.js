@@ -1,4 +1,13 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,19 +17,21 @@ const dayjs_1 = __importDefault(require("dayjs"));
 const discord_js_1 = require("discord.js");
 const moduleBase_1 = require("../classes/moduleBase");
 const managerUtilsConfigService_1 = require("../services/managerUtilsConfigService");
-class ManagerUtilsModule extends moduleBase_1.ModuleBase {
-    constructor() {
+const typedi_1 = require("typedi");
+let ManagerUtilsModule = class ManagerUtilsModule extends moduleBase_1.ModuleBase {
+    constructor(service) {
         super();
-        this.service = new managerUtilsConfigService_1.ManagerUtilsConfigService();
+        this.service = service;
         this._moduleName = "ManagerUtils";
         this._listeners = [
-            { event: "guildBanAdd", run: this.onMemberBanned },
             {
-                event: "guildMemberRemove", run: async (member) => {
-                    console.log("Guild member was removed.");
-                    if (member.partial)
-                        await member.fetch();
-                    await this.onMemberLeave(member);
+                event: "guildBanAdd", run: async (_, member) => {
+                    await this.onMemberBanned(member);
+                }
+            },
+            {
+                event: "guildMemberRemove", run: async (client, member) => {
+                    await this.onMemberRemoved(member);
                 }
             }
         ];
@@ -28,15 +39,15 @@ class ManagerUtilsModule extends moduleBase_1.ModuleBase {
     async getConfig(guildId) {
         return this.service.findOneOrCreate(guildId);
     }
-    async getLoggingChannel(client, guildId) {
-        const config = await this.getConfig(guildId);
-        if (!config.loggingChannel)
-            return null;
-        const loggingChannel = await client.channels.fetch(config.loggingChannel);
-        return loggingChannel && typeof loggingChannel === typeof discord_js_1.TextChannel ? loggingChannel : null;
+    async getLoggingChannel(guild) {
+        const config = await this.getConfig(guild.id);
+        if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
+            return (await guild.channels.fetch(config.loggingChannel));
+        }
+        return null;
     }
-    async onMemberLeave(member) {
-        const loggingChannel = await this.getLoggingChannel(member.client, member.guild.id);
+    async onMemberRemoved(member) {
+        const loggingChannel = await this.getLoggingChannel(member.guild);
         if (!loggingChannel)
             return;
         const kickedData = (await member.guild.fetchAuditLogs({
@@ -58,7 +69,7 @@ class ManagerUtilsModule extends moduleBase_1.ModuleBase {
         await loggingChannel.send({ embeds: [embed] });
     }
     async onMemberBanned(ban) {
-        const loggingChannel = await this.getLoggingChannel(ban.client, ban.guild.id);
+        const loggingChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel)
             return;
         const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
@@ -82,5 +93,9 @@ class ManagerUtilsModule extends moduleBase_1.ModuleBase {
             await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
         }
     }
-}
+};
+ManagerUtilsModule = __decorate([
+    (0, typedi_1.Service)(),
+    __metadata("design:paramtypes", [managerUtilsConfigService_1.ManagerUtilsConfigService])
+], ManagerUtilsModule);
 exports.ManagerUtilsModule = ManagerUtilsModule;
