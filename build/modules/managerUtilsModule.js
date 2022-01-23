@@ -24,16 +24,8 @@ let ManagerUtilsModule = class ManagerUtilsModule extends moduleBase_1.ModuleBas
         this.service = service;
         this._moduleName = "ManagerUtils";
         this._listeners = [
-            {
-                event: "guildBanAdd", run: async (_, member) => {
-                    await this.onMemberBanned(member);
-                }
-            },
-            {
-                event: "guildMemberRemove", run: async (client, member) => {
-                    await this.onMemberRemoved(member);
-                }
-            }
+            { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
+            { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) }
         ];
     }
     async getConfig(guildId) {

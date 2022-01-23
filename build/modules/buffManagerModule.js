@@ -15,7 +15,6 @@ var BuffManagerModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BuffManagerModule = void 0;
 const moduleBase_1 = require("../classes/moduleBase");
-const builders_1 = require("@discordjs/builders");
 const dayjs_1 = __importDefault(require("dayjs"));
 const discord_js_1 = require("discord.js");
 const utils_1 = require("../utils");
@@ -29,30 +28,27 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends mo
         this._moduleName = "BuffManager";
         this._commands = [
             {
-                command: new builders_1.SlashCommandBuilder().setName("todays_buff").setDescription("Displays the buff for the day."),
+                command: builder => builder.setName("todays_buff").setDescription("Displays the buff for the day."),
                 run: async (interaction) => await this.postBuff(interaction, (0, dayjs_1.default)(), "Today's Buff Shall Be:")
             },
             {
-                command: new builders_1.SlashCommandBuilder().setName("tomorrows_buff").setDescription("Displays the buff for tomorrow."),
+                command: builder => builder.setName("tomorrows_buff").setDescription("Displays the buff for tomorrow."),
                 run: async (interaction) => await this.postBuff(interaction, (0, dayjs_1.default)().add(1, "day"), "Tomorrow's Buff Shall Be:")
             },
             {
-                command: new builders_1.SlashCommandBuilder().setName("this_weeks_buff").setDescription("Displays the buffs for the week"),
+                command: builder => builder.setName("this_weeks_buffs").setDescription("Displays the buffs for the week"),
                 run: async (interaction) => await this.postWeeksBuffs(interaction, (0, dayjs_1.default)(), "The Buffs For The Week Shall Be:")
             },
             {
-                command: new builders_1.SlashCommandBuilder().setName("next_weeks_buff").setDescription("Displays the buffs for next week"),
+                command: builder => builder.setName("next_weeks_buffs").setDescription("Displays the buffs for next week"),
                 run: async (interaction) => await this.postWeeksBuffs(interaction, (0, dayjs_1.default)().add(1, "week"), "The Buffs For Next Week Shall Be:")
             }
         ];
         this._tasks = [
             {
-                name: "buffManager_dailyMessage_Loop",
+                name: `${this.moduleName}#dailyMessageTask`,
                 timeout: 60000,
-                run: async (client) => {
-                    await task_1.Task.waitTillReady(client);
-                    await this.postDailyMessage(client);
-                }
+                run: async (client) => await this.postDailyMessage(client)
             }
         ];
     }
@@ -120,6 +116,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends mo
         await interaction.reply({ embeds: [BuffManagerModule_1.createWeekEmbed(title, week, config.days, date)] });
     }
     async postDailyMessage(client) {
+        await task_1.Task.waitTillReady(client);
         const configs = await this.service.getAll();
         const now = (0, dayjs_1.default)();
         for (const config of configs) {

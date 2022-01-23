@@ -17,7 +17,6 @@ exports.GardeningModule = void 0;
 const gardeningConfigModel_1 = require("../models/gardeningConfigModel");
 const dayjs_1 = __importDefault(require("dayjs"));
 const moduleBase_1 = require("../classes/moduleBase");
-const task_1 = require("../classes/task");
 const gardeningConfigService_1 = require("../services/gardeningConfigService");
 const typedi_1 = require("typedi");
 let GardeningModule = GardeningModule_1 = class GardeningModule extends moduleBase_1.ModuleBase {
@@ -47,11 +46,7 @@ let GardeningModule = GardeningModule_1 = class GardeningModule extends moduleBa
             }
         ];
         this._tasks = [
-            {
-                name: "GardeningTickTaskLoop",
-                timeout: 60000,
-                run: client => task_1.Task.waitTillReady(client).then(() => this.tick(client))
-            }
+            { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) }
         ];
     }
     async subCommandResolver(interaction) {

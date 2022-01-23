@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleManagerModule = void 0;
 const discord_js_1 = require("discord.js");
 const utils_1 = require("../utils");
-const builders_1 = require("@discordjs/builders");
 const moduleBase_1 = require("../classes/moduleBase");
 const roleManagerConfigService_1 = require("../services/roleManagerConfigService");
 const typedi_1 = require("typedi");
@@ -23,15 +22,13 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends mo
         this.service = service;
         this._moduleName = "RoleManager";
         this._listeners = [
-            { event: "guildMemberAdd", run: this.onMemberJoin },
-            { event: "ready", run: this.onReady }
+            { event: "guildMemberAdd", run: async (_, member) => this.onMemberJoin(member) },
+            { event: "ready", run: async (client) => this.onReady(client) }
         ];
         this._commands = [
             {
-                command: new builders_1.SlashCommandBuilder()
-                    .setName("gen_role_chooser")
-                    .setDescription("Displays the buff for the day."),
-                run: RoleManagerModule_1.sendButtons
+                command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
+                run: async (interaction) => this.sendButtons(interaction)
             }
         ];
     }
@@ -85,7 +82,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends mo
             }
         }
     }
-    async onMemberJoin(_, member) {
+    async onMemberJoin(member) {
         if (member.partial)
             await member.fetch();
         const config = await this.getConfig(member.guild.id);
@@ -111,7 +108,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends mo
         await RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
         await messageReaction.remove();
     }
-    static async sendButtons(interaction) {
+    async sendButtons(interaction) {
         await interaction.reply({
             content: "yolo",
             components: [new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]

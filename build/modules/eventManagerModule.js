@@ -33,44 +33,20 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                     .setName("event")
                     .setDescription("Displays events.")
                     .addIntegerOption(option => option.setName("index").setDescription("The index for the event, starting at 0")),
-                run: async (interaction) => await this.event(interaction)
+                run: async (interaction) => this.event(interaction)
             }
         ];
         this._listeners = [
-            { event: "messageCreate", run: this.createEvent },
-            {
-                event: "messageUpdate", run: async (_, oldMessage, newMessage) => {
-                    if (oldMessage.partial)
-                        await oldMessage.fetch();
-                    if (newMessage.partial)
-                        await newMessage.fetch();
-                    await this.updateEvent(oldMessage, newMessage);
-                }
-            },
-            {
-                event: "messageDelete", run: async (_, message) => {
-                    if (message.partial)
-                        await message.fetch();
-                    await this.deleteEvent(message);
-                }
-            },
-            {
-                event: "ready", run: async (client) => {
-                    const configs = await this.service.getAll();
-                    for (const config of configs) {
-                        if (!config.listenerChannelId || !config.events.length)
-                            continue;
-                        await (0, utils_1.fetchMessages)(client, config.guildId, config.listenerChannelId, config.events.map(event => event.messageId));
-                    }
-                }
-            },
+            { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
+            { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
+            { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
+            { event: "ready", run: async (client) => this.onReady(client) },
         ];
         this._tasks = [
             {
-                name: "eventManager_postMessageLoop", timeout: 60000, run: async (client) => {
-                    await task_1.Task.waitTillReady(client);
-                    await this.reminderLoop(client);
-                }
+                name: `${this.moduleName}#postMessageTask`,
+                timeout: 60000,
+                run: async (client) => await this.reminderLoop(client)
             }
         ];
     }
@@ -130,7 +106,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             throw new ReferenceError("guildId cannot be null nor empty.");
         return this.service.findOneOrCreate(guildId);
     }
-    async createEvent(_, message) {
+    async createEvent(message) {
         if (message.author.id === message.client.application?.id)
             return;
         if (!message.guildId)
@@ -158,8 +134,10 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         }
     }
     async updateEvent(oldMessage, newMessage) {
-        if (!oldMessage.guildId)
-            return;
+        if (oldMessage.partial)
+            await oldMessage.fetch();
+        if (newMessage.partial)
+            await newMessage.fetch();
         const config = await this.getConfig(oldMessage.guildId);
         if (config.listenerChannelId !== oldMessage.channelId)
             return;
@@ -185,8 +163,8 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         }
     }
     async deleteEvent(message) {
-        if (!message.guildId)
-            return;
+        if (message.partial)
+            await message.fetch();
         const config = await this.getConfig(message.guildId);
         if (!config.events.find(event => event.messageId === message.id))
             return;
@@ -198,6 +176,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         return dayjs_1.default.duration({ hours: hold.hour(), minutes: hold.minute() });
     }
     async reminderLoop(client) {
+        await task_1.Task.waitTillReady(client);
         const now = (0, dayjs_1.default)();
         const configs = await this.service.getAll();
         const alteredConfigs = [];
@@ -273,6 +252,14 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             }
         }
         await interaction.reply({ embeds: [embed] });
+    }
+    async onReady(client) {
+        const configs = await this.service.getAll();
+        for (const config of configs) {
+            if (!config.listenerChannelId || !config.events.length)
+                continue;
+            await (0, utils_1.fetchMessages)(client, config.guildId, config.listenerChannelId, config.events.map(event => event.messageId));
+        }
     }
 };
 EventManagerModule = EventManagerModule_1 = __decorate([
