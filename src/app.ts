@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {loadModules} from "./config/moduleConfiguration";
 import {Client} from "./classes/client";
 import dayjs from "dayjs";
