@@ -7,7 +7,7 @@ import {Task} from "./task";
 export class Client extends DiscordClient {
     private readonly _modules: Collection<string, ModuleBase>
     private readonly _commands: Collection<string, Command>;
-    private readonly _moduleListeners: Collection<Exclude<string | symbol, keyof ClientEvents>, Listener[]>;
+    private readonly _moduleListeners: Collection<keyof ClientEvents, Listener[]>;
     private readonly _tasks: Collection<string, Task>;
 
     constructor() {
@@ -16,7 +16,7 @@ export class Client extends DiscordClient {
         this._commands = new Collection<string, Command>();
         this._tasks = new Collection<string, Task>();
         this._modules = new Collection<string, ModuleBase>();
-        this._moduleListeners = new Collection<Exclude<string | symbol, keyof ClientEvents>, Listener[]>();
+        this._moduleListeners = new Collection<keyof ClientEvents, Listener[]>();
     }
 
     get modules(): Collection<string, ModuleBase> {
@@ -27,7 +27,7 @@ export class Client extends DiscordClient {
         return this._commands;
     }
 
-    get moduleListeners(): Collection<Exclude<string | symbol, keyof ClientEvents>, Listener[]> {
+    get moduleListeners(): Collection<keyof ClientEvents, Listener[]> {
         return this._moduleListeners;
     }
 
