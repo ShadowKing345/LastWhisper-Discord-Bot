@@ -38,11 +38,7 @@ export class GardeningModule extends ModuleBase {
         ];
 
         this._tasks = [
-            {
-                name: "GardeningTickTaskLoop",
-                timeout: 60000,
-                run: client => Task.waitTillReady(client).then(() => this.tick(client))
-            }
+            {name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client)}
         ];
     }
 

@@ -11,7 +11,6 @@ import {
 } from "discord.js";
 import {RoleManagerConfig} from "../models/roleManager";
 import {fetchMessages} from "../utils";
-import {SlashCommandBuilder} from "@discordjs/builders";
 import {ModuleBase} from "../classes/moduleBase";
 import {Client} from "../classes/client";
 import {RoleManagerConfigService} from "../services/roleManagerConfigService";
@@ -25,16 +24,14 @@ export class RoleManagerModule extends ModuleBase {
 
         this._moduleName = "RoleManager";
         this._listeners = [
-            {event: "guildMemberAdd", run: this.onMemberJoin},
-            {event: "ready", run: this.onReady}
+            {event: "guildMemberAdd", run: async (_, member) => this.onMemberJoin(member)},
+            {event: "ready", run: async (client) => this.onReady(client)}
         ];
 
         this._commands = [
             {
-                command: new SlashCommandBuilder()
-                    .setName("gen_role_chooser")
-                    .setDescription("Displays the buff for the day."),
-                run: RoleManagerModule.sendButtons
+                command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
+                run: async interaction => this.sendButtons(interaction)
             }
         ];
     }
@@ -92,7 +89,7 @@ export class RoleManagerModule extends ModuleBase {
         }
     }
 
-    private async onMemberJoin(_, member: GuildMember) {
+    private async onMemberJoin(member: GuildMember) {
         if (member.partial) await member.fetch();
         const config: RoleManagerConfig = await this.getConfig(member.guild.id);
 
@@ -122,7 +119,7 @@ export class RoleManagerModule extends ModuleBase {
         await messageReaction.remove();
     }
 
-    private static async sendButtons(interaction: CommandInteraction) {
+    private async sendButtons(interaction: CommandInteraction) {
         await interaction.reply({
             content: "yolo",
             components: [new MessageActionRow().addComponents(new MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]

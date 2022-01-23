@@ -13,16 +13,8 @@ export class ManagerUtilsModule extends ModuleBase {
 
         this._moduleName = "ManagerUtils";
         this._listeners = [
-            {
-                event: "guildBanAdd", run: async (_, member) => {
-                    await this.onMemberBanned(member);
-                }
-            },
-            {
-                event: "guildMemberRemove", run: async (client, member) => {
-                    await this.onMemberRemoved(member);
-                }
-            }
+            {event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member)},
+            {event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member)}
         ];
     }
 

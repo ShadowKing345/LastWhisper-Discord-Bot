@@ -13,34 +13,31 @@ import {Service} from "typedi";
 export class BuffManagerModule extends ModuleBase {
     constructor(private service: BuffManagerConfigService) {
         super();
-        this._moduleName = "BuffManager";
 
+        this._moduleName = "BuffManager";
         this._commands = [
             {
-                command: new SlashCommandBuilder().setName("todays_buff").setDescription("Displays the buff for the day."),
+                command: builder => builder.setName("todays_buff").setDescription("Displays the buff for the day."),
                 run: async interaction => await this.postBuff(interaction, dayjs(), "Today's Buff Shall Be:")
             },
             {
-                command: new SlashCommandBuilder().setName("tomorrows_buff").setDescription("Displays the buff for tomorrow."),
+                command: builder => builder.setName("tomorrows_buff").setDescription("Displays the buff for tomorrow."),
                 run: async interaction => await this.postBuff(interaction, dayjs().add(1, "day"), "Tomorrow's Buff Shall Be:")
             },
             {
-                command: new SlashCommandBuilder().setName("this_weeks_buff").setDescription("Displays the buffs for the week"),
+                command: builder => builder.setName("this_weeks_buffs").setDescription("Displays the buffs for the week"),
                 run: async interaction => await this.postWeeksBuffs(interaction, dayjs(), "The Buffs For The Week Shall Be:")
             },
             {
-                command: new SlashCommandBuilder().setName("next_weeks_buff").setDescription("Displays the buffs for next week"),
+                command: builder => builder.setName("next_weeks_buffs").setDescription("Displays the buffs for next week"),
                 run: async interaction => await this.postWeeksBuffs(interaction, dayjs().add(1, "week"), "The Buffs For Next Week Shall Be:")
-            }];
-
+            }
+        ];
         this._tasks = [
             {
-                name: "buffManager_dailyMessage_Loop",
+                name: `${this.moduleName}#dailyMessageTask`,
                 timeout: 60000,
-                run: async client => {
-                    await Task.waitTillReady(client);
-                    await this.postDailyMessage(client);
-                }
+                run: async client => await this.postDailyMessage(client)
             }
         ];
     }
@@ -123,6 +120,8 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private async postDailyMessage(client: Client) {
+        await Task.waitTillReady(client);
+
         const configs: BuffManagerConfig[] = await this.service.getAll();
         const now: dayjs.Dayjs = dayjs();
 
