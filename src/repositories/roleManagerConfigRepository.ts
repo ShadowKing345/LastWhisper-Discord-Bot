@@ -1,7 +1,9 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration";
 import {RoleManagerConfig} from "../models/roleManager";
+import {Service} from "typedi";
 
+@Service()
 export class RoleManagerConfigRepository {
     private static readonly collectionName: string = "role_manager";
     private collection: Collection<RoleManagerConfig>

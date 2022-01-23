@@ -5,13 +5,13 @@ import {fetchMessages} from "../utils";
 import {ModuleBase} from "../classes/moduleBase";
 import {Task} from "../classes/task";
 import {EventManagerConfigService} from "../services/eventManagerConfigService";
+import {Service} from "typedi";
 
+@Service()
 export class EventManagerModule extends ModuleBase {
-    private service: EventManagerConfigService;
 
-    constructor() {
+    constructor(private service: EventManagerConfigService) {
         super();
-        this.service = new EventManagerConfigService();
 
         this._moduleName = "EventManager";
         this._commands = [

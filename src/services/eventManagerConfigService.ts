@@ -1,11 +1,11 @@
 import {EventManagerRepository} from "../repositories/eventManagerRepository";
 import {EventManagerConfig} from "../models/eventManager";
+import {Service} from "typedi";
 
+@Service()
 export class EventManagerConfigService {
-    private repo: EventManagerRepository;
 
-    constructor() {
-        this.repo = new EventManagerRepository();
+    constructor(private repo: EventManagerRepository) {
     }
 
     public async findOne(id: string): Promise<EventManagerConfig> {

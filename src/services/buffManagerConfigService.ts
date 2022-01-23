@@ -1,11 +1,10 @@
 import {BuffManagerConfig} from "../models/buffManager";
 import {BuffManagerConfigRepository} from "../repositories/buffManagerConfigRepository";
+import {Service} from "typedi";
 
+@Service()
 export class BuffManagerConfigService {
-    private repo: BuffManagerConfigRepository;
-
-    constructor() {
-        this.repo = new BuffManagerConfigRepository();
+    constructor(private repo: BuffManagerConfigRepository) {
     }
 
     public async findOne(id: string): Promise<BuffManagerConfig> {

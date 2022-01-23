@@ -1,11 +1,11 @@
 import {RoleManagerConfigRepository} from "../repositories/roleManagerConfigRepository";
 import {RoleManagerConfig} from "../models/roleManager";
+import {Service} from "typedi";
 
+@Service()
 export class RoleManagerConfigService {
-    private repo: RoleManagerConfigRepository;
 
-    constructor() {
-        this.repo = new RoleManagerConfigRepository();
+    constructor(private repo: RoleManagerConfigRepository) {
     }
 
     public async findOne(id: string): Promise<RoleManagerConfig> {

@@ -1,11 +1,11 @@
 import {GardeningConfig} from "../models/gardeningConfigModel";
 import {GardeningConfigRepository} from "../repositories/gardeningConfigRepository";
+import {Service} from "typedi";
 
+@Service()
 export class GardeningConfigService {
-    private repo: GardeningConfigRepository;
 
-    constructor() {
-        this.repo = new GardeningConfigRepository();
+    constructor(private repo: GardeningConfigRepository) {
     }
 
     public async findOne(id: string): Promise<GardeningConfig> {

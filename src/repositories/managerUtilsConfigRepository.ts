@@ -1,7 +1,9 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration";
 import {ManagerUtilsConfig} from "../models/mangerUtils";
+import {Service} from "typedi";
 
+@Service()
 export class ManagerUtilsConfigRepository {
     private static readonly collectionName: string = "manager_utils";
     private collection: Collection<ManagerUtilsConfig>

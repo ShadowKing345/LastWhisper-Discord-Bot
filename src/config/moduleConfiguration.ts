@@ -8,13 +8,14 @@ import {EventManagerModule} from "../modules/eventManagerModule";
 import {GardeningModule} from "../modules/gardeningModule";
 import {ManagerUtilsModule} from "../modules/managerUtilsModule";
 import {RoleManagerModule} from "../modules/roleManagerModule";
+import {Container} from "typedi";
 
 export const loadedModules: ModuleBase[] = [
-    new BuffManagerModule(),
-    new EventManagerModule(),
-    new GardeningModule(),
-    new ManagerUtilsModule(),
-    new RoleManagerModule()
+    Container.get(BuffManagerModule),
+    Container.get(EventManagerModule),
+    Container.get(GardeningModule),
+    Container.get(ManagerUtilsModule),
+    Container.get(RoleManagerModule)
 ];
 
 async function runEvent(listeners: Listener[], ...args) {

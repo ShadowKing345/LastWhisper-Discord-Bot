@@ -6,13 +6,13 @@ import {ModuleBase} from "../classes/moduleBase";
 import {Task} from "../classes/task";
 import {Client} from "../classes/client";
 import {GardeningConfigService} from "../services/gardeningConfigService";
+import {Service} from "typedi";
 
+@Service()
 export class GardeningModule extends ModuleBase {
-    private service: GardeningConfigService;
 
-    public constructor() {
+    public constructor(private service: GardeningConfigService) {
         super();
-        this.service = new GardeningConfigService();
 
         this._moduleName = "GardeningModule";
         this._commands = [

@@ -15,14 +15,13 @@ import {SlashCommandBuilder} from "@discordjs/builders";
 import {ModuleBase} from "../classes/moduleBase";
 import {Client} from "../classes/client";
 import {RoleManagerConfigService} from "../services/roleManagerConfigService";
+import {Service} from "typedi";
 
+@Service()
 export class RoleManagerModule extends ModuleBase {
 
-    private service: RoleManagerConfigService;
-
-    constructor() {
+    constructor(private service: RoleManagerConfigService) {
         super();
-        this.service = new RoleManagerConfigService();
 
         this._moduleName = "RoleManager";
         this._listeners = [

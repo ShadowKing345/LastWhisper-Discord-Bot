@@ -1,7 +1,9 @@
 import {Collection, Filter} from "mongodb";
 import {GardeningConfig} from "../models/gardeningConfigModel";
 import {DB} from "../config/databaseConfiguration";
+import {Service} from "typedi";
 
+@Service()
 export class GardeningConfigRepository {
     private static readonly collectionName: string = "gardening_manager";
     private collection: Collection<GardeningConfig>

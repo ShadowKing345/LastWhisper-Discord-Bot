@@ -1,7 +1,9 @@
 import {Collection, Filter} from "mongodb";
 import {EventManagerConfig} from "../models/eventManager";
 import {DB} from "../config/databaseConfiguration";
+import {Service} from "typedi";
 
+@Service()
 export class EventManagerRepository {
     private static readonly collectionName: string = "event_manager";
     private collection: Collection<EventManagerConfig>

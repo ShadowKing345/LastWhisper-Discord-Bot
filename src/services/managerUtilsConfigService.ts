@@ -1,11 +1,11 @@
 import {ManagerUtilsConfigRepository} from "../repositories/managerUtilsConfigRepository";
 import {ManagerUtilsConfig} from "../models/mangerUtils";
+import {Service} from "typedi";
 
+@Service()
 export class ManagerUtilsConfigService {
-    private repo: ManagerUtilsConfigRepository;
 
-    constructor() {
-        this.repo = new ManagerUtilsConfigRepository();
+    constructor(private repo: ManagerUtilsConfigRepository) {
     }
 
     public async findOne(id: string): Promise<ManagerUtilsConfig> {

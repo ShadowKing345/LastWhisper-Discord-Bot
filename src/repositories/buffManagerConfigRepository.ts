@@ -1,7 +1,9 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration";
 import {BuffManagerConfig} from "../models/buffManager";
+import {Service} from "typedi";
 
+@Service()
 export class BuffManagerConfigRepository {
     private static readonly collectionName: string = "buff_manager";
     private collection: Collection<BuffManagerConfig>

@@ -7,14 +7,13 @@ import {DaysToArray} from "../utils";
 import {Client} from "../classes/client";
 import {Task} from "../classes/task";
 import {BuffManagerConfigService} from "../services/buffManagerConfigService";
+import {Service} from "typedi";
 
+@Service()
 export class BuffManagerModule extends ModuleBase {
-    private service: BuffManagerConfigService;
-
-    constructor() {
+    constructor(private service: BuffManagerConfigService) {
         super();
         this._moduleName = "BuffManager";
-        this.service = new BuffManagerConfigService();
 
         this._commands = [
             {

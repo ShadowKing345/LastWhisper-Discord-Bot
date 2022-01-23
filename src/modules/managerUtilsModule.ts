@@ -3,13 +3,13 @@ import {Client, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "di
 import {ManagerUtilsConfig} from "../models/mangerUtils";
 import {ModuleBase} from "../classes/moduleBase";
 import {ManagerUtilsConfigService} from "../services/managerUtilsConfigService";
+import {Service} from "typedi";
 
+@Service()
 export class ManagerUtilsModule extends ModuleBase {
-    private service: ManagerUtilsConfigService;
 
-    constructor() {
+    constructor(private service: ManagerUtilsConfigService) {
         super();
-        this.service = new ManagerUtilsConfigService();
 
         this._moduleName = "ManagerUtils";
         this._listeners = [
