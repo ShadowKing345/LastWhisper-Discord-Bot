@@ -78,7 +78,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends mo
                     }
                 }
                 await message.reactions.removeAll();
-                message.createReactionCollector({ filter: filter }).on("collect", this.onReactionAdd);
+                message.createReactionCollector({ filter: filter }).on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
             }
         }
     }
