@@ -3,3 +3,4 @@ services:
   bot:
     build: ./
     command: yarn start
+    tty: true
