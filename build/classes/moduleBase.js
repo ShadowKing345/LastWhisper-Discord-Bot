@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModuleBase = void 0;
-class ModuleBase {
+export class ModuleBase {
     constructor() {
         this._moduleName = "";
         this._commands = [];
@@ -21,4 +18,4 @@ class ModuleBase {
         return this._tasks;
     }
 }
-exports.ModuleBase = ModuleBase;
+//# sourceMappingURL=moduleBase.js.map

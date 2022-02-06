@@ -1,93 +1,91 @@
-"use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ManagerUtilsModule = void 0;
-const dayjs_1 = __importDefault(require("dayjs"));
-const discord_js_1 = require("discord.js");
-const moduleBase_1 = require("../classes/moduleBase");
-const managerUtilsConfigService_1 = require("../services/managerUtilsConfigService");
-const typedi_1 = require("typedi");
-let ManagerUtilsModule = class ManagerUtilsModule extends moduleBase_1.ModuleBase {
-    constructor(service) {
+import dayjs from "dayjs";
+import { MessageEmbed } from "discord.js";
+import { ManagerUtilsConfigService } from "../services/managerUtilsConfigService.js";
+import { ModuleBase } from "../classes/moduleBase.js";
+export class ManagerUtilsModule extends ModuleBase {
+    constructor() {
         super();
-        this.service = service;
+        this.service = new ManagerUtilsConfigService();
         this._moduleName = "ManagerUtils";
         this._listeners = [
-            { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
-            { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) }
+            { event: "guildBanAdd", run: (_, member) => __awaiter(this, void 0, void 0, function* () { return yield this.onMemberBanned(member); }) },
+            { event: "guildMemberRemove", run: (client, member) => __awaiter(this, void 0, void 0, function* () { return yield this.onMemberRemoved(member); }) }
         ];
     }
-    async getConfig(guildId) {
-        return this.service.findOneOrCreate(guildId);
+    getConfig(guildId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.service.findOneOrCreate(guildId);
+        });
     }
-    async getLoggingChannel(guild) {
-        const config = await this.getConfig(guild.id);
-        if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
-            return (await guild.channels.fetch(config.loggingChannel));
-        }
-        return null;
+    getLoggingChannel(guild) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const config = yield this.getConfig(guild.id);
+            if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
+                return (yield guild.channels.fetch(config.loggingChannel));
+            }
+            return null;
+        });
     }
-    async onMemberRemoved(member) {
-        const loggingChannel = await this.getLoggingChannel(member.guild);
-        if (!loggingChannel)
-            return;
-        const kickedData = (await member.guild.fetchAuditLogs({
-            limit: 1,
-            type: "MEMBER_KICK"
-        })).entries.first();
-        const embed = new discord_js_1.MessageEmbed()
-            .setColor("RANDOM")
-            .addFields({ name: "Joined On:", value: (0, dayjs_1.default)(member.joinedAt).format("HH:mm:ss DD/MM/YYYY") }, { name: "Nickname was:", value: member.nickname ?? "None" }, { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
-            .setThumbnail(member.user.displayAvatarURL());
-        if (kickedData && kickedData.target.id === member.id) {
-            embed.setTitle("User Kicked!")
-                .setDescription(`User **${member.displayName}** was kicked by **${(await member.guild.members.fetch(kickedData.executor.id)).displayName}** from the server.`);
-        }
-        else {
-            embed.setTitle("User Left!")
-                .setDescription(`User **${member.displayName}** has left this discord server`);
-        }
-        await loggingChannel.send({ embeds: [embed] });
-    }
-    async onMemberBanned(ban) {
-        const loggingChannel = await this.getLoggingChannel(ban.guild);
-        if (!loggingChannel)
-            return;
-        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
-        if (banLogs) {
-            const executor = banLogs.executor;
-            const target = banLogs.target;
-            const embed = new discord_js_1.MessageEmbed()
-                .setTitle("Member Banned!")
-                .setColor("RANDOM");
-            if (target) {
-                embed
-                    .setDescription(`User **${target.tag}** was banned by ${executor ? (await ban.guild.members.fetch(executor.id)).displayName : "Someone who was not part of the server somehow... what how?? "}!`)
-                    .setThumbnail(target.displayAvatarURL());
+    onMemberRemoved(member) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            const loggingChannel = yield this.getLoggingChannel(member.guild);
+            if (!loggingChannel)
+                return;
+            const kickedData = (yield member.guild.fetchAuditLogs({
+                limit: 1,
+                type: "MEMBER_KICK"
+            })).entries.first();
+            const embed = new MessageEmbed()
+                .setColor("RANDOM")
+                .addFields({ name: "Joined On:", value: dayjs(member.joinedAt).format("HH:mm:ss DD/MM/YYYY") }, { name: "Nickname was:", value: (_a = member.nickname) !== null && _a !== void 0 ? _a : "None" }, { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
+                .setThumbnail(member.user.displayAvatarURL());
+            if (kickedData && kickedData.target.id === member.id) {
+                embed.setTitle("User Kicked!")
+                    .setDescription(`User **${member.user.username}** was kicked by **${(yield member.guild.members.fetch(kickedData.executor.id)).displayName}** from the server.`);
             }
             else {
-                embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
+                embed.setTitle("User Left!")
+                    .setDescription(`User **${member.user.username}** has left this discord server`);
             }
-            await loggingChannel.send({ embeds: [embed] });
-        }
-        else {
-            await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
-        }
+            yield loggingChannel.send({ embeds: [embed] });
+        });
     }
-};
-ManagerUtilsModule = __decorate([
-    (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [managerUtilsConfigService_1.ManagerUtilsConfigService])
-], ManagerUtilsModule);
-exports.ManagerUtilsModule = ManagerUtilsModule;
+    onMemberBanned(ban) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const loggingChannel = yield this.getLoggingChannel(ban.guild);
+            if (!loggingChannel)
+                return;
+            const banLogs = (yield ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
+            if (banLogs) {
+                const executor = banLogs.executor;
+                const target = banLogs.target;
+                const embed = new MessageEmbed()
+                    .setTitle("Member Banned!")
+                    .setColor("RANDOM");
+                if (target) {
+                    embed
+                        .setDescription(`User **${target.tag}** was banned by ${executor ? (yield ban.guild.members.fetch(executor.id)).displayName : "Someone who was not part of the server somehow... what how?? "}!`)
+                        .setThumbnail(target.displayAvatarURL());
+                }
+                else {
+                    embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
+                }
+                yield loggingChannel.send({ embeds: [embed] });
+            }
+            else {
+                yield loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
+            }
+        });
+    }
+}
+//# sourceMappingURL=managerUtilsModule.js.map

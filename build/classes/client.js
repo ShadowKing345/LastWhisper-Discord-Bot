@@ -1,22 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Client = void 0;
-const discord_js_1 = require("discord.js");
-class Client extends discord_js_1.Client {
+import { Client as DiscordClient, Collection, Intents } from "discord.js";
+export class Client extends DiscordClient {
     constructor() {
         super({
             intents: [
-                discord_js_1.Intents.FLAGS.GUILDS,
-                discord_js_1.Intents.FLAGS.GUILD_BANS,
-                discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
-                discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
-                discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+                Intents.FLAGS.GUILDS,
+                Intents.FLAGS.GUILD_BANS,
+                Intents.FLAGS.GUILD_MEMBERS,
+                Intents.FLAGS.GUILD_MESSAGES,
+                Intents.FLAGS.GUILD_MESSAGE_REACTIONS
             ]
         });
-        this._commands = new discord_js_1.Collection();
-        this._tasks = new discord_js_1.Collection();
-        this._modules = new discord_js_1.Collection();
-        this._moduleListeners = new discord_js_1.Collection();
+        this._commands = new Collection();
+        this._tasks = new Collection();
+        this._modules = new Collection();
+        this._moduleListeners = new Collection();
     }
     get modules() {
         return this._modules;
@@ -31,4 +28,4 @@ class Client extends discord_js_1.Client {
         return this._tasks;
     }
 }
-exports.Client = Client;
+//# sourceMappingURL=client.js.map

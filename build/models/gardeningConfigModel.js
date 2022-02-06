@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GardeningConfig = exports.Plot = exports.Slot = exports.Reason = exports.Reservation = void 0;
-class Reservation {
+export class Reservation {
     constructor(player, plant, duration, reason) {
         this.reason = Reason.NONE;
         this.player = player;
@@ -10,14 +7,13 @@ class Reservation {
         this.plant = plant;
     }
 }
-exports.Reservation = Reservation;
-var Reason;
+export var Reason;
 (function (Reason) {
     Reason[Reason["NONE"] = 0] = "NONE";
     Reason[Reason["GROWING"] = 1] = "GROWING";
     Reason[Reason["BREADING"] = 2] = "BREADING";
-})(Reason = exports.Reason || (exports.Reason = {}));
-class Slot {
+})(Reason || (Reason = {}));
+export class Slot {
     constructor(player, plant, duration, reason, started, next = []) {
         this.reason = Reason.NONE;
         this.next = [];
@@ -29,13 +25,11 @@ class Slot {
         this.next = next;
     }
 }
-exports.Slot = Slot;
-class Plot {
+export class Plot {
 }
-exports.Plot = Plot;
-class GardeningConfig {
+export class GardeningConfig {
     constructor() {
         this.plots = [];
     }
 }
-exports.GardeningConfig = GardeningConfig;
+//# sourceMappingURL=gardeningConfigModel.js.map

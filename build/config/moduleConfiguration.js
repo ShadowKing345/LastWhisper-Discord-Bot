@@ -1,33 +1,43 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadModules = exports.loadedModules = void 0;
-const buffManagerModule_1 = require("../modules/buffManagerModule");
-const builders_1 = require("@discordjs/builders");
-const eventManagerModule_1 = require("../modules/eventManagerModule");
-const gardeningModule_1 = require("../modules/gardeningModule");
-const managerUtilsModule_1 = require("../modules/managerUtilsModule");
-const roleManagerModule_1 = require("../modules/roleManagerModule");
-const typedi_1 = require("typedi");
-exports.loadedModules = [
-    typedi_1.Container.get(buffManagerModule_1.BuffManagerModule),
-    typedi_1.Container.get(eventManagerModule_1.EventManagerModule),
-    typedi_1.Container.get(gardeningModule_1.GardeningModule),
-    typedi_1.Container.get(managerUtilsModule_1.ManagerUtilsModule),
-    typedi_1.Container.get(roleManagerModule_1.RoleManagerModule)
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { BuffManagerModule } from "../modules/buffManagerModule.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { EventManagerModule } from "../modules/eventManagerModule.js";
+import { GardeningModule } from "../modules/gardeningModule.js";
+import { ManagerUtilsModule } from "../modules/managerUtilsModule.js";
+import { RoleManagerModule } from "../modules/roleManagerModule.js";
+import { logger } from "../utils/logger.js";
+import chalk from "chalk";
+export const loadedModules = [
+    new BuffManagerModule(),
+    new EventManagerModule(),
+    new GardeningModule(),
+    new ManagerUtilsModule(),
+    new RoleManagerModule()
 ];
-async function runEvent(listeners, client, ...args) {
-    for (let i = 0; i < listeners.length; i++) {
-        try {
-            await listeners[i].run(client, ...args);
+function runEvent(listeners, client, ...args) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 0; i < listeners.length; i++) {
+            try {
+                yield listeners[i].run(client, ...args);
+            }
+            catch (e) {
+                console.error(e);
+            }
         }
-        catch (e) {
-            console.error(e);
-        }
-    }
+    });
 }
-function loadModules(client) {
-    client.on("interactionCreate", async (interaction) => {
+export function loadModules(client) {
+    client.on("interactionCreate", (interaction) => __awaiter(this, void 0, void 0, function* () {
         if (interaction.isButton()) {
+            // todo: setup buttons.
         }
         if (interaction.isCommand()) {
             const command = interaction.client.commands.get(interaction.commandName);
@@ -35,19 +45,19 @@ function loadModules(client) {
                 return;
             return command.run(interaction);
         }
-    });
-    exports.loadedModules.forEach(module => {
-        console.debug("Setting up module", module.moduleName);
+    }));
+    loadedModules.forEach(module => {
+        logger.log("info", `Setting up module ${chalk.red(module.moduleName)}`, { context: "ModuleConfiguration" });
         client.modules.set(module.moduleName, module);
-        console.debug("Setting up commands.");
+        logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, { context: "ModuleConfiguration" });
         module.commands.forEach((command, index, array) => {
             if (typeof command.command === "function") {
-                command.command = command.command(new builders_1.SlashCommandBuilder());
+                command.command = command.command(new SlashCommandBuilder());
                 array[index] = command;
             }
             client.commands.set(command.command.name, command);
         });
-        console.debug("Setting up listeners.");
+        logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, { context: "ModuleConfiguration" });
         module.listeners.forEach(listener => {
             let listeners = client.moduleListeners.get(listener.event);
             if (!listeners) {
@@ -56,23 +66,23 @@ function loadModules(client) {
             listeners.push(listener);
             client.moduleListeners.set(listener.event, listeners);
         });
-        console.debug("Setting up tasks.");
+        logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, { context: "ModuleConfiguration" });
         module.tasks.forEach(task => {
             client.tasks.set(task.name, task);
             setInterval(task.run, task.timeout, client);
             task.run(client).catch(err => console.error(err));
         });
     });
-    console.debug("Instantiating events.");
+    logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("events")}...`, { context: "ModuleConfiguration" });
     client.moduleListeners.forEach((listener, event) => {
         switch (event) {
             case "ready":
-                client.once(event, async (...args) => runEvent(listener, client, ...args));
+                client.once(event, (...args) => __awaiter(this, void 0, void 0, function* () { return runEvent(listener, client, ...args); }));
                 break;
             default:
-                client.on(event, async (...args) => runEvent(listener, client, ...args));
+                client.on(event, (...args) => __awaiter(this, void 0, void 0, function* () { return runEvent(listener, client, ...args); }));
                 break;
         }
     });
 }
-exports.loadModules = loadModules;
+//# sourceMappingURL=moduleConfiguration.js.map

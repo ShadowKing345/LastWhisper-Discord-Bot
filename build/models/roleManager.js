@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoleManagerConfig = void 0;
-class RoleManagerConfig {
+export class RoleManagerConfig {
 }
-exports.RoleManagerConfig = RoleManagerConfig;
+//# sourceMappingURL=roleManager.js.map

@@ -1,14 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventManagerConfig = exports.Tags = exports.EventObj = exports.ReminderTrigger = void 0;
-class ReminderTrigger {
+export class ReminderTrigger {
     constructor(message, timeDelta) {
         this.message = message;
         this.timeDelta = timeDelta;
     }
 }
-exports.ReminderTrigger = ReminderTrigger;
-class EventObj {
+export class EventObj {
     constructor(messageId, name = "", description = "", dateTime = null, additional = []) {
         this.messageId = messageId;
         this.name = name;
@@ -20,8 +16,7 @@ class EventObj {
         return this.name != "" && this.description != "" && this.dateTime != null;
     }
 }
-exports.EventObj = EventObj;
-class Tags {
+export class Tags {
     constructor(announcement = "Event Announcement", description = "Event Description", dateTime = "Time", exclusionList = []) {
         this.announcement = announcement;
         this.description = description;
@@ -29,8 +24,7 @@ class Tags {
         this.exclusionList = exclusionList;
     }
 }
-exports.Tags = Tags;
-class EventManagerConfig {
+export class EventManagerConfig {
     constructor(id = "", listenerChannelId = null, postingChannelId = null, delimiterCharacters = ["\\[", "\\]"], tags = new Tags(), dateTimeFormat = [], events = [], reminders = []) {
         this.guildId = id;
         this.listenerChannelId = listenerChannelId;
@@ -42,4 +36,4 @@ class EventManagerConfig {
         this.reminders = reminders;
     }
 }
-exports.EventManagerConfig = EventManagerConfig;
+//# sourceMappingURL=eventManager.js.map

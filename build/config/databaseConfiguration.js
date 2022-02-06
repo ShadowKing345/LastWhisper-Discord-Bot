@@ -1,14 +1,24 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createDbClient = exports.DB = void 0;
-const mongodb_1 = require("mongodb");
-const appConfigs_1 = require("./appConfigs");
-async function createDbClient() {
-    const client = await mongodb_1.MongoClient.connect(appConfigs_1.CONFIGS.dbUrl);
-    exports.DB = client.db();
-    client.on("error", error => {
-        console.error(error);
-        client.close();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { MongoClient } from "mongodb";
+import { CONFIGS } from "./appConfigs.js";
+import { logger } from "../utils/logger.js";
+export let DB;
+export function createDbClient() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = yield MongoClient.connect(CONFIGS.dbUrl);
+        DB = client.db();
+        client.on("error", error => {
+            logger.log("error", `${error.name} ${error.message}`, { context: "DatabaseConfiguration" });
+            client.close();
+        });
     });
 }
-exports.createDbClient = createDbClient;
+//# sourceMappingURL=databaseConfiguration.js.map

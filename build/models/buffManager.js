@@ -1,26 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BuffManagerConfig = exports.MessageSettings = exports.Week = exports.Days = exports.Day = void 0;
-class Day {
+export class Day {
 }
-exports.Day = Day;
-class Days {
+export class Days {
 }
-exports.Days = Days;
-class Week {
+export class Week {
     constructor() {
         this.days = new Days();
     }
 }
-exports.Week = Week;
-class MessageSettings {
+export class MessageSettings {
 }
-exports.MessageSettings = MessageSettings;
-class BuffManagerConfig {
+export class BuffManagerConfig {
     constructor() {
         this.messageSettings = new MessageSettings();
         this.days = [];
         this.weeks = [];
     }
 }
-exports.BuffManagerConfig = BuffManagerConfig;
+//# sourceMappingURL=buffManager.js.map

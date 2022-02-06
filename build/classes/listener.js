@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Listener = void 0;
-class Listener {
+export class Listener {
 }
-exports.Listener = Listener;
+//# sourceMappingURL=listener.js.map
