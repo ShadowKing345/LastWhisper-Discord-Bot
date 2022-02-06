@@ -5,11 +5,10 @@
   "main": "build/app.js",
   "scripts": {
     "start": "node build/app.js",
-    "dev": "nodemon src/app.ts",
-    "commands": "node build/config/commandRegistration/registerCommands.js",
-    "dev-commands": "ts-node src/config/commandRegistration/registerCommands.ts",
-    "build": "tsc -b",
-    "test": "TZ=UTC jest"
+    "dev": "nodemon --watch './src/**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/main/app.ts",
+    "command-setup": "node build/config/commandRegistration/registerCommands.js",
+    "command-setup:ts": "node --experimental-specifier-resolution=node --loader ts-node/esm src/main/config/commandRegistration/registerCommands.ts",
+    "build": "tsc -b"
   },
   "repository": {
     "type": "git",
