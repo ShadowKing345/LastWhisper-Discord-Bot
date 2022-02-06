@@ -1,122 +1,125 @@
-"use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var RoleManagerModule_1;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoleManagerModule = void 0;
-const discord_js_1 = require("discord.js");
-const utils_1 = require("../utils");
-const moduleBase_1 = require("../classes/moduleBase");
-const roleManagerConfigService_1 = require("../services/roleManagerConfigService");
-const typedi_1 = require("typedi");
-let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends moduleBase_1.ModuleBase {
-    constructor(service) {
+import { MessageActionRow, MessageButton } from "discord.js";
+import { fetchMessages } from "../utils/utils.js";
+import { ModuleBase } from "../classes/moduleBase.js";
+import { RoleManagerConfigService } from "../services/roleManagerConfigService.js";
+export class RoleManagerModule extends ModuleBase {
+    constructor() {
         super();
-        this.service = service;
+        this.service = new RoleManagerConfigService();
         this._moduleName = "RoleManager";
         this._listeners = [
-            { event: "guildMemberAdd", run: async (_, member) => this.onMemberJoin(member) },
-            { event: "ready", run: async (client) => this.onReady(client) }
+            { event: "guildMemberAdd", run: (_, member) => __awaiter(this, void 0, void 0, function* () { return this.onMemberJoin(member); }) },
+            { event: "ready", run: (client) => __awaiter(this, void 0, void 0, function* () { return this.onReady(client); }) }
         ];
         this._commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
-                run: async (interaction) => this.sendButtons(interaction)
+                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.sendButtons(interaction); })
             }
         ];
     }
-    async getConfig(guildId) {
-        return this.service.findOneOrCreate(guildId);
-    }
-    static async alterMembersRoles(member, newMemberRoleId, memberRoleId) {
-        if (!member.roles.cache.has(newMemberRoleId))
-            return;
-        if (!member.roles.cache.has(memberRoleId)) {
-            const memberRole = await member.guild.roles.fetch(memberRoleId);
-            if (memberRole) {
-                await member.roles.add(memberRole);
-            }
-        }
-        const newMemberRole = await member.guild.roles.fetch(newMemberRoleId);
-        if (newMemberRole) {
-            await member.roles.remove([newMemberRole]);
-        }
-    }
-    async onReady(client) {
-        const configs = await this.service.getAll();
-        for (const config of configs) {
-            if (!client.guilds.cache.has(config.guildId))
-                continue;
-            if (!config.reactionListeningChannel || !config.reactionMessageIds.length)
-                continue;
-            const messages = await (0, utils_1.fetchMessages)(client, config.guildId, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
-            if (!messages)
-                continue;
-            const guild = await client.guilds.fetch(config.guildId);
-            if (!guild)
-                continue;
-            const filter = (reaction, _) => config.reactionMessageIds.includes(reaction.message.id);
-            for (const message of messages) {
-                for (const reaction of message.reactions.cache.values()) {
-                    await reaction.users.fetch();
-                    for (const user of reaction.users.cache.values()) {
-                        try {
-                            const member = await guild.members.fetch(user.id);
-                            if (member)
-                                await RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
-                        }
-                        catch (error) {
-                            console.error(error);
-                        }
-                    }
-                }
-                await message.reactions.removeAll();
-                message.createReactionCollector({ filter: filter }).on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
-            }
-        }
-    }
-    async onMemberJoin(member) {
-        if (member.partial)
-            await member.fetch();
-        const config = await this.getConfig(member.guild.id);
-        if (!config.newUserRoleId)
-            return;
-        const newMemberRole = await member.guild.roles.fetch(config.newUserRoleId);
-        if (newMemberRole) {
-            await member.roles.add([newMemberRole], "Bot added.");
-        }
-    }
-    async onReactionAdd(messageReaction, user) {
-        if (user.bot)
-            return;
-        const guild = messageReaction.message.guild;
-        if (!guild)
-            return;
-        const member = await guild.members.fetch(user.id);
-        if (!member) {
-            console.error("How the actual... did a user that is not in the guild react to a message?");
-            return;
-        }
-        const config = await this.getConfig(guild.id);
-        await RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
-        await messageReaction.remove();
-    }
-    async sendButtons(interaction) {
-        await interaction.reply({
-            content: "yolo",
-            components: [new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]
+    getConfig(guildId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.service.findOneOrCreate(guildId);
         });
     }
-};
-RoleManagerModule = RoleManagerModule_1 = __decorate([
-    (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [roleManagerConfigService_1.RoleManagerConfigService])
-], RoleManagerModule);
-exports.RoleManagerModule = RoleManagerModule;
+    static alterMembersRoles(member, newMemberRoleId, memberRoleId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!member.roles.cache.has(newMemberRoleId))
+                return;
+            if (!member.roles.cache.has(memberRoleId)) {
+                const memberRole = yield member.guild.roles.fetch(memberRoleId);
+                if (memberRole) {
+                    yield member.roles.add(memberRole);
+                }
+            }
+            const newMemberRole = yield member.guild.roles.fetch(newMemberRoleId);
+            if (newMemberRole) {
+                yield member.roles.remove([newMemberRole]);
+            }
+        });
+    }
+    onReady(client) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const configs = yield this.service.getAll();
+            for (const config of configs) {
+                if (!client.guilds.cache.has(config.guildId))
+                    continue;
+                if (!config.reactionListeningChannel || !config.reactionMessageIds.length)
+                    continue;
+                const messages = yield fetchMessages(client, config.guildId, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
+                if (!messages)
+                    continue;
+                const guild = yield client.guilds.fetch(config.guildId);
+                if (!guild)
+                    continue;
+                const filter = (reaction, _) => config.reactionMessageIds.includes(reaction.message.id);
+                for (const message of messages) {
+                    for (const reaction of message.reactions.cache.values()) {
+                        yield reaction.users.fetch();
+                        for (const user of reaction.users.cache.values()) {
+                            try {
+                                const member = yield guild.members.fetch(user.id);
+                                if (member)
+                                    yield RoleManagerModule.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+                            }
+                            catch (error) {
+                                console.error(error);
+                            }
+                        }
+                    }
+                    yield message.reactions.removeAll();
+                    message.createReactionCollector({ filter: filter }).on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
+                }
+            }
+        });
+    }
+    onMemberJoin(member) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (member.partial)
+                yield member.fetch();
+            const config = yield this.getConfig(member.guild.id);
+            if (!config.newUserRoleId)
+                return;
+            const newMemberRole = yield member.guild.roles.fetch(config.newUserRoleId);
+            if (newMemberRole) {
+                yield member.roles.add([newMemberRole], "Bot added.");
+            }
+        });
+    }
+    onReactionAdd(messageReaction, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (user.bot)
+                return;
+            const guild = messageReaction.message.guild;
+            if (!guild)
+                return;
+            const member = yield guild.members.fetch(user.id);
+            if (!member) {
+                console.error("How the actual... did a user that is not in the guild react to a message?");
+                return;
+            }
+            const config = yield this.getConfig(guild.id);
+            yield RoleManagerModule.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+            yield messageReaction.remove();
+        });
+    }
+    sendButtons(interaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield interaction.reply({
+                content: "yolo",
+                components: [new MessageActionRow().addComponents(new MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]
+            });
+        });
+    }
+}
+//# sourceMappingURL=roleManagerModule.js.map

@@ -9,18 +9,18 @@ import {
     Role,
     User
 } from "discord.js";
-import {RoleManagerConfig} from "../models/roleManager";
-import {fetchMessages} from "../utils";
-import {ModuleBase} from "../classes/moduleBase";
-import {Client} from "../classes/client";
-import {RoleManagerConfigService} from "../services/roleManagerConfigService";
-import {Service} from "typedi";
+import {RoleManagerConfig} from "../models/roleManager.js";
+import {fetchMessages} from "../utils/utils.js";
+import {ModuleBase} from "../classes/moduleBase.js";
+import {Client} from "../classes/client.js";
+import {RoleManagerConfigService} from "../services/roleManagerConfigService.js";
 
-@Service()
 export class RoleManagerModule extends ModuleBase {
+    private service: RoleManagerConfigService;
 
-    constructor(private service: RoleManagerConfigService) {
+    constructor() {
         super();
+        this.service = new RoleManagerConfigService();
 
         this._moduleName = "RoleManager";
         this._listeners = [
