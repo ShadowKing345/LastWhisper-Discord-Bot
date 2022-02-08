@@ -6,6 +6,7 @@ import {DaysToArray} from "../utils/utils.js";
 import {Client} from "../classes/client.js";
 import {Task} from "../classes/task.js";
 import {BuffManagerConfigService} from "../services/buffManagerConfigService.js";
+import {logger} from "../utils/logger";
 
 export class BuffManagerModule extends ModuleBase {
     private static daysOfWeek: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -140,7 +141,7 @@ export class BuffManagerModule extends ModuleBase {
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
 
                 if (!channel) {
-                    console.warn(`Invalid posting channel for ${config.guildId}`);
+                    logger.info(`Invalid posting channel for ${config.guildId}`, {context: "BuffManagerModule"})
                     continue;
                 }
 
@@ -148,7 +149,7 @@ export class BuffManagerModule extends ModuleBase {
                 const day: Buff = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
                 if (!day) {
-                    console.warn(`Invalid day id for guild ${config.guildId}`);
+                    logger.info(`Invalid day id for guild ${config.guildId}`, {context: "BuffManagerModule"})
                     continue;
                 }
 
@@ -158,7 +159,7 @@ export class BuffManagerModule extends ModuleBase {
                 if (messageSettings.dow && messageSettings.dow === now.day())
                     await channel.send({embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.days, now)]});
             } catch (error) {
-                console.log(error);
+                logger.error(`${error.name} error.message`, {context: "BuffManagerModule"});
             }
         }
     }
