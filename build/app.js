@@ -24,9 +24,11 @@ export class App {
     }
     load() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.debug("Loading Configurations");
+            logger.log("info", "Loading Configurations", { context: "ClientSetup" });
             initConfigs();
-            logger.level = CONFIGS.logging_level;
+            if (CONFIGS.logging_level) {
+                logger.level = CONFIGS.logging_level;
+            }
             logger.log("info", "Creating Db Client", { context: "ClientSetup" });
             yield createDbClient();
             logger.log("info", "Loading modules.", { context: "ClientSetup" });

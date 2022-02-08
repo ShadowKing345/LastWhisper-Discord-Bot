@@ -1,6 +1,9 @@
-export class Day {
+export class Buff {
 }
 export class Days {
+    get toArray() {
+        return [this.sunday, this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday];
+    }
 }
 export class Week {
     constructor() {
@@ -12,7 +15,7 @@ export class MessageSettings {
 export class BuffManagerConfig {
     constructor() {
         this.messageSettings = new MessageSettings();
-        this.days = [];
+        this.buffs = [];
         this.weeks = [];
     }
 }

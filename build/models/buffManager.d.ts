@@ -1,4 +1,4 @@
-export declare class Day {
+export declare class Buff {
     id: string;
     text: string;
     imageUrl: string;
@@ -11,8 +11,10 @@ export declare class Days {
     friday: string;
     saturday: string;
     sunday: string;
+    get toArray(): string[];
 }
 export declare class Week {
+    isEnabled: boolean;
     title: string;
     days: Days;
 }
@@ -25,7 +27,7 @@ export declare class MessageSettings {
 }
 export declare class BuffManagerConfig {
     guildId: string;
-    messageSettings: MessageSettings | null;
-    days: Day[];
+    messageSettings: MessageSettings;
+    buffs: Buff[];
     weeks: Week[];
 }

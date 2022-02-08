@@ -13,6 +13,7 @@ import { MessageEmbed } from "discord.js";
 import { DaysToArray } from "../utils/utils.js";
 import { Task } from "../classes/task.js";
 import { BuffManagerConfigService } from "../services/buffManagerConfigService.js";
+import { logger } from "../utils/logger";
 export class BuffManagerModule extends ModuleBase {
     constructor() {
         super();
@@ -54,29 +55,28 @@ export class BuffManagerModule extends ModuleBase {
         });
     }
     static createWeekEmbed(title, week, days, date) {
-        const _days = DaysToArray(week.days).map((dayId, index) => {
-            var _a;
-            const dow = this.daysOfWeek[index];
-            const day = (_a = days.find(entry => entry.id === dayId)) !== null && _a !== void 0 ? _a : { text: "No Buff Found" };
-            return { name: dow, value: day.text, inline: true };
-        });
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
             description: week.title,
-            fields: _days,
+            fields: week.days.toArray.map((dayId, index) => {
+                var _a;
+                const dow = this.daysOfWeek[index];
+                const day = (_a = days.find(entry => entry.id === dayId)) !== null && _a !== void 0 ? _a : { text: "No Buff Found" };
+                return { name: dow, value: day.text, inline: true };
+            }),
             footer: { text: `Week ${date.week()}.` }
         });
     }
     tryGetConfig(interaction, guildId) {
         return __awaiter(this, void 0, void 0, function* () {
             const config = yield this.service.findOneOrCreate(guildId);
-            if (config.days.length <= 0) {
+            if (config.buffs.length <= 0) {
                 yield interaction.reply({ content: "Sorry, there are not buffs set.", ephemeral: true });
                 return [null, false];
             }
-            if (config.weeks.length <= 0) {
-                yield interaction.reply({ content: "Sorry, there are not weeks set.", ephemeral: true });
+            if (config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled).length <= 0) {
+                yield interaction.reply({ content: "Sorry, there are not enabled weeks set.", ephemeral: true });
                 return [null, false];
             }
             return [config, true];
@@ -92,7 +92,7 @@ export class BuffManagerModule extends ModuleBase {
             if (!flag)
                 return;
             const week = config.weeks[date.week() % config.weeks.length];
-            const day = config.days.find(day => day.id === DaysToArray(week.days)[date.day()]);
+            const day = config.buffs.find(day => day.id === week.days.toArray[date.day()]);
             if (!day) {
                 yield interaction.reply({
                     content: `Sorry, but the buff with id **${week.days[date.day()]}** does not actually exist!\nKindly contact your FC Admin / Manager to fix this issue.`,
@@ -112,8 +112,8 @@ export class BuffManagerModule extends ModuleBase {
             const [config, flag] = yield this.tryGetConfig(interaction, interaction.guildId);
             if (!flag)
                 return;
-            const week = config.weeks[date.week() % config.weeks.length];
-            yield interaction.reply({ embeds: [BuffManagerModule.createWeekEmbed(title, week, config.days, date)] });
+            const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[date.week() % config.weeks.length];
+            yield interaction.reply({ embeds: [BuffManagerModule.createWeekEmbed(title, week, config.buffs, date)] });
         });
     }
     postDailyMessage(client) {
@@ -133,25 +133,26 @@ export class BuffManagerModule extends ModuleBase {
                         continue;
                     if (!now.isSame(dayjs(messageSettings.hour, "HH:mm", true), "minute"))
                         continue;
-                    if (!config.days.length || !config.weeks.length)
+                    if (!config.buffs.length || !config.weeks.length)
                         continue;
                     const channel = yield guild.channels.fetch(messageSettings.channelId);
                     if (!channel) {
-                        console.warn(`Invalid posting channel for ${config.guildId}`);
+                        logger.log("info", `Invalid posting channel for ${config.guildId}`, { context: "BuffManagerModule" });
                         continue;
                     }
-                    const week = config.weeks[now.week() % config.weeks.length];
-                    const day = config.days.find(day => day.id === DaysToArray(week.days)[now.day()]);
+                    const week = config.weeks.filter(week => week.isEnabled)[now.week() % config.weeks.length];
+                    const day = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
                     if (!day) {
-                        console.warn(`Invalid day id for guild ${config.guildId}`);
+                        logger.log("info", `Invalid day id for guild ${config.guildId}`, { context: "BuffManagerModule" });
                         continue;
                     }
                     yield channel.send({ embeds: [BuffManagerModule.createDayEmbed(messageSettings.buffMessage, day, now)] });
-                    if (messageSettings.dow && messageSettings.dow === now.day())
-                        yield channel.send({ embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.days, now)] });
+                    if (messageSettings.dow && messageSettings.dow === now.day()) {
+                        yield channel.send({ embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)] });
+                    }
                 }
                 catch (error) {
-                    console.log(error);
+                    logger.log("error", `${error.name} error.message`, { context: "BuffManagerModule" });
                 }
             }
         });

@@ -8,4 +8,5 @@ export declare class BuffManagerConfigRepository {
     save(config: BuffManagerConfig): Promise<BuffManagerConfig>;
     findOne(filter: Filter<BuffManagerConfig>): Promise<BuffManagerConfig>;
     find(filter: Filter<BuffManagerConfig>): Promise<BuffManagerConfig[]>;
+    private sanitiseOutput;
 }

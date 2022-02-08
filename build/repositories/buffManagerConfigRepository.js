@@ -8,8 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { DB } from "../config/databaseConfiguration.js";
+import { BuffManagerConfig, Buff, Days, MessageSettings, Week } from "../models/buffManager.js";
 export class BuffManagerConfigRepository {
-    constructor() { }
+    constructor() {
+    }
     validate() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.collection)
@@ -20,20 +22,31 @@ export class BuffManagerConfigRepository {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.validate();
             let result = yield this.collection.findOneAndReplace({ guildId: config.guildId }, config, { upsert: true });
-            return result.ok ? config : null;
+            return result.ok ? this.sanitiseOutput(config) : null;
         });
     }
     findOne(filter) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.validate();
-            return yield this.collection.findOne(filter);
+            return this.sanitiseOutput(yield this.collection.findOne(filter));
         });
     }
     find(filter) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.validate();
-            return yield this.collection.find(filter).toArray();
+            return (yield this.collection.find(filter).toArray()).map(config => this.sanitiseOutput(config));
         });
+    }
+    sanitiseOutput(config) {
+        config = Object.assign(new BuffManagerConfig(), config);
+        config.messageSettings = Object.assign(new MessageSettings(), config.messageSettings);
+        config.buffs = config.buffs.map(day => Object.assign(new Buff(), day));
+        config.weeks = config.weeks.map(week => {
+            week = Object.assign(new Week(), week);
+            week.days = Object.assign(new Days(), week.days);
+            return week;
+        });
+        return config;
     }
 }
 BuffManagerConfigRepository.collectionName = "buff_manager";
