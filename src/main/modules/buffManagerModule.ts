@@ -54,20 +54,17 @@ export class BuffManagerModule extends ModuleBase {
         });
     }
 
-    private static createWeekEmbed(title: string, week: Week, days: Day[], date: dayjs.Dayjs): MessageEmbed {
-
-        const _days = DaysToArray(week.days).map((dayId, index) => {
-            const dow: string = this.daysOfWeek[index];
-            const day: Day = days.find(entry => entry.id === dayId) ?? {text: "No Buff Found"} as Day
-
-            return {name: dow, value: day.text, inline: true};
-        });
-
+    private static createWeekEmbed(title: string, week: Week, days: Buff[], date: dayjs.Dayjs): MessageEmbed {
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
             description: week.title,
-            fields: _days,
+            fields: week.days.toArray.map((dayId, index) => {
+                const dow: string = this.daysOfWeek[index];
+                const day: Buff = days.find(entry => entry.id === dayId) ?? {text: "No Buff Found"} as Buff
+
+                return {name: dow, value: day.text, inline: true};
+            }),
             footer: {text: `Week ${date.week()}.`}
         });
     }

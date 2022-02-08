@@ -12,6 +12,10 @@ export class Days {
     public friday: string;
     public saturday: string;
     public sunday: string;
+
+    public get toArray(): string[]{
+        return [this.sunday, this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday];
+    }
 }
 
 export class Week {
