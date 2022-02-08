@@ -1,6 +1,6 @@
 import {ModuleBase} from "../classes/moduleBase.js";
 import dayjs from "dayjs";
-import {BuffManagerConfig, Day, MessageSettings, Week} from "../models/buffManager.js";
+import {BuffManagerConfig, Buff, MessageSettings, Week} from "../models/buffManager.js";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import {DaysToArray} from "../utils/utils.js";
 import {Client} from "../classes/client.js";
@@ -45,7 +45,7 @@ export class BuffManagerModule extends ModuleBase {
         ];
     }
 
-    private static createDayEmbed(title: string, day: Day, date: dayjs.Dayjs): MessageEmbed {
+    private static createDayEmbed(title: string, day: Buff, date: dayjs.Dayjs): MessageEmbed {
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
@@ -70,10 +70,10 @@ export class BuffManagerModule extends ModuleBase {
         });
     }
 
-    private async tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[BuffManagerConfig | null, boolean]> {
+    private async tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[BuffManagerConfig, boolean]> {
         const config: BuffManagerConfig = await this.service.findOneOrCreate(guildId);
 
-        if (config.days.length <= 0) {
+        if (config.buffs.length <= 0) {
             await interaction.reply({content: "Sorry, there are not buffs set.", ephemeral: true});
             return [null, false];
         }
@@ -92,7 +92,7 @@ export class BuffManagerModule extends ModuleBase {
             return;
         }
 
-        const [config, flag]: [BuffManagerConfig | null, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
+        const [config, flag]: [BuffManagerConfig, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
         if (!flag) return;
 
         const week = config.weeks[date.week() % config.weeks.length];
@@ -109,20 +109,20 @@ export class BuffManagerModule extends ModuleBase {
         await interaction.reply({embeds: [BuffManagerModule.createDayEmbed(title, day, date)]});
     }
 
-    private async postWeeksBuffs(interaction: CommandInteraction, date: dayjs.Dayjs, title: string) {
+    private async postWeeksBuffs(interaction: CommandInteraction, date: dayjs.Dayjs, title: string): Promise<void> {
         if (!interaction.guildId) {
             await interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
             return;
         }
 
-        const [config, flag]: [BuffManagerConfig | null, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
+        const [config, flag]: [BuffManagerConfig, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
         if (!flag) return;
 
         const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[date.week() % config.weeks.length];
         await interaction.reply({embeds: [BuffManagerModule.createWeekEmbed(title, week, config.buffs, date)]});
     }
 
-    private async postDailyMessage(client: Client) {
+    private async postDailyMessage(client: Client): Promise<void> {
         await Task.waitTillReady(client);
 
         const configs: BuffManagerConfig[] = await this.service.getAll();
@@ -136,7 +136,7 @@ export class BuffManagerModule extends ModuleBase {
                 const messageSettings: MessageSettings = config.messageSettings as MessageSettings;
                 if (!messageSettings.channelId || !messageSettings.hour) continue;
                 if (!now.isSame(dayjs(messageSettings.hour, "HH:mm", true), "minute")) continue;
-                if (!config.days.length || !config.weeks.length) continue;
+                if (!config.buffs.length || !config.weeks.length) continue;
 
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
 
@@ -156,8 +156,9 @@ export class BuffManagerModule extends ModuleBase {
                 await channel.send({embeds: [BuffManagerModule.createDayEmbed(messageSettings.buffMessage, day, now)]});
 
 
-                if (messageSettings.dow && messageSettings.dow === now.day())
-                    await channel.send({embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.days, now)]});
+                if (messageSettings.dow && messageSettings.dow === now.day()) {
+                    await channel.send({embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]});
+                }
             } catch (error) {
                 logger.error(`${error.name} error.message`, {context: "BuffManagerModule"});
             }
