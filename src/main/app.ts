@@ -18,9 +18,11 @@ export class App {
     }
 
     public async load() {
-        console.debug("Loading Configurations");
+        logger.log("info", "Loading Configurations", {context: "ClientSetup"});
         initConfigs();
-        logger.level = CONFIGS.logging_level;
+        if (CONFIGS.logging_level) {
+            logger.level = CONFIGS.logging_level;
+        }
 
         logger.log("info", "Creating Db Client", {context: "ClientSetup"});
         await createDbClient();
