@@ -10,6 +10,7 @@ import {ManagerUtilsModule} from "../modules/managerUtilsModule.js";
 import {RoleManagerModule} from "../modules/roleManagerModule.js";
 import {logger} from "../utils/logger.js";
 import chalk from "chalk";
+import {CommandInteraction} from "discord.js";
 
 export const loadedModules: ModuleBase[] = [
     new BuffManagerModule(),
@@ -23,31 +24,39 @@ async function runEvent(listeners: Listener[], client: Client, ...args) {
     for (let i = 0; i < listeners.length; i++) {
         try {
             await listeners[i].run(client, ...args);
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            logger.error(error, {context: "EventRunner"});
         }
     }
 }
 
 export function loadModules(client: Client) {
-    client.on("interactionCreate", async interaction => {
-        if (interaction.isButton()) {
-            // todo: setup buttons.
-        }
+    client.on("interactionCreate", async (interaction) => {
+        try {
+            if (interaction.isButton()) {
+                // todo: setup buttons.
+            }
 
-        if (interaction.isCommand()) {
-            const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
-            if (!command) return;
+            if (interaction.isCommand()) {
+                const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
+                if (!command) return;
 
-            return command.run(interaction);
+                await command.run(interaction);
+            }
+        } catch (error) {
+            await (interaction as CommandInteraction).reply({
+                content: "There was an internal issue executing the command",
+                ephemeral: true
+            });
+            logger.error(error, {context: "InteractionInvoking"});
         }
     });
 
     loadedModules.forEach(module => {
-        logger.log("info", `Setting up module ${chalk.red(module.moduleName)}`, {context: "ModuleConfiguration"});
+        logger.info(`Setting up module ${chalk.red(module.moduleName)}`, {context: "ModuleConfiguration"});
         client.modules.set(module.moduleName, module);
 
-        logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, {context: "ModuleConfiguration"});
+        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, {context: "ModuleConfiguration"});
         module.commands.forEach((command, index, array) => {
             if (typeof command.command === "function") {
                 command.command = command.command(new SlashCommandBuilder());
@@ -56,7 +65,7 @@ export function loadModules(client: Client) {
             client.commands.set((command.command as SlashCommandBuilder).name, command);
         });
 
-        logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, {context: "ModuleConfiguration"});
+        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, {context: "ModuleConfiguration"});
         module.listeners.forEach(listener => {
             let listeners = client.moduleListeners.get(listener.event);
             if (!listeners) {
@@ -66,7 +75,7 @@ export function loadModules(client: Client) {
             client.moduleListeners.set(listener.event, listeners);
         });
 
-        logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, {context: "ModuleConfiguration"});
+        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, {context: "ModuleConfiguration"});
         module.tasks.forEach(task => {
             client.tasks.set(task.name, task)
             setInterval(task.run, task.timeout, client);
@@ -74,7 +83,7 @@ export function loadModules(client: Client) {
         });
     });
 
-    logger.log("debug", `${" ".repeat(4)}Setting up ${chalk.cyan("events")}...`, {context: "ModuleConfiguration"});
+    logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("events")}...`, {context: "ModuleConfiguration"});
     client.moduleListeners.forEach((listener, event) => {
         switch (event) {
             case "ready":
