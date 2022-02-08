@@ -19,6 +19,7 @@ export class Days {
 }
 
 export class Week {
+    public isEnabled: boolean;
     public title: string;
     public days: Days = new Days();
 }
@@ -33,7 +34,7 @@ export class MessageSettings {
 
 export class BuffManagerConfig {
     public guildId: string;
-    public messageSettings: MessageSettings | null = new MessageSettings();
-    public days: Day[] = [];
+    public messageSettings: MessageSettings = new MessageSettings();
+    public buffs: Buff[] = [];
     public weeks: Week[] = [];
 }

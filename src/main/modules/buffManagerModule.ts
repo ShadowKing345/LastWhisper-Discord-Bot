@@ -77,8 +77,8 @@ export class BuffManagerModule extends ModuleBase {
             return [null, false];
         }
 
-        if (config.weeks.length <= 0) {
-            await interaction.reply({content: "Sorry, there are not weeks set.", ephemeral: true});
+        if (config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled).length <= 0) {
+            await interaction.reply({content: "Sorry, there are not enabled weeks set.", ephemeral: true});
             return [null, false];
         }
 
@@ -95,7 +95,7 @@ export class BuffManagerModule extends ModuleBase {
         if (!flag) return;
 
         const week = config.weeks[date.week() % config.weeks.length];
-        const day = config.days.find(day => day.id === DaysToArray(week.days)[date.day()]);
+        const day = config.buffs.find(day => day.id === week.days.toArray[date.day()]);
 
         if (!day) {
             await interaction.reply({
@@ -117,8 +117,8 @@ export class BuffManagerModule extends ModuleBase {
         const [config, flag]: [BuffManagerConfig | null, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
         if (!flag) return;
 
-        const week = config.weeks[date.week() % config.weeks.length];
-        await interaction.reply({embeds: [BuffManagerModule.createWeekEmbed(title, week, config.days, date)]});
+        const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[date.week() % config.weeks.length];
+        await interaction.reply({embeds: [BuffManagerModule.createWeekEmbed(title, week, config.buffs, date)]});
     }
 
     private async postDailyMessage(client: Client) {
@@ -144,8 +144,8 @@ export class BuffManagerModule extends ModuleBase {
                     continue;
                 }
 
-                const week: Week = config.weeks[now.week() % config.weeks.length];
-                const day: Day | undefined = config.days.find(day => day.id === DaysToArray(week.days)[now.day()]);
+                const week: Week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[now.week() % config.weeks.length];
+                const day: Buff = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
                 if (!day) {
                     console.warn(`Invalid day id for guild ${config.guildId}`);
