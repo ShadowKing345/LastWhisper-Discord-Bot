@@ -112,7 +112,8 @@ export class BuffManagerModule extends ModuleBase {
             const [config, flag] = yield this.tryGetConfig(interaction, interaction.guildId);
             if (!flag)
                 return;
-            const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[date.week() % config.weeks.length];
+            const filteredWeeks = config.weeks.filter(week => week.isEnabled);
+            const week = filteredWeeks[date.week() % filteredWeeks.length];
             yield interaction.reply({ embeds: [BuffManagerModule.createWeekEmbed(title, week, config.buffs, date)] });
         });
     }
@@ -140,7 +141,8 @@ export class BuffManagerModule extends ModuleBase {
                         logger.info(`Invalid posting channel for ${config.guildId}`, { context: "BuffManagerModule" });
                         continue;
                     }
-                    const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[now.week() % config.weeks.length];
+                    const filteredWeeks = config.weeks.filter(week => week.isEnabled);
+                    const week = filteredWeeks[now.week() % filteredWeeks.length];
                     const day = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
                     if (!day) {
                         logger.info(`Invalid day id for guild ${config.guildId}`, { context: "BuffManagerModule" });

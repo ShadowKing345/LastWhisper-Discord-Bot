@@ -118,7 +118,8 @@ export class BuffManagerModule extends ModuleBase {
         const [config, flag]: [BuffManagerConfig, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
         if (!flag) return;
 
-        const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[date.week() % config.weeks.length];
+        const filteredWeeks = config.weeks.filter(week => week.isEnabled);
+        const week = filteredWeeks[date.week() % filteredWeeks.length];
         await interaction.reply({embeds: [BuffManagerModule.createWeekEmbed(title, week, config.buffs, date)]});
     }
 
@@ -145,7 +146,8 @@ export class BuffManagerModule extends ModuleBase {
                     continue;
                 }
 
-                const week: Week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[now.week() % config.weeks.length];
+                const filteredWeeks = config.weeks.filter(week => week.isEnabled);
+                const week: Week = filteredWeeks[now.week() % filteredWeeks.length];
                 const day: Buff = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
                 if (!day) {
