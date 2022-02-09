@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
-import weekOfYear from "dayjs/plugin/weekOfYear";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import { initConfigs } from "../appConfigs";
+import duration from "dayjs/plugin/duration.js";
+import weekOfYear from "dayjs/plugin/weekOfYear.js";
+import advancedFormat from "dayjs/plugin/advancedFormat.js";
+import customParseFormat from "dayjs/plugin/customParseFormat.js";
+import { initConfigs } from "../appConfigs.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { loadedModules } from "../moduleConfiguration.js";
 const appConfigs = initConfigs();
