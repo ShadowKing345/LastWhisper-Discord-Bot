@@ -6,7 +6,7 @@ import {DaysToArray} from "../utils/utils.js";
 import {Client} from "../classes/client.js";
 import {Task} from "../classes/task.js";
 import {BuffManagerConfigService} from "../services/buffManagerConfigService.js";
-import {logger} from "../utils/logger";
+import {logger} from "../utils/logger.js";
 
 export class BuffManagerModule extends ModuleBase {
     private static daysOfWeek: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

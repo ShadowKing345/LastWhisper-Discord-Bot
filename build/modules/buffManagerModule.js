@@ -13,7 +13,7 @@ import { MessageEmbed } from "discord.js";
 import { DaysToArray } from "../utils/utils.js";
 import { Task } from "../classes/task.js";
 import { BuffManagerConfigService } from "../services/buffManagerConfigService.js";
-import { logger } from "../utils/logger";
+import { logger } from "../utils/logger.js";
 export class BuffManagerModule extends ModuleBase {
     constructor() {
         super();
@@ -137,13 +137,13 @@ export class BuffManagerModule extends ModuleBase {
                         continue;
                     const channel = yield guild.channels.fetch(messageSettings.channelId);
                     if (!channel) {
-                        logger.log("info", `Invalid posting channel for ${config.guildId}`, { context: "BuffManagerModule" });
+                        logger.info(`Invalid posting channel for ${config.guildId}`, { context: "BuffManagerModule" });
                         continue;
                     }
-                    const week = config.weeks.filter(week => week.isEnabled)[now.week() % config.weeks.length];
+                    const week = config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled)[now.week() % config.weeks.length];
                     const day = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
                     if (!day) {
-                        logger.log("info", `Invalid day id for guild ${config.guildId}`, { context: "BuffManagerModule" });
+                        logger.info(`Invalid day id for guild ${config.guildId}`, { context: "BuffManagerModule" });
                         continue;
                     }
                     yield channel.send({ embeds: [BuffManagerModule.createDayEmbed(messageSettings.buffMessage, day, now)] });
@@ -152,7 +152,7 @@ export class BuffManagerModule extends ModuleBase {
                     }
                 }
                 catch (error) {
-                    logger.log("error", `${error.name} error.message`, { context: "BuffManagerModule" });
+                    logger.error(`${error.name} error.message`, { context: "BuffManagerModule" });
                 }
             }
         });
