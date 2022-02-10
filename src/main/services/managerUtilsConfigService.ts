@@ -1,5 +1,5 @@
 import {ManagerUtilsConfigRepository} from "../repositories/managerUtilsConfigRepository.js";
-import {ManagerUtilsConfig} from "../models/mangerUtils.js";
+import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
 
 export class ManagerUtilsConfigService {
     private repo: ManagerUtilsConfigRepository;

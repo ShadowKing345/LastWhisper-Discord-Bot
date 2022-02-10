@@ -1,4 +1,4 @@
-import {GardeningConfig} from "../models/gardeningConfigModel.js";
+import {GardeningConfig} from "../models/gardeningConfig.model.js";
 import {GardeningConfigRepository} from "../repositories/gardeningConfigRepository.js";
 
 export class GardeningConfigService {

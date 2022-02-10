@@ -1,4 +1,4 @@
-import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../models/gardeningConfigModel.js";
+import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../models/gardeningConfig.model.js";
 import dayjs from "dayjs";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import {CommandInteraction} from "discord.js";

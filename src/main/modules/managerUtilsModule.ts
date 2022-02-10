@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
-import {ManagerUtilsConfig} from "../models/mangerUtils.js";
+import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
 import {ManagerUtilsConfigService} from "../services/managerUtilsConfigService.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 

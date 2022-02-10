@@ -1,4 +1,4 @@
-import {EventManagerConfig, EventObj, Tags} from "../models/eventManager.js";
+import {EventManagerConfig, EventObj, Tags} from "../models/eventManager.model.js";
 import dayjs from "dayjs";
 import {Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel} from "discord.js";
 import {fetchMessages} from "../utils/utils.js";

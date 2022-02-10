@@ -1,6 +1,6 @@
 import {ModuleBase} from "../classes/moduleBase.js";
 import dayjs from "dayjs";
-import {BuffManagerConfig, Buff, MessageSettings, Week} from "../models/buffManager.js";
+import {BuffManagerConfig, Buff, MessageSettings, Week} from "../models/buffManager.model.js";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import {DaysToArray} from "../utils/utils.js";
 import {Client} from "../classes/client.js";

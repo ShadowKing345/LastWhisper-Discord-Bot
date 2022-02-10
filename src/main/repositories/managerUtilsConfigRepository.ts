@@ -1,6 +1,6 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration.js";
-import {ManagerUtilsConfig} from "../models/mangerUtils.js";
+import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
 
 export class ManagerUtilsConfigRepository {
     private static readonly collectionName: string = "manager_utils";

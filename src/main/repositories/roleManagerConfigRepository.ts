@@ -1,6 +1,6 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration.js";
-import {RoleManagerConfig} from "../models/roleManager.js";
+import {RoleManagerConfig} from "../models/roleManager.model.js";
 
 export class RoleManagerConfigRepository {
     private static readonly collectionName: string = "role_manager";

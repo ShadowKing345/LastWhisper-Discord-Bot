@@ -9,7 +9,7 @@ import {
     Role,
     User
 } from "discord.js";
-import {RoleManagerConfig} from "../models/roleManager.js";
+import {RoleManagerConfig} from "../models/roleManager.model.js";
 import {fetchMessages} from "../utils/utils.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";

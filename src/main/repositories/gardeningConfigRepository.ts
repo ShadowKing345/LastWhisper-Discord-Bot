@@ -1,5 +1,5 @@
 import {Collection, Filter} from "mongodb";
-import {GardeningConfig} from "../models/gardeningConfigModel.js";
+import {GardeningConfig} from "../models/gardeningConfig.model.js";
 import {DB} from "../config/databaseConfiguration.js";
 
 export class GardeningConfigRepository {

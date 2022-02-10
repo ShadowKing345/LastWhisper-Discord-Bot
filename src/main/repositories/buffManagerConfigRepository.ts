@@ -1,6 +1,6 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration.js";
-import {BuffManagerConfig, Buff, Days, MessageSettings, Week} from "../models/buffManager.js";
+import {BuffManagerConfig, Buff, Days, MessageSettings, Week} from "../models/buffManager.model.js";
 
 export class BuffManagerConfigRepository {
     private static readonly collectionName: string = "buff_manager";

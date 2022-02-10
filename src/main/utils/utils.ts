@@ -1,5 +1,5 @@
 import {Channel, Client, Guild, Message, Snowflake, TextChannel} from "discord.js";
-import {Days} from "../models/buffManager.js";
+import {Days} from "../models/buffManager.model.js";
 
 async function fetchMessages(client: Client, guildId: Snowflake, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
     const result: Message[] = [];

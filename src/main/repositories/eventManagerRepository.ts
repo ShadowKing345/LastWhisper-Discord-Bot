@@ -1,5 +1,5 @@
 import {Collection, Filter} from "mongodb";
-import {EventManagerConfig} from "../models/eventManager.js";
+import {EventManagerConfig} from "../models/eventManager.model.js";
 import {DB} from "../config/databaseConfiguration.js";
 
 export class EventManagerRepository {
