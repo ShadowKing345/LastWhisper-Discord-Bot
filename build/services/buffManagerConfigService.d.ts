@@ -1,4 +1,4 @@
-import { BuffManagerConfig } from "../models/buffManager.js";
+import { BuffManagerConfig } from "../models/buffManager.model.js";
 export declare class BuffManagerConfigService {
     private repo;
     constructor();

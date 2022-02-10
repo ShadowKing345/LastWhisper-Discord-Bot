@@ -1,4 +1,4 @@
-import { GardeningConfig, Reason } from "../models/gardeningConfigModel.js";
+import { GardeningConfig, Reason } from "../models/gardeningConfig.model.js";
 import { CommandInteraction } from "discord.js";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { Client } from "../classes/client.js";

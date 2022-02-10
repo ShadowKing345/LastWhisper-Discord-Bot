@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { EventObj } from "../models/eventManager.js";
+import { EventObj } from "../models/eventManager.model.js";
 import dayjs from "dayjs";
 import { MessageEmbed } from "discord.js";
 import { fetchMessages } from "../utils/utils.js";

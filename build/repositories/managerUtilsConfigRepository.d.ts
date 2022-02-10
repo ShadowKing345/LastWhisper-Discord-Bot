@@ -1,5 +1,5 @@
 import { Filter } from "mongodb";
-import { ManagerUtilsConfig } from "../models/mangerUtils.js";
+import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 export declare class ManagerUtilsConfigRepository {
     private static readonly collectionName;
     private collection;

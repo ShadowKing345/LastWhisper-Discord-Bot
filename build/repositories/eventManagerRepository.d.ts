@@ -1,5 +1,5 @@
 import { Filter } from "mongodb";
-import { EventManagerConfig } from "../models/eventManager.js";
+import { EventManagerConfig } from "../models/eventManager.model.js";
 export declare class EventManagerRepository {
     private static readonly collectionName;
     private collection;

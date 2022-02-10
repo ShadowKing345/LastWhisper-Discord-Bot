@@ -1,5 +1,5 @@
 import { Filter } from "mongodb";
-import { BuffManagerConfig } from "../models/buffManager.js";
+import { BuffManagerConfig } from "../models/buffManager.model.js";
 export declare class BuffManagerConfigRepository {
     private static readonly collectionName;
     private collection;

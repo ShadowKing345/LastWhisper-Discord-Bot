@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Reason, Reservation, Slot } from "../models/gardeningConfigModel.js";
+import { Reason, Reservation, Slot } from "../models/gardeningConfig.model.js";
 import dayjs from "dayjs";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { GardeningConfigService } from "../services/gardeningConfigService.js";

@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { RoleManagerConfigRepository } from "../repositories/roleManagerConfigRepository.js";
-import { RoleManagerConfig } from "../models/roleManager.js";
+import { RoleManagerConfig } from "../models/roleManager.model.js";
 export class RoleManagerConfigService {
     constructor() {
         this.repo = new RoleManagerConfigRepository();

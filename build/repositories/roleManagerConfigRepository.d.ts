@@ -1,5 +1,5 @@
 import { Filter } from "mongodb";
-import { RoleManagerConfig } from "../models/roleManager.js";
+import { RoleManagerConfig } from "../models/roleManager.model.js";
 export declare class RoleManagerConfigRepository {
     private static readonly collectionName;
     private collection;

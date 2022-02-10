@@ -1,4 +1,4 @@
-import { ManagerUtilsConfig } from "../models/mangerUtils.js";
+import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 export declare class ManagerUtilsConfigService {
     private repo;
     constructor();

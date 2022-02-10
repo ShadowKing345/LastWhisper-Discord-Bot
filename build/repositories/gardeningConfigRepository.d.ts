@@ -1,5 +1,5 @@
 import { Filter } from "mongodb";
-import { GardeningConfig } from "../models/gardeningConfigModel.js";
+import { GardeningConfig } from "../models/gardeningConfig.model.js";
 export declare class GardeningConfigRepository {
     private static readonly collectionName;
     private collection;

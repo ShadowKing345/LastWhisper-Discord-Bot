@@ -1,4 +1,4 @@
-import { EventManagerConfig } from "../models/eventManager.js";
+import { EventManagerConfig } from "../models/eventManager.model.js";
 export declare class EventManagerConfigService {
     private repo;
     constructor();

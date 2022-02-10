@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { ManagerUtilsConfigRepository } from "../repositories/managerUtilsConfigRepository.js";
-import { ManagerUtilsConfig } from "../models/mangerUtils.js";
+import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 export class ManagerUtilsConfigService {
     constructor() {
         this.repo = new ManagerUtilsConfigRepository();

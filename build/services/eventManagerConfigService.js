@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { EventManagerRepository } from "../repositories/eventManagerRepository.js";
-import { EventManagerConfig } from "../models/eventManager.js";
+import { EventManagerConfig } from "../models/eventManager.model.js";
 export class EventManagerConfigService {
     constructor() {
         this.repo = new EventManagerRepository();

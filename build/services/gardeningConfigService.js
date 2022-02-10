@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { GardeningConfig } from "../models/gardeningConfigModel.js";
+import { GardeningConfig } from "../models/gardeningConfig.model.js";
 import { GardeningConfigRepository } from "../repositories/gardeningConfigRepository.js";
 export class GardeningConfigService {
     constructor() {

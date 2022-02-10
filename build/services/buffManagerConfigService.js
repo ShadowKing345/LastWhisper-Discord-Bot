@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { BuffManagerConfig } from "../models/buffManager.js";
+import { BuffManagerConfig } from "../models/buffManager.model.js";
 import { BuffManagerConfigRepository } from "../repositories/buffManagerConfigRepository.js";
 export class BuffManagerConfigService {
     constructor() {

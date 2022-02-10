@@ -1,4 +1,4 @@
-import { RoleManagerConfig } from "../models/roleManager.js";
+import { RoleManagerConfig } from "../models/roleManager.model.js";
 export declare class RoleManagerConfigService {
     private repo;
     constructor();
