@@ -1,5 +1,5 @@
 import {Client} from "../classes/client.js";
-import {BuffManagerModule} from "../modules/buffManagerModule.js";
+import {BuffManagerModule} from "../modules/buffManager.module.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {SlashCommandBuilder} from "@discordjs/builders";
 import {Command} from "../classes/command.js";
