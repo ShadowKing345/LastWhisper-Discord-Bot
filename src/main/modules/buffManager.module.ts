@@ -7,9 +7,11 @@ import {Client} from "../classes/client.js";
 import {Task} from "../classes/task.js";
 import {BuffManagerConfigService} from "../services/buffManagerConfigService.js";
 import {logger} from "../utils/logger.js";
+import chalk from "chalk";
 
 export class BuffManagerModule extends ModuleBase {
-    private static daysOfWeek: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    private static readonly loggerMeta = {context: "BuffManagerModule"};
+    private static readonly daysOfWeek: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     private service: BuffManagerConfigService;
 
@@ -71,18 +73,22 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private async tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[BuffManagerConfig, boolean]> {
+        logger.debug(`Attempting to acquire configuration for guild ${chalk.yellow(guildId)}`, BuffManagerModule.loggerMeta);
         const config: BuffManagerConfig = await this.service.findOneOrCreate(guildId);
 
         if (config.buffs.length <= 0) {
             await interaction.reply({content: "Sorry, there are not buffs set.", ephemeral: true});
+            logger.debug(`Expected Failure. No buffs were set in config.`, BuffManagerModule.loggerMeta);
             return [null, false];
         }
 
         if (config.weeks.filter(week => !('isEnabled' in week) || week.isEnabled).length <= 0) {
             await interaction.reply({content: "Sorry, there are not enabled weeks set.", ephemeral: true});
+            logger.debug(`Expected Failure. No weeks were set in config.`, BuffManagerModule.loggerMeta);
             return [null, false];
         }
 
+        logger.debug(`Success. Returning results.`, BuffManagerModule.loggerMeta);
         return [config, true];
     }
 
@@ -142,7 +148,7 @@ export class BuffManagerModule extends ModuleBase {
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
 
                 if (!channel) {
-                    logger.info(`Invalid posting channel for ${config.guildId}`, {context: "BuffManagerModule"})
+                    logger.info(`Invalid posting channel for ${config.guildId}`, BuffManagerModule.loggerMeta)
                     continue;
                 }
 
@@ -151,7 +157,7 @@ export class BuffManagerModule extends ModuleBase {
                 const day: Buff = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
                 if (!day) {
-                    logger.info(`Invalid day id for guild ${config.guildId}`, {context: "BuffManagerModule"})
+                    logger.info(`Invalid day id for guild ${config.guildId}`, BuffManagerModule.loggerMeta)
                     continue;
                 }
 
@@ -162,7 +168,7 @@ export class BuffManagerModule extends ModuleBase {
                     await channel.send({embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]});
                 }
             } catch (error) {
-                logger.error(`${error.name} error.message`, {context: "BuffManagerModule"});
+                logger.error(`${error.name} error.message`, BuffManagerModule.loggerMeta);
             }
         }
     }
