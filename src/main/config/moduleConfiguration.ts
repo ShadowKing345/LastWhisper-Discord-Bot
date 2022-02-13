@@ -5,7 +5,7 @@ import {SlashCommandBuilder} from "@discordjs/builders";
 import {Command} from "../classes/command.js";
 import {Listener} from "../classes/listener.js";
 import {EventManagerModule} from "../modules/eventManagerModule.js";
-import {GardeningModule} from "../modules/gardeningModule.js";
+import {GardeningModule} from "../modules/gardening.module.js";
 import {ManagerUtilsModule} from "../modules/managerUtilsModule.js";
 import {RoleManagerModule} from "../modules/roleManagerModule.js";
 import {logger} from "../utils/logger.js";
@@ -43,12 +43,12 @@ export function loadModules(client: Client) {
 
                 await command.run(interaction);
             }
-        } catch (error) {
+        } catch (err) {
             await (interaction as CommandInteraction).reply({
                 content: "There was an internal issue executing the command",
                 ephemeral: true
             });
-            logger.error(error, {context: "InteractionInvoking"});
+            logger.error(err, {context: "InteractionInvoking"});
         }
     });
 

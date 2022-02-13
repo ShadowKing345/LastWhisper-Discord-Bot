@@ -8,7 +8,7 @@ export async function createDbClient() {
     const client = await MongoClient.connect(CONFIGS.dbUrl);
     DB = client.db();
     client.on("error", error => {
-        logger.log("error", `${error.name} ${error.message}`, {context: "DatabaseConfiguration"});
+        logger.error(error.message, {context: "DatabaseConfiguration"});
         client.close();
     })
 }

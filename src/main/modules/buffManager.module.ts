@@ -47,7 +47,8 @@ export class BuffManagerModule extends ModuleBase {
         ];
     }
 
-    private static createDayEmbed(title: string, day: Buff, date: dayjs.Dayjs): MessageEmbed {
+    private static createBuffEmbed(title: string, day: Buff, date: dayjs.Dayjs): MessageEmbed {
+        logger.debug("Creating Buff Embed.", this.loggerMeta);
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
@@ -58,6 +59,7 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private static createWeekEmbed(title: string, week: Week, days: Buff[], date: dayjs.Dayjs): MessageEmbed {
+        logger.debug("Creating Week Embed.", this.loggerMeta);
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
@@ -93,6 +95,7 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private async postBuff(interaction: CommandInteraction, date: dayjs.Dayjs, title: string) {
+        logger.debug(`Posting buff message for ${date}`, BuffManagerModule.loggerMeta);
         if (!interaction.guildId) {
             await interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
             return;
@@ -112,10 +115,11 @@ export class BuffManagerModule extends ModuleBase {
             return;
         }
 
-        await interaction.reply({embeds: [BuffManagerModule.createDayEmbed(title, day, date)]});
+        await interaction.reply({embeds: [BuffManagerModule.createBuffEmbed(title, day, date)]});
     }
 
     private async postWeeksBuffs(interaction: CommandInteraction, date: dayjs.Dayjs, title: string): Promise<void> {
+        logger.debug(`Posting week message for ${date}`, BuffManagerModule.loggerMeta);
         if (!interaction.guildId) {
             await interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
             return;
@@ -130,6 +134,7 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private async postDailyMessage(client: Client): Promise<void> {
+        logger.debug("Posting daily message task.", BuffManagerModule.loggerMeta);
         await Task.waitTillReady(client);
 
         const configs: BuffManagerConfig[] = await this.service.getAll();
@@ -148,7 +153,7 @@ export class BuffManagerModule extends ModuleBase {
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
 
                 if (!channel) {
-                    logger.info(`Invalid posting channel for ${config.guildId}`, BuffManagerModule.loggerMeta)
+                    logger.info(`Invalid posting channel for ${config.guildId}`, BuffManagerModule.loggerMeta);
                     continue;
                 }
 
@@ -157,18 +162,18 @@ export class BuffManagerModule extends ModuleBase {
                 const day: Buff = config.buffs.find(day => day.id === DaysToArray(week.days)[now.day()]);
 
                 if (!day) {
-                    logger.info(`Invalid day id for guild ${config.guildId}`, BuffManagerModule.loggerMeta)
+                    logger.info(`Invalid day id for guild ${config.guildId}`, BuffManagerModule.loggerMeta);
                     continue;
                 }
 
-                await channel.send({embeds: [BuffManagerModule.createDayEmbed(messageSettings.buffMessage, day, now)]});
+                await channel.send({embeds: [BuffManagerModule.createBuffEmbed(messageSettings.buffMessage, day, now)]});
 
 
                 if (messageSettings.dow && messageSettings.dow === now.day()) {
                     await channel.send({embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]});
                 }
-            } catch (error) {
-                logger.error(`${error.name} error.message`, BuffManagerModule.loggerMeta);
+            } catch (err) {
+                logger.error(err, BuffManagerModule.loggerMeta);
             }
         }
     }

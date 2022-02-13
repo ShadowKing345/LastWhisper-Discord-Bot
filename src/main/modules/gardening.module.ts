@@ -5,8 +5,10 @@ import {CommandInteraction} from "discord.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
 import {GardeningConfigService} from "../services/gardeningConfigService.js";
+import {logger} from "../utils/logger";
 
 export class GardeningModule extends ModuleBase {
+    private static readonly loggerMeta = {context: "GardeningModule"};
     private service: GardeningConfigService;
 
     public constructor() {
@@ -203,7 +205,7 @@ export class GardeningModule extends ModuleBase {
         }
 
         for (let config of altered) {
-            this.service.update(config).catch(err => console.error(err));
+            this.service.update(config).catch(err => logger.error(err, GardeningModule.loggerMeta));
         }
     }
 }
