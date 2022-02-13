@@ -169,7 +169,7 @@ export class BuffManagerModule extends ModuleBase {
                 await channel.send({embeds: [BuffManagerModule.createBuffEmbed(messageSettings.buffMessage, day, now)]});
 
 
-                if (messageSettings.dow && messageSettings.dow === now.day()) {
+                if (messageSettings.dow !== null && messageSettings.dow === now.day()) {
                     await channel.send({embeds: [BuffManagerModule.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]});
                 }
             } catch (err) {
