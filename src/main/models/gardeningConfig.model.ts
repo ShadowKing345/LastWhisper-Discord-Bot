@@ -52,5 +52,5 @@ export class Plot {
 export class GardeningConfig {
     public guildId: string;
     public plots: Plot[] = [];
-    public eventPostingChannel: string;
+    public messagePostingChannelId: string;
 }
