@@ -1,7 +1,7 @@
 import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../models/gardeningConfig.model.js";
 import dayjs from "dayjs";
 import {SlashCommandBuilder} from "@discordjs/builders";
-import {CommandInteraction} from "discord.js";
+import {CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel} from "discord.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
 import {GardeningConfigService} from "../services/gardeningConfigService.js";
@@ -14,27 +14,25 @@ export class GardeningModule extends ModuleBase {
         this.service = new GardeningConfigService();
 
         this._moduleName = "GardeningModule";
-        this._commands = [
-            {
-                command: builder => builder.setName("gardening").setDescription("gardening module.")
-                    .addSubcommand(subComBuilder => subComBuilder.setName("reserve").setDescription("Reserve a slot in a plot to be used by you.")
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("The plot number.").setRequired(true))
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("The slot number.").setRequired(true))
-                        .addStringOption(optionBuilder => optionBuilder.setName("plant").setDescription("The name of the plant you wish to plant.").setRequired(true))
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("duration").setDescription("For how long do you wish to reserve this spot. In hours.").setRequired(true))
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("reason").setDescription("The reason you are reserving this spot.").setRequired(true)
-                            .addChoices(Object.keys(Reason).filter(key => !isNaN(Number(Reason[key]))).map((value, index) => [value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1.toUpperCase() + g2.toLowerCase()), index]))))
-                    .addSubcommand(subComBuilder => subComBuilder.setName("cancel").setDescription("Cancel any reservations you have made to a slot in a plot.")
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("The plot number.").setRequired(true))
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("The slot number.").setRequired(true))
-                        .addStringOption(optionBuilder => optionBuilder.setName("plant").setDescription("The name of the plant you wish to cancel for.").setRequired(true)))
-                    .addSubcommand(subComBuilder => subComBuilder.setName("list").setDescription("Shows all plots and their states.")
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("Index of the plot you wish to view."))
-                        .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("Index of the slot you wish to view."))
-                        .addBooleanOption(optionBuilder => optionBuilder.setName("detailed").setDescription("Should show a detailed view. Default: false"))) as SlashCommandBuilder,
-                run: async interaction => this.subCommandResolver(interaction)
-            }
-        ];
+        this._command = {
+            command: builder => builder.setName("gardening").setDescription("gardening module.")
+                .addSubcommand(subComBuilder => subComBuilder.setName("reserve").setDescription("Reserve a slot in a plot to be used by you.")
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("The plot number.").setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("The slot number.").setRequired(true))
+                    .addStringOption(optionBuilder => optionBuilder.setName("plant").setDescription("The name of the plant you wish to plant.").setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("duration").setDescription("For how long do you wish to reserve this spot. In hours.").setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("reason").setDescription("The reason you are reserving this spot.").setRequired(true)
+                        .addChoices(Object.keys(Reason).filter(key => !isNaN(Number(Reason[key]))).map((value, index) => [value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1.toUpperCase() + g2.toLowerCase()), index]))))
+                .addSubcommand(subComBuilder => subComBuilder.setName("cancel").setDescription("Cancel any reservations you have made to a slot in a plot.")
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("The plot number.").setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("The slot number.").setRequired(true))
+                    .addStringOption(optionBuilder => optionBuilder.setName("plant").setDescription("The name of the plant you wish to cancel for.").setRequired(true)))
+                .addSubcommand(subComBuilder => subComBuilder.setName("list").setDescription("Shows all plots and their states.")
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("Index of the plot you wish to view."))
+                    .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("Index of the slot you wish to view."))
+                    .addBooleanOption(optionBuilder => optionBuilder.setName("detailed").setDescription("Should show a detailed view. Default: false"))) as SlashCommandBuilder,
+            run: async interaction => this.subCommandResolver(interaction)
+        };
 
         this._tasks = [
             {name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client)}
@@ -95,7 +93,35 @@ export class GardeningModule extends ModuleBase {
         }
 
         await this.service.update(config);
-        return interaction.reply({content: "Reservation has been created."});
+        await interaction.reply({content: "Reservation has been created."});
+        await this.postChannelMessage(interaction.client as Client, config, {
+            title: "Gardening Plot Has Been Reserved!",
+            description: `${(interaction.member as GuildMember).displayName} has registered the plot **${plot.name}**, slot **${slotNum}** for the plant **${plant}**.`,
+            memberUrl: (interaction.member as GuildMember).displayAvatarURL(),
+            slot: plot.slots[plotNum],
+            fields: [
+                {
+                    name: "Plot:",
+                    value: plot.name
+                },
+                {
+                    name: "Slot:",
+                    value: slotNum.toString()
+                },
+                {
+                    name: "Plant:",
+                    value: plant
+                },
+                {
+                    name: "For how long:",
+                    value: duration.toString()
+                },
+                {
+                    name: "Reason",
+                    value: reason.toString()
+                }
+            ]
+        });
     }
 
     public async cancel(interaction: CommandInteraction, config: GardeningConfig, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
@@ -206,4 +232,34 @@ export class GardeningModule extends ModuleBase {
             this.service.update(config).catch(err => console.error(err));
         }
     }
+
+    public async postChannelMessage(client: Client, config: GardeningConfig, messageArgs: MessagePostArgs) {
+        if (!client.guilds.cache.has(config.guildId)) return;
+        const guild = await client.guilds.fetch(config.guildId);
+
+        if (config.messagePostingChannelId && !guild.channels.cache.has(config.messagePostingChannelId)) return;
+        const channel = await guild.channels.fetch(config.messagePostingChannelId) as TextChannel;
+
+        const embed: MessageEmbed = new MessageEmbed({
+            title: messageArgs.title,
+            description: messageArgs.description,
+            thumbnail: {
+                url: messageArgs.memberUrl
+            },
+            fields: messageArgs.fields,
+            footer: {
+                text: dayjs().format("YYYY-MM-DD HH:mm")
+            }
+        });
+
+        await channel.send({embeds: [embed]});
+    }
+}
+
+class MessagePostArgs {
+    public title: string;
+    public description: string;
+    public memberUrl: string;
+    public slot?: Slot;
+    public fields: EmbedFieldData[];
 }
