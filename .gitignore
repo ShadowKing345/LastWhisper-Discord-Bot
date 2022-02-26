@@ -3,5 +3,6 @@ node_modules
 srcBackup
 Todo
 tsconfig.tsbuildinfo
-/appConfigs.json
+appConfigs.json
 yarn-error.log
+appConfigs-dev.json
