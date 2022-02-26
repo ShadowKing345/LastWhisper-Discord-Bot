@@ -7,6 +7,8 @@ module.exports = {
         "plugin:@typescript-eslint/recommended",
     ],
     rules: {
+        "prefer-const": ["warn"],
+        "eol-last": ["warn"],
         "no-empty": "off",
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
