@@ -12,6 +12,11 @@ import {logger} from "../utils/logger.js";
 import chalk from "chalk";
 import {CommandInteraction} from "discord.js";
 
+const loggerMeta = {
+    moduleConfiguration: {context: "ModuleConfiguration"},
+    interaction: {context: "InteractionInvoking"}
+};
+
 export const loadedModules: ModuleBase[] = [
     new BuffManagerModule(),
     new EventManagerModule(),
@@ -32,14 +37,21 @@ async function runEvent(listeners: Listener[], client: Client, ...args) {
 
 export function loadModules(client: Client) {
     client.on("interactionCreate", async (interaction) => {
+        logger.debug(chalk.magentaBright("Interaction Innovated"), loggerMeta.interaction);
+
         try {
             if (interaction.isButton()) {
+                logger.debug(chalk.magentaBright("Confirmed Button Interaction."), loggerMeta.interaction);
                 // todo: setup buttons.
             }
 
             if (interaction.isCommand()) {
+                logger.debug(chalk.magentaBright("Confirmed Command Interaction."), loggerMeta.interaction);
                 const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
-                if (!command) return;
+                if (!command) {
+                    logger.debug(`No command found with name: ${chalk.yellow(interaction.commandName)}.`, loggerMeta.interaction);
+                    return;
+                }
 
                 await command.run(interaction);
             }
@@ -48,15 +60,15 @@ export function loadModules(client: Client) {
                 content: "There was an internal issue executing the command",
                 ephemeral: true
             });
-            logger.error(err, {context: "InteractionInvoking"});
+            logger.error(err, loggerMeta.interaction);
         }
     });
 
     loadedModules.forEach(module => {
-        logger.info(`Setting up module ${chalk.red(module.moduleName)}`, {context: "ModuleConfiguration"});
+        logger.info(`Setting up module ${chalk.blueBright(module.moduleName)}`, loggerMeta.moduleConfiguration);
         client.modules.set(module.moduleName, module);
 
-        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, {context: "ModuleConfiguration"});
+        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, loggerMeta.moduleConfiguration);
         module.commands.forEach((command, index, array) => {
             if (typeof command.command === "function") {
                 command.command = command.command(new SlashCommandBuilder());
@@ -65,7 +77,7 @@ export function loadModules(client: Client) {
             client.commands.set((command.command as SlashCommandBuilder).name, command);
         });
 
-        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, {context: "ModuleConfiguration"});
+        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, loggerMeta.moduleConfiguration);
         module.listeners.forEach(listener => {
             let listeners = client.moduleListeners.get(listener.event);
             if (!listeners) {
@@ -75,7 +87,7 @@ export function loadModules(client: Client) {
             client.moduleListeners.set(listener.event, listeners);
         });
 
-        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, {context: "ModuleConfiguration"});
+        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, loggerMeta.moduleConfiguration);
         module.tasks.forEach(task => {
             client.tasks.set(task.name, task)
             setInterval(task.run, task.timeout, client);
@@ -83,7 +95,7 @@ export function loadModules(client: Client) {
         });
     });
 
-    logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("events")}...`, {context: "ModuleConfiguration"});
+    logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("events")}...`, loggerMeta.moduleConfiguration);
     client.moduleListeners.forEach((listener, event) => {
         switch (event) {
             case "ready":
