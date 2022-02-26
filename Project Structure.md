@@ -53,22 +53,23 @@ Color        |    Meaning or usage
 ======================================
 Red          |    Errors
 Yellow       |    Warnings
-White        |    Information
+Cyan         |    Information
 Blue         |    Debug
 ```
 
 - For the logger message:
 
 ```
-Color        |    Meaning or usage
-===============================================================================================================
-White        |    Modules / Services / Repositories
-Blue         |    Models / Class objects.
-Yellow       |    Information provided by the client. Eg, guildId, clientId, messageID
-Magenta      |    Bot event specific actions. Eg, ready message, interaction invocation, on error messages.
-Cyan         |    Actions executed internally. Setup of commands for example.
-Green        |    Successfully execution or initialization. Think of it as something good has happened.
-Red          |    Failure of execution or initialization. Think of it as something bad has happened. 
+Color          |    Meaning or usage
+==================================================================================================================
+Bright Blue    |    Modules, Services, or Repositories.
+Blue           |    Models or Class objects.
+Bright Yellow  |    Context color.
+Yellow         |    Information provided by the client. Eg, guildId, clientId, messageID.
+Brihgt Magenta |    Bot event specific actions. Eg, ready message, interaction invocation, on error messages.
+Cyan           |    Actions executed internally. Setup of commands for example.
+Green          |    Successfully execution or initialization. Think of it as something good has happened.
+Red            |    Failure of execution or initialization. Think of it as something bad has happened. 
 ```
 
 In case of too many logger calls preventing your for seeing the information in the terminal property, you can use a background color such as bgRed. This however should only be used for at the time debugging information and should not be left in. Any color can be used as these logger calls are temporary.
