@@ -8,7 +8,7 @@
     "dev": "nodemon --watch './src/**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/main/app.ts",
     "command-setup": "node build/config/commandRegistration/registerCommands.js",
     "command-setup:ts": "node --experimental-specifier-resolution=node --loader ts-node/esm src/main/config/commandRegistration/registerCommands.ts",
-    "build": "tsc -b"
+    "build": "tsc --build --clean"
   },
   "repository": {
     "type": "git",
