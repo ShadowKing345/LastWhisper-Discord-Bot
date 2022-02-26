@@ -1,7 +1,8 @@
 import winston, {format, Logger, Logform} from "winston";
+import chalk from "chalk";
 
 export const loggerFormat = format.printf((info: Logform.TransformableInfo) => {
-    return `[${info.timestamp}] [${info.level}]\t${info.context}: ${info.message}`;
+    return `[${info.timestamp}] [${info.level}]\t${chalk.yellowBright(info.context)}: ${info.message}`;
 });
 
 export const logger: Logger = winston.createLogger(
@@ -13,7 +14,14 @@ export const logger: Logger = winston.createLogger(
                 return info;
             })(),
             format.label({label: "No Label"}),
-            format.colorize(),
+            format.colorize({
+                colors: {
+                    debug: "bold italic blue",
+                    info: "bold cyan",
+                    warning: "bold yellow",
+                    error: "bold red"
+                }
+            }),
             format.timestamp({format: "YYYY-MM-DD HH:mm:ss"}),
             loggerFormat
         ),
