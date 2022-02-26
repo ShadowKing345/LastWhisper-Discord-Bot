@@ -1,13 +1,10 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration.js";
-import {BuffManagerConfig, Buff, Days, MessageSettings, Week} from "../models/buffManager.model.js";
+import {Buff, BuffManagerConfig, Days, MessageSettings, Week} from "../models/buffManager.model.js";
 
 export class BuffManagerConfigRepository {
     private static readonly collectionName: string = "buff_manager";
     private collection: Collection<BuffManagerConfig>
-
-    constructor() {
-    }
 
     private async validate() {
         if (!this.collection) this.collection = await DB.collection(BuffManagerConfigRepository.collectionName);
@@ -15,7 +12,7 @@ export class BuffManagerConfigRepository {
 
     public async save(config: BuffManagerConfig): Promise<BuffManagerConfig> {
         await this.validate();
-        let result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
+        const result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
 
         return result.ok ? this.sanitiseOutput(config) : null;
     }

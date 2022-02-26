@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { DB } from "../config/databaseConfiguration.js";
 export class GardeningConfigRepository {
-    constructor() { }
     validate() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.collection)
@@ -19,7 +18,7 @@ export class GardeningConfigRepository {
     save(config) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.validate();
-            let result = yield this.collection.findOneAndReplace({ guildId: config.guildId }, config, { upsert: true });
+            const result = yield this.collection.findOneAndReplace({ guildId: config.guildId }, config, { upsert: true });
             return result.ok ? config : null;
         });
     }

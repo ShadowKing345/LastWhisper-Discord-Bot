@@ -19,10 +19,11 @@ export class Reservation implements SlotBase {
     }
 }
 
+// noinspection JSUnusedGlobalSymbols
 export enum Reason {
-    NONE,
-    GROWING,
-    BREADING
+    NONE = "NONE",
+    GROWING = "GROWING",
+    BREADING = "BREADING"
 }
 
 export class Slot implements SlotBase {

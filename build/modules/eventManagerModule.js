@@ -51,10 +51,11 @@ export class EventManagerModule extends ModuleBase {
         const patternSplit = ((_a = content === null || content === void 0 ? void 0 : content.match(re)) !== null && _a !== void 0 ? _a : []).map(l => {
             var _a, _b, _c;
             re.lastIndex = 0;
-            let match = (_a = re.exec(l).slice(1, 3)) !== null && _a !== void 0 ? _a : [null, null];
+            const match = (_a = re.exec(l).slice(1, 3)) !== null && _a !== void 0 ? _a : [null, null];
             return [(_b = match[0]) === null || _b === void 0 ? void 0 : _b.trim(), (_c = match[1]) === null || _c === void 0 ? void 0 : _c.trim()];
         });
         for (const [key, value] of patternSplit) {
+            let date, matchedResult, unixTimeStr, number;
             switch (key) {
                 case config.tags.announcement:
                     event.name = value;
@@ -63,7 +64,6 @@ export class EventManagerModule extends ModuleBase {
                     event.description = value;
                     break;
                 case config.tags.dateTime:
-                    let date;
                     if (config.dateTimeFormat.length > 0) {
                         date = dayjs(value, config.dateTimeFormat, true);
                         if (date.isValid()) {
@@ -72,13 +72,13 @@ export class EventManagerModule extends ModuleBase {
                         }
                     }
                     // Checks if it's hammer time.
-                    const matchedResult = value === null || value === void 0 ? void 0 : value.match(hammerRegex);
+                    matchedResult = value === null || value === void 0 ? void 0 : value.match(hammerRegex);
                     if (!matchedResult)
                         break;
-                    const unixTimeStr = matchedResult[1];
+                    unixTimeStr = matchedResult[1];
                     if (!unixTimeStr)
                         break;
-                    const number = Number(unixTimeStr);
+                    number = Number(unixTimeStr);
                     if (isNaN(number))
                         break;
                     date = dayjs.unix(number);
@@ -189,7 +189,7 @@ export class EventManagerModule extends ModuleBase {
                 try {
                     if (!client.guilds.cache.has(config.guildId))
                         continue;
-                    let postingGuild = yield client.guilds.fetch(config.guildId);
+                    const postingGuild = yield client.guilds.fetch(config.guildId);
                     if (!postingGuild)
                         continue;
                     if (config.events.length > 0 && config.postingChannelId) {

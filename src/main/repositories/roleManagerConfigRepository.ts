@@ -5,16 +5,14 @@ import {RoleManagerConfig} from "../models/roleManager.model.js";
 export class RoleManagerConfigRepository {
     private static readonly collectionName: string = "role_manager";
     private collection: Collection<RoleManagerConfig>
-
-    constructor() {}
-
+    
     private async validate() {
         if (!this.collection) this.collection = await DB.collection(RoleManagerConfigRepository.collectionName);
     }
 
     public async save(config: RoleManagerConfig): Promise<RoleManagerConfig> {
         await this.validate();
-        let result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
+        const result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
 
         return result.ok ? config : null;
     }

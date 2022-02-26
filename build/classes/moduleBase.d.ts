@@ -7,7 +7,6 @@ export declare class ModuleBase {
     protected _commands: Command[];
     protected _listeners: Listener[];
     protected _tasks: Task[];
-    constructor();
     get moduleName(): string;
     get command(): Command;
     get commands(): Command[];

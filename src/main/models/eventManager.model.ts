@@ -15,7 +15,7 @@ export class EventObj {
     public dateTime: Date;
     public additional: [string, string][];
 
-    constructor(messageId: string, name: string = "", description: string = "", dateTime: Date = null, additional: [string, string][] = []) {
+    constructor(messageId: string, name = "", description = "", dateTime: Date = null, additional: [string, string][] = []) {
         this.messageId = messageId;
         this.name = name;
         this.description = description;
@@ -34,7 +34,7 @@ export class Tags {
     public dateTime: string;
     public exclusionList: string[];
 
-    constructor(announcement: string = "Event Announcement", description: string = "Event Description", dateTime: string = "Time", exclusionList: string[] = []) {
+    constructor(announcement = "Event Announcement", description = "Event Description", dateTime = "Time", exclusionList: string[] = []) {
         this.announcement = announcement;
         this.description = description;
         this.dateTime = dateTime;
@@ -52,7 +52,7 @@ export class EventManagerConfig {
     public events: EventObj[];
     public reminders: ReminderTrigger[];
 
-    constructor(id: string = "", listenerChannelId: string = null, postingChannelId: string = null, delimiterCharacters: [string, string] = ["\\[", "\\]"], tags: Tags = new Tags(), dateTimeFormat: string[] = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
+    constructor(id = "", listenerChannelId: string = null, postingChannelId: string = null, delimiterCharacters: [string, string] = ["\\[", "\\]"], tags: Tags = new Tags(), dateTimeFormat: string[] = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
         this.guildId = id;
         this.listenerChannelId = listenerChannelId;
         this.postingChannelId = postingChannelId;

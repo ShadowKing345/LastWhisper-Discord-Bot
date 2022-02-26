@@ -17,8 +17,8 @@ dayjs.extend(customParseFormat);
 const rest = new REST({version: "9"}).setToken(appConfigs.token);
 
 (async () => {
-    const commands: {}[] = [];
-    loadedModules.forEach(module => module.commands.forEach(command => commands.push((command.command as SlashCommandBuilder).toJSON())));
+    const commands = [];
+    loadedModules.forEach(module => module.commands.forEach(command => commands.push(typeof command.command === "function" ? command.command(new SlashCommandBuilder()).toJSON() : (command.command as SlashCommandBuilder).toJSON())));
 
     try {
         if (appConfigs.registerGuildCommands) {

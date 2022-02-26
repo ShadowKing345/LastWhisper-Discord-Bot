@@ -8,10 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { DB } from "../config/databaseConfiguration.js";
-import { BuffManagerConfig, Buff, Days, MessageSettings, Week } from "../models/buffManager.model.js";
+import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "../models/buffManager.model.js";
 export class BuffManagerConfigRepository {
-    constructor() {
-    }
     validate() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.collection)
@@ -21,7 +19,7 @@ export class BuffManagerConfigRepository {
     save(config) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.validate();
-            let result = yield this.collection.findOneAndReplace({ guildId: config.guildId }, config, { upsert: true });
+            const result = yield this.collection.findOneAndReplace({ guildId: config.guildId }, config, { upsert: true });
             return result.ok ? this.sanitiseOutput(config) : null;
         });
     }

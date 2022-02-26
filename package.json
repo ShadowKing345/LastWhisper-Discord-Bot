@@ -10,7 +10,8 @@
     "command-setup:ts": "node --experimental-specifier-resolution=node --loader ts-node/esm src/main/config/commandRegistration/registerCommands.ts",
     "build": "yarn build:clean && yarn build:compile",
     "build:clean": "tsc --build --clean",
-    "build:compile": "tsc --build --verbose"
+    "build:compile": "tsc --build --verbose",
+    "eslint": "eslint . --ext .ts"
   },
   "repository": {
     "type": "git",

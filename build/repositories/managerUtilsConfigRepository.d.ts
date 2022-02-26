@@ -3,7 +3,6 @@ import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 export declare class ManagerUtilsConfigRepository {
     private static readonly collectionName;
     private collection;
-    constructor();
     private validate;
     save(config: ManagerUtilsConfig): Promise<ManagerUtilsConfig>;
     findOne(filter: Filter<ManagerUtilsConfig>): Promise<ManagerUtilsConfig>;

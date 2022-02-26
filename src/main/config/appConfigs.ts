@@ -18,7 +18,7 @@ export class AppConfigs {
 
 export function initConfigs(): AppConfigs {
     const rawData = fs.readFileSync("./appConfigs.json", "utf8");
-    const settings: Settings = Object.assign(new Settings, JSON.parse(rawData));
+    const settings: Settings = Object.assign(new Settings, JSON.parse(rawData)) as Settings;
 
     CONFIGS = Object.assign(new AppConfigs, settings.production, settings.development);
 

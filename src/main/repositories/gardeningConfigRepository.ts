@@ -5,16 +5,14 @@ import {DB} from "../config/databaseConfiguration.js";
 export class GardeningConfigRepository {
     private static readonly collectionName: string = "gardening_manager";
     private collection: Collection<GardeningConfig>
-
-    constructor() {}
-
+    
     private async validate() {
         if (!this.collection) this.collection = await DB.collection(GardeningConfigRepository.collectionName);
     }
 
     public async save(config: GardeningConfig): Promise<GardeningConfig> {
         await this.validate();
-        let result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
+        const result = await this.collection.findOneAndReplace({guildId: config.guildId}, config, {upsert: true});
 
         return result.ok ? config : null;
     }

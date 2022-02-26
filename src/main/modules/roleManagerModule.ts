@@ -31,7 +31,7 @@ export class RoleManagerModule extends ModuleBase {
         this._commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
-                run: async interaction => this.sendButtons(interaction)
+                run: async interaction => RoleManagerModule.sendButtons(interaction)
             }
         ];
     }
@@ -119,7 +119,7 @@ export class RoleManagerModule extends ModuleBase {
         await messageReaction.remove();
     }
 
-    private async sendButtons(interaction: CommandInteraction) {
+    private static async sendButtons(interaction: CommandInteraction) {
         await interaction.reply({
             content: "yolo",
             components: [new MessageActionRow().addComponents(new MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]

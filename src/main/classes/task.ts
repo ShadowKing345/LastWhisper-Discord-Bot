@@ -6,7 +6,7 @@ export class Task {
     public timeout: number;
     public run: (client: Client) => Promise<void>;
 
-    public static async waitTillReady(client: DiscordClient, checkAgainTime: number = 500) {
+    public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
         while (!client.isReady())
         {
             await new Promise(resolve => setTimeout(resolve, checkAgainTime));

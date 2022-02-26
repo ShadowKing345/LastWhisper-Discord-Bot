@@ -7,5 +7,5 @@ export declare class RoleManagerModule extends ModuleBase {
     private onReady;
     private onMemberJoin;
     private onReactionAdd;
-    private sendButtons;
+    private static sendButtons;
 }

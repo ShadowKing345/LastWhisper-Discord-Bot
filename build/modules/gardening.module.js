@@ -19,22 +19,64 @@ export class GardeningModule extends ModuleBase {
         this.service = new GardeningConfigService();
         this._moduleName = "GardeningModule";
         this._command = {
-            command: builder => builder.setName("gardening").setDescription("gardening module.")
-                .addSubcommand(subComBuilder => subComBuilder.setName("reserve").setDescription("Reserve a slot in a plot to be used by you.")
-                .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("The plot number.").setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("The slot number.").setRequired(true))
-                .addStringOption(optionBuilder => optionBuilder.setName("plant").setDescription("The name of the plant you wish to plant.").setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder.setName("duration").setDescription("For how long do you wish to reserve this spot. In hours.").setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder.setName("reason").setDescription("The reason you are reserving this spot.").setRequired(true)
-                .addChoices(Object.keys(Reason).filter(key => !isNaN(Number(Reason[key]))).map((value, index) => [value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1.toUpperCase() + g2.toLowerCase()), index]))))
-                .addSubcommand(subComBuilder => subComBuilder.setName("cancel").setDescription("Cancel any reservations you have made to a slot in a plot.")
-                .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("The plot number.").setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("The slot number.").setRequired(true))
-                .addStringOption(optionBuilder => optionBuilder.setName("plant").setDescription("The name of the plant you wish to cancel for.").setRequired(true)))
-                .addSubcommand(subComBuilder => subComBuilder.setName("list").setDescription("Shows all plots and their states.")
-                .addIntegerOption(optionBuilder => optionBuilder.setName("plot").setDescription("Index of the plot you wish to view."))
-                .addIntegerOption(optionBuilder => optionBuilder.setName("slot").setDescription("Index of the slot you wish to view."))
-                .addBooleanOption(optionBuilder => optionBuilder.setName("detailed").setDescription("Should show a detailed view. Default: false"))),
+            command: builder => builder
+                .setName("gardening")
+                .setDescription("gardening module.")
+                .addSubcommand(subComBuilder => subComBuilder
+                .setName("reserve")
+                .setDescription("Reserve a slot in a plot to be used by you.")
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("plot")
+                .setDescription("The plot number.")
+                .setRequired(true))
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("slot")
+                .setDescription("The slot number.")
+                .setRequired(true))
+                .addStringOption(optionBuilder => optionBuilder
+                .setName("plant")
+                .setDescription("The name of the plant you wish to plant.")
+                .setRequired(true))
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("duration")
+                .setDescription("For how long do you wish to reserve this spot. In hours.")
+                .setRequired(true))
+                .addStringOption(optionBuilder => optionBuilder
+                .setName("reason")
+                .setDescription("The reason you are reserving this spot.")
+                .setRequired(true)
+                .addChoices(Object.keys(Reason)
+                .map(value => [
+                value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1 + g2.toLowerCase()),
+                value
+            ]))))
+                .addSubcommand(subComBuilder => subComBuilder
+                .setName("cancel")
+                .setDescription("Cancel any reservations you have made to a slot in a plot.")
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("plot")
+                .setDescription("The plot number.")
+                .setRequired(true))
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("slot")
+                .setDescription("The slot number.")
+                .setRequired(true))
+                .addStringOption(optionBuilder => optionBuilder
+                .setName("plant")
+                .setDescription("The name of the plant you wish to cancel for.")
+                .setRequired(true)))
+                .addSubcommand(subComBuilder => subComBuilder
+                .setName("list")
+                .setDescription("Shows all plots and their states.")
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("plot")
+                .setDescription("Index of the plot you wish to view."))
+                .addIntegerOption(optionBuilder => optionBuilder
+                .setName("slot")
+                .setDescription("Index of the slot you wish to view."))
+                .addBooleanOption(optionBuilder => optionBuilder
+                .setName("detailed")
+                .setDescription("Should show a detailed view. Default: false"))),
             run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.subCommandResolver(interaction); })
         };
         this._tasks = [
@@ -53,7 +95,7 @@ export class GardeningModule extends ModuleBase {
             const player = `${interaction.user.username}#${interaction.user.discriminator}`;
             const plant = interaction.options.getString("plant");
             const duration = ((_a = interaction.options.getInteger("duration")) !== null && _a !== void 0 ? _a : 0) * 360;
-            const reason = ((_b = interaction.options.getInteger("reason")) !== null && _b !== void 0 ? _b : 0);
+            const reason = ((_b = interaction.options.getInteger("reason")) !== null && _b !== void 0 ? _b : Reason.NONE);
             switch (subCommand) {
                 case "reserve":
                     return this.register(interaction, config, player, plant, duration, reason, plotNum, slotNum);
@@ -89,10 +131,11 @@ export class GardeningModule extends ModuleBase {
     }
     register(interaction, config, player, plant, duration, reason, plotNum, slotNum) {
         return __awaiter(this, void 0, void 0, function* () {
-            let valid = yield GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
-            if (!valid)
+            const value = yield GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+            if (!value)
                 return;
-            let [plot, slot] = valid;
+            const plot = value[0];
+            let slot = value[1];
             if (!slot) {
                 slot = new Slot(player, plant, duration, reason, dayjs().unix());
                 plot.slots[plotNum] = slot;
@@ -134,20 +177,21 @@ export class GardeningModule extends ModuleBase {
     }
     cancel(interaction, config, player, plant, plotNum, slotNum) {
         return __awaiter(this, void 0, void 0, function* () {
-            let valid = yield GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
-            if (!valid)
+            const value = yield GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+            if (!value)
                 return;
-            let [plot, slot] = valid;
+            const plot = value[0];
+            let slot = value[1];
             if (!slot)
                 return interaction.reply({ content: "Sorry but this slot is currently empty.", ephemeral: true });
             if (slot.player === player && slot.plant === plant) {
-                let nextReserved = slot.next;
-                let next = nextReserved.pop();
+                const nextReserved = slot.next;
+                const next = nextReserved.pop();
                 slot = typeof next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, dayjs().unix(), nextReserved) : undefined;
                 plot.slots[plotNum] = slot;
             }
             else {
-                let next = slot.next.find(reservation => reservation.player === player && reservation.plant === plant);
+                const next = slot.next.find(reservation => reservation.player === player && reservation.plant === plant);
                 if (!next)
                     return interaction.reply({
                         content: "There is no reservation currently registered to you.",
@@ -183,7 +227,7 @@ export class GardeningModule extends ModuleBase {
                     content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
                     ephemeral: true
                 });
-            let text = "\`\`\`";
+            let text = "```";
             if (plotNum !== null) {
                 if (plotNum >= config.plots.length)
                     return interaction.reply({ content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}` });
@@ -209,7 +253,7 @@ export class GardeningModule extends ModuleBase {
                     }
                 }
             }
-            text += "\`\`\`";
+            text += "```";
             return interaction.reply(text);
         });
     }
@@ -218,7 +262,7 @@ export class GardeningModule extends ModuleBase {
             const now = dayjs().unix();
             const configs = yield this.service.getAll();
             const altered = [];
-            for (let config of configs) {
+            for (const config of configs) {
                 if (!client.guilds.cache.has(config.guildId))
                     continue;
                 config.plots.forEach(plot => {
@@ -227,8 +271,8 @@ export class GardeningModule extends ModuleBase {
                             return;
                         if (slot.started + slot.duration > now)
                             return;
-                        let nextReserved = slot.next;
-                        let next = nextReserved.pop();
+                        const nextReserved = slot.next;
+                        const next = nextReserved.pop();
                         array[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null;
                         if (altered.findIndex((item) => item.guildId === config.guildId) === -1) {
                             altered.push(config);
@@ -236,7 +280,7 @@ export class GardeningModule extends ModuleBase {
                     });
                 });
             }
-            for (let config of altered) {
+            for (const config of altered) {
                 this.service.update(config).catch(err => logger.error(err, GardeningModule.loggerMeta));
             }
         });

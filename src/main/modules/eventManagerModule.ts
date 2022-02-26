@@ -40,17 +40,18 @@ export class EventManagerModule extends ModuleBase {
 
     private parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
         const event = new EventObj(messageId);
-        const hammerRegex: RegExp = /<.*:(\d+):.*>/
+        const hammerRegex = /<.*:(\d+):.*>/
         const [l, r] = config.delimiterCharacters as [string, string];
-        const re: RegExp = new RegExp(`${l}(.*)${r}([^${l}]*)`, "gm");
+        const re = new RegExp(`${l}(.*)${r}([^${l}]*)`, "gm");
 
         const patternSplit: [string | null, string | null][] = (content?.match(re) ?? []).map(l => {
             re.lastIndex = 0;
-            let match = re.exec(l).slice(1, 3) ?? [null, null];
+            const match = re.exec(l).slice(1, 3) ?? [null, null];
             return [match[0]?.trim(), match[1]?.trim()];
         });
 
         for (const [key, value] of patternSplit) {
+            let date: dayjs.Dayjs, matchedResult: RegExpMatchArray, unixTimeStr: string, number: number;
             switch (key) {
                 case config.tags.announcement:
                     event.name = value;
@@ -61,7 +62,6 @@ export class EventManagerModule extends ModuleBase {
                     break;
 
                 case config.tags.dateTime:
-                    let date: dayjs.Dayjs;
                     if (config.dateTimeFormat.length > 0) {
                         date = dayjs(value, config.dateTimeFormat, true);
                         if (date.isValid()) {
@@ -71,12 +71,12 @@ export class EventManagerModule extends ModuleBase {
                     }
 
                     // Checks if it's hammer time.
-                    const matchedResult = value?.match(hammerRegex);
+                    matchedResult = value?.match(hammerRegex);
 
                     if (!matchedResult) break;
-                    const unixTimeStr = matchedResult[1];
+                    unixTimeStr = matchedResult[1];
                     if (!unixTimeStr) break;
-                    const number: number = Number(unixTimeStr);
+                    number = Number(unixTimeStr);
                     if (isNaN(number)) break;
 
                     date = dayjs.unix(number);
@@ -179,7 +179,7 @@ export class EventManagerModule extends ModuleBase {
         for (const config of configs) {
             try {
                 if (!client.guilds.cache.has(config.guildId)) continue;
-                let postingGuild: Guild = await client.guilds.fetch(config.guildId);
+                const postingGuild: Guild = await client.guilds.fetch(config.guildId);
                 if (!postingGuild) continue;
                 if (config.events.length > 0 && config.postingChannelId) {
                     const postingChannel: TextChannel | null = await postingGuild.channels.fetch(config.postingChannelId) as TextChannel | null;

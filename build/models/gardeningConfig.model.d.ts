@@ -12,9 +12,9 @@ export declare class Reservation implements SlotBase {
     constructor(player: string, plant: string, duration: number, reason: Reason);
 }
 export declare enum Reason {
-    NONE = 0,
-    GROWING = 1,
-    BREADING = 2
+    NONE = "NONE",
+    GROWING = "GROWING",
+    BREADING = "BREADING"
 }
 export declare class Slot implements SlotBase {
     player: string;

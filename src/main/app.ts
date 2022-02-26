@@ -33,7 +33,7 @@ export class App {
         this.client.once("ready", () => {
             logger.log("info", chalk.magentaBright("Bot is up and ready to roll!"), {context: "ClientRuntime"});
         });
-        this.client.on("error", async error => {
+        this.client.on("error", error => {
             logger.log("error", `${error.name}: ${error.message}`, {context: "ClientRuntime"});
         });
 

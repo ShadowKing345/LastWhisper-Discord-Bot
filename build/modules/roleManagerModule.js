@@ -23,7 +23,7 @@ export class RoleManagerModule extends ModuleBase {
         this._commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
-                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.sendButtons(interaction); })
+                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return RoleManagerModule.sendButtons(interaction); })
             }
         ];
     }
@@ -113,7 +113,7 @@ export class RoleManagerModule extends ModuleBase {
             yield messageReaction.remove();
         });
     }
-    sendButtons(interaction) {
+    static sendButtons(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
             yield interaction.reply({
                 content: "yolo",
