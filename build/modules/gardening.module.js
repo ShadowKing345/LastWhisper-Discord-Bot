@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import { MessageEmbed } from "discord.js";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { GardeningConfigService } from "../services/gardeningConfigService.js";
-import { logger } from "../utils/logger";
+import { logger } from "../utils/logger.js";
 export class GardeningModule extends ModuleBase {
     constructor() {
         super();

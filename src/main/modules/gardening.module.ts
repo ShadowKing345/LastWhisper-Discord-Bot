@@ -5,7 +5,7 @@ import {CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChann
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
 import {GardeningConfigService} from "../services/gardeningConfigService.js";
-import {logger} from "../utils/logger";
+import {logger} from "../utils/logger.js";
 
 export class GardeningModule extends ModuleBase {
     private static readonly loggerMeta = {context: "GardeningModule"};
