@@ -1,26 +1,43 @@
-import fs from "fs";
+import * as fs from "fs";
+
+const configPath = "./appConfigs.json", devConfigPath = "./appConfigs-dev.json";
 
 export let CONFIGS: AppConfigs = null;
 
-class Settings {
-    public production: AppConfigs;
-    public development: AppConfigs;
-}
-
 export class AppConfigs {
     public token: string;
-    public clientId: string;
     public dbUrl: string;
-    public guildId: string;
-    public registerGuildCommands: boolean;
     public logging_level: string;
+    public commandRegistration: CommandRegistrationConfiguration;
+}
+
+export class CommandRegistrationConfiguration {
+    public clientId: string;
+    public guildId: string;
+    public registerForGuild: boolean;
+    public unregister: boolean;
 }
 
 export function initConfigs(): AppConfigs {
-    const rawData = fs.readFileSync("./appConfigs.json", "utf8");
-    const settings: Settings = Object.assign(new Settings, JSON.parse(rawData)) as Settings;
+    if (!fs.existsSync(configPath)) {
+        throw new ConfigurationError("No configuration file named appConfigs.json found in root directory. Please create one.");
+    }
 
-    CONFIGS = Object.assign(new AppConfigs, settings.production, settings.development);
+    const raw = fs.readFileSync(configPath, "utf-8");
+    let dev;
+
+    if (fs.existsSync(devConfigPath)) {
+        dev = fs.readFileSync(devConfigPath, "utf-8");
+    }
+
+    CONFIGS = Object.assign<AppConfigs, object>(new AppConfigs, JSON.parse(raw));
+
+    if (dev) {
+        Object.assign<AppConfigs, object>(CONFIGS, JSON.parse(dev));
+    }
 
     return CONFIGS;
+}
+
+export class ConfigurationError extends Error {
 }
