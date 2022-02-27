@@ -5,7 +5,9 @@ import {fetchMessages} from "../utils/utils.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Task} from "../classes/task.js";
 import {EventManagerConfigService} from "../services/eventManagerConfigService.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class EventManagerModule extends ModuleBase {
     private service: EventManagerConfigService;
 

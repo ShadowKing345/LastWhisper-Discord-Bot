@@ -14,7 +14,9 @@ import {fetchMessages} from "../utils/utils.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
 import {RoleManagerConfigService} from "../services/roleManagerConfigService.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class RoleManagerModule extends ModuleBase {
     private service: RoleManagerConfigService;
 

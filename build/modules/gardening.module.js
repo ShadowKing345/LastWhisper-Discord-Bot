@@ -1,3 +1,12 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,13 +16,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var GardeningModule_1;
 import { Reason, Reservation, Slot } from "../models/gardeningConfig.model.js";
 import dayjs from "dayjs";
 import { MessageEmbed } from "discord.js";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { GardeningConfigService } from "../services/gardeningConfigService.js";
 import { logger } from "../utils/logger.js";
-export class GardeningModule extends ModuleBase {
+import { injectable } from "tsyringe";
+let GardeningModule = GardeningModule_1 = class GardeningModule extends ModuleBase {
     constructor() {
         super();
         this.service = new GardeningConfigService();
@@ -131,7 +142,7 @@ export class GardeningModule extends ModuleBase {
     }
     register(interaction, config, player, plant, duration, reason, plotNum, slotNum) {
         return __awaiter(this, void 0, void 0, function* () {
-            const value = yield GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+            const value = yield GardeningModule_1.validatePlotAndSlot(interaction, config, plotNum, slotNum);
             if (!value)
                 return;
             const plot = value[0];
@@ -177,7 +188,7 @@ export class GardeningModule extends ModuleBase {
     }
     cancel(interaction, config, player, plant, plotNum, slotNum) {
         return __awaiter(this, void 0, void 0, function* () {
-            const value = yield GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+            const value = yield GardeningModule_1.validatePlotAndSlot(interaction, config, plotNum, slotNum);
             if (!value)
                 return;
             const plot = value[0];
@@ -235,20 +246,20 @@ export class GardeningModule extends ModuleBase {
                 if (slotNum !== null) {
                     if (slotNum >= plot.slots.length)
                         return interaction.reply({ content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}` });
-                    text += GardeningModule.printPlotInfo(plot, plotNum);
-                    text += GardeningModule.printSlotInfo(plot.slots[slotNum], slotNum, 1);
+                    text += GardeningModule_1.printPlotInfo(plot, plotNum);
+                    text += GardeningModule_1.printSlotInfo(plot.slots[slotNum], slotNum, 1);
                 }
                 else {
-                    text += GardeningModule.printPlotInfo(plot, plotNum, true);
+                    text += GardeningModule_1.printPlotInfo(plot, plotNum, true);
                 }
             }
             else {
                 for (let plotNum = 0; plotNum < config.plots.length; plotNum++) {
                     const plot = config.plots[plotNum];
-                    text += GardeningModule.printPlotInfo(plot, plotNum, !showDetailed);
+                    text += GardeningModule_1.printPlotInfo(plot, plotNum, !showDetailed);
                     if (showDetailed) {
                         for (let slotNum = 0; slotNum < plot.slots.length; slotNum++) {
-                            text += GardeningModule.printSlotInfo(plot.slots[slotNum], slotNum, 1);
+                            text += GardeningModule_1.printSlotInfo(plot.slots[slotNum], slotNum, 1);
                         }
                     }
                 }
@@ -281,7 +292,7 @@ export class GardeningModule extends ModuleBase {
                 });
             }
             for (const config of altered) {
-                this.service.update(config).catch(err => logger.error(err, GardeningModule.loggerMeta));
+                this.service.update(config).catch(err => logger.error(err, GardeningModule_1.loggerMeta));
             }
         });
     }
@@ -307,8 +318,13 @@ export class GardeningModule extends ModuleBase {
             yield channel.send({ embeds: [embed] });
         });
     }
-}
+};
 GardeningModule.loggerMeta = { context: "GardeningModule" };
+GardeningModule = GardeningModule_1 = __decorate([
+    injectable(),
+    __metadata("design:paramtypes", [])
+], GardeningModule);
+export { GardeningModule };
 class MessagePostArgs {
 }
 //# sourceMappingURL=gardening.module.js.map

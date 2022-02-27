@@ -1,7 +1,9 @@
 import {Collection, Filter} from "mongodb";
 import {DB} from "../config/databaseConfiguration.js";
 import {Buff, BuffManagerConfig, Days, MessageSettings, Week} from "../models/buffManager.model.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class BuffManagerConfigRepository {
     private static readonly collectionName: string = "buff_manager";
     private collection: Collection<BuffManagerConfig>

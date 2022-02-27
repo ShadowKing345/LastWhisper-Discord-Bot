@@ -3,7 +3,9 @@ import {Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "dis
 import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
 import {ManagerUtilsConfigService} from "../services/managerUtilsConfigService.js";
 import {ModuleBase} from "../classes/moduleBase.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class ManagerUtilsModule extends ModuleBase {
     private service: ManagerUtilsConfigService;
 

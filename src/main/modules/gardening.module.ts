@@ -5,7 +5,9 @@ import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
 import {GardeningConfigService} from "../services/gardeningConfigService.js";
 import {logger} from "../utils/logger.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class GardeningModule extends ModuleBase {
     private static readonly loggerMeta = {context: "GardeningModule"};
     private service: GardeningConfigService;

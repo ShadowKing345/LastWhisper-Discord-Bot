@@ -1,3 +1,12 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,6 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var EventManagerModule_1;
 import { EventObj } from "../models/eventManager.model.js";
 import dayjs from "dayjs";
 import { MessageEmbed } from "discord.js";
@@ -14,7 +24,8 @@ import { fetchMessages } from "../utils/utils.js";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { Task } from "../classes/task.js";
 import { EventManagerConfigService } from "../services/eventManagerConfigService.js";
-export class EventManagerModule extends ModuleBase {
+import { injectable } from "tsyringe";
+let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     constructor() {
         super();
         this.service = new EventManagerConfigService();
@@ -199,7 +210,7 @@ export class EventManagerModule extends ModuleBase {
                         for (const trigger of config.reminders) {
                             if (!trigger.timeDelta)
                                 continue;
-                            const triggerTime = EventManagerModule.parseTriggerDuration(trigger.timeDelta);
+                            const triggerTime = EventManagerModule_1.parseTriggerDuration(trigger.timeDelta);
                             for (const event of config.events) {
                                 const eventTime = dayjs(event.dateTime);
                                 if (!now.isSame(eventTime, "date"))
@@ -271,5 +282,10 @@ export class EventManagerModule extends ModuleBase {
             }
         });
     }
-}
+};
+EventManagerModule = EventManagerModule_1 = __decorate([
+    injectable(),
+    __metadata("design:paramtypes", [])
+], EventManagerModule);
+export { EventManagerModule };
 //# sourceMappingURL=eventManagerModule.js.map

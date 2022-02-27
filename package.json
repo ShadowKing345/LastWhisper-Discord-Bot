@@ -39,6 +39,8 @@
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.2.0",
     "mongodb": "^4.3.1",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.6.0",
     "uuid": "^8.3.2",
     "winston": "^3.4.0"
   },

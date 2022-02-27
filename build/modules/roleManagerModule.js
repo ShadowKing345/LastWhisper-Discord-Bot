@@ -1,3 +1,12 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,11 +16,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var RoleManagerModule_1;
 import { MessageActionRow, MessageButton } from "discord.js";
 import { fetchMessages } from "../utils/utils.js";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { RoleManagerConfigService } from "../services/roleManagerConfigService.js";
-export class RoleManagerModule extends ModuleBase {
+import { injectable } from "tsyringe";
+let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     constructor() {
         super();
         this.service = new RoleManagerConfigService();
@@ -23,7 +34,7 @@ export class RoleManagerModule extends ModuleBase {
         this.commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
-                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return RoleManagerModule.sendButtons(interaction); })
+                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return RoleManagerModule_1.sendButtons(interaction); })
             }
         ];
     }
@@ -70,7 +81,7 @@ export class RoleManagerModule extends ModuleBase {
                             try {
                                 const member = yield guild.members.fetch(user.id);
                                 if (member)
-                                    yield RoleManagerModule.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+                                    yield RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
                             }
                             catch (error) {
                                 console.error(error);
@@ -109,7 +120,7 @@ export class RoleManagerModule extends ModuleBase {
                 return;
             }
             const config = yield this.getConfig(guild.id);
-            yield RoleManagerModule.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
+            yield RoleManagerModule_1.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
             yield messageReaction.remove();
         });
     }
@@ -121,5 +132,10 @@ export class RoleManagerModule extends ModuleBase {
             });
         });
     }
-}
+};
+RoleManagerModule = RoleManagerModule_1 = __decorate([
+    injectable(),
+    __metadata("design:paramtypes", [])
+], RoleManagerModule);
+export { RoleManagerModule };
 //# sourceMappingURL=roleManagerModule.js.map

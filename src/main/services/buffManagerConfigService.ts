@@ -1,11 +1,11 @@
 import {BuffManagerConfig} from "../models/buffManager.model.js";
 import {BuffManagerConfigRepository} from "../repositories/buffManagerConfigRepository.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class BuffManagerConfigService {
-    private repo: BuffManagerConfigRepository;
 
-    constructor() {
-        this.repo = new BuffManagerConfigRepository();
+    constructor(private repo: BuffManagerConfigRepository) {
     }
 
     public async findOne(id: string): Promise<BuffManagerConfig> {

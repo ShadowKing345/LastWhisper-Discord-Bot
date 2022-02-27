@@ -31,7 +31,7 @@ const isForRegistering = (done = false) => commandConfigs.unregister ? chalk.red
 const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${chalk.yellow(commandConfigs.guildId)}` : chalk.yellow("global commands");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        logger.info(`Begging ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
+        logger.info(`Beginning ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
         const route = commandConfigs.registerForGuild ?
             Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId) :
             Routes.applicationCommands(commandConfigs.clientId);

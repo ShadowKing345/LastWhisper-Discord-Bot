@@ -7,6 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import "reflect-metadata";
+import { container } from "tsyringe";
 import { BuffManagerModule } from "../modules/buffManager.module.js";
 import { BuildCommand } from "../classes/command.js";
 import { EventManagerModule } from "../modules/eventManagerModule.js";
@@ -20,11 +22,11 @@ const loggerMeta = {
     interaction: { context: "InteractionInvoking" }
 };
 export const loadedModules = [
-    new BuffManagerModule(),
-    new EventManagerModule(),
-    new GardeningModule(),
-    new ManagerUtilsModule(),
-    new RoleManagerModule()
+    container.resolve(BuffManagerModule),
+    container.resolve(EventManagerModule),
+    container.resolve(GardeningModule),
+    container.resolve(ManagerUtilsModule),
+    container.resolve(RoleManagerModule)
 ];
 function runEvent(listeners, client, ...args) {
     return __awaiter(this, void 0, void 0, function* () {

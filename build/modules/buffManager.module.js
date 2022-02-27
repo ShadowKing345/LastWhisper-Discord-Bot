@@ -1,3 +1,12 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,29 +23,30 @@ import { Task } from "../classes/task.js";
 import { BuffManagerConfigService } from "../services/buffManagerConfigService.js";
 import { logger } from "../utils/logger.js";
 import chalk from "chalk";
-export class BuffManagerModule extends ModuleBase {
-    constructor() {
+import { injectable } from "tsyringe";
+let BuffManagerModule = class BuffManagerModule extends ModuleBase {
+    constructor(service) {
         super();
+        this.service = service;
         this.loggerMeta = { context: "BuffManagerModule" };
         this.daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        this.service = new BuffManagerConfigService();
         this.moduleName = "BuffManager";
         this.commands = [
             {
-                command: builder => builder.setName("todays_buff").setDescription("Displays the buff for the day."),
-                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.postBuff(interaction, dayjs(), "Today's Buff Shall Be:"); })
-            },
-            {
-                command: builder => builder.setName("tomorrows_buff").setDescription("Displays the buff for tomorrow."),
-                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.postBuff(interaction, dayjs().add(1, "day"), "Tomorrow's Buff Shall Be:"); })
-            },
-            {
-                command: builder => builder.setName("this_weeks_buffs").setDescription("Displays the buffs for the week"),
-                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.postWeeksBuffs(interaction, dayjs(), "The Buffs For The Week Shall Be:"); })
-            },
-            {
-                command: builder => builder.setName("next_weeks_buffs").setDescription("Displays the buffs for next week"),
-                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.postWeeksBuffs(interaction, dayjs().add(1, "week"), "The Buffs For Next Week Shall Be:"); })
+                command: builder => builder
+                    .setName("buff_manager")
+                    .setDescription("Manages all things related to buffs")
+                    .addSubcommandGroup(subGroup => subGroup
+                    .setName("buffs")
+                    .setDescription("Shows you what buffs are set.")
+                    .addSubcommand(subBuilder => subBuilder.setName("today").setDescription("Gets today's buff."))
+                    .addSubcommand(subBuilder => subBuilder.setName("tomorrow").setDescription("Gets tomorrow's buff.")))
+                    .addSubcommandGroup(subGroup => subGroup
+                    .setName("weeks")
+                    .setDescription("Shows you what buffs for the week, are set to.")
+                    .addSubcommand(subBuilder => subBuilder.setName("this_week").setDescription("Gets this week's buffs."))
+                    .addSubcommand(subBuilder => subBuilder.setName("next_week").setDescription("Gets next week's buffs"))),
+                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.subCommandManager(interaction); })
             }
         ];
         this.tasks = [
@@ -46,6 +56,33 @@ export class BuffManagerModule extends ModuleBase {
                 run: (client) => __awaiter(this, void 0, void 0, function* () { return this.postDailyMessage(client); })
             }
         ];
+    }
+    subCommandManager(interaction) {
+        return __awaiter(this, void 0, void 0, function* () {
+            logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`, this.loggerMeta);
+            const group = interaction.options.getSubcommandGroup();
+            const subCommand = interaction.options.getSubcommand();
+            if (!(subCommand && group)) {
+                logger.debug(`${chalk.red("Expected Failure:")} no ${chalk.blue("subcommand")} or ${chalk.blue("group")} was used.`, this.loggerMeta);
+                return interaction.reply({
+                    content: "Sorry you can only use the group or subcommands not the main command.",
+                    ephemeral: true
+                });
+            }
+            if (!interaction.guildId) {
+                logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`, this.loggerMeta);
+                return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
+            }
+            const [config, flag] = yield this.tryGetConfig(interaction, interaction.guildId);
+            if (!flag)
+                return;
+            if (group === "buffs") {
+                return this.postBuff(interaction, subCommand, config);
+            }
+            else {
+                return this.postWeeksBuffs(interaction, subCommand, config);
+            }
+        });
     }
     createBuffEmbed(title, day, date) {
         logger.debug(`Creating ${chalk.cyan("Buff Embed")}.`, this.loggerMeta);
@@ -90,17 +127,13 @@ export class BuffManagerModule extends ModuleBase {
             return [config, true];
         });
     }
-    postBuff(interaction, date, title) {
+    postBuff(interaction, subCommand, config) {
         return __awaiter(this, void 0, void 0, function* () {
-            logger.debug(`Posting ${chalk.blue("buff")} message for ${chalk.yellow(date.format())}`, this.loggerMeta);
-            if (!interaction.guildId) {
-                yield interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-                logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`, this.loggerMeta);
-                return;
-            }
-            const [config, flag] = yield this.tryGetConfig(interaction, interaction.guildId);
-            if (!flag)
-                return;
+            logger.debug(`Command invoked for ${chalk.blue("buffs")}.`);
+            const today = subCommand === "today";
+            const date = today ? dayjs() : dayjs().add(1, "day");
+            const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
+            logger.debug(`Posting ${chalk.blue("buff")} message for the date ${chalk.yellow(date.format())}`, this.loggerMeta);
             const week = config.weeks[date.week() % config.weeks.length];
             const buffId = week.days.toArray[date.day()];
             const buff = config.buffs.find(day => day.id === buffId);
@@ -115,17 +148,13 @@ export class BuffManagerModule extends ModuleBase {
             yield interaction.reply({ embeds: [this.createBuffEmbed(title, buff, date)] });
         });
     }
-    postWeeksBuffs(interaction, date, title) {
+    postWeeksBuffs(interaction, subCommand, config) {
         return __awaiter(this, void 0, void 0, function* () {
+            logger.debug(`Command invoked for ${chalk.blue("weeks")}.`);
+            const thisWeek = subCommand === "this_week";
+            const date = thisWeek ? dayjs() : dayjs().add(1, "week");
+            const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
             logger.debug(`Posting ${chalk.blue("week")} message for ${chalk.yellow(date.format())}`, this.loggerMeta);
-            if (!interaction.guildId) {
-                yield interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-                logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`, this.loggerMeta);
-                return;
-            }
-            const [config, flag] = yield this.tryGetConfig(interaction, interaction.guildId);
-            if (!flag)
-                return;
             const filteredWeeks = config.weeks.filter(week => week.isEnabled);
             const week = filteredWeeks[date.week() % filteredWeeks.length];
             yield interaction.reply({ embeds: [this.createWeekEmbed(title, week, config.buffs, date)] });
@@ -183,5 +212,10 @@ export class BuffManagerModule extends ModuleBase {
             }
         });
     }
-}
+};
+BuffManagerModule = __decorate([
+    injectable(),
+    __metadata("design:paramtypes", [BuffManagerConfigService])
+], BuffManagerModule);
+export { BuffManagerModule };
 //# sourceMappingURL=buffManager.module.js.map

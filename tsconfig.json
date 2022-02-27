@@ -12,7 +12,10 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "build",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "src/main"

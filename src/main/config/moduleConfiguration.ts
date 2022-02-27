@@ -1,3 +1,6 @@
+import "reflect-metadata";
+import {container} from "tsyringe";
+
 import {Client} from "../classes/client.js";
 import {BuffManagerModule} from "../modules/buffManager.module.js";
 import {ModuleBase} from "../classes/moduleBase.js";
@@ -16,12 +19,13 @@ const loggerMeta = {
     interaction: {context: "InteractionInvoking"}
 };
 
+
 export const loadedModules: ModuleBase[] = [
-    new BuffManagerModule(),
-    new EventManagerModule(),
-    new GardeningModule(),
-    new ManagerUtilsModule(),
-    new RoleManagerModule()
+    container.resolve(BuffManagerModule),
+    container.resolve(EventManagerModule),
+    container.resolve(GardeningModule),
+    container.resolve(ManagerUtilsModule),
+    container.resolve(RoleManagerModule)
 ];
 
 async function runEvent(listeners: Listener[], client: Client, ...args) {
