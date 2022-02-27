@@ -20,8 +20,8 @@ export class BuffManagerModule extends ModuleBase {
         this.loggerMeta = { context: "BuffManagerModule" };
         this.daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         this.service = new BuffManagerConfigService();
-        this._moduleName = "BuffManager";
-        this._commands = [
+        this.moduleName = "BuffManager";
+        this.commands = [
             {
                 command: builder => builder.setName("todays_buff").setDescription("Displays the buff for the day."),
                 run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.postBuff(interaction, dayjs(), "Today's Buff Shall Be:"); })
@@ -39,7 +39,7 @@ export class BuffManagerModule extends ModuleBase {
                 run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.postWeeksBuffs(interaction, dayjs().add(1, "week"), "The Buffs For Next Week Shall Be:"); })
             }
         ];
-        this._tasks = [
+        this.tasks = [
             {
                 name: `${this.moduleName}#dailyMessageTask`,
                 timeout: 60000,
@@ -102,7 +102,7 @@ export class BuffManagerModule extends ModuleBase {
             if (!flag)
                 return;
             const week = config.weeks[date.week() % config.weeks.length];
-            const buffId = week.days[date.day()];
+            const buffId = week.days.toArray[date.day()];
             const buff = config.buffs.find(day => day.id === buffId);
             if (!buff) {
                 yield interaction.reply({
@@ -133,8 +133,10 @@ export class BuffManagerModule extends ModuleBase {
     }
     postDailyMessage(client) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!client.isReady()) {
+                yield Task.waitTillReady(client);
+            }
             logger.debug(chalk.cyan("TASK: ") + "Posting daily buff message.", this.loggerMeta);
-            yield Task.waitTillReady(client);
             const configs = yield this.service.getAll();
             const now = dayjs();
             for (const config of configs) {
@@ -162,7 +164,7 @@ export class BuffManagerModule extends ModuleBase {
                     }
                     const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                     const week = filteredWeeks[now.week() % filteredWeeks.length];
-                    const buffId = week.days[now.day()];
+                    const buffId = week.days.toArray[now.day()];
                     const buff = config.buffs.find(day => day.id === buffId);
                     if (!buff) {
                         logger.warn(`Invalid ${chalk.blue("buff")} ID ${chalk.yellow(buffId)} for guild ${chalk.yellow(config.guildId)}. ${chalk.cyan("Skipping...")}`, this.loggerMeta);

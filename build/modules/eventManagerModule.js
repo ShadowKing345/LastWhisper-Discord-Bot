@@ -18,8 +18,8 @@ export class EventManagerModule extends ModuleBase {
     constructor() {
         super();
         this.service = new EventManagerConfigService();
-        this._moduleName = "EventManager";
-        this._commands = [
+        this.moduleName = "EventManager";
+        this.commands = [
             {
                 command: builder => builder
                     .setName("event")
@@ -28,13 +28,13 @@ export class EventManagerModule extends ModuleBase {
                 run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.event(interaction); })
             }
         ];
-        this._listeners = [
+        this.listeners = [
             { event: "messageCreate", run: (_, message) => __awaiter(this, void 0, void 0, function* () { return this.createEvent(message); }) },
             { event: "messageUpdate", run: (_, old, message) => __awaiter(this, void 0, void 0, function* () { return this.updateEvent(old, message); }) },
             { event: "messageDelete", run: (_, message) => __awaiter(this, void 0, void 0, function* () { return yield this.deleteEvent(message); }) },
             { event: "ready", run: (client) => __awaiter(this, void 0, void 0, function* () { return this.onReady(client); }) },
         ];
-        this._tasks = [
+        this.tasks = [
             {
                 name: `${this.moduleName}#postMessageTask`,
                 timeout: 60000,

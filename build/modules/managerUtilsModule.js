@@ -15,8 +15,8 @@ export class ManagerUtilsModule extends ModuleBase {
     constructor() {
         super();
         this.service = new ManagerUtilsConfigService();
-        this._moduleName = "ManagerUtils";
-        this._listeners = [
+        this.moduleName = "ManagerUtils";
+        this.listeners = [
             { event: "guildBanAdd", run: (_, member) => __awaiter(this, void 0, void 0, function* () { return yield this.onMemberBanned(member); }) },
             { event: "guildMemberRemove", run: (client, member) => __awaiter(this, void 0, void 0, function* () { return yield this.onMemberRemoved(member); }) }
         ];

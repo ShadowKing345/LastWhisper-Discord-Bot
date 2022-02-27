@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { BuffManagerModule } from "../modules/buffManager.module.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { BuildCommand } from "../classes/command.js";
 import { EventManagerModule } from "../modules/eventManagerModule.js";
 import { GardeningModule } from "../modules/gardening.module.js";
 import { ManagerUtilsModule } from "../modules/managerUtilsModule.js";
@@ -68,13 +68,7 @@ export function loadModules(client) {
         logger.info(`Setting up module ${chalk.blueBright(module.moduleName)}`, loggerMeta.moduleConfiguration);
         client.modules.set(module.moduleName, module);
         logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, loggerMeta.moduleConfiguration);
-        module.commands.forEach((command, index, array) => {
-            if (typeof command.command === "function") {
-                command.command = command.command(new SlashCommandBuilder());
-                array[index] = command;
-            }
-            client.commands.set(command.command.name, command);
-        });
+        module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command));
         logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, loggerMeta.moduleConfiguration);
         module.listeners.forEach(listener => {
             let listeners = client.moduleListeners.get(listener.event);

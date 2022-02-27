@@ -17,69 +17,69 @@ export class GardeningModule extends ModuleBase {
     constructor() {
         super();
         this.service = new GardeningConfigService();
-        this._moduleName = "GardeningModule";
-        this._command = {
-            command: builder => builder
-                .setName("gardening")
-                .setDescription("gardening module.")
-                .addSubcommand(subComBuilder => subComBuilder
-                .setName("reserve")
-                .setDescription("Reserve a slot in a plot to be used by you.")
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("plot")
-                .setDescription("The plot number.")
-                .setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("slot")
-                .setDescription("The slot number.")
-                .setRequired(true))
-                .addStringOption(optionBuilder => optionBuilder
-                .setName("plant")
-                .setDescription("The name of the plant you wish to plant.")
-                .setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("duration")
-                .setDescription("For how long do you wish to reserve this spot. In hours.")
-                .setRequired(true))
-                .addStringOption(optionBuilder => optionBuilder
-                .setName("reason")
-                .setDescription("The reason you are reserving this spot.")
-                .setRequired(true)
-                .addChoices(Object.keys(Reason)
-                .map(value => [
-                value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1 + g2.toLowerCase()),
-                value
-            ]))))
-                .addSubcommand(subComBuilder => subComBuilder
-                .setName("cancel")
-                .setDescription("Cancel any reservations you have made to a slot in a plot.")
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("plot")
-                .setDescription("The plot number.")
-                .setRequired(true))
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("slot")
-                .setDescription("The slot number.")
-                .setRequired(true))
-                .addStringOption(optionBuilder => optionBuilder
-                .setName("plant")
-                .setDescription("The name of the plant you wish to cancel for.")
-                .setRequired(true)))
-                .addSubcommand(subComBuilder => subComBuilder
-                .setName("list")
-                .setDescription("Shows all plots and their states.")
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("plot")
-                .setDescription("Index of the plot you wish to view."))
-                .addIntegerOption(optionBuilder => optionBuilder
-                .setName("slot")
-                .setDescription("Index of the slot you wish to view."))
-                .addBooleanOption(optionBuilder => optionBuilder
-                .setName("detailed")
-                .setDescription("Should show a detailed view. Default: false"))),
-            run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.subCommandResolver(interaction); })
-        };
-        this._tasks = [
+        this.moduleName = "GardeningModule";
+        this.commands = [{
+                command: builder => builder
+                    .setName("gardening")
+                    .setDescription("gardening module.")
+                    .addSubcommand(subComBuilder => subComBuilder
+                    .setName("reserve")
+                    .setDescription("Reserve a slot in a plot to be used by you.")
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("plot")
+                    .setDescription("The plot number.")
+                    .setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("slot")
+                    .setDescription("The slot number.")
+                    .setRequired(true))
+                    .addStringOption(optionBuilder => optionBuilder
+                    .setName("plant")
+                    .setDescription("The name of the plant you wish to plant.")
+                    .setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("duration")
+                    .setDescription("For how long do you wish to reserve this spot. In hours.")
+                    .setRequired(true))
+                    .addStringOption(optionBuilder => optionBuilder
+                    .setName("reason")
+                    .setDescription("The reason you are reserving this spot.")
+                    .setRequired(true)
+                    .addChoices(Object.keys(Reason)
+                    .map(value => [
+                    value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1 + g2.toLowerCase()),
+                    value
+                ]))))
+                    .addSubcommand(subComBuilder => subComBuilder
+                    .setName("cancel")
+                    .setDescription("Cancel any reservations you have made to a slot in a plot.")
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("plot")
+                    .setDescription("The plot number.")
+                    .setRequired(true))
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("slot")
+                    .setDescription("The slot number.")
+                    .setRequired(true))
+                    .addStringOption(optionBuilder => optionBuilder
+                    .setName("plant")
+                    .setDescription("The name of the plant you wish to cancel for.")
+                    .setRequired(true)))
+                    .addSubcommand(subComBuilder => subComBuilder
+                    .setName("list")
+                    .setDescription("Shows all plots and their states.")
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("plot")
+                    .setDescription("Index of the plot you wish to view."))
+                    .addIntegerOption(optionBuilder => optionBuilder
+                    .setName("slot")
+                    .setDescription("Index of the slot you wish to view."))
+                    .addBooleanOption(optionBuilder => optionBuilder
+                    .setName("detailed")
+                    .setDescription("Should show a detailed view. Default: false"))),
+                run: (interaction) => __awaiter(this, void 0, void 0, function* () { return this.subCommandResolver(interaction); })
+            }];
+        this.tasks = [
             { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) }
         ];
     }

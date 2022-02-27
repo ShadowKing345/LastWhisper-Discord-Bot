@@ -15,12 +15,12 @@ export class RoleManagerModule extends ModuleBase {
     constructor() {
         super();
         this.service = new RoleManagerConfigService();
-        this._moduleName = "RoleManager";
-        this._listeners = [
+        this.moduleName = "RoleManager";
+        this.listeners = [
             { event: "guildMemberAdd", run: (_, member) => __awaiter(this, void 0, void 0, function* () { return this.onMemberJoin(member); }) },
             { event: "ready", run: (client) => __awaiter(this, void 0, void 0, function* () { return this.onReady(client); }) }
         ];
-        this._commands = [
+        this.commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
                 run: (interaction) => __awaiter(this, void 0, void 0, function* () { return RoleManagerModule.sendButtons(interaction); })

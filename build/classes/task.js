@@ -7,9 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { logger } from "../utils/logger";
+import chalk from "chalk";
 export class Task {
     static waitTillReady(client, checkAgainTime = 500) {
         return __awaiter(this, void 0, void 0, function* () {
+            logger.debug(`Waiting for ${chalk.cyan("client")} to be ready.`, { context: "Task#WaitTillReady" });
             while (!client.isReady()) {
                 yield new Promise(resolve => setTimeout(resolve, checkAgainTime));
             }

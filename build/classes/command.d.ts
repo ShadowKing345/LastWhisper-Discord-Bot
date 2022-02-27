@@ -4,3 +4,4 @@ export declare class Command {
     command: Partial<SlashCommandBuilder | ((builder: SlashCommandBuilder) => SlashCommandBuilder)>;
     run: (interaction: CommandInteraction) => Promise<void>;
 }
+export declare function BuildCommand(command: Command): SlashCommandBuilder;
