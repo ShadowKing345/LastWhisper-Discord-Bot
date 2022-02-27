@@ -12,7 +12,7 @@ module.exports = {
         "no-empty": "off",
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
-            "error",
+            "warn",
             {
                 argsIgnorePattern: "_"
             }
