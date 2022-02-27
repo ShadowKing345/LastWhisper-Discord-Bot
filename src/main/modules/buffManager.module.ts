@@ -18,8 +18,8 @@ export class BuffManagerModule extends ModuleBase {
         super();
         this.service = new BuffManagerConfigService();
 
-        this._moduleName = "BuffManager";
-        this._commands = [
+        this.moduleName = "BuffManager";
+        this.commands = [
             {
                 command: builder => builder.setName("todays_buff").setDescription("Displays the buff for the day."),
                 run: async interaction => this.postBuff(interaction, dayjs(), "Today's Buff Shall Be:")
@@ -37,7 +37,7 @@ export class BuffManagerModule extends ModuleBase {
                 run: async interaction => this.postWeeksBuffs(interaction, dayjs().add(1, "week"), "The Buffs For Next Week Shall Be:")
             }
         ];
-        this._tasks = [
+        this.tasks = [
             {
                 name: `${this.moduleName}#dailyMessageTask`,
                 timeout: 60000,

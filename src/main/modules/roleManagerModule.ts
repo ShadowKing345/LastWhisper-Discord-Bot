@@ -22,13 +22,13 @@ export class RoleManagerModule extends ModuleBase {
         super();
         this.service = new RoleManagerConfigService();
 
-        this._moduleName = "RoleManager";
-        this._listeners = [
+        this.moduleName = "RoleManager";
+        this.listeners = [
             {event: "guildMemberAdd", run: async (_, member) => this.onMemberJoin(member)},
             {event: "ready", run: async (client) => this.onReady(client)}
         ];
 
-        this._commands = [
+        this.commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
                 run: async interaction => RoleManagerModule.sendButtons(interaction)

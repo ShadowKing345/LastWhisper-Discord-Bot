@@ -14,8 +14,8 @@ export class GardeningModule extends ModuleBase {
         super();
         this.service = new GardeningConfigService();
 
-        this._moduleName = "GardeningModule";
-        this._command = {
+        this.moduleName = "GardeningModule";
+        this.commands = [{
             command: builder => builder
                 .setName("gardening")
                 .setDescription("gardening module.")
@@ -109,9 +109,9 @@ export class GardeningModule extends ModuleBase {
                         )
                 ),
             run: async interaction => this.subCommandResolver(interaction)
-        };
+        }];
 
-        this._tasks = [
+        this.tasks = [
             {name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client)}
         ];
     }

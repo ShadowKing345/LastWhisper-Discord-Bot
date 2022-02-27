@@ -11,8 +11,8 @@ export class ManagerUtilsModule extends ModuleBase {
         super();
         this.service = new ManagerUtilsConfigService();
 
-        this._moduleName = "ManagerUtils";
-        this._listeners = [
+        this.moduleName = "ManagerUtils";
+        this.listeners = [
             {event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member)},
             {event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member)}
         ];

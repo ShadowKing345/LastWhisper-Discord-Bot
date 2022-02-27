@@ -13,8 +13,8 @@ export class EventManagerModule extends ModuleBase {
         super();
         this.service = new EventManagerConfigService();
 
-        this._moduleName = "EventManager";
-        this._commands = [
+        this.moduleName = "EventManager";
+        this.commands = [
             {
                 command: builder => builder
                     .setName("event")
@@ -23,13 +23,13 @@ export class EventManagerModule extends ModuleBase {
                 run: async interaction => this.event(interaction)
             }
         ];
-        this._listeners = [
+        this.listeners = [
             {event: "messageCreate", run: async (_, message) => this.createEvent(message)},
             {event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message)},
             {event: "messageDelete", run: async (_, message) => await this.deleteEvent(message)},
             {event: "ready", run: async client => this.onReady(client)},
         ];
-        this._tasks = [
+        this.tasks = [
             {
                 name: `${this.moduleName}#postMessageTask`,
                 timeout: 60000,
