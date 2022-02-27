@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { logger } from "../utils/logger";
+import { logger } from "../utils/logger.js";
 import chalk from "chalk";
 export class Task {
     static waitTillReady(client, checkAgainTime = 500) {

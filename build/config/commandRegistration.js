@@ -18,7 +18,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import { initConfigs } from "./appConfigs.js";
 import { loadedModules } from "./moduleConfiguration.js";
 import { logger } from "../utils/logger.js";
-import { BuildCommand } from "../classes/command";
+import { BuildCommand } from "../classes/command.js";
 dayjs.extend(duration);
 dayjs.extend(weekOfYear);
 dayjs.extend(advancedFormat);

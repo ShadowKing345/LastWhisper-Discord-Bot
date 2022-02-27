@@ -1,6 +1,6 @@
 import {Client} from "./client.js";
 import {Client as DiscordClient} from "discord.js";
-import {logger} from "../utils/logger";
+import {logger} from "../utils/logger.js";
 import chalk from "chalk";
 
 export class Task {
