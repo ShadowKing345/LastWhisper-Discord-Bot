@@ -1,6 +1,6 @@
 import {ModuleBase} from "../classes/moduleBase.js";
 import dayjs from "dayjs";
-import {BuffManagerConfig, Buff, MessageSettings, Week} from "../models/buffManager.model.js";
+import {Buff, BuffManagerConfig, MessageSettings, Week} from "../models/buffManager.model.js";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
 import {Client} from "../classes/client.js";
 import {Task} from "../classes/task.js";
@@ -105,7 +105,7 @@ export class BuffManagerModule extends ModuleBase {
         if (!flag) return;
 
         const week = config.weeks[date.week() % config.weeks.length];
-        const buffId = week.days[date.day()];
+        const buffId = week.days.toArray[date.day()];
         const buff = config.buffs.find(day => day.id === buffId);
 
         if (!buff) {
@@ -169,7 +169,7 @@ export class BuffManagerModule extends ModuleBase {
 
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week: Week = filteredWeeks[now.week() % filteredWeeks.length];
-                const buffId: string = week.days[now.day()];
+                const buffId: string = week.days.toArray[now.day()];
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {
