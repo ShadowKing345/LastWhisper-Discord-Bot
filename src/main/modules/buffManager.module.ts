@@ -137,8 +137,10 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private async postDailyMessage(client: Client): Promise<void> {
+        if (!client.isReady()) {
+            await Task.waitTillReady(client);
+        }
         logger.debug(chalk.cyan("TASK: ") + "Posting daily buff message.", this.loggerMeta);
-        await Task.waitTillReady(client);
 
         const configs: BuffManagerConfig[] = await this.service.getAll();
         const now: dayjs.Dayjs = dayjs();
