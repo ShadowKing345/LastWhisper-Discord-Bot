@@ -9,10 +9,9 @@ import advancedFormat from "dayjs/plugin/advancedFormat.js";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 
 import {AppConfigs, CommandRegistrationConfiguration, initConfigs} from "./appConfigs.js";
-import {SlashCommandBuilder} from "@discordjs/builders";
 import {loadedModules} from "./moduleConfiguration.js";
 import {logger} from "../utils/logger.js";
-import {Command} from "../classes/command.js";
+import {BuildCommand} from "../classes/command";
 
 dayjs.extend(duration);
 dayjs.extend(weekOfYear);
@@ -24,14 +23,6 @@ const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegis
 const rest = new REST({version: "9"}).setToken(appConfigs.token);
 
 const loggerMeta = {context: "CommandRegistration"};
-
-function getCommandJson(command: Command) {
-    if (command.command instanceof SlashCommandBuilder) {
-        return command.command.toJSON();
-    } else if (typeof command.command === "function") {
-        return (command.command(new SlashCommandBuilder())).toJSON();
-    }
-}
 
 const isForRegistering = (done = false) => commandConfigs.unregister ? chalk.red(done ? "removed" : "removal") : chalk.green(done ? "registered" : "registration");
 const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${chalk.yellow(commandConfigs.guildId)}` : chalk.yellow("global commands");
@@ -54,11 +45,8 @@ async function main(): Promise<void> {
         logger.info(`${chalk.cyan("Generating")} ${isForGlobal()}`, loggerMeta);
         const commands = [];
         loadedModules.forEach(module => {
-            if (module.command) {
-                commands.push(getCommandJson(module.command));
-            }
             for (const command of module.commands) {
-                commands.push(getCommandJson(command));
+                commands.push(BuildCommand(command).toJSON());
             }
         });
 

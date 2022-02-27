@@ -1,8 +1,7 @@
 import {Client} from "../classes/client.js";
 import {BuffManagerModule} from "../modules/buffManager.module.js";
 import {ModuleBase} from "../classes/moduleBase.js";
-import {SlashCommandBuilder} from "@discordjs/builders";
-import {Command} from "../classes/command.js";
+import {BuildCommand, Command} from "../classes/command.js";
 import {Listener} from "../classes/listener.js";
 import {EventManagerModule} from "../modules/eventManagerModule.js";
 import {GardeningModule} from "../modules/gardening.module.js";
@@ -69,13 +68,7 @@ export function loadModules(client: Client) {
         client.modules.set(module.moduleName, module);
 
         logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, loggerMeta.moduleConfiguration);
-        module.commands.forEach((command, index, array) => {
-            if (typeof command.command === "function") {
-                command.command = command.command(new SlashCommandBuilder());
-                array[index] = command;
-            }
-            client.commands.set((command.command as SlashCommandBuilder).name, command);
-        });
+        module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
 
         logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, loggerMeta.moduleConfiguration);
         module.listeners.forEach(listener => {
