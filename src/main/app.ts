@@ -1,4 +1,4 @@
-import {loadModules} from "./config/moduleConfiguration.js";
+import {configureModules} from "./config/moduleConfiguration.js";
 import {Client} from "./classes/client.js";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration.js";
@@ -6,7 +6,7 @@ import weekOfYear from "dayjs/plugin/weekOfYear.js";
 import advancedFormat from "dayjs/plugin/advancedFormat.js";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import {CONFIGS, initConfigs} from "./config/appConfigs.js";
-import {createDbClient} from "./config/databaseConfiguration.js";
+import {connectClient} from "./config/databaseConfiguration.js";
 import {logger} from "./utils/logger.js";
 import chalk from "chalk";
 
@@ -25,10 +25,10 @@ export class App {
         }
 
         logger.log("info", "Creating Db Client", {context: "ClientSetup"});
-        await createDbClient();
+        await connectClient();
 
         logger.log("info", "Loading modules.", {context: "ClientSetup"});
-        loadModules(this.client);
+        configureModules(this.client);
 
         this.client.once("ready", () => {
             logger.log("info", chalk.magentaBright("Bot is up and ready to roll!"), {context: "ClientRuntime"});
