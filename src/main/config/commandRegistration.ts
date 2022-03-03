@@ -9,7 +9,7 @@ import advancedFormat from "dayjs/plugin/advancedFormat.js";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 
 import {AppConfigs, CommandRegistrationConfiguration, initConfigs} from "./appConfigs.js";
-import {loadedModules} from "./moduleConfiguration.js";
+import {loadModules} from "./moduleConfiguration.js";
 import {logger} from "../utils/logger.js";
 import {BuildCommand} from "../classes/command.js";
 
@@ -44,7 +44,7 @@ async function main(): Promise<void> {
     } else {
         logger.info(`${chalk.cyan("Generating")} ${isForGlobal()}`, loggerMeta);
         const commands = [];
-        loadedModules.forEach(module => {
+        loadModules().forEach(module => {
             for (const command of module.commands) {
                 commands.push(BuildCommand(command).toJSON());
             }
