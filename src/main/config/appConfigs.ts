@@ -6,7 +6,7 @@ export let CONFIGS: AppConfigs = null;
 
 export class AppConfigs {
     public token: string;
-    public dbUrl: string;
+    public database: DatabaseConfiguration;
     public logging_level: string;
     public commandRegistration: CommandRegistrationConfiguration;
 }
@@ -16,6 +16,16 @@ export class CommandRegistrationConfiguration {
     public guildId: string;
     public registerForGuild: boolean;
     public unregister: boolean;
+}
+
+export class DatabaseConfiguration {
+    public username: string;
+    public password: string;
+    public host: string;
+    public port: string;
+    public database: string;
+    public query: string;
+    public url: string;
 }
 
 export function initConfigs(): AppConfigs {
