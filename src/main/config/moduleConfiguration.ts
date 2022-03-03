@@ -19,14 +19,17 @@ const loggerMeta = {
     interaction: {context: "InteractionInvoking"}
 };
 
+let loadedModules;
 
-export const loadedModules: ModuleBase[] = [
-    container.resolve(BuffManagerModule),
-    container.resolve(EventManagerModule),
-    container.resolve(GardeningModule),
-    container.resolve(ManagerUtilsModule),
-    container.resolve(RoleManagerModule)
-];
+export function loadModules(): ModuleBase[] {
+    return loadedModules ??= [
+        container.resolve(BuffManagerModule),
+        container.resolve(EventManagerModule),
+        container.resolve(GardeningModule),
+        container.resolve(ManagerUtilsModule),
+        container.resolve(RoleManagerModule)
+    ];
+}
 
 async function runEvent(listeners: Listener[], client: Client, ...args) {
     for (let i = 0; i < listeners.length; i++) {
@@ -38,7 +41,7 @@ async function runEvent(listeners: Listener[], client: Client, ...args) {
     }
 }
 
-export function loadModules(client: Client) {
+export function configureModules(client: Client) {
     client.on("interactionCreate", async (interaction) => {
         logger.debug(chalk.magentaBright("Interaction Innovated"), loggerMeta.interaction);
 
@@ -67,7 +70,7 @@ export function loadModules(client: Client) {
         }
     });
 
-    loadedModules.forEach(module => {
+    loadModules().forEach(module => {
         logger.info(`Setting up module ${chalk.blueBright(module.moduleName)}`, loggerMeta.moduleConfiguration);
         client.modules.set(module.moduleName, module);
 
