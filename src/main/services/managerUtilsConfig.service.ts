@@ -1,11 +1,11 @@
-import {ManagerUtilsConfigRepository} from "../repositories/managerUtilsConfigRepository.js";
+import {ManagerUtilsConfigRepository} from "../repositories/managerUtilsConfig.repository.js";
 import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class ManagerUtilsConfigService {
-    private repo: ManagerUtilsConfigRepository;
 
-    constructor() {
-        this.repo = new ManagerUtilsConfigRepository();
+    constructor(private repo: ManagerUtilsConfigRepository) {
     }
 
     public async findOne(id: string): Promise<ManagerUtilsConfig> {

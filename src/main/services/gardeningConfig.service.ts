@@ -1,11 +1,10 @@
 import {GardeningConfig} from "../models/gardeningConfig.model.js";
-import {GardeningConfigRepository} from "../repositories/gardeningConfigRepository.js";
+import {GardeningConfigRepository} from "../repositories/gardeningConfig.repository.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class GardeningConfigService {
-    private repo: GardeningConfigRepository;
-
-    constructor() {
-        this.repo = new GardeningConfigRepository();
+    constructor(private repo: GardeningConfigRepository) {
     }
 
     public async findOne(id: string): Promise<GardeningConfig> {

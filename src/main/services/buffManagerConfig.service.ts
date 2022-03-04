@@ -1,5 +1,5 @@
 import {BuffManagerConfig} from "../models/buffManager.model.js";
-import {BuffManagerConfigRepository} from "../repositories/buffManagerConfigRepository.js";
+import {BuffManagerConfigRepository} from "../repositories/buffManagerConfig.repository.js";
 import {injectable} from "tsyringe";
 
 @injectable()

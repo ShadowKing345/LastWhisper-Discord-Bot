@@ -1,11 +1,11 @@
-import {RoleManagerConfigRepository} from "../repositories/roleManagerConfigRepository.js";
+import {RoleManagerConfigRepository} from "../repositories/roleManagerConfig.repository.js";
 import {RoleManagerConfig} from "../models/roleManager.model.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class RoleManagerConfigService {
-    private repo: RoleManagerConfigRepository;
 
-    constructor() {
-        this.repo = new RoleManagerConfigRepository();
+    constructor(private repo: RoleManagerConfigRepository) {
     }
 
     public async findOne(id: string): Promise<RoleManagerConfig> {

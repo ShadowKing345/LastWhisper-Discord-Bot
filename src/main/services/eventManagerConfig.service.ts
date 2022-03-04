@@ -1,11 +1,11 @@
-import {EventManagerRepository} from "../repositories/eventManagerRepository.js";
+import {EventManagerRepository} from "../repositories/eventManager.repository.js";
 import {EventManagerConfig} from "../models/eventManager.model.js";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class EventManagerConfigService {
-    private repo: EventManagerRepository;
 
-    constructor() {
-        this.repo = new EventManagerRepository();
+    constructor(private repo: EventManagerRepository) {
     }
 
     public async findOne(id: string): Promise<EventManagerConfig> {
