@@ -1,0 +1,19 @@
+import {Collection, Filter} from "mongodb";
+import {GardeningConfig} from "../models/gardeningConfig.model.js";
+import {Database, DB} from "../config/databaseConfiguration.js";
+import {injectable} from "tsyringe";
+import {BasicRepository} from "./basicRepository";
+
+@injectable()
+export class GardeningConfigRepository extends BasicRepository<GardeningConfig> {
+    private readonly collectionName: string = "gardening_manager";
+
+    constructor(protected db: Database) {
+        super();
+        this.collection = db.collection(this.collectionName);
+    }
+
+    protected sanitiseOutput(config: GardeningConfig): GardeningConfig {
+        return Object.assign(new GardeningConfig(), config);
+    }
+}
