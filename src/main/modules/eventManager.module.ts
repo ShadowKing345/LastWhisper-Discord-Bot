@@ -4,16 +4,15 @@ import {Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel} f
 import {fetchMessages} from "../utils/utils.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Task} from "../classes/task.js";
-import {EventManagerConfigService} from "../services/eventManagerConfigService.js";
+import {EventManagerConfigService} from "../services/eventManagerConfig.service.js";
 import {injectable} from "tsyringe";
 
 @injectable()
 export class EventManagerModule extends ModuleBase {
-    private service: EventManagerConfigService;
 
-    constructor() {
+
+    constructor(private service: EventManagerConfigService) {
         super();
-        this.service = new EventManagerConfigService();
 
         this.moduleName = "EventManager";
         this.commands = [

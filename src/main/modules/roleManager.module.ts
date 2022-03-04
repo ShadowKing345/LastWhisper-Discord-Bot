@@ -13,16 +13,13 @@ import {RoleManagerConfig} from "../models/roleManager.model.js";
 import {fetchMessages} from "../utils/utils.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
-import {RoleManagerConfigService} from "../services/roleManagerConfigService.js";
+import {RoleManagerConfigService} from "../services/roleManagerConfig.service.js";
 import {injectable} from "tsyringe";
 
 @injectable()
 export class RoleManagerModule extends ModuleBase {
-    private service: RoleManagerConfigService;
-
-    constructor() {
+    constructor(private service: RoleManagerConfigService) {
         super();
-        this.service = new RoleManagerConfigService();
 
         this.moduleName = "RoleManager";
         this.listeners = [

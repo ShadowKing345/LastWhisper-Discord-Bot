@@ -1,17 +1,15 @@
 import dayjs from "dayjs";
 import {Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
 import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
-import {ManagerUtilsConfigService} from "../services/managerUtilsConfigService.js";
+import {ManagerUtilsConfigService} from "../services/managerUtilsConfig.service.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {injectable} from "tsyringe";
 
 @injectable()
 export class ManagerUtilsModule extends ModuleBase {
-    private service: ManagerUtilsConfigService;
 
-    constructor() {
+    constructor(private service: ManagerUtilsConfigService) {
         super();
-        this.service = new ManagerUtilsConfigService();
 
         this.moduleName = "ManagerUtils";
         this.listeners = [

@@ -3,18 +3,16 @@ import dayjs from "dayjs";
 import {CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel} from "discord.js";
 import {ModuleBase} from "../classes/moduleBase.js";
 import {Client} from "../classes/client.js";
-import {GardeningConfigService} from "../services/gardeningConfigService.js";
+import {GardeningConfigService} from "../services/gardeningConfig.service.js";
 import {logger} from "../utils/logger.js";
 import {injectable} from "tsyringe";
 
 @injectable()
 export class GardeningModule extends ModuleBase {
     private static readonly loggerMeta = {context: "GardeningModule"};
-    private service: GardeningConfigService;
 
-    public constructor() {
+    public constructor(private service: GardeningConfigService) {
         super();
-        this.service = new GardeningConfigService();
 
         this.moduleName = "GardeningModule";
         this.commands = [{
