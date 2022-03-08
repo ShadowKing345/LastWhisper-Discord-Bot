@@ -24,8 +24,9 @@ export class DatabaseConfiguration {
     public host: string;
     public port: string;
     public database: string;
-    public query: string;
+    public query: { [key: string]: object };
     public url: string;
+    public useDns: boolean;
 }
 
 export function initConfigs(): AppConfigs {
