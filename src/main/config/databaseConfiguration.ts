@@ -3,13 +3,37 @@ import {CONFIGS} from "./appConfigs.js";
 import {logger} from "../utils/logger.js";
 import {container} from "tsyringe";
 
-export class Database extends Db {}
+export class Database extends Db {
+}
 
 export let CLIENT: MongoClient;
 export let DB: Database;
 
 export async function connectClient(): Promise<MongoClient> {
-    const url = CONFIGS.database?.url ?? `mongodb+srv://${CONFIGS.database.username}:${CONFIGS.database.password}@${CONFIGS.database.host}${CONFIGS.database.port ? ":" + CONFIGS.database.port : ""}/${CONFIGS.database.database}?${CONFIGS.database.query}`;
+    const dbConfig = CONFIGS.database;
+    let url;
+
+    if (dbConfig?.url) {
+        url = dbConfig.url;
+    } else {
+        url = `mongodb${dbConfig.useDns ? "+srv" : ""}://`;
+        url += `${encodeURIComponent(dbConfig.username)}:${encodeURIComponent(dbConfig.password)}`;
+        url += `@${dbConfig.host}`;
+        if (dbConfig.port) {
+            url += `:${dbConfig.port}`;
+        }
+        if (dbConfig.database) {
+            url += `/${encodeURIComponent(dbConfig.database)}`;
+        }
+        if (dbConfig.query) {
+            const queryArray = Object.entries(dbConfig.query);
+            if (queryArray.length > 0) {
+                url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
+            }
+        }
+    }
+
+    console.log(url);
 
     if (!CLIENT) {
         CLIENT = await MongoClient.connect(url);
@@ -21,7 +45,7 @@ export async function connectClient(): Promise<MongoClient> {
     }
 
     if (!DB) {
-        DB = CLIENT.db(CONFIGS.database.database);
+        DB = CLIENT.db(dbConfig.database);
         container.register<Database>(Database, {useValue: DB});
     }
 
