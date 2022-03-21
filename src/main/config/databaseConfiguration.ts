@@ -1,7 +1,7 @@
-import {Db, MongoClient} from "mongodb";
-import {CONFIGS} from "./appConfigs.js";
-import {logger} from "../utils/logger.js";
-import {container} from "tsyringe";
+import { Db, MongoClient } from "mongodb";
+import { CONFIGS, DatabaseConfiguration } from "./appConfigs.js";
+import { logger } from "../utils/logger.js";
+import { container } from "tsyringe";
 
 export class Database extends Db {
 }
@@ -10,13 +10,13 @@ export let CLIENT: MongoClient;
 export let DB: Database;
 
 export async function connectClient(): Promise<MongoClient> {
-    const dbConfig = CONFIGS.database;
+    const dbConfig = CONFIGS.database ?? new DatabaseConfiguration();
     let url;
 
-    if (dbConfig?.url) {
+    if (dbConfig.url) {
         url = dbConfig.url;
     } else {
-        url = `mongodb${dbConfig.useDns ? "+srv" : ""}://`;
+        url = `mongodb${dbConfig?.useDns && "+srv"}://`;
         url += `${encodeURIComponent(dbConfig.username)}:${encodeURIComponent(dbConfig.password)}`;
         url += `@${dbConfig.host}`;
         if (dbConfig.port) {
@@ -28,7 +28,7 @@ export async function connectClient(): Promise<MongoClient> {
         if (dbConfig.query) {
             const queryArray = Object.entries(dbConfig.query);
             if (queryArray.length > 0) {
-                url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
+                url += "?" + queryArray.map(value => `${value[ 0 ]}=${encodeURIComponent(value[ 1 ].toString())}`).join("&");
             }
         }
     }
@@ -40,6 +40,9 @@ export async function connectClient(): Promise<MongoClient> {
             CLIENT.close();
         });
         container.register<MongoClient>(MongoClient, {useValue: CLIENT});
+
+        process.once("SIGINT", () => CLIENT.close());
+        process.once("SIGTERM", () => CLIENT.close());
     }
 
     if (!DB) {
