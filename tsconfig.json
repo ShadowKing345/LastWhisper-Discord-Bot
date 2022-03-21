@@ -13,7 +13,7 @@
     "sourceMap": true,
     "outDir": "build",
     "forceConsistentCasingInFileNames": true,
-
+    "noEmit": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
