@@ -1,8 +1,8 @@
-const ts = require("ts-jest/jest-preset");
-const mongoDb = require("@shelf/jest-mongodb/jest-preset");
-const {recursive} = require("merge");
+import ts from "ts-jest/jest-preset.js";
+import mongoDb from "@shelf/jest-mongodb/jest-preset.js";
+import {recursive} from "merge";
 
-module.exports = recursive(ts, mongoDb, {
+export default recursive(ts, mongoDb, {
     notify: true,
     testRegex: "(/test[s]/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
     bail: false,
