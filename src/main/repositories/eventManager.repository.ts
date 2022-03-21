@@ -1,9 +1,8 @@
-import {Collection, Filter} from "mongodb";
 import {EventManagerConfig, EventObj} from "../models/eventManager.model.js";
-import {Database, DB} from "../config/databaseConfiguration.js";
+import {Database} from "../config/databaseConfiguration.js";
 import {injectable} from "tsyringe";
-import {BasicRepository} from "./basicRepository";
-import {BuffManagerConfig} from "../models/buffManager.model";
+import {BasicRepository} from "./basicRepository.js";
+import {BuffManagerConfig} from "../models/buffManager.model.js";
 
 @injectable()
 export class EventManagerRepository extends BasicRepository<EventManagerConfig> {

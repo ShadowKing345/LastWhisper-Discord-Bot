@@ -1,8 +1,7 @@
-import {Collection, Filter} from "mongodb";
-import {Database, DB} from "../config/databaseConfiguration.js";
+import {Database} from "../config/databaseConfiguration.js";
 import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
 import {injectable} from "tsyringe";
-import {BasicRepository} from "./basicRepository";
+import {BasicRepository} from "./basicRepository.js";
 
 @injectable()
 export class ManagerUtilsConfigRepository extends BasicRepository<ManagerUtilsConfig>{
