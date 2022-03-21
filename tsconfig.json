@@ -6,16 +6,15 @@
       "es2020",
       "dom"
     ],
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "sourceMap": true,
     "outDir": "build",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
   "include": [
     "src/main"

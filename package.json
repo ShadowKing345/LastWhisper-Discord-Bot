@@ -8,7 +8,9 @@
     "dev": "nodemon --watch './src/**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/main/app.ts",
     "command-setup": "node build/config/commandRegistration.js",
     "command-setup:ts": "node --experimental-specifier-resolution=node --loader ts-node/esm src/main/config/commandRegistration.ts",
-    "build": "yarn babel src/main --extensions .ts --out-dir build",
+    "build:compile": "babel src/main --extensions .ts --out-dir build --source-maps",
+    "build:types": "tsc",
+    "build": "concurrently yarn:build:*",
     "test": "jest --passWithNoTests",
     "eslint": "eslint . --ext .ts"
   },
@@ -58,6 +60,7 @@
     "@typescript-eslint/parser": "^5.12.1",
     "babel-jest": "^27.5.1",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
+    "concurrently": "^7.0.0",
     "eslint": "^8.10.0",
     "jest": "^27.5.1",
     "node-notifier": "^10.0.1",
