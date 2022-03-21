@@ -33,8 +33,6 @@ export async function connectClient(): Promise<MongoClient> {
         }
     }
 
-    console.log(url);
-
     if (!CLIENT) {
         CLIENT = await MongoClient.connect(url);
         CLIENT.on("error", error => {
