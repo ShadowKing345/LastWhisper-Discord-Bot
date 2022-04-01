@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-const configPath = "./appConfigs.json", devConfigPath = "./appConfigs-dev.json";
+export const configPath = "./appConfigs.json", devConfigPath = "./appConfigs-dev.json";
 
 export let CONFIGS: AppConfigs = null;
 
@@ -34,20 +34,13 @@ export function initConfigs(): AppConfigs {
         throw new ConfigurationError("No configuration file named appConfigs.json found in root directory. Please create one.");
     }
 
-    const raw = fs.readFileSync(configPath, "utf-8");
-    let dev;
+    CONFIGS = Object.assign<AppConfigs, object>(new AppConfigs, JSON.parse(fs.readFileSync(configPath, "utf-8")));
 
-    if (fs.existsSync(devConfigPath)) {
-        dev = fs.readFileSync(devConfigPath, "utf-8");
+    if (!fs.existsSync(devConfigPath)) {
+        return CONFIGS;
     }
 
-    CONFIGS = Object.assign<AppConfigs, object>(new AppConfigs, JSON.parse(raw));
-
-    if (dev) {
-        Object.assign<AppConfigs, object>(CONFIGS, JSON.parse(dev));
-    }
-
-    return CONFIGS;
+    return CONFIGS = Object.assign<AppConfigs, object>(CONFIGS, JSON.parse(fs.readFileSync(devConfigPath, "utf-8")));
 }
 
 export class ConfigurationError extends Error {
