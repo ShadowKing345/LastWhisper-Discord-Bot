@@ -174,7 +174,7 @@ export class BuffManagerModule extends ModuleBase {
         for (const config of configs) {
             try {
                 if (!client.guilds.cache.has(config.guildId)) {
-                    logger.warn(`${chalk.red("Expected Failure:")} There is a ${chalk.blue("config")} listing for the guild with ID ${chalk.yellow(config.guildId)}, which the bot is currently not inside of. Please remove configuration. ${chalk.cyan("Skipping...")}`, this.loggerMeta);
+                    logger.warn(`${chalk.red("Expected Failure:")} There is a ${chalk.blue("config")} listing for the guild with ID ${chalk.yellow(config.guildId)}, which the bot is currently not a member of. Please remove configuration. ${chalk.cyan("Skipping...")}`, this.loggerMeta);
                     continue;
                 }
 
