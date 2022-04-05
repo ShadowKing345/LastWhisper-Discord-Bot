@@ -34,6 +34,9 @@
   },
   "homepage": "https://github.com/ShadowKing345/LastWhisper-Discord-Bot#readme",
   "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
