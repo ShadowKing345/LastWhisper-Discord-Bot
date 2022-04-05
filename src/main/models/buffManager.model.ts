@@ -1,3 +1,5 @@
+import { BasicModel } from "./basicModel.js";
+
 export class Buff {
     public id: string;
     public text: string;
@@ -32,7 +34,7 @@ export class MessageSettings {
     public weekMessage: string;
 }
 
-export class BuffManagerConfig {
+export class BuffManagerConfig extends BasicModel {
     public guildId: string;
     public messageSettings: MessageSettings = new MessageSettings();
     public buffs: Buff[] = [];

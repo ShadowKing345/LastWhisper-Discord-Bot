@@ -1,3 +1,5 @@
+import { BasicModel } from "./basicModel.js";
+
 export interface SlotBase {
     player: string;
     duration: number;
@@ -50,7 +52,7 @@ export class Plot {
     public slots: Slot[];
 }
 
-export class GardeningConfig {
+export class GardeningConfig extends BasicModel {
     public guildId: string;
     public plots: Plot[] = [];
     public messagePostingChannelId: string;

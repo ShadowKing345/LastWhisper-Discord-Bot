@@ -1,3 +1,5 @@
+import { BasicModel } from "./basicModel.js";
+
 export class ReminderTrigger {
     public message: string;
     public timeDelta: string;
@@ -42,7 +44,7 @@ export class Tags {
     }
 }
 
-export class EventManagerConfig {
+export class EventManagerConfig extends BasicModel {
     public guildId: string;
     public listenerChannelId: string | null;
     public postingChannelId: string | null;
@@ -51,15 +53,4 @@ export class EventManagerConfig {
     public dateTimeFormat: string[];
     public events: EventObj[];
     public reminders: ReminderTrigger[];
-
-    constructor(id = "", listenerChannelId: string = null, postingChannelId: string = null, delimiterCharacters: [ string, string ] = [ "\\[", "\\]" ], tags: Tags = new Tags(), dateTimeFormat: string[] = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
-        this.guildId = id;
-        this.listenerChannelId = listenerChannelId;
-        this.postingChannelId = postingChannelId;
-        this.delimiterCharacters = delimiterCharacters;
-        this.tags = tags;
-        this.dateTimeFormat = dateTimeFormat;
-        this.events = events;
-        this.reminders = reminders;
-    }
 }
