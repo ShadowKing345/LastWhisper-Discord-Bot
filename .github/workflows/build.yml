@@ -39,6 +39,6 @@ jobs:
           node-version: 17
       - name: Execute ESlint
         run: |
-          yarn eslint
+          yarn lint
 
 # TODO: Deployment/Publish Job

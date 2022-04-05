@@ -14,7 +14,7 @@
     "build:types": "tsc",
     "build": "concurrently yarn:build:*",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests",
-    "eslint": "eslint . --ext .ts --max-warnings=0"
+    "lint": "eslint . --ext .ts"
   },
   "repository": {
     "type": "git",
