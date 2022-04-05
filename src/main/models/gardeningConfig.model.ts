@@ -8,8 +8,8 @@ export interface SlotBase {
 export class Reservation implements SlotBase {
     public player: string;
     public duration: number;
-    public reason: Reason = Reason.NONE;
     public plant: string;
+    public reason: Reason = Reason.NONE;
 
     constructor(player: string, plant: string, duration: number, reason: Reason) {
         this.player = player;
@@ -29,8 +29,8 @@ export enum Reason {
 export class Slot implements SlotBase {
     public player: string;
     public duration: number;
-    public reason: Reason = Reason.NONE;
     public plant: string;
+    public reason: Reason = Reason.NONE;
     public started: number;
     public next: Reservation[] = [];
 

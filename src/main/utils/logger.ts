@@ -1,11 +1,11 @@
-import winston, {format, Logger, Logform} from "winston";
 import chalk from "chalk";
+import { createLogger, format, Logform, Logger, transports } from "winston";
 
 export const loggerFormat = format.printf((info: Logform.TransformableInfo) => {
     return `[${info.timestamp}] [${info.level}]\t${chalk.yellowBright(info.context)}: ${info.message}`;
 });
 
-export const logger: Logger = winston.createLogger(
+export const logger: Logger = createLogger(
     {
         level: "info",
         format: format.combine(
@@ -13,24 +13,24 @@ export const logger: Logger = winston.createLogger(
                 info.level = info.level.toUpperCase();
                 return info;
             })(),
-            format.label({label: "No Label"}),
+            format.label({ label: "No Label" }),
             format.colorize({
                 colors: {
                     debug: "bold italic blue",
                     info: "bold cyan",
                     warning: "bold yellow",
-                    error: "bold red"
-                }
+                    error: "bold red",
+                },
             }),
-            format.timestamp({format: "YYYY-MM-DD HH:mm:ss"}),
-            loggerFormat
+            format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+            loggerFormat,
         ),
         defaultMeta: {
-            context: "Context-less"
+            context: "Context-less",
         },
         transports: [
-            new winston.transports.Console()
+            new transports.Console(),
         ],
-        exitOnError: false
-    }
+        exitOnError: false,
+    },
 );

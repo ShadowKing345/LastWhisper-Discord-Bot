@@ -1,27 +1,26 @@
-import {Collection, Filter} from "mongodb";
+import { Collection, Filter } from "mongodb";
 
-export abstract class BasicRepository<T extends object> {
+export abstract class BasicRepository<T> {
     protected collection: Collection<T>;
 
     public async save(config: T): Promise<T> {
-        const result = await this.collection.findOneAndReplace({_id: config['_id']}, config, {upsert: true});
-
-        return result.ok ? this.sanitiseOutput(config) : null;
+        const result = await this.collection.findOneAndReplace(config, { upsert: true });
+        return this.sanitiseOutput(result);
     }
 
     public async findOne(filter: Filter<T>): Promise<T> {
-        return this.sanitiseOutput(await this.collection.findOne(filter) as T);
+        return this.sanitiseOutput(await this.collection.findOne(filter));
     }
 
     public async find(filter: Filter<T>): Promise<T[]> {
-        return (await this.collection.find(filter).toArray()).map(config => this.sanitiseOutput(config as T));
+        return (await this.collection.find(filter).toArray()).map(config => this.sanitiseOutput(config));
     }
 
     public async bulkSave(configs: T[]) {
         if (configs.length <= 0) return;
 
         const bulk = this.collection.initializeOrderedBulkOp();
-        configs.forEach(config => bulk.find({_id: config['_id']}).upsert().replaceOne(config));
+        configs.forEach(config => bulk.find({ _id: config._id }).upsert().replaceOne(config));
 
         await bulk.execute();
     }

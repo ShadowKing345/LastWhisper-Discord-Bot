@@ -1,6 +1,6 @@
-import {Command} from "./command.js";
-import {Listener} from "./listener.js";
-import {Task} from "./task.js";
+import { Command } from "./command.js";
+import { Listener } from "./listener.js";
+import { Task } from "./task.js";
 
 export class ModuleBase {
     public moduleName = "";

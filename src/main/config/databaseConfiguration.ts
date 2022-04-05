@@ -1,7 +1,8 @@
 import { Db, MongoClient } from "mongodb";
-import { CONFIGS, DatabaseConfiguration } from "./appConfigs.js";
-import { logger } from "../utils/logger.js";
 import { container } from "tsyringe";
+
+import { logger } from "../utils/logger.js";
+import { CONFIGS, DatabaseConfiguration } from "./appConfigs.js";
 
 export class Database extends Db {
 }
@@ -28,7 +29,7 @@ export async function connectClient(): Promise<MongoClient> {
         if (dbConfig.query) {
             const queryArray = Object.entries(dbConfig.query);
             if (queryArray.length > 0) {
-                url += "?" + queryArray.map(value => `${value[ 0 ]}=${encodeURIComponent(value[ 1 ].toString())}`).join("&");
+                url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
             }
         }
     }
@@ -36,10 +37,10 @@ export async function connectClient(): Promise<MongoClient> {
     if (!CLIENT) {
         CLIENT = await MongoClient.connect(url);
         CLIENT.on("error", error => {
-            logger.error(error.message, {context: "DatabaseConfiguration"});
+            logger.error(error.message, { context: "DatabaseConfiguration" });
             CLIENT.close();
         });
-        container.register<MongoClient>(MongoClient, {useValue: CLIENT});
+        container.register<MongoClient>(MongoClient, { useValue: CLIENT });
 
         process.once("SIGINT", () => CLIENT.close());
         process.once("SIGTERM", () => CLIENT.close());
@@ -47,7 +48,7 @@ export async function connectClient(): Promise<MongoClient> {
 
     if (!DB) {
         DB = CLIENT.db(dbConfig.database);
-        container.register<Database>(Database, {useValue: DB});
+        container.register<Database>(Database, { useValue: DB });
     }
 
     return CLIENT;

@@ -13,9 +13,9 @@ export class EventObj {
     public name: string;
     public description: string;
     public dateTime: Date;
-    public additional: [string, string][];
+    public additional: [ string, string ][];
 
-    constructor(messageId: string, name = "", description = "", dateTime: Date = null, additional: [string, string][] = []) {
+    constructor(messageId: string, name = "", description = "", dateTime: Date = null, additional: [ string, string ][] = []) {
         this.messageId = messageId;
         this.name = name;
         this.description = description;
@@ -46,13 +46,13 @@ export class EventManagerConfig {
     public guildId: string;
     public listenerChannelId: string | null;
     public postingChannelId: string | null;
-    public delimiterCharacters: [string, string];
+    public delimiterCharacters: [ string, string ];
     public tags: Tags;
     public dateTimeFormat: string[];
     public events: EventObj[];
     public reminders: ReminderTrigger[];
 
-    constructor(id = "", listenerChannelId: string = null, postingChannelId: string = null, delimiterCharacters: [string, string] = ["\\[", "\\]"], tags: Tags = new Tags(), dateTimeFormat: string[] = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
+    constructor(id = "", listenerChannelId: string = null, postingChannelId: string = null, delimiterCharacters: [ string, string ] = [ "\\[", "\\]" ], tags: Tags = new Tags(), dateTimeFormat: string[] = [], events: EventObj[] = [], reminders: ReminderTrigger[] = []) {
         this.guildId = id;
         this.listenerChannelId = listenerChannelId;
         this.postingChannelId = postingChannelId;

@@ -1,11 +1,12 @@
-import {Client as DiscordClient, ClientEvents, Collection, Intents} from "discord.js";
-import {Command} from "./command.js";
-import {Listener} from "./listener.js";
-import {ModuleBase} from "./moduleBase.js";
-import {Task} from "./task.js";
+import { Client as DiscordClient, ClientEvents, Collection, Intents } from "discord.js";
+
+import { Command } from "./command.js";
+import { Listener } from "./listener.js";
+import { ModuleBase } from "./moduleBase.js";
+import { Task } from "./task.js";
 
 export class Client extends DiscordClient {
-    private readonly _modules: Collection<string, ModuleBase>
+    private readonly _modules: Collection<string, ModuleBase>;
     private readonly _commands: Collection<string, Command>;
     private readonly _moduleListeners: Collection<keyof ClientEvents, Listener[]>;
     private readonly _tasks: Collection<string, Task>;
@@ -17,8 +18,8 @@ export class Client extends DiscordClient {
                 Intents.FLAGS.GUILD_BANS,
                 Intents.FLAGS.GUILD_MEMBERS,
                 Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-            ]
+                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            ],
         });
 
         this._commands = new Collection<string, Command>();

@@ -1,7 +1,8 @@
-import {Database} from "../config/databaseConfiguration.js";
-import {RoleManagerConfig} from "../models/roleManager.model.js";
-import {injectable} from "tsyringe";
-import {BasicRepository} from "./basicRepository.js";
+import { injectable } from "tsyringe";
+
+import { Database } from "../config/databaseConfiguration.js";
+import { RoleManagerConfig } from "../models/roleManager.model.js";
+import { BasicRepository } from "./basicRepository.js";
 
 @injectable()
 export class RoleManagerConfigRepository extends BasicRepository<RoleManagerConfig> {

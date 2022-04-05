@@ -1,6 +1,7 @@
-import {GardeningConfig} from "../models/gardeningConfig.model.js";
-import {GardeningConfigRepository} from "../repositories/gardeningConfig.repository.js";
-import {injectable} from "tsyringe";
+import { injectable } from "tsyringe";
+
+import { GardeningConfig } from "../models/gardeningConfig.model.js";
+import { GardeningConfigRepository } from "../repositories/gardeningConfig.repository.js";
 
 @injectable()
 export class GardeningConfigService {
@@ -8,11 +9,11 @@ export class GardeningConfigService {
     }
 
     public async findOne(id: string): Promise<GardeningConfig> {
-        return this.repo.findOne({guildId: id});
+        return this.repo.findOne({ guildId: id });
     }
 
     public async findOneOrCreate(id: string): Promise<GardeningConfig> {
-        let result = await this.repo.findOne({guildId: id})
+        let result = await this.repo.findOne({ guildId: id });
         if (result) return result;
 
         result = new GardeningConfig();

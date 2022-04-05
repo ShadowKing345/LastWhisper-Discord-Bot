@@ -1,22 +1,23 @@
 import "reflect-metadata";
-import {container} from "tsyringe";
 
-import {Client} from "../classes/client.js";
-import {BuffManagerModule} from "../modules/buffManager.module.js";
-import {ModuleBase} from "../classes/moduleBase.js";
-import {BuildCommand, Command} from "../classes/command.js";
-import {Listener} from "../classes/listener.js";
-import {EventManagerModule} from "../modules/eventManager.module.js";
-import {GardeningModule} from "../modules/gardening.module.js";
-import {ManagerUtilsModule} from "../modules/managerUtils.module.js";
-import {RoleManagerModule} from "../modules/roleManager.module.js";
-import {logger} from "../utils/logger.js";
 import chalk from "chalk";
-import {CommandInteraction} from "discord.js";
+import { CommandInteraction } from "discord.js";
+import { container } from "tsyringe";
+
+import { Client } from "../classes/client.js";
+import { BuildCommand, Command } from "../classes/command.js";
+import { Listener } from "../classes/listener.js";
+import { ModuleBase } from "../classes/moduleBase.js";
+import { BuffManagerModule } from "../modules/buffManager.module.js";
+import { EventManagerModule } from "../modules/eventManager.module.js";
+import { GardeningModule } from "../modules/gardening.module.js";
+import { ManagerUtilsModule } from "../modules/managerUtils.module.js";
+import { RoleManagerModule } from "../modules/roleManager.module.js";
+import { logger } from "../utils/logger.js";
 
 const loggerMeta = {
-    moduleConfiguration: {context: "ModuleConfiguration"},
-    interaction: {context: "InteractionInvoking"}
+    moduleConfiguration: { context: "ModuleConfiguration" },
+    interaction: { context: "InteractionInvoking" },
 };
 
 let loadedModules;
@@ -27,16 +28,18 @@ export function loadModules(): ModuleBase[] {
         container.resolve(EventManagerModule),
         container.resolve(GardeningModule),
         container.resolve(ManagerUtilsModule),
-        container.resolve(RoleManagerModule)
+        container.resolve(RoleManagerModule),
     ];
 }
 
-async function runEvent(listeners: Listener[], client: Client, ...args) {
+async function runEvent(listeners: Listener[], client: Client, ...args: any[]) {
     for (let i = 0; i < listeners.length; i++) {
         try {
             await listeners[i].run(client, ...args);
         } catch (error) {
-            logger.error(error, {context: "EventRunner"});
+            if (error instanceof Error) {
+                logger.error(error.stack, { context: "EventRunner" });
+            }
         }
     }
 }
@@ -64,9 +67,9 @@ export function configureModules(client: Client) {
         } catch (err) {
             await (interaction as CommandInteraction).reply({
                 content: "There was an internal issue executing the command",
-                ephemeral: true
+                ephemeral: true,
             });
-            logger.error(err, loggerMeta.interaction);
+            logger.error((err as Error).stack, loggerMeta.interaction);
         }
     });
 
@@ -89,7 +92,7 @@ export function configureModules(client: Client) {
 
         logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, loggerMeta.moduleConfiguration);
         module.tasks.forEach(task => {
-            client.tasks.set(task.name, task)
+            client.tasks.set(task.name, task);
             setInterval(task.run, task.timeout, client);
             task.run(client).catch(err => console.error(err));
         });

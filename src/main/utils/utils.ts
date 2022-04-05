@@ -1,4 +1,4 @@
-import {Channel, Client, Guild, Message, Snowflake, TextChannel} from "discord.js";
+import { Channel, Client, Guild, Message, Snowflake, TextChannel } from "discord.js";
 
 export async function fetchMessages(client: Client, guildId: Snowflake, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
     const result: Message[] = [];

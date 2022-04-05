@@ -5,28 +5,28 @@ export const configPath = "./appConfigs.json", devConfigPath = "./appConfigs-dev
 export let CONFIGS: AppConfigs = null;
 
 export class AppConfigs {
-    public token: string;
-    public database: DatabaseConfiguration;
-    public logging_level: string = "info";
-    public commandRegistration: CommandRegistrationConfiguration;
+    public token?: string;
+    public database?: DatabaseConfiguration;
+    public logging_level?: string = "info";
+    public commandRegistration?: CommandRegistrationConfiguration;
 }
 
 export class CommandRegistrationConfiguration {
-    public clientId: string;
-    public guildId: string;
-    public registerForGuild: boolean = true;
-    public unregister: boolean = false;
+    public clientId?: string;
+    public guildId?: string;
+    public registerForGuild?: boolean = true;
+    public unregister?: boolean = false;
 }
 
 export class DatabaseConfiguration {
-    public username: string;
-    public password: string;
-    public host: string;
-    public port: string;
-    public database: string;
-    public query: { [key: string]: object };
-    public url: string;
-    public useDns: boolean = false;
+    public username?: string;
+    public password?: string;
+    public host?: string;
+    public port?: string;
+    public database?: string;
+    public query?: { [key: string]: object };
+    public url?: string;
+    public useDns?: boolean = false;
 }
 
 export function parseConfigFile(): AppConfigs {

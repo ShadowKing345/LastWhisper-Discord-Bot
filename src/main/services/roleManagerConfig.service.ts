@@ -1,6 +1,7 @@
-import {RoleManagerConfigRepository} from "../repositories/roleManagerConfig.repository.js";
-import {RoleManagerConfig} from "../models/roleManager.model.js";
-import {injectable} from "tsyringe";
+import { injectable } from "tsyringe";
+
+import { RoleManagerConfig } from "../models/roleManager.model.js";
+import { RoleManagerConfigRepository } from "../repositories/roleManagerConfig.repository.js";
 
 @injectable()
 export class RoleManagerConfigService {
@@ -9,11 +10,11 @@ export class RoleManagerConfigService {
     }
 
     public async findOne(id: string): Promise<RoleManagerConfig> {
-        return this.repo.findOne({guildId: id});
+        return this.repo.findOne({ guildId: id });
     }
 
     public async findOneOrCreate(id: string): Promise<RoleManagerConfig> {
-        let result = await this.repo.findOne({guildId: id})
+        let result = await this.repo.findOne({ guildId: id });
         if (result) return result;
 
         result = new RoleManagerConfig();

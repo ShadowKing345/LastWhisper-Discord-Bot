@@ -1,20 +1,11 @@
-import {
-    CommandInteraction,
-    Guild,
-    GuildMember,
-    Message,
-    MessageActionRow,
-    MessageButton,
-    MessageReaction,
-    Role,
-    User
-} from "discord.js";
-import {RoleManagerConfig} from "../models/roleManager.model.js";
-import {fetchMessages} from "../utils/utils.js";
-import {ModuleBase} from "../classes/moduleBase.js";
-import {Client} from "../classes/client.js";
-import {RoleManagerConfigService} from "../services/roleManagerConfig.service.js";
-import {injectable} from "tsyringe";
+import { CommandInteraction, Guild, GuildMember, Message, MessageActionRow, MessageButton, MessageReaction, Role, User } from "discord.js";
+import { injectable } from "tsyringe";
+
+import { Client } from "../classes/client.js";
+import { ModuleBase } from "../classes/moduleBase.js";
+import { RoleManagerConfig } from "../models/roleManager.model.js";
+import { RoleManagerConfigService } from "../services/roleManagerConfig.service.js";
+import { fetchMessages } from "../utils/utils.js";
 
 @injectable()
 export class RoleManagerModule extends ModuleBase {
@@ -23,20 +14,16 @@ export class RoleManagerModule extends ModuleBase {
 
         this.moduleName = "RoleManager";
         this.listeners = [
-            {event: "guildMemberAdd", run: async (_, member) => this.onMemberJoin(member)},
-            {event: "ready", run: async (client) => this.onReady(client)}
+            { event: "guildMemberAdd", run: async (_, member) => this.onMemberJoin(member) },
+            { event: "ready", run: async (client) => this.onReady(client) },
         ];
 
         this.commands = [
             {
                 command: builder => builder.setName("gen_role_chooser").setDescription("Displays the buff for the day."),
-                run: async interaction => RoleManagerModule.sendButtons(interaction)
-            }
+                run: async interaction => RoleManagerModule.sendButtons(interaction),
+            },
         ];
-    }
-
-    private async getConfig(guildId: string): Promise<RoleManagerConfig> {
-        return this.service.findOneOrCreate(guildId);
     }
 
     private static async alterMembersRoles(member: GuildMember, newMemberRoleId: string, memberRoleId: string) {
@@ -51,8 +38,19 @@ export class RoleManagerModule extends ModuleBase {
 
         const newMemberRole: Role | null = await member.guild.roles.fetch(newMemberRoleId);
         if (newMemberRole) {
-            await member.roles.remove([newMemberRole]);
+            await member.roles.remove([ newMemberRole ]);
         }
+    }
+
+    private static async sendButtons(interaction: CommandInteraction) {
+        await interaction.reply({
+            content: "yolo",
+            components: [ new MessageActionRow().addComponents(new MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY")) ],
+        });
+    }
+
+    private async getConfig(guildId: string): Promise<RoleManagerConfig> {
+        return this.service.findOneOrCreate(guildId);
     }
 
     private async onReady(client: Client) {
@@ -67,7 +65,7 @@ export class RoleManagerModule extends ModuleBase {
             const guild: Guild | null = await client.guilds.fetch(config.guildId);
             if (!guild) continue;
 
-            const filter = (reaction: MessageReaction, _: User) => config.reactionMessageIds.includes(reaction.message.id);
+            const filter = (reaction: MessageReaction) => config.reactionMessageIds.includes(reaction.message.id);
 
             for (const message of messages) {
                 for (const reaction of message.reactions.cache.values()) {
@@ -83,7 +81,7 @@ export class RoleManagerModule extends ModuleBase {
                 }
 
                 await message.reactions.removeAll();
-                message.createReactionCollector({filter: filter}).on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
+                message.createReactionCollector({ filter }).on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
             }
         }
     }
@@ -97,7 +95,7 @@ export class RoleManagerModule extends ModuleBase {
         const newMemberRole: Role | null = await member.guild.roles.fetch(config.newUserRoleId);
 
         if (newMemberRole) {
-            await member.roles.add([newMemberRole], "Bot added.");
+            await member.roles.add([ newMemberRole ], "Bot added.");
         }
     }
 
@@ -116,12 +114,5 @@ export class RoleManagerModule extends ModuleBase {
         await RoleManagerModule.alterMembersRoles(member, config.newUserRoleId, config.memberRoleId);
 
         await messageReaction.remove();
-    }
-
-    private static async sendButtons(interaction: CommandInteraction) {
-        await interaction.reply({
-            content: "yolo",
-            components: [new MessageActionRow().addComponents(new MessageButton().setCustomId("fish").setLabel("yolo2").setStyle("PRIMARY"))]
-        });
     }
 }

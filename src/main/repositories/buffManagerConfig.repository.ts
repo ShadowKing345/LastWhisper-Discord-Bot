@@ -1,7 +1,8 @@
-import {Database} from "../config/databaseConfiguration.js";
-import {Buff, BuffManagerConfig, Days, MessageSettings, Week} from "../models/buffManager.model.js";
-import {injectable} from "tsyringe";
-import {BasicRepository} from "./basicRepository.js";
+import { injectable } from "tsyringe";
+
+import { Database } from "../config/databaseConfiguration.js";
+import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "../models/buffManager.model.js";
+import { BasicRepository } from "./basicRepository.js";
 
 @injectable()
 export class BuffManagerConfigRepository extends BasicRepository<BuffManagerConfig> {

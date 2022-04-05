@@ -1,10 +1,11 @@
-import {Database} from "../config/databaseConfiguration.js";
-import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
-import {injectable} from "tsyringe";
-import {BasicRepository} from "./basicRepository.js";
+import { injectable } from "tsyringe";
+
+import { Database } from "../config/databaseConfiguration.js";
+import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
+import { BasicRepository } from "./basicRepository.js";
 
 @injectable()
-export class ManagerUtilsConfigRepository extends BasicRepository<ManagerUtilsConfig>{
+export class ManagerUtilsConfigRepository extends BasicRepository<ManagerUtilsConfig> {
     private readonly collectionName: string = "manager_utils";
 
     constructor(protected db: Database) {

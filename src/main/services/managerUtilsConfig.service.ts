@@ -1,6 +1,7 @@
-import {ManagerUtilsConfigRepository} from "../repositories/managerUtilsConfig.repository.js";
-import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
-import {injectable} from "tsyringe";
+import { injectable } from "tsyringe";
+
+import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
+import { ManagerUtilsConfigRepository } from "../repositories/managerUtilsConfig.repository.js";
 
 @injectable()
 export class ManagerUtilsConfigService {
@@ -9,11 +10,11 @@ export class ManagerUtilsConfigService {
     }
 
     public async findOne(id: string): Promise<ManagerUtilsConfig> {
-        return this.repo.findOne({guildId: id});
+        return this.repo.findOne({ guildId: id });
     }
 
     public async findOneOrCreate(id: string): Promise<ManagerUtilsConfig> {
-        let result = await this.repo.findOne({guildId: id})
+        let result = await this.repo.findOne({ guildId: id });
         if (result) return result;
 
         result = new ManagerUtilsConfig();

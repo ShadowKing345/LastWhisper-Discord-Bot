@@ -1,6 +1,7 @@
-import {EventManagerRepository} from "../repositories/eventManager.repository.js";
-import {EventManagerConfig} from "../models/eventManager.model.js";
-import {injectable} from "tsyringe";
+import { injectable } from "tsyringe";
+
+import { EventManagerConfig } from "../models/eventManager.model.js";
+import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 
 @injectable()
 export class EventManagerConfigService {
@@ -9,11 +10,11 @@ export class EventManagerConfigService {
     }
 
     public async findOne(id: string): Promise<EventManagerConfig> {
-        return this.repo.findOne({guildId: id});
+        return this.repo.findOne({ guildId: id });
     }
 
     public async findOneOrCreate(id: string): Promise<EventManagerConfig> {
-        let result = await this.repo.findOne({guildId: id})
+        let result = await this.repo.findOne({ guildId: id });
         if (result) return result;
 
         result = new EventManagerConfig();

@@ -1,6 +1,7 @@
-import {jest} from "@jest/globals";
-import {AppConfigs, DatabaseConfiguration, parseConfigFile} from "../../main/config/appConfigs";
-import {vol} from "memfs";
+import { jest } from "@jest/globals";
+import { vol } from "memfs";
+
+import { AppConfigs, DatabaseConfiguration, parseConfigFile } from "../../main/config/appConfigs";
 
 jest.mock("fs");
 
@@ -18,7 +19,7 @@ describe("App Configuration", () => {
         expect(parseConfigFile()).toEqual(config);
     });
 
-    it('should return null if no file was found', () => {
+    it("should return null if no file was found", () => {
         expect(parseConfigFile()).not.toBeTruthy();
     });
 

@@ -1,7 +1,8 @@
-import {GardeningConfig} from "../models/gardeningConfig.model.js";
-import {Database} from "../config/databaseConfiguration.js";
-import {injectable} from "tsyringe";
-import {BasicRepository} from "./basicRepository.js";
+import { injectable } from "tsyringe";
+
+import { Database } from "../config/databaseConfiguration.js";
+import { GardeningConfig } from "../models/gardeningConfig.model.js";
+import { BasicRepository } from "./basicRepository.js";
 
 @injectable()
 export class GardeningConfigRepository extends BasicRepository<GardeningConfig> {

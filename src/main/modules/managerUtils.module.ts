@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
-import {Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User} from "discord.js";
-import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
-import {ManagerUtilsConfigService} from "../services/managerUtilsConfig.service.js";
-import {ModuleBase} from "../classes/moduleBase.js";
-import {injectable} from "tsyringe";
+import { Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
+import { injectable } from "tsyringe";
+
+import { ModuleBase } from "../classes/moduleBase.js";
+import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
+import { ManagerUtilsConfigService } from "../services/managerUtilsConfig.service.js";
 
 @injectable()
 export class ManagerUtilsModule extends ModuleBase {
@@ -13,8 +14,8 @@ export class ManagerUtilsModule extends ModuleBase {
 
         this.moduleName = "ManagerUtils";
         this.listeners = [
-            {event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member)},
-            {event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member)}
+            { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
+            { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
         ];
     }
 
@@ -38,15 +39,15 @@ export class ManagerUtilsModule extends ModuleBase {
 
         const kickedData = (await member.guild.fetchAuditLogs({
             limit: 1,
-            type: "MEMBER_KICK"
+            type: "MEMBER_KICK",
         })).entries.first();
 
         const embed = new MessageEmbed()
             .setColor("RANDOM")
             .addFields(
-                {name: "Joined On:", value: dayjs(member.joinedAt).format("HH:mm:ss DD/MM/YYYY")},
-                {name: "Nickname was:", value: member.nickname ?? "None"},
-                {name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ")})
+                { name: "Joined On:", value: dayjs(member.joinedAt).format("HH:mm:ss DD/MM/YYYY") },
+                { name: "Nickname was:", value: member.nickname ?? "None" },
+                { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
             .setThumbnail(member.user.displayAvatarURL());
 
         if (kickedData && (kickedData.target as User).id === member.id) {
@@ -57,14 +58,14 @@ export class ManagerUtilsModule extends ModuleBase {
                 .setDescription(`User **${member.user.username}** has left this discord server`);
         }
 
-        await loggingChannel.send({embeds: [embed]});
+        await loggingChannel.send({ embeds: [ embed ] });
     }
 
     private async onMemberBanned(ban: GuildBan) {
         const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel) return;
 
-        const banLogs = (await ban.guild.fetchAuditLogs({limit: 1, type: "MEMBER_BAN_ADD"})).entries.first();
+        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
 
         if (banLogs) {
             const executor: User | null = banLogs.executor;
@@ -82,7 +83,7 @@ export class ManagerUtilsModule extends ModuleBase {
                 embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
             }
 
-            await loggingChannel.send({embeds: [embed]});
+            await loggingChannel.send({ embeds: [ embed ] });
         } else {
             await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
         }

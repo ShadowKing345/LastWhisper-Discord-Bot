@@ -1,6 +1,7 @@
-import {BuffManagerConfig} from "../models/buffManager.model.js";
-import {BuffManagerConfigRepository} from "../repositories/buffManagerConfig.repository.js";
-import {injectable} from "tsyringe";
+import { injectable } from "tsyringe";
+
+import { BuffManagerConfig } from "../models/buffManager.model.js";
+import { BuffManagerConfigRepository } from "../repositories/buffManagerConfig.repository.js";
 
 @injectable()
 export class BuffManagerConfigService {
@@ -9,11 +10,11 @@ export class BuffManagerConfigService {
     }
 
     public async findOne(id: string): Promise<BuffManagerConfig> {
-        return this.repo.findOne({guildId: id});
+        return this.repo.findOne({ guildId: id });
     }
 
     public async findOneOrCreate(id: string): Promise<BuffManagerConfig> {
-        let result = await this.repo.findOne({guildId: id})
+        let result = await this.repo.findOne({ guildId: id });
         if (result) return result;
 
         result = new BuffManagerConfig();
