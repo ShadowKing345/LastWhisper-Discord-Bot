@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import dayjs from "dayjs";
 import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
-import { Error } from "memfs/lib/internal/errors.js";
 import { injectable } from "tsyringe";
 
 import { Client } from "../classes/client.js";
