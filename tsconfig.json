@@ -1,9 +1,11 @@
 {
+  "ts-node": {
+    "esm": true
+  },
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -14,7 +16,7 @@
     "emitDeclarationOnly": true
   },
   "include": [
-    "src/main"
+    "src"
   ],
   "exclude": [
     "node_modules"
