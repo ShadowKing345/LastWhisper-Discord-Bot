@@ -8,3 +8,4 @@ yarn-error.log
 appConfigs-dev.json
 /build/
 globalConfig.json
+/.nyc_output/
