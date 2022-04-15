@@ -1,4 +1,4 @@
-import dayjs, { unix } from "dayjs";
+import dayjs from "dayjs";
 import { Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel } from "discord.js";
 import { injectable } from "tsyringe";
 
@@ -7,6 +7,8 @@ import { Task } from "../classes/task.js";
 import { EventManagerConfig, EventObj, Tags } from "../models/eventManager.model.js";
 import { EventManagerConfigService } from "../services/eventManagerConfig.service.js";
 import { fetchMessages } from "../utils/utils.js";
+
+const unix = dayjs.unix;
 
 @injectable()
 export class EventManagerModule extends ModuleBase {

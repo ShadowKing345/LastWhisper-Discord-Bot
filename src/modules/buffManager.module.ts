@@ -59,7 +59,7 @@ export class BuffManagerModule extends ModuleBase {
         if (!(subCommand && group)) {
             logger.debug(`${chalk.red("Expected Failure:")} no ${chalk.blue("subcommand")} or ${chalk.blue("group")} was used.`, this.loggerMeta);
             return interaction.reply({
-                content: "Sorry you can only use the group or subcommands not the main command.",
+                content: "Sorry you can only use the group or subcommands not the src command.",
                 ephemeral: true,
             });
         }

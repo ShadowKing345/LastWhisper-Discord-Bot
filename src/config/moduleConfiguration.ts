@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { container } from "tsyringe";

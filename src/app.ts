@@ -1,5 +1,7 @@
+import "reflect-metadata";
+
 import chalk from "chalk";
-import { extend } from "dayjs";
+import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat.js";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 import duration from "dayjs/plugin/duration.js";
@@ -10,6 +12,8 @@ import { CONFIGS, initConfigs } from "./config/appConfigs.js";
 import { connectClient } from "./config/databaseConfiguration.js";
 import { configureModules } from "./config/moduleConfiguration.js";
 import { logger } from "./utils/logger.js";
+
+const extend = dayjs.extend;
 
 export class App {
     private readonly client: Client;

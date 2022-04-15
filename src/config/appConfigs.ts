@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import fs from "fs";
 
 export const configPath = "./appConfigs.json", devConfigPath = "./appConfigs-dev.json";
 
@@ -24,7 +24,7 @@ export class DatabaseConfiguration {
     public host?: string;
     public port?: string;
     public database?: string;
-    public query?: { [key: string]: object };
+    public query?: { [key: string]: any };
     public url?: string;
     public useDns?: boolean = false;
 }

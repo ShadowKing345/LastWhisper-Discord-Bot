@@ -2,7 +2,7 @@ import * as fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
 
-import { AppConfigs, CommandRegistrationConfiguration, configPath, DatabaseConfiguration, devConfigPath, parseConfigFile } from "./appConfigs";
+import { AppConfigs, CommandRegistrationConfiguration, configPath, DatabaseConfiguration, devConfigPath, parseConfigFile } from "./appConfigs.js";
 
 enum DEFAULT_ACTIONS {
     FINISH = -1,
