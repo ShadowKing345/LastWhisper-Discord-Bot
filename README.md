@@ -1,141 +1,134 @@
 # Last Whisper Discord Bot
 
-The Discord bot for the Final Fantasy XIV Last Whisper free company Discord server. 
+The Discord bot for the Final Fantasy XIV Last Whisper free company Discord server.
 
-## Table of contents:
+## Table of contents
 
-- [Features of the Discord bot](#features-of-the-discord-bot)
-- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Commands Setup](#command-setup)
+    - [Guild Specific Command Setup](#guild-specific-command-setup)
 
-## Features of the Discord bot:
+## Features of the Discord bot
 
 - Periodically post a message about the buff for the day.
-
 - Event scheduling and posting of reminders by parsing messages.
-
 - Role manager.
 
-## Prerequisites:
+## Getting Started
 
-- Node.js version 16 or 17 is currently supported and known to work
+You will need to have Node.js version 16 and up in order to be able to run this application. For the database a MongoDB
+database is needed.
 
-- Yarn was the used package manager. *npm is also fine.*
+Clone, Download/unzip this project into your desired location.
 
-### Docker:
-
-A standard docker installer and docker-compose (version 3.5 was used during development) should be fine for running the application with docker.
-
-### Installing prerequisite:
-
-Install the Node.js packages needed to run the application for a production run.
-
-Yarn:
-
-```shell
-yarn --production
+```bash
+git clone https://github.com/ShadowKing345/LastWhisper-Discord-Bot.git Discord-Bot
 ```
 
-Npm:
+*Note: The folder name was used in later command examples.*
 
-```shell
-npm install --production
+From here simply enter the file and download the node packages used for production.
+
+```bash
+yarn 
+
+npm install #if you are planning on using npm instead of yarn.
 ```
 
-## Running:
+Once all the packages are installed simply run the start script.
 
-Once you have cloned and downloaded the prerequisites you can run the following:
+```bash
+yarn run start #yarn start for some sugar syntax
 
-Yarn:
-
-```shell
-yarn run start
-```
-
-or npm:
-
-```shell
 npm run start
 ```
 
-### Registering commands:
+The bot will begin the setup process, connect to the database and Discord API and start.
+*Note: Assuming you have not configured the bot it will defiantly fail and throw errors.*
+However, this is done to just confirm that the environment is set up correctly.
 
-To register command you will need to run the `command-setup` script.
+## Configuration
 
-### Docker method:
+The bot uses a standard JSON file for its configuration. The file name is `appConfigs.json` and should be place at the
+project root. The minimum needed to get the bot up and running is just the database URL for MongoDB and the bot token
+which can be acquired.
 
-A docker-compose.yml file can be found at the base of the project. You can use docker-compose to build a docker container that can be ran from.
+The token can be acquired by going to [Discord Developer Applications](https://discord.com/developers/applications) and
+creating a new application getting the token from there.
+*See: [Discord.js guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) for a
+more detailed guide*
 
-*Note:* You do not need to install prerequisites for this method as the docker container will automatically install them for you.
+Once you have acquired this information you can create a `appConfigs.json` file at the project root and have the
+following data.
 
-```shell
-docker-compose up --build
+```json
+{
+  "token": "[Discord Bot Token]",
+  "database": {
+    "url": "[MongoDB URL]"
+  }
+}
 ```
 
-*Note:* --build will cause the container to rebuild itself from any stage where a change was detected. If you do not want this functionality you can simply remove it.
+Once this has been saved you should be able to run the application and have the bot be live on your server and should
+show ready to run message on the console.
 
-If you want to detach the instance add a -d right after up.
+The bot also comes with a script for generating the configuration file as well as updating the existing
+one. `yarn run generate-config`.
 
-```shell
-docker-compose up -d --build
+A schema is also available as well [here]().
+
+## Command Setup
+
+The bot uses slash commands which require manual registration. For this to work you will need the application ID for the
+bot. In the configuration file add the following or use the configuration script.
+
+```json
+{
+  "commandRegistration": {
+    "clientId": "[Bot Application Id]",
+    "unregister": false
+  }
+}
 ```
 
-## Building:
+*Note: Unregister is actually not needed, but I would recommend keeping it so that you can easily toggle it without
+having to look through documentation or dealing with configuration tool.*
 
-In case you need to build the application you can do the following.
+Once the configuration file has been saved you can simply run.
 
-### Installing prerequisite:
+```bash
+yarn run command-setup
 
-Install the Node.js packages needed to run the application including development dependencies.
-
-Yarn:
-
-```shell
-yarn
+npm run command-setup
 ```
 
-Npm:
+After this wait and the slash commands will be updates. It may take a long amount of time.
 
-```shell
-npm install
+Unregistering the commands are as simple as setting unregister to true and running the command again. It will unregister
+all the commands.
+
+### Guild Specific Command Setup
+
+If you don't want to have the global commands or wish to have them instantly available or are just testing / developing
+the bot, you can set up the slash commands for a specific guild. You will need the guild ID for the guild you wish to
+add the slash commands for.
+
+In the application configuration inside commandRegistration add the following.
+
+```json
+{
+  "guildId": "[Guild ID]",
+  "registerForGuild": true
+}
 ```
 
-### Running the build script:
+*Note: You can set `registerForGuild` to false, and it will still register globally instead of the guild. You can keep
+the guildId.*
 
-From here you can simply run the `build` script needed. 
+One thing to mention is that guild command and global commands do not stack so if you have registered both of them you
+will see two entries in the slash command.
 
-Yarn:
-
-```shell
-yarn run build
-```
-
-Npm:
-
-```shell
-npm run build
-```
-
-If you wish you can also run the `test` script to ensure everything is working as expected. This can be done before the build as the source code will get tested not the final build.
-
-Yarn:
-
-```shell
-yarn run test
-```
-
-Npm:
-
-```shell
-npm run test
-```
-
-## Development:
-
-If you wish to develop the application further you do not need to build the application.
-
-Additionally you will need to use the dev scripts instead of the standard ones.
-
-| Script           | Purpose                                                    |
-| ---------------- | ---------------------------------------------------------- |
-| dev              | Nodemon watch for the typescript source code.              |
-| command-setup:ts | The typescript version of the command registration script. |
+Anything thing to note is that guild command will stay after the bot leaves so its recommend unregistering them if you
+wish to remove the bot. Global commands do not do this.
