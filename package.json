@@ -6,7 +6,7 @@
     "start": "node build/index.js",
     "command-setup": "node build/config/commandRegistration.js",
     "generate-config": "node build/config/generateAppConfigs.js",
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon src/index.ts",
     "dev:command-setup": "ts-node src/config/commandRegistration.ts",
     "dev:generate-config": "ts-node src/config/generateAppConfigs.ts",
     "build:compile": "babel src --extensions .ts --out-dir build --source-maps",
