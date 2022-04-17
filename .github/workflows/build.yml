@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -19,10 +18,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: ./.github/workflow/setup.yml
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn --frozen-lockfile
     - run: yarn run test
     - run: yarn run build
 
