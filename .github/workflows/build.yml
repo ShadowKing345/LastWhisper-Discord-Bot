@@ -16,7 +16,6 @@ jobs:
         node-version: [ 16.x, 17.x ]
 
     steps:
-      - uses: actions/checkout@v3
       - uses: ./.github/workflows/setup.yml
         with:
           node-version: ${{ matrix.node-version }}
