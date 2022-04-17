@@ -1,11 +1,12 @@
 import dayjs from "dayjs";
-import { CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel } from "discord.js";
+import { CommandInteraction, EmbedFieldData, MessageEmbed, TextChannel } from "discord.js";
 import { injectable } from "tsyringe";
 
 import { Client } from "../classes/client.js";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { GardeningConfig, Plot, Reason, Reservation, Slot } from "../models/gardeningConfig.model.js";
 import { GardeningConfigService } from "../services/gardeningConfig.service.js";
+import { InvalidArgumentError } from "../utils/errors.js";
 import { logger } from "../utils/logger.js";
 
 @injectable()
@@ -117,17 +118,29 @@ export class GardeningModule extends ModuleBase {
         ];
     }
 
-    private static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number): Promise<void | [ Plot, Slot ]> {
-        if (config.plots.length <= plotNum) return interaction.reply({
-            content: `Sorry but the plot number has to be from 0 to ${config.plots.length - 1}.`,
-            ephemeral: true,
-        });
+    public static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [ Plot, Slot ]> {
+        if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
+            throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
+        }
+
+        if (config.plots.length <= plotNum) {
+            await interaction.reply({
+                content: `Sorry but the plot number has to be from 0 to ${config.plots.length - 1}.`,
+                ephemeral: true,
+            });
+            return null;
+        }
         const plot = config.plots[plotNum];
-        if (plot.slots.length <= slotNum) return interaction.reply({
-            content: `Sorry but the slot number has to be from 0 to ${plot.slots.length}.`,
-            ephemeral: true,
-        });
-        return [ plot, plot.slots[slotNum] ];
+        const slot = plot.slots.length > 0 ? plot.slots[slotNum] : null;
+        if (!slot && slotShouldExist) {
+            await interaction.reply({
+                content: `Sorry but the slot number has to be from 0 to ${plot.slots.length}.`,
+                ephemeral: true,
+            });
+            return null;
+        }
+
+        return [ plot, slot ];
     }
 
     private static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 0): string {
@@ -148,7 +161,10 @@ export class GardeningModule extends ModuleBase {
     }
 
     public async register(interaction: CommandInteraction, config: GardeningConfig, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
-        const value: void | [ Plot, Slot ] = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+        if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
+            throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
+        }
+        const value: void | [ Plot, Slot ] = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
         if (!value) return;
         const plot: Plot = value[0];
         let slot: Slot = value[1];
@@ -162,7 +178,8 @@ export class GardeningModule extends ModuleBase {
 
         await this.service.update(config);
         await interaction.reply({ content: "Reservation has been created." });
-        await this.postChannelMessage(interaction.client as Client, config, {
+        // TODO: Re-enable posting of messages
+        /*await this.postChannelMessage(interaction.client as Client, config, {
             title: "Gardening Plot Has Been Reserved!",
             description: `${(interaction.member as GuildMember).displayName} has registered the plot **${plot.name}**, slot **${slotNum}** for the plant **${plant}**.`,
             memberUrl: (interaction.member as GuildMember).displayAvatarURL(),
@@ -189,7 +206,7 @@ export class GardeningModule extends ModuleBase {
                     value: reason.toString(),
                 },
             ],
-        });
+        });*/
     }
 
     public async cancel(interaction: CommandInteraction, config: GardeningConfig, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
