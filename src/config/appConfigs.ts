@@ -29,23 +29,16 @@ export class DatabaseConfiguration {
     public useDns?: boolean = false;
 }
 
-export function parseConfigFile(): AppConfigs {
-    if (!fs.existsSync(configPath)) {
-        return null;
-    }
+export function parseConfigFile(path: string, devPath?: string): AppConfigs {
+    if (!path || !fs.existsSync(path)) return null;
+    const config = Object.assign<AppConfigs, object>(new AppConfigs(), JSON.parse(fs.readFileSync(path, "utf-8")));
 
-    const config = Object.assign<AppConfigs, object>(new AppConfigs(), JSON.parse(fs.readFileSync(configPath, "utf-8")));
-    if (!fs.existsSync(devConfigPath)) {
-        return config;
-    }
-
-    return Object.assign<AppConfigs, object>(config, JSON.parse(fs.readFileSync(devConfigPath, "utf-8")));
+    if (!devPath || !fs.existsSync(devPath)) return config;
+    return Object.assign<AppConfigs, object>(config, JSON.parse(fs.readFileSync(devPath, "utf-8")));
 }
 
 export function initConfigs(): AppConfigs {
-    if (!fs.existsSync(configPath)) {
-        throw new Error("Configuration file was not found. You can create one with the generate-config script.");
-    }
+    if (!fs.existsSync(configPath)) throw new Error("Configuration file was not found. You can create one with the generate-config script.");
 
-    return CONFIGS ??= parseConfigFile();
+    return CONFIGS ??= parseConfigFile(configPath, devConfigPath);
 }
