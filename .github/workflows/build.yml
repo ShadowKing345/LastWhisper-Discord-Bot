@@ -10,24 +10,34 @@ jobs:
   setup:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [16, 17]
+
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: ./.github/actions/cache-restore
+        id: cache-node-modules
         with:
-          node-version: "16"
-      - uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          node-version: ${{ matrix.node-version }}
       - run: yarn --frozen-lockfile
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
 
   build:
     needs: setup
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [ 16, 17 ]
+
     steps:
-      - name: Running Build Script
-      - run: yarn build
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/cache-restore
+        id: cache-node-modules
+        with:
+          node-version: ${{ matrix.node-version }}
+   - run: yarn build
 
 
 
