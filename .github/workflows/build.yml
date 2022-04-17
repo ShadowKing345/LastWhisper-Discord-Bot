@@ -16,11 +16,12 @@ jobs:
         node-version: [16.x, 17.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: ./.github/workflow/setup.yml
       with:
         node-version: ${{ matrix.node-version }}
+    - run: yarn --frozen-lockfile
     - run: yarn run test
     - run: yarn run build
 
@@ -30,9 +31,9 @@ jobs:
     # if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup NodeJS Environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 17
       - name: Execute ESlint
