@@ -160,7 +160,7 @@ function generateCreateConfigurationChoices(devFile: boolean, token: string, log
 
 async function saveConfigurationFile(overwrite: boolean) {
     let devFile = false;
-    const configFile = overwrite ? parseConfigFile() : new AppConfigs();
+    const configFile = overwrite ? parseConfigFile(configPath, devConfigPath) : new AppConfigs();
 
     if (!configFile) {
         throw new Error("Existing config file could not be parsed.");

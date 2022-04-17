@@ -3,7 +3,7 @@
   "version": "3.0.1",
   "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
   "scripts": {
-    "start": "node build/app.js",
+    "start": "node build/index.js",
     "command-setup": "node build/config/commandRegistration.js",
     "generate-config": "node build/config/generateAppConfigs.js",
     "dev": "nodemon src/app.ts",
