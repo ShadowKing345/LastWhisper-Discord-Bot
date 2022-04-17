@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Last Whisper Discord Bot Configuration Schema",
+  "description": "The application configuration json schema",
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string",
+      "description": "The token for the Discord Bot."
+    },
+    "database": {
+      "type": "object",
+      "description": "Settings for database.",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username for the database."
+        },
+        "password": {
+          "type": "string",
+          "description": "Password for the database."
+        },
+        "host": {
+          "type": "string",
+          "description": "Host url for the database."
+        },
+        "port": {
+          "type": "string",
+          "description": "Port number for the database."
+        },
+        "database": {
+          "type": "string",
+          "description": "Database name (Collection name) for the database."
+        },
+        "query": {
+          "type": "object",
+          "description": "Collection of key value pairs that create the query parameters in the url.",
+          "additionalProperties": true
+        },
+        "url": {
+          "type": "string",
+          "description": "Full url path for database. If this is set all other settings are ignored."
+        },
+        "useDns": {
+          "type": "boolean",
+          "description": "Enables DNS for the host."
+        }
+      }
+    }
+  },
+  "required": [
+    "token"
+  ]
+}
