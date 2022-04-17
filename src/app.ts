@@ -13,6 +13,8 @@ import { connectClient } from "./config/databaseConfiguration.js";
 import { configureModules } from "./config/moduleConfiguration.js";
 import { logger } from "./utils/logger.js";
 
+// Disabled due to possible bug in dayjs
+// eslint-disable-next-line import/no-named-as-default-member
 const extend = dayjs.extend;
 
 export class App {

@@ -8,6 +8,8 @@ import { EventManagerConfig, EventObj, Tags } from "../models/eventManager.model
 import { EventManagerConfigService } from "../services/eventManagerConfig.service.js";
 import { fetchMessages } from "../utils/utils.js";
 
+// Disabled due to possible bug in dayjs
+// eslint-disable-next-line import/no-named-as-default-member
 const unix = dayjs.unix;
 
 @injectable()
