@@ -50,20 +50,17 @@ export class App {
     }
 }
 
-async function main() {
+export function preInit() {
     extend(duration);
     extend(weekOfYear);
     extend(advancedFormat);
     extend(customParseFormat);
+}
 
+export async function main() {
+    preInit();
     const app: App = new App();
     await app.load();
 
     await app.run();
-}
-
-try {
-    await main();
-} catch (error) {
-    logger.error(error);
 }
