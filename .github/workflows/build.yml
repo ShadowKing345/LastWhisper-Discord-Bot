@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16, 17]
+        node-version: [ 16, 17 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -37,11 +37,11 @@ jobs:
         id: cache-node-modules
         with:
           node-version: ${{ matrix.node-version }}
-   - run: yarn build
+    - run: yarn build
 
 
 
-        #  lint:
+      #  lint:
 #    name: Analyse Code
 #    runs-on: ubuntu-latest
 #    # if: ${{ github.event_name == 'pull_request' }}
