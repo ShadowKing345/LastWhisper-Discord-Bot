@@ -37,11 +37,11 @@ jobs:
         id: cache-node-modules
         with:
           node-version: ${{ matrix.node-version }}
-    - run: yarn build
+      - run: yarn build
 
 
 
-      #  lint:
+        #  lint:
 #    name: Analyse Code
 #    runs-on: ubuntu-latest
 #    # if: ${{ github.event_name == 'pull_request' }}
