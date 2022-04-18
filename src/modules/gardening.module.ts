@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { CommandInteraction, EmbedFieldData, MessageEmbed, TextChannel } from "discord.js";
 import { injectable } from "tsyringe";
 

@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
-import dayjs from "dayjs";
 import { CommandInteraction } from "discord.js";
+import { DateTime } from "luxon";
 import { fake, SinonStub, useFakeTimers } from "sinon";
 import { test } from "tap";
 import { container } from "tsyringe";
@@ -143,7 +143,7 @@ test("Gardening Module Tests", async t => {
 
             await module.register(interaction, config, player, plant, duration, reason, plotNum, slotNum);
 
-            t.same(config.plots[0].slots[0], new Slot(player, plant, duration, reason, dayjs().unix()));
+            t.same(config.plots[0].slots[0], new Slot(player, plant, duration, reason, DateTime.now().toUnixInteger()));
         });
         await t.test("should be able to reserve slot.", async t => {
             config.plots.push(plot);

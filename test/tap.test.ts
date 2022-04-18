@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import { DateTime } from "luxon";
 import { useFakeTimers } from "sinon";
 import { pass, test } from "tap";
 
@@ -17,8 +17,8 @@ test("Should be able to", async t => {
 
     await t.test("mock now.", async t => {
         const clock = useFakeTimers();
-        const now = dayjs();
-        t.same(now.unix(), dayjs().unix(), "Should be same time.");
+        const now = DateTime.now().toUnixInteger();
+        t.same(now, DateTime.now().toUnixInteger(), "Should be same time.");
 
         clock.restore();
         t.end();

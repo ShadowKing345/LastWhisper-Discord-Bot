@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
 import { injectable } from "tsyringe";
 

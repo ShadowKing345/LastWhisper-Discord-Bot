@@ -1,21 +1,12 @@
 import "reflect-metadata";
 
 import chalk from "chalk";
-import dayjs from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat.js";
-import customParseFormat from "dayjs/plugin/customParseFormat.js";
-import duration from "dayjs/plugin/duration.js";
-import weekOfYear from "dayjs/plugin/weekOfYear.js";
 
 import { Client } from "./classes/client.js";
 import { CONFIGS, initConfigs } from "./config/appConfigs.js";
 import { connectClient } from "./config/databaseConfiguration.js";
 import { configureModules } from "./config/moduleConfiguration.js";
 import { logger } from "./utils/logger.js";
-
-// Disabled due to possible bug in dayjs
-// eslint-disable-next-line import/no-named-as-default-member
-const extend = dayjs.extend;
 
 export class App {
     private readonly client: Client;
@@ -52,15 +43,7 @@ export class App {
     }
 }
 
-export function preInit() {
-    extend(duration);
-    extend(weekOfYear);
-    extend(advancedFormat);
-    extend(customParseFormat);
-}
-
 export async function main() {
-    preInit();
     const app: App = new App();
     await app.load();
 

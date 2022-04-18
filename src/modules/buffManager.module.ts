@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import dayjs from "dayjs";
 import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
 import { injectable } from "tsyringe";
 

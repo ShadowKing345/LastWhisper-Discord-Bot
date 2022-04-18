@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel } from "discord.js";
 import { injectable } from "tsyringe";
 
@@ -7,10 +6,6 @@ import { Task } from "../classes/task.js";
 import { EventManagerConfig, EventObj, Tags } from "../models/eventManager.model.js";
 import { EventManagerConfigService } from "../services/eventManagerConfig.service.js";
 import { fetchMessages } from "../utils/utils.js";
-
-// Disabled due to possible bug in dayjs
-// eslint-disable-next-line import/no-named-as-default-member
-const unix = dayjs.unix;
 
 @injectable()
 export class EventManagerModule extends ModuleBase {

@@ -1,21 +1,11 @@
 import { REST } from "@discordjs/rest";
 import chalk from "chalk";
-import { extend } from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat.js";
-import customParseFormat from "dayjs/plugin/customParseFormat.js";
-import duration from "dayjs/plugin/duration.js";
-import weekOfYear from "dayjs/plugin/weekOfYear.js";
 import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 
 import { BuildCommand } from "../classes/command.js";
 import { logger } from "../utils/logger.js";
 import { AppConfigs, CommandRegistrationConfiguration, initConfigs } from "./appConfigs.js";
 import { loadModules } from "./moduleConfiguration.js";
-
-extend(duration);
-extend(weekOfYear);
-extend(advancedFormat);
-extend(customParseFormat);
 
 const appConfigs: AppConfigs = initConfigs();
 const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
