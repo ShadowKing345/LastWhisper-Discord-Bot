@@ -1,4 +1,4 @@
-import { BasicModel } from "./basicModel.js";
+import {BasicModel} from "./basicModel.js";
 
 export class ReminderTrigger {
     public message: string;
@@ -14,10 +14,10 @@ export class EventObj {
     public messageId: string;
     public name: string;
     public description: string;
-    public dateTime: Date;
-    public additional: [ string, string ][];
+    public dateTime: number;
+    public additional: [string, string][];
 
-    constructor(messageId: string, name = "", description = "", dateTime: Date = null, additional: [ string, string ][] = []) {
+    constructor(messageId: string, name = "", description = "", dateTime: number = null, additional: [string, string][] = []) {
         this.messageId = messageId;
         this.name = name;
         this.description = description;
@@ -48,9 +48,9 @@ export class EventManagerConfig extends BasicModel {
     public guildId: string;
     public listenerChannelId: string | null;
     public postingChannelId: string | null;
-    public delimiterCharacters: [ string, string ];
+    public delimiterCharacters: [string, string];
     public tags: Tags;
-    public dateTimeFormat: string[];
+    public dateTimeFormat: string;
     public events: EventObj[];
     public reminders: ReminderTrigger[];
 }

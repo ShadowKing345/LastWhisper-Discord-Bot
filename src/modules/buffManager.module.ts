@@ -1,18 +1,19 @@
 import chalk from "chalk";
-import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
-import { injectable } from "tsyringe";
+import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
+import {injectable} from "tsyringe";
 
-import { Client } from "../classes/client.js";
-import { ModuleBase } from "../classes/moduleBase.js";
-import { Task } from "../classes/task.js";
-import { Buff, BuffManagerConfig, MessageSettings, Week } from "../models/buffManager.model.js";
-import { BuffManagerConfigService } from "../services/buffManagerConfig.service.js";
-import { logger } from "../utils/logger.js";
+import {Client} from "../classes/client.js";
+import {ModuleBase} from "../classes/moduleBase.js";
+import {Task} from "../classes/task.js";
+import {Buff, BuffManagerConfig, MessageSettings, Week} from "../models/buffManager.model.js";
+import {BuffManagerConfigService} from "../services/buffManagerConfig.service.js";
+import {logger} from "../utils/logger.js";
+import {DateTime} from "luxon";
 
 @injectable()
 export class BuffManagerModule extends ModuleBase {
-    private readonly loggerMeta = { context: "BuffManagerModule" };
-    private readonly daysOfWeek: string[] = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
+    private readonly loggerMeta = {context: "BuffManagerModule"};
+    private readonly daysOfWeek: string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     constructor(private service: BuffManagerConfigService) {
         super();
@@ -68,7 +69,7 @@ export class BuffManagerModule extends ModuleBase {
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
 
-        const [ config, flag ]: [ BuffManagerConfig, boolean ] = await this.tryGetConfig(interaction, interaction.guildId);
+        const [config, flag]: [BuffManagerConfig, boolean] = await this.tryGetConfig(interaction, interaction.guildId);
         if (!flag) return;
 
         if (group === "buffs") {
@@ -78,18 +79,18 @@ export class BuffManagerModule extends ModuleBase {
         }
     }
 
-    private createBuffEmbed(title: string, day: Buff, date: dayjs.Dayjs): MessageEmbed {
+    private createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed {
         logger.debug(`Creating ${chalk.cyan("Buff Embed")}.`, this.loggerMeta);
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
             description: day.text,
-            thumbnail: { url: day.imageUrl },
-            footer: { text: date.format("dddd Do MMMM YYYY") },
+            thumbnail: {url: day.imageUrl},
+            footer: {text: date.toFormat("dddd Do MMMM YYYY")},
         });
     }
 
-    private createWeekEmbed(title: string, week: Week, days: Buff[], date: dayjs.Dayjs): MessageEmbed {
+    private createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed {
         logger.debug(`Creating ${chalk.cyan("Week Embed")}.`, this.loggerMeta);
         return new MessageEmbed({
             color: "RANDOM",
@@ -97,44 +98,44 @@ export class BuffManagerModule extends ModuleBase {
             description: week.title,
             fields: week.days.toArray.map((dayId, index) => {
                 const dow: string = this.daysOfWeek[index];
-                const day: Buff = days.find(entry => entry.id === dayId) ?? { text: "No Buff Found!" } as Buff;
+                const day: Buff = days.find(entry => entry.id === dayId) ?? {text: "No Buff Found!"} as Buff;
 
-                return { name: dow, value: day.text, inline: true };
+                return {name: dow, value: day.text, inline: true};
             }),
-            footer: { text: `Week ${date.week()}.` },
+            footer: {text: `Week ${date.get("weekNumber")}.`},
         });
     }
 
-    private async tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[ BuffManagerConfig, boolean ]> {
+    private async tryGetConfig(interaction: CommandInteraction, guildId: string): Promise<[BuffManagerConfig, boolean]> {
         logger.debug(`Attempting to acquire ${chalk.blue("configuration")} for guild ${chalk.yellow(guildId)}.`, this.loggerMeta);
         const config: BuffManagerConfig = await this.service.findOneOrCreate(guildId);
 
         if (config.buffs.length <= 0) {
-            await interaction.reply({ content: "Sorry, there are not buffs set.", ephemeral: true });
+            await interaction.reply({content: "Sorry, there are not buffs set.", ephemeral: true});
             logger.debug(`${chalk.red("Expected Failure:")} No ${chalk.blue("buffs")} were set in config.`, this.loggerMeta);
-            return [ null, false ];
+            return [null, false];
         }
 
         if (config.weeks.filter(week => !("isEnabled" in week) || week.isEnabled).length <= 0) {
-            await interaction.reply({ content: "Sorry, there are not enabled weeks set.", ephemeral: true });
+            await interaction.reply({content: "Sorry, there are not enabled weeks set.", ephemeral: true});
             logger.debug(`${chalk.red("Expected Failure:")} No ${chalk.blue("weeks")} were set in config.`, this.loggerMeta);
-            return [ null, false ];
+            return [null, false];
         }
 
         logger.debug(`${chalk.green("Success:")} Returning results.`, this.loggerMeta);
-        return [ config, true ];
+        return [config, true];
     }
 
     private async postBuff(interaction: CommandInteraction, subCommand: string, config: BuffManagerConfig): Promise<void> {
         logger.debug(`Command invoked for ${chalk.blue("buffs")}.`);
 
         const today = subCommand === "today";
-        const date = today ? dayjs() : dayjs().add(1, "day");
+        const date = today ? DateTime.now() : DateTime.now().plus({days: 1});
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
 
-        logger.debug(`Posting ${chalk.blue("buff")} message for the date ${chalk.yellow(date.format())}`, this.loggerMeta);
-        const week = config.weeks[date.week() % config.weeks.length];
-        const buffId = week.days.toArray[date.day()];
+        logger.debug(`Posting ${chalk.blue("buff")} message for the date ${chalk.yellow(date.toISO())}`, this.loggerMeta);
+        const week = config.weeks[date.get("weekNumber") % config.weeks.length];
+        const buffId = week.days.toArray[date.get("weekday")];
         const buff = config.buffs.find(day => day.id === buffId);
 
         if (!buff) {
@@ -146,22 +147,23 @@ export class BuffManagerModule extends ModuleBase {
             return;
         }
 
-        await interaction.reply({ embeds: [ this.createBuffEmbed(title, buff, date) ] });
+        await interaction.reply({embeds: [this.createBuffEmbed(title, buff, date)]});
     }
 
     private async postWeeksBuffs(interaction: CommandInteraction, subCommand: string, config: BuffManagerConfig): Promise<void> {
         logger.debug(`Command invoked for ${chalk.blue("weeks")}.`);
 
         const thisWeek = subCommand === "this_week";
-        const date = thisWeek ? dayjs() : dayjs().add(1, "week");
+        const date = thisWeek ? DateTime.now() : DateTime.now().plus({week: 1});
         const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
 
-        logger.debug(`Posting ${chalk.blue("week")} message for ${chalk.yellow(date.format())}`, this.loggerMeta);
+        logger.debug(`Posting ${chalk.blue("week")} message for ${chalk.yellow(date.toISO())}`, this.loggerMeta);
         const filteredWeeks = config.weeks.filter(week => week.isEnabled);
-        const week = filteredWeeks[date.week() % filteredWeeks.length];
-        await interaction.reply({ embeds: [ this.createWeekEmbed(title, week, config.buffs, date) ] });
+        const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
+        await interaction.reply({embeds: [this.createWeekEmbed(title, week, config.buffs, date)]});
     }
 
+    // Todo: replace all date calculations with unix format.
     private async postDailyMessage(client: Client): Promise<void> {
         if (!client.isReady()) {
             await Task.waitTillReady(client);
@@ -169,7 +171,7 @@ export class BuffManagerModule extends ModuleBase {
         logger.debug(chalk.cyan("TASK: ") + "Posting daily buff message.", this.loggerMeta);
 
         const configs: BuffManagerConfig[] = await this.service.getAll();
-        const now: dayjs.Dayjs = dayjs();
+        const now: DateTime = DateTime.now();
 
         for (const config of configs) {
             try {
@@ -186,7 +188,7 @@ export class BuffManagerModule extends ModuleBase {
 
                 const messageSettings: MessageSettings = config.messageSettings as MessageSettings;
                 if (!messageSettings.channelId || !messageSettings.hour) continue;
-                if (!now.isSame(dayjs(messageSettings.hour, "HH:mm", true), "minute")) continue;
+                // if (!now.(dayjs(messageSettings.hour, "HH:mm", true), "minute")) continue;
                 if (!config.buffs.length || !config.weeks.length) continue;
 
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
@@ -196,8 +198,8 @@ export class BuffManagerModule extends ModuleBase {
                 }
 
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
-                const week: Week = filteredWeeks[now.week() % filteredWeeks.length];
-                const buffId: string = week.days.toArray[now.day()];
+                const week: Week = filteredWeeks[now.get("weekNumber") % filteredWeeks.length];
+                const buffId: string = week.days.toArray[now.get("weekday")];
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {
@@ -206,12 +208,12 @@ export class BuffManagerModule extends ModuleBase {
                 }
 
                 logger.debug(`Posting ${chalk.cyan("buff message")}.`, this.loggerMeta);
-                await channel.send({ embeds: [ this.createBuffEmbed(messageSettings.buffMessage, buff, now) ] });
+                await channel.send({embeds: [this.createBuffEmbed(messageSettings.buffMessage, buff, now)]});
 
-                if (messageSettings.dow !== null && messageSettings.dow === now.day()) {
-                    logger.debug(`Posting ${chalk.cyan("week message")}.`, this.loggerMeta);
-                    await channel.send({ embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ] });
-                }
+                // if (messageSettings.dow !== null && messageSettings.dow === now.day()) {
+                //     logger.debug(`Posting ${chalk.cyan("week message")}.`, this.loggerMeta);
+                //     await channel.send({embeds: [this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]});
+                // }
             } catch (err) {
                 if (err instanceof Error) {
                     logger.error(err.stack, this.loggerMeta);

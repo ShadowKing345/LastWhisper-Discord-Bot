@@ -4,6 +4,7 @@ import { injectable } from "tsyringe";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 import { ManagerUtilsConfigService } from "../services/managerUtilsConfig.service.js";
+import {DateTime} from "luxon";
 
 @injectable()
 export class ManagerUtilsModule extends ModuleBase {
@@ -44,7 +45,7 @@ export class ManagerUtilsModule extends ModuleBase {
         const embed = new MessageEmbed()
             .setColor("RANDOM")
             .addFields(
-                { name: "Joined On:", value: dayjs(member.joinedAt).format("HH:mm:ss DD/MM/YYYY") },
+                { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY") },
                 { name: "Nickname was:", value: member.nickname ?? "None" },
                 { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
             .setThumbnail(member.user.displayAvatarURL());

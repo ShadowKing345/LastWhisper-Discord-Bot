@@ -1,11 +1,12 @@
-import { Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel } from "discord.js";
-import { injectable } from "tsyringe";
+import {Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel} from "discord.js";
+import {injectable} from "tsyringe";
 
-import { ModuleBase } from "../classes/moduleBase.js";
-import { Task } from "../classes/task.js";
-import { EventManagerConfig, EventObj, Tags } from "../models/eventManager.model.js";
-import { EventManagerConfigService } from "../services/eventManagerConfig.service.js";
-import { fetchMessages } from "../utils/utils.js";
+import {ModuleBase} from "../classes/moduleBase.js";
+import {Task} from "../classes/task.js";
+import {EventManagerConfig, EventObj, Tags} from "../models/eventManager.model.js";
+import {EventManagerConfigService} from "../services/eventManagerConfig.service.js";
+import {fetchMessages} from "../utils/utils.js";
+import {DateTime, Duration} from "luxon";
 
 @injectable()
 export class EventManagerModule extends ModuleBase {
@@ -24,10 +25,10 @@ export class EventManagerModule extends ModuleBase {
             },
         ];
         this.listeners = [
-            { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
-            { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
-            { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
-            { event: "ready", run: async client => this.onReady(client) },
+            {event: "messageCreate", run: async (_, message) => this.createEvent(message)},
+            {event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message)},
+            {event: "messageDelete", run: async (_, message) => await this.deleteEvent(message)},
+            {event: "ready", run: async client => this.onReady(client)},
         ];
         this.tasks = [
             {
@@ -39,24 +40,24 @@ export class EventManagerModule extends ModuleBase {
     }
 
     private static parseTriggerDuration(triggerTime: string) {
-        const hold = dayjs(triggerTime, "HH:mm", true);
-        return dayjs.duration({ hours: hold.hour(), minutes: hold.minute() });
+        const hold = DateTime.fromFormat(triggerTime, "HH:mm");
+        return Duration.fromObject({hours: hold.get("hour"), minutes: hold.get("minute")});
     }
 
     private parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
         const event = new EventObj(messageId);
         const hammerRegex = /<.*:(\d+):.*>/;
-        const [ l, r ] = config.delimiterCharacters as [ string, string ];
+        const [l, r] = config.delimiterCharacters as [string, string];
         const re = new RegExp(`${l}(.*)${r}([^${l}]*)`, "gm");
 
-        const patternSplit: [ string | null, string | null ][] = (content?.match(re) ?? []).map(l => {
+        const patternSplit: [string | null, string | null][] = (content?.match(re) ?? []).map(l => {
             re.lastIndex = 0;
-            const match = re.exec(l).slice(1, 3) ?? [ null, null ];
-            return [ match[0]?.trim(), match[1]?.trim() ];
+            const match = re.exec(l).slice(1, 3) ?? [null, null];
+            return [match[0]?.trim(), match[1]?.trim()];
         });
 
-        for (const [ key, value ] of patternSplit) {
-            let date: dayjs.Dayjs, matchedResult: RegExpMatchArray, unixTimeStr: string, number: number;
+        for (const [key, value] of patternSplit) {
+            let date: DateTime, matchedResult: RegExpMatchArray, unixTimeStr: string, number: number;
             switch (key) {
                 case config.tags.announcement:
                     event.name = value;
@@ -68,9 +69,9 @@ export class EventManagerModule extends ModuleBase {
 
                 case config.tags.dateTime:
                     if (config.dateTimeFormat.length > 0) {
-                        date = dayjs(value, config.dateTimeFormat, true);
-                        if (date.isValid()) {
-                            event.dateTime = date.toDate();
+                        date = DateTime.fromFormat(value, config.dateTimeFormat, {});
+                        if (date.isValid) {
+                            event.dateTime = date.toUnixInteger();
                             break;
                         }
                     }
@@ -84,14 +85,14 @@ export class EventManagerModule extends ModuleBase {
                     number = Number(unixTimeStr);
                     if (isNaN(number)) break;
 
-                    date = unix(number);
-                    if (!date.isValid()) break;
-                    event.dateTime = date.toDate();
+                    date = DateTime.fromSeconds(number);
+                    if (!date.isValid) break;
+                    event.dateTime = date.toUnixInteger();
                     break;
 
                 default:
                     if (!config.tags.exclusionList.every(e => e !== key)) continue;
-                    event.additional.push([ key, value ]);
+                    event.additional.push([key, value]);
                     break;
             }
         }
@@ -111,7 +112,7 @@ export class EventManagerModule extends ModuleBase {
         const config = await this.getConfig(message.guildId);
 
         if (config.listenerChannelId !== message.channelId) return;
-        const [ l, r ]: string[] = config.delimiterCharacters as string[];
+        const [l, r]: string[] = config.delimiterCharacters as string[];
 
         const matchTags: string[] = (message.content?.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
         if (!matchTags.includes((config.tags as Tags).announcement)) return;
@@ -172,7 +173,7 @@ export class EventManagerModule extends ModuleBase {
     private async reminderLoop(client: Client) {
         await Task.waitTillReady(client);
 
-        const now: dayjs.Dayjs = dayjs();
+        const now: DateTime = DateTime.now();
         const configs = await this.service.getAll();
         const alteredConfigs = [];
 
@@ -189,14 +190,14 @@ export class EventManagerModule extends ModuleBase {
                         if (!trigger.timeDelta) continue;
                         const triggerTime = EventManagerModule.parseTriggerDuration(trigger.timeDelta);
                         for (const event of config.events) {
-                            const eventTime = dayjs(event.dateTime);
-                            if (!now.isSame(eventTime, "date")) continue;
-                            if (eventTime.diff(now, "minutes") === triggerTime.asMinutes()) {
+                            const eventTime = DateTime.fromSeconds(event.dateTime);
+                            if (Math.abs(eventTime.diff(now, "days").get("day")) > 1) continue;
+                            if (eventTime.get("minute") === triggerTime.as("minutes")) {
                                 const messageValues: { [key: string]: string } = {
                                     "%everyone%": "@everyone",
                                     "%eventName%": event.name,
-                                    "%hourDiff%": triggerTime.hours().toString(),
-                                    "%minuteDiff%": triggerTime.minutes().toString(),
+                                    "%hourDiff%": triggerTime.get("hours").toString(),
+                                    "%minuteDiff%": triggerTime.get("minutes").toString(),
                                 };
 
                                 await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
@@ -207,7 +208,7 @@ export class EventManagerModule extends ModuleBase {
 
                 const before = config.events.length;
 
-                for (const past of config.events.filter(event => now.isAfter(dayjs(event.dateTime))))
+                for (const past of config.events.filter(event => now >= DateTime.fromSeconds(event.dateTime)))
                     config.events.splice(config.events.indexOf(past), 1);
 
                 if (before !== config.events.length)
@@ -229,7 +230,7 @@ export class EventManagerModule extends ModuleBase {
 
         if (config.events.length <= 0) {
             embed.addField("Notice", "There are no upcoming events!");
-            await interaction.reply({ embeds: [ embed ] });
+            await interaction.reply({embeds: [embed]});
             return;
         }
 
@@ -239,21 +240,20 @@ export class EventManagerModule extends ModuleBase {
             embed.setTitle(event.name);
             embed.setDescription(event.description);
 
-            for (const [ key, value ] of event.additional) {
+            for (const [key, value] of event.additional) {
                 embed.addField(key, value, false);
             }
 
-            const time: number = dayjs(event.dateTime).unix();
-            embed.addField("Time Remaining:", `<t:${time}:R>`, false);
-            embed.addField("Set For:", `<t:${time}:f>`, false);
+            embed.addField("Time Remaining:", `<t:${event.dateTime}:R>`, false);
+            embed.addField("Set For:", `<t:${event.dateTime}:f>`, false);
         } else {
             embed.setTitle("Upcoming Events");
 
-            for (const [ index, event ] of config.events.entries()) {
-                embed.addField(`Index ${index}:`, `${event.name}\n**Begins: <t:${dayjs(event.dateTime).unix()}:R>**`, false);
+            for (const [index, event] of config.events.entries()) {
+                embed.addField(`Index ${index}:`, `${event.name}\n**Begins: <t:${event.dateTime}:R>**`, false);
             }
         }
-        await interaction.reply({ embeds: [ embed ] });
+        await interaction.reply({embeds: [embed]});
     }
 
     private async onReady(client: Client) {
