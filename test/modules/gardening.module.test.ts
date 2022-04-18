@@ -1,17 +1,17 @@
 import "reflect-metadata";
 
-import { CommandInteraction } from "discord.js";
-import { DateTime } from "luxon";
-import { fake, SinonStub, useFakeTimers } from "sinon";
-import { test } from "tap";
-import { container } from "tsyringe";
+import {CommandInteraction} from "discord.js";
+import {DateTime} from "luxon";
+import {fake, SinonStub, useFakeTimers} from "sinon";
+import {test} from "tap";
+import {container} from "tsyringe";
 
-import { Database } from "../../src/config/databaseConfiguration.js";
-import { Plot, Reason, Reservation, Slot } from "../../src/models/gardeningConfig.model.js";
-import { GardeningModule } from "../../src/modules/gardening.module.js";
-import { InvalidArgumentError } from "../../src/utils/errors.js";
+import {Database} from "../../src/config/databaseConfiguration.js";
+import {Plot, Reason, Reservation, Slot} from "../../src/models/gardeningConfig.model.js";
+import {GardeningModule} from "../../src/modules/gardening.module.js";
+import {InvalidArgumentError} from "../../src/utils/errors.js";
 
-test("Gardening Module Tests", async t => {
+test("Gardening Module Tests:", async t => {
     let clock;
 
     let slot: Slot = {
@@ -25,13 +25,13 @@ test("Gardening Module Tests", async t => {
     let plot: Plot = {
         name: "Test Plot.",
         description: "Test Description",
-        slots: [ slot ],
+        slots: [slot],
     };
     let config = {
         _id: undefined,
         guildId: "",
         messagePostingChannelId: "",
-        plots: [ plot ],
+        plots: [plot],
     };
 
     container.register<Database>(Database, {
@@ -43,7 +43,7 @@ test("Gardening Module Tests", async t => {
                         return config;
                     },
                     findOne: async () => config,
-                    find: async () => [ config ],
+                    find: async () => [config],
                     replaceOne: async (obj) => {
                         Object.assign(config, obj);
                         return config;
@@ -54,7 +54,7 @@ test("Gardening Module Tests", async t => {
     });
     const module = container.resolve(GardeningModule);
 
-    const interaction = { reply: fake() } as unknown as CommandInteraction;
+    const interaction = {reply: fake()} as unknown as CommandInteraction;
 
     t.before(() => clock = useFakeTimers());
     t.teardown(() => clock.restore());
@@ -97,8 +97,8 @@ test("Gardening Module Tests", async t => {
         await t.test("should return void when no plots.", async t => {
             const result = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
-            t.ok((<SinonStub> interaction.reply).called, "Interaction was called.");
-            t.ok((<SinonStub> interaction.reply).calledWith({
+            t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
+            t.ok((<SinonStub>interaction.reply).calledWith({
                 content: `Sorry but the plot number has to be from 0 to ${config.plots.length - 1}.`,
                 ephemeral: true,
             }), "Called with correct message.");
@@ -108,8 +108,8 @@ test("Gardening Module Tests", async t => {
 
             const result = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
-            t.ok((<SinonStub> interaction.reply).called, "Interaction was called.");
-            t.ok((<SinonStub> interaction.reply).calledWith({
+            t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
+            t.ok((<SinonStub>interaction.reply).calledWith({
                 content: `Sorry but the slot number has to be from 0 to ${plot.slots.length}.`,
                 ephemeral: true,
             }), "Called with correct message.");
@@ -129,6 +129,9 @@ test("Gardening Module Tests", async t => {
             await t.rejects(GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, null), InvalidArgumentError, "Slot Should Exist.");
         });
     });
+
+    await t.todo("Print plot info");
+    await t.todo("Print slot info");
 
     await t.test("Slot registering", async t => {
         const player = "shadowking1243";
@@ -165,7 +168,7 @@ test("Gardening Module Tests", async t => {
 
         await t.test("should not be able to overwrite existing reservation.", async t => {
             config.plots.push(plot);
-            plot.slots.push({ next: [] } as Slot);
+            plot.slots.push({next: []} as Slot);
 
             await module.register(interaction, config, player, plant, duration, reason, plotNum, slotNum);
 
@@ -190,4 +193,32 @@ test("Gardening Module Tests", async t => {
             await t.rejects(module.register(interaction, config, player, plant, duration, reason, plotNum, null), InvalidArgumentError, "Slot Number.");
         });
     });
+
+    await t.test("Slot cancellation", async t => {
+        const player = "shadowking124";
+        const plant = "Test";
+        const plotNum = 0;
+        const slotNum = 0;
+
+        await t.todo("should cancel when correct.");
+        await t.todo("should not cancel when the player is wrong.");
+        await t.todo("should not cancel when the plant is wrong.");
+        await t.todo("should not cancel when the plot number is wrong.");
+        await t.todo("should not cancel when the slot number is wrong.");
+
+        await t.todo("should not cancel other players reservation.");
+        await t.todo("should cancel the first reservation that matches only.");
+
+        await t.test("should not cancel without a: ", async t => {
+            await t.rejects(module.cancel(interaction, config, null, plant, plotNum, slotNum), InvalidArgumentError, "Player.");
+            await t.rejects(module.cancel(interaction, config, player, null, plotNum, slotNum), InvalidArgumentError, "Plant.");
+            await t.rejects(module.cancel(interaction, config, player, plant, null, slotNum), InvalidArgumentError, "Plot Number.");
+            await t.rejects(module.cancel(interaction, config, player, plant, plotNum, null), InvalidArgumentError, "Slot Number.");
+        });
+    });
+
+    await t.todo("Listing plots and slots");
+    await t.todo("Ticking");
+    await t.todo("Posting channel message");
+    await t.todo("Sub command resolver");
 });
