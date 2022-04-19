@@ -4,12 +4,27 @@ import {CommandInteraction} from "discord.js";
 import {DateTime} from "luxon";
 import {fake, SinonStub, useFakeTimers} from "sinon";
 import {test} from "tap";
-import {container} from "tsyringe";
+import {container, injectable} from "tsyringe";
 
 import {Database} from "../../src/config/databaseConfiguration.js";
-import {Plot, Reason, Reservation, Slot} from "../../src/models/gardeningConfig.model.js";
+import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../../src/models/gardeningConfig.model.js";
 import {GardeningModule} from "../../src/modules/gardening.module.js";
 import {InvalidArgumentError} from "../../src/utils/errors.js";
+
+@injectable()
+class MockModule extends GardeningModule {
+    public validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true) {
+        return GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist);
+    }
+
+    public printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 1) {
+        return GardeningModule.printPlotInfo(plot, plotNum, detailed, indent);
+    }
+
+    public printSlotInfo(slot: Slot, slotNum: number, indent = 1) {
+        return GardeningModule.printSlotInfo(slot, slotNum, indent);
+    }
+}
 
 test("Gardening Module Tests:", async t => {
     let clock;
@@ -52,7 +67,7 @@ test("Gardening Module Tests:", async t => {
             },
         } as unknown as Database,
     });
-    const module = container.resolve(GardeningModule);
+    const module = container.resolve(MockModule);
 
     const interaction = {reply: fake()} as unknown as CommandInteraction;
 
@@ -89,13 +104,13 @@ test("Gardening Module Tests:", async t => {
             config.plots.push(plot);
             plot.slots.push(slot);
 
-            const result = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
+            const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.ok(result, "Is not null.");
             t.same(result[0], plot, "Same plot.");
             t.same(result[1], slot, "Same slot.");
         });
         await t.test("should return void when no plots.", async t => {
-            const result = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
+            const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
             t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
             t.ok((<SinonStub>interaction.reply).calledWith({
@@ -106,7 +121,7 @@ test("Gardening Module Tests:", async t => {
         await t.test("should return void when no slots.", async t => {
             config.plots.push(plot);
 
-            const result = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
+            const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
             t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
             t.ok((<SinonStub>interaction.reply).calledWith({
@@ -117,21 +132,60 @@ test("Gardening Module Tests:", async t => {
         await t.test("should return plot and null when no slots and slot should exist is false.", async t => {
             config.plots.push(plot);
 
-            const result = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
+            const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
             t.ok(result, "Is not null.");
             t.same(result[0], plot, "Same plot.");
             t.notOk(result[1], "Slot is null.");
         });
 
         await t.test("should throw when argument is null:", async t => {
-            await t.rejects(GardeningModule.validatePlotAndSlot(interaction, config, null, slotNum), InvalidArgumentError, "Plot Number.");
-            await t.rejects(GardeningModule.validatePlotAndSlot(interaction, config, plotNum, null), InvalidArgumentError, "Slot Number.");
-            await t.rejects(GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, null), InvalidArgumentError, "Slot Should Exist.");
+            await t.rejects(module.validatePlotAndSlot(interaction, config, null, slotNum), InvalidArgumentError, "Plot Number.");
+            await t.rejects(module.validatePlotAndSlot(interaction, config, plotNum, null), InvalidArgumentError, "Slot Number.");
+            await t.rejects(module.validatePlotAndSlot(interaction, config, plotNum, slotNum, null), InvalidArgumentError, "Slot Should Exist.");
         });
     });
 
-    await t.todo("Print plot info");
-    await t.todo("Print slot info");
+    await t.test("Print plot info", async t => {
+        const plotNum = 0;
+
+        await t.test("should be able to print a basic view.", async t => {
+            plot.slots.push(slot);
+            const correct = `Plot ${plotNum}:\n  Slot Count: 1\n`;
+            const result = module.printPlotInfo(plot, plotNum, false);
+            t.equal(result, correct);
+        });
+
+        await t.test("should be able to print a detailed view.", async t => {
+            plot.slots.push(slot);
+            const correct =
+                `Plot ${plotNum}:\n  Slot 0:\n    Player: ${slot.player}\n    Plant: ${slot.plant}\n    Reason: ${slot.reason}\n    Started: ${slot.started}\n    Duration: ${slot.duration}\n    Next Queue Size: 0\n  Slot Count: 1\n`;
+            const result = module.printPlotInfo(plot, plotNum, true);
+            t.equal(result, correct);
+        });
+
+        await t.test("should trow without a:", async t => {
+            t.throws(() => module.printPlotInfo(null, plotNum, false, 1), InvalidArgumentError, "Plot.");
+            t.throws(() => module.printPlotInfo(plot, null, false, 1), InvalidArgumentError, "Plot Number.");
+            t.throws(() => module.printPlotInfo(plot, plotNum, null, 1), InvalidArgumentError, "Detailed.");
+            t.throws(() => module.printPlotInfo(plot, plotNum, false, null), InvalidArgumentError, "Indent.");
+        });
+    });
+
+    await t.test("Print slot info", async t => {
+        const slotNum = 0;
+
+        await t.test("should be able to print slot details.", async t => {
+            const correct = `Slot 0:\n  Player: ${slot.player}\n  Plant: ${slot.plant}\n  Reason: ${slot.reason}\n  Started: ${slot.started}\n  Duration: ${slot.duration}\n  Next Queue Size: 0\n`;
+            const result = module.printSlotInfo(slot, slotNum);
+            t.equal(result, correct);
+        });
+
+        await t.test("should trow without a:", async t => {
+            t.throws(() => module.printSlotInfo(null, slotNum, 1), InvalidArgumentError, "Slot.");
+            t.throws(() => module.printSlotInfo(slot, null, 1), InvalidArgumentError, "Slot Number.");
+            t.throws(() => module.printSlotInfo(slot, slotNum, null), InvalidArgumentError, "Indent.");
+        });
+    });
 
     await t.test("Slot registering", async t => {
         const player = "shadowking1243";
@@ -200,12 +254,43 @@ test("Gardening Module Tests:", async t => {
         const plotNum = 0;
         const slotNum = 0;
 
-        await t.todo("should cancel when correct.");
-        await t.todo("should not cancel when the player is wrong.");
-        await t.todo("should not cancel when the plant is wrong.");
-        await t.todo("should not cancel when the plot number is wrong.");
-        await t.todo("should not cancel when the slot number is wrong.");
+        await t.todo("should cancel when correct.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(slot);
 
+            await module.cancel(interaction, config, player, plant, plotNum, slotNum);
+            t.notSame(plot.slots.length, 1);
+        });
+        await t.todo("should not cancel when the player is wrong.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(slot);
+
+            await module.cancel(interaction, config, "wrong", plant, plotNum, slotNum);
+            t.equal(plot.slots.length, 1);
+        });
+        await t.todo("should not cancel when the plant is wrong.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(slot);
+
+            await module.cancel(interaction, config, player, "wrong", plotNum, slotNum);
+            t.equal(plot.slots.length, 1);
+        });
+        await t.todo("should not cancel when the plot number is wrong.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(slot);
+
+            await module.cancel(interaction, config, player, plant, 1, slotNum);
+            t.equal(plot.slots.length, 1);
+        });
+        await t.todo("should not cancel when the slot number is wrong.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(slot);
+
+            await module.cancel(interaction, config, player, plant, plotNum, 1);
+            t.equal(plot.slots.length, 1);
+        });
+
+        await t.todo("should cancel a reservation.");
         await t.todo("should not cancel other players reservation.");
         await t.todo("should cancel the first reservation that matches only.");
 

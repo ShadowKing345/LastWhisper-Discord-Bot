@@ -118,7 +118,7 @@ export class GardeningModule extends ModuleBase {
         ];
     }
 
-    public static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [Plot, Slot]> {
+    protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [Plot, Slot]> {
         if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
@@ -143,21 +143,41 @@ export class GardeningModule extends ModuleBase {
         return [plot, slot];
     }
 
-    private static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 0): string {
-        return `${"\t".repeat(indent)}Plot ${plotNum}:\n`
-            + (detailed ? `${"\t".repeat(indent + 1)}Slot Count: ${plot.slots.length}\n` : "");
+    protected static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 1): string {
+        if (!(plot && plotNum != null && detailed != null && indent != null)) {
+            throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
+        }
+
+        const indentStr = " ".repeat(2 * indent);
+
+        let result = `${" ".repeat(2 * Math.max(indent - 1, 0))}Plot ${plotNum}:\n`;
+
+        if (detailed) {
+            plot.slots?.forEach((slot, index) => {
+                result += GardeningModule.printSlotInfo(slot, index, indent + 1);
+            });
+        }
+
+        result += `${indentStr}Slot Count: ${plot.slots.length}\n`;
+
+        return result;
     }
 
-    private static printSlotInfo(slot: Slot, slotNum: number, indent = 0): string {
-        const indented = "\t".repeat(indent + 1);
-        return slot ? `${"\t".repeat(indent)}Slot ${slotNum}:\n`
-            + `${indented}Player: ${slot.player}\n`
-            + `${indented}Plant: ${slot.plant}\n`
-            + `${indented}Reason: ${slot.reason}\n`
-            + `${indented}Started: ${slot.started}\n`
-            + `${indented}Duration: ${slot.duration}\n`
-            + `${indented}Next Queue Size: ${slot.next.length}\n`
-            : `${"\t".repeat(indent)}Slot ${slotNum}: Empty\n`;
+    protected static printSlotInfo(slot: Slot, slotNum: number, indent = 1): string {
+        if (!(slot && slotNum != null && indent != null)) {
+            throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
+        }
+        const indentStr = " ".repeat(2 * indent);
+
+        let result = `${" ".repeat(2 * Math.max(indent - 1, 0))}Slot ${slotNum}:\n`;
+        result += `${indentStr}Player: ${slot.player}\n`;
+        result += `${indentStr}Plant: ${slot.plant}\n`;
+        result += `${indentStr}Reason: ${slot.reason}\n`;
+        result += `${indentStr}Started: ${slot.started}\n`;
+        result += `${indentStr}Duration: ${slot.duration}\n`;
+        result += `${indentStr}Next Queue Size: ${slot.next.length}\n`;
+
+        return result;
     }
 
     public async register(interaction: CommandInteraction, config: GardeningConfig, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
