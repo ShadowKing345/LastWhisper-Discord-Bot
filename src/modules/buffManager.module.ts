@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import {CommandInteraction, Guild, MessageEmbed, TextChannel} from "discord.js";
+import {DateTime} from "luxon";
 import {injectable} from "tsyringe";
 
 import {Client} from "../classes/client.js";
@@ -8,7 +9,6 @@ import {Task} from "../classes/task.js";
 import {Buff, BuffManagerConfig, MessageSettings, Week} from "../models/buffManager.model.js";
 import {BuffManagerConfigService} from "../services/buffManagerConfig.service.js";
 import {logger} from "../utils/logger.js";
-import {DateTime} from "luxon";
 
 @injectable()
 export class BuffManagerModule extends ModuleBase {

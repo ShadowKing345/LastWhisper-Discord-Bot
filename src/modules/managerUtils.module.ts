@@ -1,10 +1,10 @@
 import { Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
+import {DateTime} from "luxon";
 import { injectable } from "tsyringe";
 
 import { ModuleBase } from "../classes/moduleBase.js";
 import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 import { ManagerUtilsConfigService } from "../services/managerUtilsConfig.service.js";
-import {DateTime} from "luxon";
 
 @injectable()
 export class ManagerUtilsModule extends ModuleBase {

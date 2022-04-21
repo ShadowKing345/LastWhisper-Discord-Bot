@@ -1,4 +1,5 @@
 import {Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel} from "discord.js";
+import {DateTime, Duration} from "luxon";
 import {injectable} from "tsyringe";
 
 import {ModuleBase} from "../classes/moduleBase.js";
@@ -6,7 +7,6 @@ import {Task} from "../classes/task.js";
 import {EventManagerConfig, EventObj, Tags} from "../models/eventManager.model.js";
 import {EventManagerConfigService} from "../services/eventManagerConfig.service.js";
 import {fetchMessages} from "../utils/utils.js";
-import {DateTime, Duration} from "luxon";
 
 @injectable()
 export class EventManagerModule extends ModuleBase {

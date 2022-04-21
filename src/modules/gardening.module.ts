@@ -1,4 +1,5 @@
-import {CommandInteraction, EmbedFieldData, MessageEmbed, TextChannel} from "discord.js";
+import {CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel} from "discord.js";
+import {DateTime} from "luxon";
 import {injectable} from "tsyringe";
 
 import {Client} from "../classes/client.js";
@@ -7,7 +8,6 @@ import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../models/garden
 import {GardeningConfigService} from "../services/gardeningConfig.service.js";
 import {InvalidArgumentError} from "../utils/errors.js";
 import {logger} from "../utils/logger.js";
-import {DateTime} from "luxon";
 
 @injectable()
 export class GardeningModule extends ModuleBase {
@@ -198,8 +198,7 @@ export class GardeningModule extends ModuleBase {
 
         await this.service.update(config);
         await interaction.reply({content: "Reservation has been created."});
-        // TODO: Re-enable posting of messages
-        /*await this.postChannelMessage(interaction.client as Client, config, {
+        await this.postChannelMessage(interaction.client as Client, config, {
             title: "Gardening Plot Has Been Reserved!",
             description: `${(interaction.member as GuildMember).displayName} has registered the plot **${plot.name}**, slot **${slotNum}** for the plant **${plant}**.`,
             memberUrl: (interaction.member as GuildMember).displayAvatarURL(),
@@ -226,7 +225,7 @@ export class GardeningModule extends ModuleBase {
                     value: reason.toString(),
                 },
             ],
-        });*/
+        });
     }
 
     public async cancel(interaction: CommandInteraction, config: GardeningConfig, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
