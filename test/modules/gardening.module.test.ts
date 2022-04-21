@@ -4,6 +4,7 @@ import {CommandInteraction} from "discord.js";
 import {DateTime} from "luxon";
 import {fake, SinonStub, useFakeTimers} from "sinon";
 import {test} from "tap";
+import {ImportMock} from "ts-mock-imports";
 import {container, injectable} from "tsyringe";
 
 import {Database} from "../../src/config/databaseConfiguration.js";
@@ -69,7 +70,11 @@ test("Gardening Module Tests:", async t => {
     });
     const module = container.resolve(MockModule);
 
-    const interaction = {reply: fake()} as unknown as CommandInteraction;
+    const interaction = {
+        reply: fake(),
+        client: {},
+        member: {displayName: "", displayAvatarURL: () => ""}
+    } as unknown as CommandInteraction;
 
     t.before(() => clock = useFakeTimers());
     t.teardown(() => clock.restore());
@@ -188,6 +193,16 @@ test("Gardening Module Tests:", async t => {
     });
 
     await t.test("Slot registering", async t => {
+        let mockedFunction: SinonStub;
+
+        t.before(() => {
+            mockedFunction = ImportMock.mockFunction(module, "postChannelMessage", null);
+        });
+
+        t.teardown(() => {
+            mockedFunction?.reset();
+        })
+
         const player = "shadowking1243";
         const plant = "Test";
         const duration = 10;
@@ -290,9 +305,49 @@ test("Gardening Module Tests:", async t => {
             t.equal(plot.slots.length, 1);
         });
 
-        await t.todo("should cancel a reservation.");
-        await t.todo("should not cancel other players reservation.");
-        await t.todo("should cancel the first reservation that matches only.");
+        await t.test("should cancel a reservation.", async t => {
+            config.plots.push(plot);
+            const s: Slot = {
+                duration: 0, plant: "", player: "", reason: undefined, started: 0,
+                next: [new Reservation(player, plant, 0, Reason.NONE)]
+            };
+            plot.slots.push(s);
+
+            await module.cancel(interaction, config, player, plant, 0, 0);
+            t.equal(s.next.length, 0);
+        });
+        await t.test("should not cancel other players reservation.", async t => {
+            config.plots.push(plot);
+            const reservation = new Reservation(null, null, 0, Reason.NONE);
+            const s: Slot = {
+                duration: 0, plant: "", player: "", reason: undefined, started: 0,
+                next: [
+                    reservation,
+                    new Reservation(player, plant, 0, Reason.NONE)
+                ]
+            };
+            plot.slots.push(s);
+
+            await module.cancel(interaction, config, player, plant, 0, 0);
+            t.equal(s.next.length, 1);
+            t.same(s.next[0], reservation);
+        });
+        await t.test("should cancel the first reservation that matches only.", async t => {
+            config.plots.push(plot);
+            const reservation = new Reservation(player, plant, 0, Reason.NONE);
+            const s: Slot = {
+                duration: 0, plant: "", player: "", reason: undefined, started: 0,
+                next: [
+                    new Reservation(player, plant, 0, Reason.NONE),
+                    reservation
+                ]
+            };
+            plot.slots.push(s);
+
+            await module.cancel(interaction, config, player, plant, 0, 0);
+            t.equal(s.next.length, 1);
+            t.equal(s.next[0], reservation);
+        });
 
         await t.test("should not cancel without a: ", async t => {
             await t.rejects(module.cancel(interaction, config, null, plant, plotNum, slotNum), InvalidArgumentError, "Player.");
@@ -302,8 +357,40 @@ test("Gardening Module Tests:", async t => {
         });
     });
 
-    await t.todo("Listing plots and slots");
-    await t.todo("Ticking");
-    await t.todo("Posting channel message");
-    await t.todo("Sub command resolver");
+    await t.test("Listing plots and slots", async t => {
+        await t.todo("should post a listing of all plots and their information.");
+        await t.todo("should show no plots set message when there are no configured slots.");
+
+        await t.todo("should post the information about a plot.");
+        await t.todo("should post the detailed information about a plot.");
+
+        await t.todo("should post the information about a slot.");
+        await t.todo("should post the detailed information about a slot.");
+
+        await t.todo("should post the next reservations.");
+
+        await t.todo("should post slot unoccupied.");
+
+        await t.test("should not post without a:", async t => {
+            //todo: Alter to use interaction call instead.
+            await t.rejects(module.list(interaction, config, null, 0), InvalidArgumentError, "Plot Number.");
+            await t.rejects(module.list(interaction, config, 0, null), InvalidArgumentError, "Slot Number.");
+        });
+    });
+
+    await t.test("Ticking", async t => {
+        await t.todo("should remove slots when time has expired.");
+        await t.todo("should remove slots and set next when time has expired.");
+
+        await t.todo("should post message when reservation has expired.");
+    });
+
+    await t.test("Posting channel message", async t => {
+        await t.todo("should post message in correct channel when called.");
+    });
+
+    await t.test("Sub command resolver", async t => {
+        await t.todo("should call the correct function when subcommand is provided.");
+        await t.todo("should provide all the necessary argument to each function.");
+    });
 });
