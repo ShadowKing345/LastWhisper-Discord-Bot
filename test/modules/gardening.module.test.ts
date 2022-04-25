@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 import {CommandInteraction} from "discord.js";
 import {DateTime} from "luxon";
-import {fake, SinonStub, useFakeTimers} from "sinon";
+import {createSandbox, fake, SinonFakeTimers, SinonSandbox, SinonStub, useFakeTimers} from "sinon";
 import {test} from "tap";
 import {ImportMock} from "ts-mock-imports";
 import {container, injectable} from "tsyringe";
@@ -28,7 +28,8 @@ class MockModule extends GardeningModule {
 }
 
 test("Gardening Module Tests:", async t => {
-    let clock;
+    let clock: SinonFakeTimers;
+    let sandbox: SinonSandbox;
 
     let slot: Slot = {
         player: "Shadowking124",
@@ -70,14 +71,27 @@ test("Gardening Module Tests:", async t => {
     });
     const module = container.resolve(MockModule);
 
+    const options = {};
+
     const interaction = {
         reply: fake(),
         client: {},
-        member: {displayName: "", displayAvatarURL: () => ""}
+        member: {displayName: "", displayAvatarURL: () => ""},
+        options: {
+            getBoolean: (key: string) => {
+                return options[key] ?? null;
+            }
+        }
     } as unknown as CommandInteraction;
 
-    t.before(() => clock = useFakeTimers());
-    t.teardown(() => clock.restore());
+    t.before(() => {
+        clock = useFakeTimers();
+        sandbox = createSandbox();
+    });
+    t.teardown(() => {
+        clock.restore();
+        sandbox.restore();
+    });
 
     t.beforeEach(() => {
         slot = {
@@ -99,6 +113,7 @@ test("Gardening Module Tests:", async t => {
             messagePostingChannelId: "",
             plots: [],
         };
+        sandbox.reset();
     });
 
     await t.test("Validation of Plots and Slots", async t => {
@@ -371,10 +386,13 @@ test("Gardening Module Tests:", async t => {
 
         await t.todo("should post slot unoccupied.");
 
-        await t.test("should not post without a:", async t => {
-            //todo: Alter to use interaction call instead.
-            await t.rejects(module.list(interaction, config, null, 0), InvalidArgumentError, "Plot Number.");
-            await t.rejects(module.list(interaction, config, 0, null), InvalidArgumentError, "Slot Number.");
+        await t.test("should not post when plot is null. ", async t => {
+            await module.list(interaction, config, null, 0);
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.ok((<SinonStub>interaction.reply).calledWith({
+                content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
+                ephemeral: true,
+            }), "Was called with the right options.");
         });
     });
 
