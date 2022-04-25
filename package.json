@@ -37,11 +37,6 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "CI=true yarn lint"
-    }
-  },
   "private": true,
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
