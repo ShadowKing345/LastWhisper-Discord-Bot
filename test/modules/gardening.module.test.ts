@@ -1,8 +1,8 @@
+import "reflect-metadata";
 
 import {CommandInteraction} from "discord.js";
 import {DateTime} from "luxon";
 import {fake, SinonStub, useFakeTimers} from "sinon";
-import "reflect-metadata";
 import {test} from "tap";
 import {ImportMock} from "ts-mock-imports";
 import {container, injectable} from "tsyringe";
