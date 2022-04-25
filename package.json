@@ -13,7 +13,8 @@
     "build:types": "tsc",
     "build": "concurrently yarn:build:*",
     "test": "tap --node-arg=--loader=ts-node/esm --no-coverage",
-    "lint": "eslint . --ext .ts --max-warnings=0"
+    "lint": "eslint . --ext .ts --max-warnings=0",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,7 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "private": true,
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
@@ -71,6 +73,7 @@
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^7.0.4",
     "memfs": "^3.4.1",
     "nodemon": "^2.0.12",
     "sinon": "^13.0.2",
