@@ -6,9 +6,9 @@ export let CONFIGS: AppConfigs = null;
 
 export class AppConfigs {
     public token?: string;
-    public database?: DatabaseConfiguration;
+    public database?: DatabaseConfiguration = new DatabaseConfiguration();
     public logging_level?: string = "info";
-    public commandRegistration?: CommandRegistrationConfiguration;
+    public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
 }
 
 export class CommandRegistrationConfiguration {
