@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 import chalk from "chalk";
 
 import { Client } from "./classes/client.js";
@@ -43,7 +41,7 @@ export class App {
     }
 }
 
-export async function main() {
+export async function botMain() {
     const app: App = new App();
     await app.load();
 
