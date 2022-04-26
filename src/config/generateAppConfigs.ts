@@ -213,7 +213,8 @@ enum MAIN_MENU_ACTIONS {
     EXIT
 }
 
-async function main() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function generateConfigs(args) {
     switch ((await inquirer.prompt<{ action: MAIN_MENU_ACTIONS }>([ {
         type: "list",
         name: "action",
@@ -237,5 +238,3 @@ async function main() {
             break;
     }
 }
-
-await main();
