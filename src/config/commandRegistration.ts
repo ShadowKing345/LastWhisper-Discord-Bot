@@ -23,22 +23,13 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
     const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
 
-    if (args.token) {
-        appConfigs.token = args.token;
-    }
-
-    if (args.client) {
-        commandConfigs.clientId = args.client;
-    }
-
+    if (args.token) appConfigs.token = args.token;
+    if (args.client) commandConfigs.clientId = args.client;
     if (args.guild) {
         commandConfigs.guildId = args.guild;
         commandConfigs.registerForGuild = true;
     }
-
-    if (args.unregister) {
-        commandConfigs.unregister = true;
-    }
+    if (args.unregister) commandConfigs.unregister = true;
 
     const isForRegistering = (done = false) => commandConfigs.unregister ? chalk.red(done ? "removed" : "removal") : chalk.green(done ? "registered" : "registration");
     const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${chalk.yellow(commandConfigs.guildId)}` : chalk.yellow("global commands");

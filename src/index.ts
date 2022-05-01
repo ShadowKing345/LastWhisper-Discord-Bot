@@ -1,29 +1,27 @@
 #!/usr/bin/env node
 import "reflect-metadata";
 
-import {program} from "commander";
-import {existsSync} from "fs";
+import { program } from "commander";
+import { existsSync } from "fs";
 import inquirer from "inquirer";
 
-import {botMain} from "./app.js";
-import {configPath} from "./config/appConfigs.js";
-import {commandRegistration} from "./config/commandRegistration.js";
-import {generateConfigs} from "./config/generator/generateConfiguration.js";
+import { botMain } from "./app.js";
+import { configPath } from "./config/appConfigs.js";
+import { commandRegistration } from "./config/commandRegistration.js";
+import { generateConfigs } from "./config/generator/generateConfiguration.js";
 
-function configCheck() {
-    return !existsSync(configPath) ? inquirer.prompt<{ result: boolean }>({
-        name: "result",
-        message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
-        type: "confirm"
-    }).then(({result}) => result ? generateConfigs({minimal: true}) : Promise.resolve()) : Promise.resolve();
-}
+const configCheck = () => !existsSync(configPath) ? inquirer.prompt<{ result: boolean }>({
+    name: "result",
+    message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
+    type: "confirm",
+}).then(({ result }) => result ? generateConfigs({ minimal: true }) : Promise.resolve()) : Promise.resolve();
 
 program
     .name("discord-bot")
     .description("Discord Bot.")
     .version("0.0.1");
 
-program.command("deploy", {isDefault: true})
+program.command("deploy", { isDefault: true })
     .description("Runs to bot.")
     .action(() => configCheck().then(botMain));
 
