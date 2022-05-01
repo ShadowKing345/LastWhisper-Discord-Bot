@@ -1,25 +1,47 @@
-import {REST} from "@discordjs/rest";
+import { REST } from "@discordjs/rest";
 import chalk from "chalk";
-import {APIApplicationCommandOption, Routes} from "discord-api-types/v9";
+import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 
-import {BuildCommand} from "../classes/command.js";
-import {logger} from "../utils/logger.js";
-import {AppConfigs, CommandRegistrationConfiguration, initConfigs} from "./appConfigs.js";
-import {loadModules} from "./moduleConfiguration.js";
+import { BuildCommand } from "../classes/command.js";
+import { logger } from "../utils/logger.js";
+import { AppConfigs, CommandRegistrationConfiguration, initConfigs } from "./appConfigs.js";
+import { loadModules } from "./moduleConfiguration.js";
 
-const loggerMeta = {context: "CommandRegistration"};
+const loggerMeta = { context: "CommandRegistration" };
 
 type toJsonResult = { name: string, description: string, options: APIApplicationCommandOption[], default_permission: boolean };
 
-export async function commandRegistration(args): Promise<void> {
+type CommandRegistrationArgs = {
+    token?: string,
+    client?: string,
+    guild?: string,
+    unregister?: boolean
+}
+
+export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
     const appConfigs: AppConfigs = initConfigs();
     const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
-    const rest = new REST({version: "9"}).setToken(appConfigs.token);
+    const rest = new REST({ version: "9" }).setToken(appConfigs.token);
+
+    if (args.token) {
+        appConfigs.token = args.token;
+    }
+
+    if (args.client) {
+        commandConfigs.clientId = args.client;
+    }
+
+    if (args.guild) {
+        commandConfigs.guildId = args.guild;
+        commandConfigs.registerForGuild = true;
+    }
+
+    if (args.unregister) {
+        commandConfigs.unregister = true;
+    }
 
     const isForRegistering = (done = false) => commandConfigs.unregister ? chalk.red(done ? "removed" : "removal") : chalk.green(done ? "registered" : "registration");
     const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${chalk.yellow(commandConfigs.guildId)}` : chalk.yellow("global commands");
-
-    console.log(args);
 
     try {
         logger.info(`Beginning ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
@@ -45,7 +67,7 @@ export async function commandRegistration(args): Promise<void> {
             });
 
             logger.info(`${chalk.cyan("Registering")} ${isForGlobal()}`, loggerMeta);
-            await rest.put(route, {body: commands});
+            await rest.put(route, { body: commands });
         }
 
         logger.info(`${chalk.green("Successfully")} ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
