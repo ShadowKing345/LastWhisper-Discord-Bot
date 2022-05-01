@@ -14,7 +14,7 @@ export class AppConfigs {
 export class CommandRegistrationConfiguration {
     public clientId?: string;
     public guildId?: string;
-    public registerForGuild?: boolean = true;
+    public registerForGuild?: boolean = false;
     public unregister?: boolean = false;
 }
 
