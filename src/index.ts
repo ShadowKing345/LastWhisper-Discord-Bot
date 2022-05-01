@@ -8,7 +8,7 @@ import inquirer from "inquirer";
 import {botMain} from "./app.js";
 import {configPath} from "./config/appConfigs.js";
 import {commandRegistration} from "./config/commandRegistration.js";
-import {generateConfigs} from "./config/generateAppConfigs.js";
+import {generateConfigs} from "./config/generator/generateConfiguration.js";
 
 program
     .name("discord-bot")
@@ -39,7 +39,21 @@ program.command("register-command")
     .option("-c, --client <string>", "Client ID.")
     .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
     .option("-u, --unregister", "Use to unregister commands instead.")
-    .action((args) => commandRegistration(args));
+    .action(async (args) => {
+        if (!existsSync(configPath)) {
+            const result = (await inquirer.prompt<{ action: boolean }>({
+                name: "action",
+                message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
+                type: "confirm"
+            })).action;
+
+            if (result) {
+                console.log("Creating a new configuration file.");
+            }
+        }
+
+        await commandRegistration(args);
+    });
 
 program.command("configuration")
     .description("Creates/Updates the configuration file.")
@@ -47,7 +61,8 @@ program.command("configuration")
     .option("-l, --logging-level <string>", "Logging level for bot output.")
     .option("-c, --client-id <string>", "Client Id used for command registration.")
     .option("-g, --guild-id <string>", "Guild Id for command registration. Sets register to guild on by default.")
-    .option("-r, --register-for-guild <boolean>", "If you want to register for a guild. Requires guild Id to be set.", false)
+    .option("-r, --register-for-guild", "If you want to register for a guild. Requires guild Id to be set.", false)
+    .option("-nr, --no-register-for-guild", "If you want to register for a guild. Requires guild Id to be set.", false)
     .option("-u, --unregister", "If you want to unregister commands instead.")
     .option("-du, --username <string>", "Database username.")
     .option("-dp, --password <string>", "Database password.")
@@ -57,8 +72,9 @@ program.command("configuration")
     .option("-dq, --query <string>", "Database query. Format is {[key:string]:any} for each pair.")
     .option("-durl, --url <string>", "Database Url. If set all other options for database is ignored.")
     .option("-ddns, --use-dns", "Database username. If set the Url generated will use DNS.")
-    .option("-m, --minimal", "Will create the minimal configuration required for the bot.")
+    .option("-f, --full", "Will create the full configuration required for the bot.", false)
     .option("-n, --new", "Will start a new config file instead of use an existing one.")
+    .option("-d, --dev", "Will save a dev version.")
     .action((args) => generateConfigs(args));
 
 program.parse();
