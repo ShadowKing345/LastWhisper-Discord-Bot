@@ -9,6 +9,30 @@
       "type": "string",
       "description": "The token for the Discord Bot."
     },
+    "commandRegistration": {
+      "type": "object",
+      "description": "The settings for registering the commands",
+      "properties": {
+        "clientId": {
+          "type": "string",
+          "description": "The bots Discord client ID."
+        },
+        "guildId": {
+          "type": "string",
+          "description": "Guild Id used when registering for a guild."
+        },
+        "registerForGuild": {
+          "type": "boolean",
+          "description": "If the command should register for the guild not globally.",
+          "default": false
+        },
+        "unregister": {
+          "type": "boolean",
+          "description": "Should the command unregister all existing commands instead.",
+          "default": false
+        }
+      }
+    },
     "database": {
       "type": "object",
       "description": "Settings for database.",
