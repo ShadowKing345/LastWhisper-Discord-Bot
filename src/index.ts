@@ -10,6 +10,14 @@ import {configPath} from "./config/appConfigs.js";
 import {commandRegistration} from "./config/commandRegistration.js";
 import {generateConfigs} from "./config/generator/generateConfiguration.js";
 
+function configCheck() {
+    return !existsSync(configPath) ? inquirer.prompt<{ result: boolean }>({
+        name: "result",
+        message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
+        type: "confirm"
+    }).then(({result}) => result ? generateConfigs({minimal: true}) : Promise.resolve()) : Promise.resolve();
+}
+
 program
     .name("discord-bot")
     .description("Discord Bot.")
@@ -17,21 +25,7 @@ program
 
 program.command("deploy", {isDefault: true})
     .description("Runs to bot.")
-    .action(async () => {
-        if (!existsSync(configPath)) {
-            const result = (await inquirer.prompt<{ action: boolean }>({
-                name: "action",
-                message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
-                type: "confirm"
-            })).action;
-
-            if (result) {
-                console.log("Creating a new configuration file.");
-            }
-        }
-
-        await botMain();
-    });
+    .action(() => configCheck().then(botMain));
 
 program.command("register-command")
     .description("Runs the command register script.")
@@ -39,21 +33,7 @@ program.command("register-command")
     .option("-c, --client <string>", "Client ID.")
     .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
     .option("-u, --unregister", "Use to unregister commands instead.")
-    .action(async (args) => {
-        if (!existsSync(configPath)) {
-            const result = (await inquirer.prompt<{ action: boolean }>({
-                name: "action",
-                message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
-                type: "confirm"
-            })).action;
-
-            if (result) {
-                console.log("Creating a new configuration file.");
-            }
-        }
-
-        await commandRegistration(args);
-    });
+    .action((args) => configCheck().then(() => commandRegistration(args)));
 
 program.command("configuration")
     .description("Creates/Updates the configuration file.")
