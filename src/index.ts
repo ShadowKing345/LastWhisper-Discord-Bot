@@ -72,7 +72,7 @@ program.command("configuration")
     .option("-dq, --query <string>", "Database query. Format is {[key:string]:any} for each pair.")
     .option("-durl, --url <string>", "Database Url. If set all other options for database is ignored.")
     .option("-ddns, --use-dns", "Database username. If set the Url generated will use DNS.")
-    .option("-f, --full", "Will create the full configuration required for the bot.", false)
+    .option("-m, --minimal", "Will create the minimal configuration required for the bot.")
     .option("-n, --new", "Will start a new config file instead of use an existing one.")
     .option("-d, --dev", "Will save a dev version.")
     .action((args) => generateConfigs(args));
