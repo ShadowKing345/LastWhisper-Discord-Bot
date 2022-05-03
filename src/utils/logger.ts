@@ -1,8 +1,8 @@
 import chalk from "chalk";
-import {createLogger, format, Logform, Logger, transports} from "winston";
+import { createLogger, format, Logform, Logger, transports } from "winston";
 
 export const loggerFormat = format.printf((info: Logform.TransformableInfo) => {
-    return `[${info.timestamp}] [${info.level}]\t${chalk.yellowBright(info.context)}: ${info.message}`;
+    return `${info.timestamp} ${chalk.yellowBright(info.context)} [${info.level}]: ${info.message}`;
 });
 
 export enum LOGGING_LEVELS {
@@ -24,7 +24,7 @@ export const logger: Logger = createLogger(
                 info.level = info.level.toUpperCase();
                 return info;
             })(),
-            format.label({label: "No Label"}),
+            format.label({ label: "No Label" }),
             format.colorize({
                 colors: {
                     debug: "bold italic blue",
@@ -33,7 +33,7 @@ export const logger: Logger = createLogger(
                     error: "bold red",
                 },
             }),
-            format.timestamp({format: "YYYY-MM-DD HH:mm:ss"}),
+            format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
             loggerFormat,
         ),
         defaultMeta: {
