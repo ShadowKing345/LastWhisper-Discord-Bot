@@ -6,19 +6,42 @@
   "type": "object",
   "properties": {
     "token": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "The token for the Discord Bot."
+    },
+    "logging_level": {
+      "type": "string",
+      "description": "The level of logging to be output to the standard out.",
+      "enum": [
+        "emerg",
+        "alert",
+        "crit",
+        "error",
+        "warning",
+        "notice",
+        "info",
+        "debug"
+      ]
     },
     "commandRegistration": {
       "type": "object",
       "description": "The settings for registering the commands",
       "properties": {
         "clientId": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "The bots Discord client ID."
         },
         "guildId": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Guild Id used when registering for a guild."
         },
         "registerForGuild": {
@@ -38,23 +61,38 @@
       "description": "Settings for database.",
       "properties": {
         "username": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Username for the database."
         },
         "password": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Password for the database."
         },
         "host": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Host url for the database."
         },
         "port": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Port number for the database."
         },
         "database": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Database name (Collection name) for the database."
         },
         "query": {
@@ -63,7 +101,10 @@
           "additionalProperties": true
         },
         "url": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Full url path for database. If this is set all other settings are ignored."
         },
         "useDns": {
@@ -72,8 +113,5 @@
         }
       }
     }
-  },
-  "required": [
-    "token"
-  ]
+  }
 }
