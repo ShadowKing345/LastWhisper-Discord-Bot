@@ -12,6 +12,8 @@
     "emitDecoratorMetadata": true,
     // Output.
     "outDir": "build",
+    "composite": true,
+    "declaration": true,
     "emitDeclarationOnly": true
   },
   "include": [
