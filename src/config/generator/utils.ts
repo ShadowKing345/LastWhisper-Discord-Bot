@@ -53,28 +53,6 @@ export async function inquireBoolean(message: string): Promise<boolean | null> {
     return result === -1 ? null : result === 1;
 }
 
-export function deepMerge(target, ...sources) {
-    if (!sources.length) return target;
-
-    for (const source of sources) {
-        if (target && source) {
-            for (const key in source) {
-                if (source[key]) {
-                    if (!target[key]) {
-                        target[key] = source[key];
-                    } else {
-                        if (typeof target[key] === "object") {
-                            deepMerge(target[key], source[key]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return target;
-}
-
 enum DictionaryQuestionResult {
     NEW = -1,
     DELETE = -2,
