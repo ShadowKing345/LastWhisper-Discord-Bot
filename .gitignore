@@ -1,11 +1,11 @@
+# Environment.
 .idea
 node_modules
-srcBackup
-Todo
+
+# Standard files.
+appConfigs*
+
+# Development.
 tsconfig.tsbuildinfo
-appConfigs.json
 yarn-error.log
-appConfigs-dev.json
-/build/
-globalConfig.json
-/.nyc_output/
+.nyc_output
