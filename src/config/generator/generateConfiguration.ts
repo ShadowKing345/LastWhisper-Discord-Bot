@@ -1,9 +1,10 @@
-import {existsSync, readFileSync, writeFileSync} from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import inquirer from "inquirer";
 
-import {LOGGING_LEVELS} from "../../utils/logger.js";
-import {AppConfigs, configPath, devConfigPath} from "../appConfigs.js";
-import {deepMerge, inquireBoolean, inquireDictionary, inquireInput, inquireOptions} from "./utils.js";
+import { LOGGING_LEVELS } from "../../utils/logger.js";
+import { deepMerge } from "../../utils/utils.js";
+import { AppConfigs, configPath, devConfigPath } from "../appConfigs.js";
+import { inquireBoolean, inquireDictionary, inquireInput, inquireOptions } from "./utils.js";
 
 const levels = Object.keys(LOGGING_LEVELS).filter(level => isNaN(Number(level)));
 
@@ -66,6 +67,7 @@ const defaultOptions = [
 ];
 
 async function minimal(config: AppConfigs): Promise<boolean> {
+    console.log("Welcome to minimal configuration.\nYou will only be able to configure a select number of fields.");
     for (; ;) {
         const {action} = await inquirer.prompt<{ action: Options }>([
             {
@@ -275,6 +277,7 @@ async function database({database}: AppConfigs): Promise<void> {
 }
 
 async function full(config: AppConfigs): Promise<boolean> {
+    console.log("Welcome to full configuration.\nYou will have access to all configurations available.")
     for (; ;) {
         const {action} = await inquirer.prompt<{ action: Options }>([
             {
@@ -330,10 +333,15 @@ async function full(config: AppConfigs): Promise<boolean> {
 }
 
 export async function generateConfigs(args: GenerateConfigsArgs): Promise<void> {
+    console.log("Welcome again to the configuration tool provided by the bot.");
+    console.log(`Current configuration method is set do ${args.dev ? "Development" : "Production"}`);
     const path = args.dev ? devConfigPath : configPath;
 
+
     const config = new AppConfigs();
-    if (!args.new && existsSync(path)) deepMerge(config, JSON.parse(readFileSync(path, "utf-8")));
+    const newConfig = !args.new && existsSync(path);
+    console.log(newConfig ? "New configuration will be created." : "An existing configuration has been found and will be used overwritten.");
+    if (newConfig) deepMerge(config, JSON.parse(readFileSync(path, "utf-8")));
 
     if (args.token) config.token = args.token;
     if (args.loggingLevel) config.logging_level = args.loggingLevel;
@@ -350,7 +358,9 @@ export async function generateConfigs(args: GenerateConfigsArgs): Promise<void> 
     if (args.url) config.database.url = args.url;
     if (args.useDns) config.database.useDns = args.useDns;
 
-    if (await (args.minimal ? minimal(config) : full(config))) {
+    const saveFlag = await (args.minimal ? minimal(config) : full(config));
+    console.log(`Config will ${saveFlag ? "" : "not"} be saved.`);
+    if (saveFlag) {
         writeFileSync(path, JSON.stringify(config, null, 4));
     }
 }
