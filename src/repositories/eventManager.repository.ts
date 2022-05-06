@@ -1,8 +1,9 @@
-import { injectable } from "tsyringe";
+import {injectable} from "tsyringe";
 
-import { Database } from "../config/databaseConfiguration.js";
-import { EventManagerConfig, EventObj } from "../models/eventManager.model.js";
-import { BasicRepository } from "./basicRepository.js";
+import {Database} from "../config/databaseConfiguration.js";
+import {EventManagerConfig} from "../models/eventManager.model.js";
+import {deepMerge} from "../utils/utils.js";
+import {BasicRepository} from "./basicRepository.js";
 
 @injectable()
 export class EventManagerRepository extends BasicRepository<EventManagerConfig> {
@@ -14,9 +15,6 @@ export class EventManagerRepository extends BasicRepository<EventManagerConfig> 
     }
 
     protected sanitiseOutput(config: EventManagerConfig): EventManagerConfig {
-        config = Object.assign(new EventManagerConfig(), config);
-        config.events = config.events.map(event => Object.assign(EventObj, event));
-
-        return config;
+        return deepMerge(new EventManagerConfig, config);
     }
 }

@@ -19,3 +19,27 @@ export async function fetchMessages(client: Client, guildId: Snowflake, channelI
 
     return result;
 }
+
+export function deepMerge<T, O>(target: T, ...sources: O[]): T {
+    if (!sources.length) return target;
+
+    for (const source of sources) {
+        if (target && source) {
+            for (const key in source) {
+                if (source[key]) {
+                    if (!target[key.valueOf()]) {
+                        target[key.valueOf()] = source[key];
+                    } else {
+                        if (typeof target[key.valueOf()] === "object") {
+                            deepMerge(target[key.valueOf()], source[key]);
+                        } else {
+                            target[key.valueOf()] = source[key];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return target;
+}

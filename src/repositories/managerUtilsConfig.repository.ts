@@ -1,8 +1,9 @@
-import { injectable } from "tsyringe";
+import {injectable} from "tsyringe";
 
-import { Database } from "../config/databaseConfiguration.js";
-import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
-import { BasicRepository } from "./basicRepository.js";
+import {Database} from "../config/databaseConfiguration.js";
+import {ManagerUtilsConfig} from "../models/mangerUtils.model.js";
+import {deepMerge} from "../utils/utils.js";
+import {BasicRepository} from "./basicRepository.js";
 
 @injectable()
 export class ManagerUtilsConfigRepository extends BasicRepository<ManagerUtilsConfig> {
@@ -14,6 +15,6 @@ export class ManagerUtilsConfigRepository extends BasicRepository<ManagerUtilsCo
     }
 
     protected sanitiseOutput(config: ManagerUtilsConfig): ManagerUtilsConfig {
-        return Object.assign(new ManagerUtilsConfig(), config);
+        return deepMerge(new ManagerUtilsConfig(), config);
     }
 }

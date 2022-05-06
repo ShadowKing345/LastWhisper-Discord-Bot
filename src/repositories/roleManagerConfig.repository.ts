@@ -1,8 +1,9 @@
-import { injectable } from "tsyringe";
+import {injectable} from "tsyringe";
 
-import { Database } from "../config/databaseConfiguration.js";
-import { RoleManagerConfig } from "../models/roleManager.model.js";
-import { BasicRepository } from "./basicRepository.js";
+import {Database} from "../config/databaseConfiguration.js";
+import {RoleManagerConfig} from "../models/roleManager.model.js";
+import {deepMerge} from "../utils/utils.js";
+import {BasicRepository} from "./basicRepository.js";
 
 @injectable()
 export class RoleManagerConfigRepository extends BasicRepository<RoleManagerConfig> {
@@ -14,6 +15,6 @@ export class RoleManagerConfigRepository extends BasicRepository<RoleManagerConf
     }
 
     protected sanitiseOutput(config: RoleManagerConfig): RoleManagerConfig {
-        return Object.assign(new RoleManagerConfig(), config);
+        return deepMerge(new RoleManagerConfig(), config);
     }
 }
