@@ -42,6 +42,7 @@ export class App {
 }
 
 export async function botMain() {
+    console.log("Welcome to the startup producer to the bot.\nWe are currently setting up some things so sit tight and we will begin soon.");
     const app: App = new App();
     await app.init();
 
