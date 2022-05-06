@@ -1,12 +1,12 @@
-import {Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel} from "discord.js";
-import {DateTime, Duration} from "luxon";
-import {injectable} from "tsyringe";
+import { Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel } from "discord.js";
+import { DateTime, Duration } from "luxon";
+import { injectable } from "tsyringe";
 
-import {ModuleBase} from "../classes/moduleBase.js";
-import {Task} from "../classes/task.js";
-import {EventManagerConfig, EventObj, Tags} from "../models/eventManager.model.js";
-import {EventManagerConfigService} from "../services/eventManagerConfig.service.js";
-import {fetchMessages} from "../utils/utils.js";
+import { ModuleBase } from "../classes/moduleBase.js";
+import { Task } from "../classes/task.js";
+import { EventManagerConfig, EventObj, Tags } from "../models/eventManager.model.js";
+import { EventManagerConfigService } from "../services/eventManagerConfig.service.js";
+import { fetchMessages } from "../utils/utils.js";
 
 @injectable()
 export class EventManagerModule extends ModuleBase {
@@ -119,7 +119,7 @@ export class EventManagerModule extends ModuleBase {
 
         const event: EventObj = this.parseMessage(message.id, message.content, config);
         try {
-            if (event.isValid) {
+            if (EventObj.isValid(event)) {
                 config.events.push(event);
                 await message.react("✅");
                 await this.service.update(config);
@@ -148,7 +148,7 @@ export class EventManagerModule extends ModuleBase {
             if (reaction)
                 await reaction.users.remove(oldMessage.client.user?.id);
 
-            if (newEvent.isValid) {
+            if (EventObj.isValid(newEvent)) {
                 await newMessage.react("✅");
                 config.events[config.events.indexOf(oldEvent)] = newEvent;
                 await this.service.update(config);
