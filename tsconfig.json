@@ -14,7 +14,8 @@
     "outDir": "build",
     "composite": true,
     "declaration": true,
-    "emitDeclarationOnly": true
+    "declarationMap": true,
+    "sourceMap": true,
   },
   "include": [
     "src"
