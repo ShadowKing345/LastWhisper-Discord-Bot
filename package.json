@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node build/index.js",
     "dev": "nodemon src/index.ts",
-    "build:compile": "babel src --extensions .ts --out-dir build --source-maps",
+    "build:compile": "babel src --extensions .ts --out-dir build",
     "build:types": "tsc",
     "build": "concurrently yarn:build:*",
     "test": "tap --node-arg=--loader=ts-node/esm --no-coverage",
