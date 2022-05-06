@@ -19,6 +19,8 @@ type CommandRegistrationArgs = {
 }
 
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
+    console.log("Welcome again to command registration or un-registration.");
+
     const appConfigs: AppConfigs = initConfigs();
     const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
