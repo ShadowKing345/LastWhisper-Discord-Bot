@@ -1,0 +1,1 @@
+{"version":3,"file":"mangerUtils.model.d.ts","sourceRoot":"","sources":["../../../src/models/mangerUtils.model.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,iBAAiB,CAAC;AAE7C,qBAAa,kBAAmB,SAAQ,UAAU;IACvC,OAAO,EAAE,MAAM,CAAC;IAChB,cAAc,EAAE,MAAM,CAAC;IACvB,qBAAqB,EAAE,MAAM,EAAE,CAAC;CAC1C"}

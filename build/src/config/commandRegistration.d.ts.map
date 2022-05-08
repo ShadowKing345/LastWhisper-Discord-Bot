@@ -1,0 +1,1 @@
+{"version":3,"file":"commandRegistration.d.ts","sourceRoot":"","sources":["../../../src/config/commandRegistration.ts"],"names":[],"mappings":"AAaA,aAAK,uBAAuB,GAAG;IAC3B,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,UAAU,CAAC,EAAE,OAAO,CAAA;CACvB,CAAA;AAED,wBAAsB,mBAAmB,CAAC,IAAI,EAAE,uBAAuB,GAAG,OAAO,CAAC,IAAI,CAAC,CAiDtF"}
