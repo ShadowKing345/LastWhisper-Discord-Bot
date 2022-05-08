@@ -1,23 +1,23 @@
-import {CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel} from "discord.js";
-import {DateTime} from "luxon";
-import {injectable} from "tsyringe";
+import { CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel } from "discord.js";
+import { DateTime } from "luxon";
+import { injectable } from "tsyringe";
 
-import {Client} from "../classes/client.js";
-import {ModuleBase} from "../classes/moduleBase.js";
-import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../models/gardeningConfig.model.js";
-import {GardeningConfigService} from "../services/gardeningConfig.service.js";
-import {InvalidArgumentError} from "../utils/errors.js";
-import {logger} from "../utils/logger.js";
+import { Client } from "../classes/client.js";
+import { ModuleBase } from "../classes/moduleBase.js";
+import { GardeningConfig, Plot, Reason, Reservation, Slot } from "../models/gardeningConfig.model.js";
+import { GardeningConfigService } from "../services/gardeningConfig.service.js";
+import { InvalidArgumentError } from "../utils/errors.js";
+import { logger } from "../utils/logger.js";
 
 @injectable()
 export class GardeningModule extends ModuleBase {
-    private static readonly loggerMeta = {context: "GardeningModule"};
+    private static readonly loggerMeta = { context: "GardeningModule" };
 
     public constructor(private service: GardeningConfigService) {
         super();
 
         this.moduleName = "GardeningModule";
-        this.commands = [{
+        this.commands = [ {
             command: builder => builder
                 .setName("gardening")
                 .setDescription("gardening module.")
@@ -111,14 +111,14 @@ export class GardeningModule extends ModuleBase {
                         ),
                 ),
             run: async interaction => this.subCommandResolver(interaction),
-        }];
+        } ];
 
         this.tasks = [
-            {name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client)},
+            { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) },
         ];
     }
 
-    protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [Plot, Slot]> {
+    protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [ Plot, Slot ]> {
         if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
@@ -140,7 +140,7 @@ export class GardeningModule extends ModuleBase {
             return null;
         }
 
-        return [plot, slot];
+        return [ plot, slot ];
     }
 
     protected static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 1): string {
@@ -184,7 +184,7 @@ export class GardeningModule extends ModuleBase {
         if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
-        const value: void | [Plot, Slot] = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
+        const value: void | [ Plot, Slot ] = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
         if (!value) return;
         const plot: Plot = value[0];
         let slot: Slot = value[1];
@@ -197,7 +197,7 @@ export class GardeningModule extends ModuleBase {
         }
 
         await this.service.update(config);
-        await interaction.reply({content: "Reservation has been created."});
+        await interaction.reply({ content: "Reservation has been created." });
         await this.postChannelMessage(interaction.client as Client, config, {
             title: "Gardening Plot Has Been Reserved!",
             description: `${(interaction.member as GuildMember).displayName} has registered the plot **${plot.name}**, slot **${slotNum}** for the plant **${plant}**.`,
@@ -233,7 +233,7 @@ export class GardeningModule extends ModuleBase {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
 
-        const value: void | [Plot, Slot] = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+        const value: void | [ Plot, Slot ] = await GardeningModule.validatePlotAndSlot(interaction, config, plotNum, slotNum);
         if (!value) return;
         const plot: Plot = value[0];
         let slot: Slot = value[1];
@@ -270,13 +270,13 @@ export class GardeningModule extends ModuleBase {
             ephemeral: true,
         });
 
-        let text = "```";
+        let text = "```\n";
 
         if (plotNum !== null) {
-            if (plotNum >= config.plots.length) return interaction.reply({content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}`});
+            if (plotNum > config.plots.length) return interaction.reply({ content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}` });
             const plot = config.plots[plotNum];
             if (slotNum !== null) {
-                if (slotNum >= plot.slots.length) return interaction.reply({content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}`});
+                if (slotNum >= plot.slots.length) return interaction.reply({ content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}` });
                 text += GardeningModule.printPlotInfo(plot, plotNum);
                 text += GardeningModule.printSlotInfo(plot.slots[slotNum], slotNum, 1);
             } else {
@@ -295,7 +295,6 @@ export class GardeningModule extends ModuleBase {
         }
 
         text += "```";
-
         return interaction.reply(text);
     }
 
@@ -347,7 +346,7 @@ export class GardeningModule extends ModuleBase {
             },
         });
 
-        await channel.send({embeds: [embed]});
+        await channel.send({ embeds: [ embed ] });
     }
 
     private async subCommandResolver(interaction: CommandInteraction) {

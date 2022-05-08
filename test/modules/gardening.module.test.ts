@@ -1,16 +1,16 @@
 import "reflect-metadata";
 
-import {CommandInteraction} from "discord.js";
-import {DateTime} from "luxon";
-import {createSandbox, fake, SinonFakeTimers, SinonSandbox, SinonStub, useFakeTimers} from "sinon";
-import {test} from "tap";
-import {ImportMock} from "ts-mock-imports";
-import {container, injectable} from "tsyringe";
+import { CommandInteraction } from "discord.js";
+import { DateTime } from "luxon";
+import { createSandbox, fake, SinonFakeTimers, SinonSandbox, SinonSpy, SinonStub, useFakeTimers } from "sinon";
+import { test } from "tap";
+import { ImportMock } from "ts-mock-imports";
+import { container, injectable } from "tsyringe";
 
-import {Database} from "../../src/config/databaseConfiguration.js";
-import {GardeningConfig, Plot, Reason, Reservation, Slot} from "../../src/models/gardeningConfig.model.js";
-import {GardeningModule} from "../../src/modules/gardening.module.js";
-import {InvalidArgumentError} from "../../src/utils/errors.js";
+import { Database } from "../../src/config/databaseConfiguration.js";
+import { GardeningConfig, Plot, Reason, Reservation, Slot } from "../../src/models/gardeningConfig.model.js";
+import { GardeningModule } from "../../src/modules/gardening.module.js";
+import { InvalidArgumentError } from "../../src/utils/errors.js";
 
 @injectable()
 class MockModule extends GardeningModule {
@@ -42,13 +42,13 @@ test("Gardening Module Tests:", async t => {
     let plot: Plot = {
         name: "Test Plot.",
         description: "Test Description",
-        slots: [slot],
+        slots: [],
     };
     let config = {
         _id: undefined,
         guildId: "",
         messagePostingChannelId: "",
-        plots: [plot],
+        plots: [],
     };
 
     container.register<Database>(Database, {
@@ -60,7 +60,7 @@ test("Gardening Module Tests:", async t => {
                         return config;
                     },
                     findOne: async () => config,
-                    find: async () => [config],
+                    find: async () => [ config ],
                     replaceOne: async (obj) => {
                         Object.assign(config, obj);
                         return config;
@@ -76,7 +76,7 @@ test("Gardening Module Tests:", async t => {
     const interaction = {
         reply: fake(),
         client: {},
-        member: {displayName: "", displayAvatarURL: () => ""},
+        member: { displayName: "", displayAvatarURL: () => "" },
         options: {
             getBoolean: (key: string) => {
                 return options[key] ?? null;
@@ -113,6 +113,7 @@ test("Gardening Module Tests:", async t => {
             messagePostingChannelId: "",
             plots: [],
         };
+        (<SinonSpy>interaction.reply).resetHistory();
         sandbox.reset();
     });
 
@@ -252,7 +253,7 @@ test("Gardening Module Tests:", async t => {
 
         await t.test("should not be able to overwrite existing reservation.", async t => {
             config.plots.push(plot);
-            plot.slots.push({next: []} as Slot);
+            plot.slots.push({ next: [] } as Slot);
 
             await module.register(interaction, config, player, plant, duration, reason, plotNum, slotNum);
 
@@ -324,7 +325,7 @@ test("Gardening Module Tests:", async t => {
             config.plots.push(plot);
             const s: Slot = {
                 duration: 0, plant: "", player: "", reason: undefined, started: 0,
-                next: [new Reservation(player, plant, 0, Reason.NONE)]
+                next: [ new Reservation(player, plant, 0, Reason.NONE) ]
             };
             plot.slots.push(s);
 
@@ -373,8 +374,24 @@ test("Gardening Module Tests:", async t => {
     });
 
     await t.test("Listing plots and slots", async t => {
-        await t.todo("should post a listing of all plots and their information.");
-        await t.todo("should show no plots set message when there are no configured slots.");
+        await t.test("should post a listing of all plots and their information.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(slot);
+            await module.list(interaction, config, 0, 0);
+
+            const reply = <SinonStub>interaction.reply;
+
+            t.ok(reply.called, "Reply message was called.");
+            t.equal(reply.getCall(0).firstArg, "```\n" + `${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0)}` + "```", "Expected reply");
+        });
+        await t.test("should show no plots set message when there are no configured slots.", async t => {
+            await module.list(interaction, config, 0, 0);
+
+            const reply = <SinonStub>interaction.reply;
+
+            t.ok(reply.called, "Reply message was called.");
+            t.equal(reply.getCall(0).firstArg, {content: "No plot and slot information has been set. Kindly contract the management if this is an issue.", ephemeral: true}, "Expected reply");
+        });
 
         await t.todo("should post the information about a plot.");
         await t.todo("should post the detailed information about a plot.");
