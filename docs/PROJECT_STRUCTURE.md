@@ -49,6 +49,31 @@ It should be abstract enough to allow for use of multiple different types of dat
 The project shall use dependency injection to simplify the use of these different components.
 A third party library will be used to simplify this.
 
+## Buff Manager
+The buff manager will be responsible for posting daily and weekly messages about what the upcoming buff(s) will be.
+There will be two different messages posted. A daily message which contains only the buff for the day, and the weekly one which should be posted once in a week to mark the buffs for that week.
+Additionally, the users should be able to request the daily or weekly message for that day or the next.
+
+The week objects contain the information about what buffs to use as well as the order. The information will be the name of the week. Weeks have the ability to be skipped by setting a special variable to true.
+The buff object contains the information about the buff such as its name, the icon and its affect.
+
+## Event Manager
+The event manager deals with parsing and posting reminders of events. The workflow is as follows. Given a channel the event manager will read all incoming messages and will parse them for event information denoted with tags.
+If a message is considered a valid event then it will save that event and react to inform the poster it has accepted it. Once saved the time when the event will occur will be used to determine when to post reminders.
+If the user has set a reminder the bot will post a message before the actual event starts.
+
+The event object will contain the following:
++ Name of the event.
++ Description.
++ Time.
++ Additional tags.
+
+*Note: Additional tags are just a collection of additional information outside the event object. They will be stored in key value pairs.*
+
+A reminder is as follows:
++ Message to be posted. (Should allow for basic data binding for additional formatting).
++ Time Delta. The amount of time between now and the event when the bot posts the event.
+
 ## Logger
 The logger handles how information is presented to the command line or saved into a file. Currently, the project is
 using Winston as its logger as the default JavaScript is not ideal for complex logging.
