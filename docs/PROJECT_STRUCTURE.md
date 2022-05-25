@@ -36,6 +36,8 @@ You can think of them as controllers in a standard web API project. They take in
 Each module will have its own way of handling slash commands but a general structure for how they are written is provided.
 For abstraction reasons the module will not process the information directly instead it will perform simple transformations and pass the information to the services.
 
+Each component described in the requirements will be a module except the Logger which will be a global object that any of the various parts can call upon.
+
 ### Service
 A service processes the information into its final form. Each service will separate to the module and multiple services can be used in the same module.
 
