@@ -137,7 +137,7 @@ export class BuffManagerService {
 
                 const messageSettings: MessageSettings = config.messageSettings as MessageSettings;
                 if (!messageSettings.channelId || !messageSettings.hour) continue;
-                // if (!now.(dayjs(messageSettings.hour, "HH:mm", true), "minute")) continue;
+                if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) continue;
                 if (!config.buffs.length || !config.weeks.length) continue;
 
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
@@ -159,10 +159,10 @@ export class BuffManagerService {
                 this.logger.debug(`Posting ${chalk.cyan("buff message")}.`);
                 await channel.send({ embeds: [ this.createBuffEmbed(messageSettings.buffMessage, buff, now) ] });
 
-                // if (messageSettings.dow !== null && messageSettings.dow === now.day()) {
-                //     logger.debug(`Posting ${chalk.cyan("week message")}.`);
-                //     await channel.send({embeds: [this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]});
-                // }
+                if (messageSettings.dow !== null && messageSettings.dow === now.weekday - 1) {
+                    this.logger.debug(`Posting ${chalk.cyan("week message")}.`);
+                    await channel.send({ embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ] });
+                }
             } catch (err) {
                 if (err instanceof Error) {
                     this.logger.error(err.stack);
