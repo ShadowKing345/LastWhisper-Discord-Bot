@@ -131,13 +131,13 @@ message and the ability to clear channels.
 
 ## Logger
 
-The logger handles how information is presented to the command line or saved into a file. Currently, the project is
-using Winston as its logger as the default JavaScript is not ideal for complex logging.
+To log information about the application we shall use `pino`. `pino-pretty` shall be used to represent the outputted
+JSON in a more human-readable format.
 
-The format for the logger is as follows.
+The format for the log messages should be as follows.
 
 ```
-<Time stamp (YYYY-MM-DD hh:mm:ss)> <context> [<Logger leve>]: <message>
+<Time stamp (yyyy-MM-dd hh:mm:ss)> <context> [<Logger leve>]: <message>
 ```
 
 The context should be used to denote where the log is coming from. For example, if the context is a repository it should
