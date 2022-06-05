@@ -1,11 +1,13 @@
 import { Db, MongoClient } from "mongodb";
 import { container } from "tsyringe";
 
-import { logger } from "../utils/logger.js";
+import { buildLogger } from "../utils/logger.js";
 import { CONFIGS, DatabaseConfiguration } from "./appConfigs.js";
 
 export class Database extends Db {
 }
+
+const logger = buildLogger("Database");
 
 export let CLIENT: MongoClient;
 export let DB: Database;

@@ -3,7 +3,7 @@ import chalk from "chalk";
 import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 
 import { BuildCommand } from "../classes/command.js";
-import { logger } from "../utils/logger.js";
+import { buildLogger } from "../utils/logger.js";
 import { AppConfigs, CommandRegistrationConfiguration, initConfigs } from "./appConfigs.js";
 import { loadModules } from "./moduleConfiguration.js";
 
@@ -19,6 +19,7 @@ type CommandRegistrationArgs = {
 }
 
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
+    const logger = buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
 
     const appConfigs: AppConfigs = initConfigs();
