@@ -1,38 +1,23 @@
-import chalk from "chalk";
-import { createLogger, format, transports } from "winston";
-export const loggerFormat = format.printf((info) => {
-    return `${info.timestamp} ${chalk.yellowBright(info.context)} [${info.level}]: ${info.message}`;
-});
+import { pino } from "pino";
+import { initConfigs } from "../config/appConfigs.js";
 export var LOGGING_LEVELS;
 (function (LOGGING_LEVELS) {
-    LOGGING_LEVELS["emerg"] = "emerg";
-    LOGGING_LEVELS["alert"] = "alert";
-    LOGGING_LEVELS["crit"] = "crit";
-    LOGGING_LEVELS["error"] = "error";
-    LOGGING_LEVELS["warning"] = "warning";
-    LOGGING_LEVELS["notice"] = "notice";
-    LOGGING_LEVELS["info"] = "info";
     LOGGING_LEVELS["debug"] = "debug";
+    LOGGING_LEVELS["info"] = "info";
+    LOGGING_LEVELS["warn"] = "warn";
+    LOGGING_LEVELS["error"] = "error";
 })(LOGGING_LEVELS || (LOGGING_LEVELS = {}));
-export const logger = createLogger({
-    level: "info",
-    format: format.combine(format(info => {
-        info.level = info.level.toUpperCase();
-        return info;
-    })(), format.label({ label: "No Label" }), format.colorize({
-        colors: {
-            debug: "bold italic blue",
-            info: "bold cyan",
-            warning: "bold yellow",
-            error: "bold red",
+export function buildLogger(name) {
+    return pino({
+        name: name,
+        level: initConfigs()?.logging_level ?? LOGGING_LEVELS.info,
+        transport: {
+            target: "pino-pretty",
+            options: {
+                translateTime: "yyyy-MM-dd hh:mm:ss",
+                ignore: "pid,hostname",
+            },
         },
-    }), format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), loggerFormat),
-    defaultMeta: {
-        context: "Context-less",
-    },
-    transports: [
-        new transports.Console(),
-    ],
-    exitOnError: false,
-});
+    });
+}
 //# sourceMappingURL=logger.js.map

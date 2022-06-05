@@ -1,6 +1,7 @@
 import { Client as DiscordClient } from "discord.js";
 import { Client } from "./client.js";
 export declare class Task {
+    private static readonly logger;
     name: string;
     timeout: number;
     run: (client: Client) => Promise<void>;

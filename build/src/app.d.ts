@@ -1,5 +1,6 @@
 export declare class App {
     private readonly client;
+    private logger;
     constructor();
     init(): Promise<void>;
     run(): Promise<string>;

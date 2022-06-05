@@ -6,7 +6,8 @@ import { EventManagerModule } from "../modules/eventManager.module.js";
 import { GardeningModule } from "../modules/gardening.module.js";
 import { ManagerUtilsModule } from "../modules/managerUtils.module.js";
 import { RoleManagerModule } from "../modules/roleManager.module.js";
-import { logger } from "../utils/logger.js";
+import { buildLogger } from "../utils/logger.js";
+const logger = buildLogger("ModuleConfiguration");
 const loggerMeta = {
     moduleConfiguration: { context: "ModuleConfiguration" },
     interaction: { context: "InteractionInvoking" },
@@ -62,9 +63,9 @@ export function configureModules(client) {
     loadModules().forEach(module => {
         logger.info(`Setting up module ${chalk.blueBright(module.moduleName)}`, loggerMeta.moduleConfiguration);
         client.modules.set(module.moduleName, module);
-        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("commands")}...`, loggerMeta.moduleConfiguration);
+        logger.debug(`Setting up ${chalk.cyan("commands")}...`, loggerMeta.moduleConfiguration);
         module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command));
-        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("listeners")}...`, loggerMeta.moduleConfiguration);
+        logger.debug(`Setting up ${chalk.cyan("listeners")}...`, loggerMeta.moduleConfiguration);
         module.listeners.forEach(listener => {
             let listeners = client.moduleListeners.get(listener.event);
             if (!listeners) {
@@ -73,14 +74,14 @@ export function configureModules(client) {
             listeners.push(listener);
             client.moduleListeners.set(listener.event, listeners);
         });
-        logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("tasks")}...`, loggerMeta.moduleConfiguration);
+        logger.debug(`Setting up ${chalk.cyan("tasks")}...`, loggerMeta.moduleConfiguration);
         module.tasks.forEach(task => {
             client.tasks.set(task.name, task);
             setInterval(task.run, task.timeout, client);
             task.run(client).catch(err => console.error(err));
         });
     });
-    logger.debug(`${" ".repeat(4)}Setting up ${chalk.cyan("events")}...`, loggerMeta.moduleConfiguration);
+    logger.debug(`Setting up ${chalk.cyan("events")}...`, loggerMeta.moduleConfiguration);
     client.moduleListeners.forEach((listener, event) => {
         switch (event) {
             case "ready":

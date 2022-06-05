@@ -1,10 +1,8 @@
 import { ModuleBase } from "../classes/moduleBase.js";
-import { ManagerUtilsConfigService } from "../services/managerUtilsConfig.service.js";
+import { ManagerUtilsService } from "../services/managerUtils.service.js";
 export declare class ManagerUtilsModule extends ModuleBase {
-    private service;
-    constructor(service: ManagerUtilsConfigService);
-    private getConfig;
-    private getLoggingChannel;
+    private managerUtilsService;
+    constructor(managerUtilsService: ManagerUtilsService);
     private onMemberRemoved;
     private onMemberBanned;
 }

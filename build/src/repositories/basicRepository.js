@@ -12,6 +12,9 @@ export class BasicRepository {
     async find(filter) {
         return (await this.collection.find(filter).toArray()).map(config => this.sanitiseOutput(config));
     }
+    getAll() {
+        return this.find({});
+    }
     async bulkSave(configs) {
         if (configs.length <= 0)
             return;

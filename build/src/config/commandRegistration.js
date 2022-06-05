@@ -2,11 +2,12 @@ import { REST } from "@discordjs/rest";
 import chalk from "chalk";
 import { Routes } from "discord-api-types/v9";
 import { BuildCommand } from "../classes/command.js";
-import { logger } from "../utils/logger.js";
+import { buildLogger } from "../utils/logger.js";
 import { initConfigs } from "./appConfigs.js";
 import { loadModules } from "./moduleConfiguration.js";
 const loggerMeta = { context: "CommandRegistration" };
 export async function commandRegistration(args) {
+    const logger = buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
     const appConfigs = initConfigs();
     const commandConfigs = appConfigs.commandRegistration;

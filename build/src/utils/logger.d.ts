@@ -1,14 +1,18 @@
-import { Logform, Logger } from "winston";
-export declare const loggerFormat: Logform.Format;
 export declare enum LOGGING_LEVELS {
-    emerg = "emerg",
-    alert = "alert",
-    crit = "crit",
-    error = "error",
-    warning = "warning",
-    notice = "notice",
+    debug = "debug",
     info = "info",
-    debug = "debug"
+    warn = "warn",
+    error = "error"
 }
-export declare const logger: Logger;
+export declare function buildLogger(name: string): import("pino").Logger<{
+    name: string;
+    level: string;
+    transport: {
+        target: string;
+        options: {
+            translateTime: string;
+            ignore: string;
+        };
+    };
+}>;
 //# sourceMappingURL=logger.d.ts.map
