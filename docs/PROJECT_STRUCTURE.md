@@ -23,6 +23,7 @@ The project will require the following components in order to function as intend
 + Manager Utils Manager: This component deals with the various manager features that are missing.
 + Logger: This component ensures that information from the bot is correctly output to the standard output for the
   console or a log file if needed later on.
++ Permission Manager: This component will manage the ability to execute a command.
 
 ## Structure
 
@@ -128,6 +129,23 @@ to them, and they can react to change it to a different role.
 
 While the name is confusing this manager roles is to provide missing functionality from Discord such as a user left
 message and the ability to clear channels.
+
+## Permission Manager.
+
+As it is not possible to restrict the use of sub commands in a slash command, individual permission management will be
+used.
+They way this manager will handle it is as follows. Given a user, command id, permission configs, the permission manager
+will check if the user has any of the roles assigned to the config. If the user has any then the permission manager will
+return true else false.
+
+The config file will be a simple key value pair collection with the value being a list of role ids.
+
+The owner of the guild will be allowed to execute any command regardless of roles.
+
+The commands this manager will be using shall be to manage roles. I.e. set roles for a key etc.
+
+The command to get if the user has permission can allow to check if the user is a manager, if any/all roles should be
+assigned or if the user can only be an owner.
 
 ## Logger
 
