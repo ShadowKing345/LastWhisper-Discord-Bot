@@ -46,7 +46,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
             },
         ];
     }
-    async subCommandManager(interaction) {
+    subCommandManager(interaction) {
         this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
         const group = interaction.options.getSubcommandGroup();
         const subCommand = interaction.options.getSubcommand();

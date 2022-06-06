@@ -13,9 +13,9 @@ import { injectable } from "tsyringe";
 import { ManagerUtilsConfig } from "../models/mangerUtils.model.js";
 import { ManagerUtilsConfigRepository } from "../repositories/managerUtilsConfig.repository.js";
 let ManagerUtilsService = class ManagerUtilsService {
-    repo;
-    constructor(repo) {
-        this.repo = repo;
+    managerUtilsConfigRepository;
+    constructor(managerUtilsConfigRepository) {
+        this.managerUtilsConfigRepository = managerUtilsConfigRepository;
     }
     async getLoggingChannel(guild) {
         const config = await this.findOneOrCreate(guild.id);
@@ -72,12 +72,12 @@ let ManagerUtilsService = class ManagerUtilsService {
         }
     }
     async findOneOrCreate(id) {
-        let result = await this.repo.findOne({ guildId: id });
+        let result = await this.managerUtilsConfigRepository.findOne({ guildId: id });
         if (result)
             return result;
         result = new ManagerUtilsConfig();
         result.guildId = id;
-        return await this.repo.save(result);
+        return await this.managerUtilsConfigRepository.save(result);
     }
 };
 ManagerUtilsService = __decorate([

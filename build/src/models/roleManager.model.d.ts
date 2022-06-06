@@ -1,7 +1,7 @@
 import { BasicModel } from "./basicModel.js";
 export declare class RoleManagerConfig extends BasicModel {
     guildId: string;
-    acceptedRole: string;
+    acceptedRoleId: string;
     reactionMessageIds: string[];
     reactionListeningChannel: string;
 }

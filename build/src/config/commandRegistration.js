@@ -4,9 +4,11 @@ import { Routes } from "discord-api-types/v9";
 import { BuildCommand } from "../classes/command.js";
 import { buildLogger } from "../utils/logger.js";
 import { initConfigs } from "./appConfigs.js";
+import { connectClient } from "./databaseConfiguration.js";
 import { loadModules } from "./moduleConfiguration.js";
 const loggerMeta = { context: "CommandRegistration" };
 export async function commandRegistration(args) {
+    await connectClient();
     const logger = buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
     const appConfigs = initConfigs();
@@ -52,6 +54,9 @@ export async function commandRegistration(args) {
     }
     catch (error) {
         logger.error(error.stack, loggerMeta);
+    }
+    finally {
+        process.exit(0);
     }
 }
 //# sourceMappingURL=commandRegistration.js.map

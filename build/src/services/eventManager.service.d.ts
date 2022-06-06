@@ -1,8 +1,8 @@
 import { Client, CommandInteraction, Message } from "discord.js";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 export declare class EventManagerService {
-    private repo;
-    constructor(repo: EventManagerRepository);
+    private eventManagerRepository;
+    constructor(eventManagerRepository: EventManagerRepository);
     private static parseTriggerDuration;
     private parseMessage;
     private getConfig;

@@ -3,9 +3,9 @@ import { Client } from "../classes/client.js";
 import { GardeningConfig, Plot, Reason, Slot } from "../models/gardeningConfig.model.js";
 import { GardeningConfigRepository } from "../repositories/gardeningConfig.repository.js";
 export declare class GardeningManagerService {
-    private repo;
+    private gardeningConfigRepository;
     private readonly logger;
-    constructor(repo: GardeningConfigRepository);
+    constructor(gardeningConfigRepository: GardeningConfigRepository);
     protected static validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist?: boolean): Promise<null | [Plot, Slot]>;
     protected static printPlotInfo(plot: Plot, plotNum: number, detailed?: boolean, indent?: number): string;
     protected static printSlotInfo(slot: Slot, slotNum: number, indent?: number): string;

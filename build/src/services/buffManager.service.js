@@ -13,15 +13,15 @@ import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { injectable } from "tsyringe";
 import { Task } from "../classes/task.js";
-import { BuffManagerConfig } from "../models/buffManager.model.js";
+import { BuffManagerConfig, Days } from "../models/buffManager.model.js";
 import { BuffManagerConfigRepository } from "../repositories/buffManagerConfig.repository.js";
 import { buildLogger } from "../utils/logger.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
-    repo;
+    buffManagerConfigRepository;
     logger = buildLogger(BuffManagerService_1.name);
     daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    constructor(repo) {
-        this.repo = repo;
+    constructor(buffManagerConfigRepository) {
+        this.buffManagerConfigRepository = buffManagerConfigRepository;
     }
     createBuffEmbed(title, day, date) {
         this.logger.debug(`Creating ${chalk.cyan("Buff Embed")}.`);
@@ -39,7 +39,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             color: "RANDOM",
             title: title,
             description: week.title,
-            fields: week.days.toArray.map((dayId, index) => {
+            fields: Days.toArray(week.days).map((dayId, index) => {
                 const dow = this.daysOfWeek[index];
                 const day = days.find(entry => entry.id === dayId) ?? { text: "No Buff Found!" };
                 return { name: dow, value: day.text, inline: true };
@@ -75,7 +75,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
         this.logger.debug(`Posting ${chalk.blue("buff")} message for the date ${chalk.yellow(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
-        const buffId = week.days.toArray[date.get("weekday")];
+        const buffId = Days.toArray(week.days)[date.get("weekday")];
         const buff = config.buffs.find(day => day.id === buffId);
         if (!buff) {
             await interaction.reply({
@@ -107,7 +107,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             await Task.waitTillReady(client);
         }
         this.logger.debug(chalk.cyan("TASK: ") + "Posting daily buff message.");
-        const configs = await this.repo.getAll();
+        const configs = await this.buffManagerConfigRepository.getAll();
         const now = DateTime.now();
         for (const config of configs) {
             try {
@@ -134,7 +134,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 }
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week = filteredWeeks[now.get("weekNumber") % filteredWeeks.length];
-                const buffId = week.days.toArray[now.get("weekday")];
+                const buffId = Days.toArray(week.days)[now.get("weekday")];
                 const buff = config.buffs.find(day => day.id === buffId);
                 if (!buff) {
                     this.logger.warn(`Invalid ${chalk.blue("buff")} ID ${chalk.yellow(buffId)} for guild ${chalk.yellow(config.guildId)}. ${chalk.cyan("Skipping...")}`);
@@ -155,12 +155,12 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         }
     }
     async findOneOrCreate(id) {
-        let result = await this.repo.findOne({ guildId: id });
+        let result = await this.buffManagerConfigRepository.findOne({ guildId: id });
         if (result)
             return result;
         result = new BuffManagerConfig();
         result.guildId = id;
-        return await this.repo.save(result);
+        return await this.buffManagerConfigRepository.save(result);
     }
 };
 BuffManagerService = BuffManagerService_1 = __decorate([
