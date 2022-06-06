@@ -8,7 +8,7 @@ import { ManagerUtilsConfigRepository } from "../repositories/managerUtilsConfig
 @injectable()
 export class ManagerUtilsService {
 
-    constructor(private repo: ManagerUtilsConfigRepository) {
+    constructor(private managerUtilsConfigRepository: ManagerUtilsConfigRepository) {
     }
 
     private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
@@ -78,12 +78,12 @@ export class ManagerUtilsService {
     }
 
     private async findOneOrCreate(id: string): Promise<ManagerUtilsConfig> {
-        let result = await this.repo.findOne({ guildId: id });
+        let result = await this.managerUtilsConfigRepository.findOne({ guildId: id });
         if (result) return result;
 
         result = new ManagerUtilsConfig();
         result.guildId = id;
 
-        return await this.repo.save(result);
+        return await this.managerUtilsConfigRepository.save(result);
     }
 }

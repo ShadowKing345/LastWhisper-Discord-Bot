@@ -14,7 +14,7 @@ export class BuffManagerService {
     private readonly logger = buildLogger(BuffManagerService.name);
     private readonly daysOfWeek: string[] = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
 
-    constructor(private repo: BuffManagerConfigRepository) {
+    constructor(private buffManagerConfigRepository: BuffManagerConfigRepository) {
     }
 
     public createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed {

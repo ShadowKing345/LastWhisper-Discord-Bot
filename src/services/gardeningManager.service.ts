@@ -12,7 +12,7 @@ import { buildLogger } from "../utils/logger.js";
 export class GardeningManagerService {
     private readonly logger = buildLogger(GardeningManagerService.name);
 
-    constructor(private repo: GardeningConfigRepository) {
+    constructor(private gardeningConfigRepository: GardeningConfigRepository) {
     }
 
     protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [ Plot, Slot ]> {
@@ -95,7 +95,7 @@ export class GardeningManagerService {
             slot.next.push(new Reservation(player, plant, duration, reason));
         }
 
-        await this.repo.save(config);
+        await this.gardeningConfigRepository.save(config);
         await interaction.reply({ content: "Reservation has been created." });
         await this.postChannelMessage(interaction.client as Client, config, {
             title: "Gardening Plot Has Been Reserved!",
@@ -159,7 +159,7 @@ export class GardeningManagerService {
             slot.next = slot.next.filter(res => res !== next);
         }
 
-        await this.repo.save(config);
+        await this.gardeningConfigRepository.save(config);
         return interaction.reply("Reservation has been canceled.");
     }
 
@@ -202,7 +202,7 @@ export class GardeningManagerService {
 
     public async tick(client: Client) {
         const now: number = DateTime.now().toUnixInteger();
-        const configs: GardeningConfig[] = await this.repo.getAll();
+        const configs: GardeningConfig[] = await this.gardeningConfigRepository.getAll();
         const altered: GardeningConfig[] = [];
 
         for (const config of configs) {
@@ -225,7 +225,7 @@ export class GardeningManagerService {
         }
 
         for (const config of altered) {
-            this.repo.save(config).catch(err => this.logger.error(err));
+            this.gardeningConfigRepository.save(config).catch(err => this.logger.error(err));
         }
     }
 
@@ -252,13 +252,13 @@ export class GardeningManagerService {
     }
 
     private async findOneOrCreate(id: string): Promise<GardeningConfig> {
-        let result = await this.repo.findOne({ guildId: id });
+        let result = await this.gardeningConfigRepository.findOne({ guildId: id });
         if (result) return result;
 
         result = new GardeningConfig();
         result.guildId = id;
 
-        return await this.repo.save(result);
+        return await this.gardeningConfigRepository.save(result);
     }
 }
 
