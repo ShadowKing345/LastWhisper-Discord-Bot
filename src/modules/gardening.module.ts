@@ -8,7 +8,7 @@ import { GardeningManagerService } from "../services/gardeningManager.service.js
 
 @injectable()
 export class GardeningModule extends ModuleBase {
-    constructor(private service: GardeningManagerService) {
+    constructor(private gardeningManagerService: GardeningManagerService) {
         super();
 
         this.moduleName = "GardeningModule";
@@ -114,22 +114,22 @@ export class GardeningModule extends ModuleBase {
     }
 
     private register(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
-        return this.service.register(interaction, player, plant, duration, reason, plotNum, slotNum);
+        return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
     }
 
     private cancel(interaction: CommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
-        return this.service.cancel(interaction, player, plant, plotNum, slotNum);
+        return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
     }
 
     private list(interaction: CommandInteraction, plotNum: number, slotNum: number) {
-        return this.service.list(interaction, plotNum, slotNum);
+        return this.gardeningManagerService.list(interaction, plotNum, slotNum);
     }
 
     private tick(client: Client): Promise<void> {
-        return this.service.tick(client);
+        return this.gardeningManagerService.tick(client);
     }
 
-    private async subCommandResolver(interaction: CommandInteraction) {
+    private subCommandResolver(interaction: CommandInteraction) {
         const subCommand: string = interaction.options.getSubcommand();
         if (!subCommand) throw new Error();
 
@@ -148,7 +148,7 @@ export class GardeningModule extends ModuleBase {
             case "list":
                 return this.list(interaction, plotNum, slotNum);
             default:
-                return interaction.reply("Yolo");
+                return interaction.reply({ content: "Not a valid subcommand", ephemeral: true });
         }
     }
 }

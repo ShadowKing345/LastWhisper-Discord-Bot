@@ -47,7 +47,7 @@ export class BuffManagerModule extends ModuleBase {
         ];
     }
 
-    private async subCommandManager(interaction: CommandInteraction): Promise<void> {
+    private subCommandManager(interaction: CommandInteraction): Promise<void> {
         this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
 
         const group = interaction.options.getSubcommandGroup();
