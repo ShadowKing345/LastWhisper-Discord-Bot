@@ -12,7 +12,7 @@ export declare class Days {
     friday: string;
     saturday: string;
     sunday: string;
-    get toArray(): string[];
+    static toArray(days: Days): string[];
 }
 export declare class Week {
     isEnabled: boolean;

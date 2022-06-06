@@ -12,8 +12,8 @@ export class Days {
     friday;
     saturday;
     sunday;
-    get toArray() {
-        return [this.sunday, this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday];
+    static toArray(days) {
+        return [days.sunday, days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday];
     }
 }
 export class Week {

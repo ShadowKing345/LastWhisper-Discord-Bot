@@ -16,9 +16,9 @@ import { EventManagerConfig, EventObj } from "../models/eventManager.model.js";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 import { fetchMessages } from "../utils/utils.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService {
-    repo;
-    constructor(repo) {
-        this.repo = repo;
+    eventManagerRepository;
+    constructor(eventManagerRepository) {
+        this.eventManagerRepository = eventManagerRepository;
     }
     static parseTriggerDuration(triggerTime) {
         const hold = DateTime.fromFormat(triggerTime, "HH:mm");
@@ -97,7 +97,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
             if (EventObj.isValid(event)) {
                 config.events.push(event);
                 await message.react("✅");
-                await this.repo.save(config);
+                await this.eventManagerRepository.save(config);
             }
             else {
                 await message.react("❎");
@@ -126,7 +126,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
             if (EventObj.isValid(newEvent)) {
                 await newMessage.react("✅");
                 config.events[config.events.indexOf(oldEvent)] = newEvent;
-                await this.repo.save(config);
+                await this.eventManagerRepository.save(config);
             }
             else {
                 await newMessage.react("❎");
@@ -143,12 +143,12 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         if (!config.events.find(event => event.messageId === message.id))
             return;
         config.events.splice(config.events.findIndex(event => event.messageId === message.id), 1);
-        await this.repo.save(config);
+        await this.eventManagerRepository.save(config);
     }
     async reminderLoop(client) {
         await Task.waitTillReady(client);
         const now = DateTime.now();
-        const configs = await this.repo.find({});
+        const configs = await this.eventManagerRepository.find({});
         const alteredConfigs = [];
         for (const config of configs) {
             try {
@@ -192,7 +192,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
             }
         }
         if (alteredConfigs.length > 0) {
-            await this.repo.bulkSave(alteredConfigs);
+            await this.eventManagerRepository.bulkSave(alteredConfigs);
         }
     }
     async listEvents(interaction) {
@@ -223,7 +223,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         await interaction.reply({ embeds: [embed] });
     }
     async onReady(client) {
-        const configs = await this.repo.find({});
+        const configs = await this.eventManagerRepository.find({});
         for (const config of configs) {
             if (!config.listenerChannelId || !config.events.length)
                 continue;
@@ -231,12 +231,12 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         }
     }
     async findOneOrCreate(id) {
-        let result = await this.repo.findOne({ guildId: id });
+        let result = await this.eventManagerRepository.findOne({ guildId: id });
         if (result)
             return result;
         result = new EventManagerConfig();
         result.guildId = id;
-        return await this.repo.save(result);
+        return await this.eventManagerRepository.save(result);
     }
 };
 EventManagerService = EventManagerService_1 = __decorate([

@@ -16,10 +16,10 @@ import { GardeningConfigRepository } from "../repositories/gardeningConfig.repos
 import { InvalidArgumentError } from "../utils/errors.js";
 import { buildLogger } from "../utils/logger.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService {
-    repo;
+    gardeningConfigRepository;
     logger = buildLogger(GardeningManagerService_1.name);
-    constructor(repo) {
-        this.repo = repo;
+    constructor(gardeningConfigRepository) {
+        this.gardeningConfigRepository = gardeningConfigRepository;
     }
     static async validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist = true) {
         if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
@@ -88,7 +88,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         else {
             slot.next.push(new Reservation(player, plant, duration, reason));
         }
-        await this.repo.save(config);
+        await this.gardeningConfigRepository.save(config);
         await interaction.reply({ content: "Reservation has been created." });
         await this.postChannelMessage(interaction.client, config, {
             title: "Gardening Plot Has Been Reserved!",
@@ -149,7 +149,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
                 });
             slot.next = slot.next.filter(res => res !== next);
         }
-        await this.repo.save(config);
+        await this.gardeningConfigRepository.save(config);
         return interaction.reply("Reservation has been canceled.");
     }
     async list(interaction, plotNum, slotNum) {
@@ -191,7 +191,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
     }
     async tick(client) {
         const now = DateTime.now().toUnixInteger();
-        const configs = await this.repo.getAll();
+        const configs = await this.gardeningConfigRepository.getAll();
         const altered = [];
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId))
@@ -212,7 +212,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
             });
         }
         for (const config of altered) {
-            this.repo.save(config).catch(err => this.logger.error(err));
+            this.gardeningConfigRepository.save(config).catch(err => this.logger.error(err));
         }
     }
     async postChannelMessage(client, config, messageArgs) {
@@ -236,12 +236,12 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         await channel.send({ embeds: [embed] });
     }
     async findOneOrCreate(id) {
-        let result = await this.repo.findOne({ guildId: id });
+        let result = await this.gardeningConfigRepository.findOne({ guildId: id });
         if (result)
             return result;
         result = new GardeningConfig();
         result.guildId = id;
-        return await this.repo.save(result);
+        return await this.gardeningConfigRepository.save(result);
     }
 };
 GardeningManagerService = GardeningManagerService_1 = __decorate([

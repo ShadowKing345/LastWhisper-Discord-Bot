@@ -4,10 +4,10 @@ import { Client } from "../classes/client.js";
 import { Buff, BuffManagerConfig, Week } from "../models/buffManager.model.js";
 import { BuffManagerConfigRepository } from "../repositories/buffManagerConfig.repository.js";
 export declare class BuffManagerService {
-    private repo;
+    private buffManagerConfigRepository;
     private readonly logger;
     private readonly daysOfWeek;
-    constructor(repo: BuffManagerConfigRepository);
+    constructor(buffManagerConfigRepository: BuffManagerConfigRepository);
     createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed;
     createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed;
     tryGetConfig(interaction: CommandInteraction): Promise<[BuffManagerConfig, boolean]>;
