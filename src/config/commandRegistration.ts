@@ -5,6 +5,7 @@ import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 import { BuildCommand } from "../classes/command.js";
 import { buildLogger } from "../utils/logger.js";
 import { AppConfigs, CommandRegistrationConfiguration, initConfigs } from "./appConfigs.js";
+import { connectClient } from "./databaseConfiguration.js";
 import { loadModules } from "./moduleConfiguration.js";
 
 const loggerMeta = { context: "CommandRegistration" };
@@ -19,6 +20,7 @@ type CommandRegistrationArgs = {
 }
 
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
+    await connectClient();
     const logger = buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
 
@@ -67,5 +69,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
         logger.info(`${chalk.green("Successfully")} ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
     } catch (error) {
         logger.error(error.stack, loggerMeta);
+    } finally {
+        process.exit(0);
     }
 }
