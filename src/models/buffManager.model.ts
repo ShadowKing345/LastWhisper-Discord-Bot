@@ -15,8 +15,8 @@ export class Days {
     public saturday: string;
     public sunday: string;
 
-    public get toArray(): string[] {
-        return [ this.sunday, this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday ];
+    public static toArray(days: Days): string[] {
+        return [ days.sunday, days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday ];
     }
 }
 
