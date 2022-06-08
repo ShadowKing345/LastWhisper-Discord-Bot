@@ -23,7 +23,13 @@ export abstract class BasicRepository<T extends BasicModel> implements IReposito
     public async findOne(filter: Filter<T>): Promise<T> {
         // For some reason due to the void call Webstorm is having issues seeing this method call.
         // noinspection JSVoidFunctionReturnValueUsed
-        return this.sanitiseOutput(await this.collection.findOne(filter) as T);
+        const result = await this.collection.findOne(filter);
+
+        if(!result) {
+            return null;
+        }
+
+        return this.sanitiseOutput(result as T);
     }
 
     public async find(filter: Filter<T>): Promise<T[]> {
