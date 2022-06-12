@@ -211,6 +211,7 @@ export class PermissionManagerService {
     }
 
     private static keyExists(key: string): boolean {
+        console.log(PermissionKeys);
         const keys: string[] = key.split(".");
 
         const item = PermissionKeys.find(item => (item instanceof Object ? item.$index : item) === keys[0]);
@@ -224,7 +225,7 @@ export class PermissionManagerService {
         }
 
         if (keys.length === 3 && sub instanceof Object) {
-            return Object.values(sub).includes(keys[3]);
+            return Object.values(sub).includes(keys[2]);
         }
     }
 }
