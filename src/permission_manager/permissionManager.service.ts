@@ -4,15 +4,16 @@ import { injectable } from "tsyringe";
 
 import { buildLogger } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
-import { PermissionManagerKeys } from "./addCommandKeys.js";
-import { Permission, PermissionKeys, PermissionManagerConfig, PermissionMode } from "./models/index.js";
+import { PermissionKeys } from "./addCommandKeys.js";
+import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 
 @injectable()
 export class PermissionManagerService {
     private readonly logger = buildLogger(PermissionManagerService.name);
 
-    constructor(private permissionManagerRepository: PermissionManagerRepository) {}
+    constructor(private permissionManagerRepository: PermissionManagerRepository) {
+    }
 
     public async isAuthorized(interaction: Interaction, key: string): Promise<boolean> {
         this.logger.debug(`Attempting to authorize for key ${key}`);
@@ -57,6 +58,7 @@ export class PermissionManagerService {
     }
 
     public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+        console.log(key);
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -163,7 +165,7 @@ export class PermissionManagerService {
             });
         } else {
             const result = `\`\`\`\n${
-                PermissionManagerKeys
+                PermissionKeys
                     .map((key) => `${key.$index} {\n\t${
                         Object.entries(key)
                             .filter(([ k ]) => k !== "$index")
@@ -200,37 +202,27 @@ export class PermissionManagerService {
         return await this.permissionManagerRepository.save(result);
     }
 
-    public static addPermissionKeys(keys: PermissionKeys): void {
-        PermissionManagerKeys.push(keys);
+    public static addPermissionKeys(keys: PermissionKeysType): void {
+        PermissionKeys.push(keys);
     }
 
     public static removePermissionKey(prefix: string): void {
-        PermissionManagerKeys.splice(PermissionManagerKeys.findIndex(key => key.$index === prefix), 1);
+        PermissionKeys.splice(PermissionKeys.findIndex(key => key.$index === prefix), 1);
     }
 
     private static keyExists(key: string): boolean {
-        const split: string[] = key.split(".");
+        const keys: string[] = key.split(".");
 
-        const prefix = PermissionManagerKeys.find(k => k.$index === split[0]);
-        if (!prefix) {
-            return false;
-        }
-
-        if (split.length === 2) {
-            return Object.values(prefix).includes(split[1]);
-        }
-        if (split.length === 3) {
-            for (const v of Object.values(prefix)) {
-                if (!(v instanceof Object)) {
-                    continue;
-                }
-
-                if (v.$index === split[1]) {
-                    return Object.values(v).includes(split[2]);
-                }
+        let item: any = PermissionKeys.find(item => item.$index === keys[0]);
+        for (const key of keys.filter(item => item !== keys[0])) {
+            if (!item) {
+                return false;
             }
+            item = item[key];
         }
 
-        return false;
+        if (item instanceof Object) {
+            return !(keys.length === 0 && Object.values(item).length !== 1);
+        }
     }
 }
