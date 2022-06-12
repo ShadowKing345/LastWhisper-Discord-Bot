@@ -12,9 +12,15 @@ import chalk from "chalk";
 import { injectable } from "tsyringe";
 import { ModuleBase } from "../classes/moduleBase.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
+import { addCommandKeys } from "../utils/addCommandKeys.js";
 import { buildLogger } from "../utils/logger.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
+    static commands = {
+        $index: "buff_manager",
+        Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
+        Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
+    };
     logger = buildLogger(BuffManagerModule_1.name);
     constructor(buffManagerService) {
         super();
@@ -23,18 +29,18 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         this.commands = [
             {
                 command: builder => builder
-                    .setName("buff_manager")
+                    .setName(BuffManagerModule_1.commands.$index)
                     .setDescription("Manages all things related to buffs")
                     .addSubcommandGroup(subGroup => subGroup
-                    .setName("buffs")
+                    .setName(BuffManagerModule_1.commands.Buffs.$index)
                     .setDescription("Shows you what buffs are set.")
-                    .addSubcommand(subBuilder => subBuilder.setName("today").setDescription("Gets today's buff."))
-                    .addSubcommand(subBuilder => subBuilder.setName("tomorrow").setDescription("Gets tomorrow's buff.")))
+                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Buffs.Today).setDescription("Gets today's buff."))
+                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Buffs.Tomorrow).setDescription("Gets tomorrow's buff.")))
                     .addSubcommandGroup(subGroup => subGroup
-                    .setName("weeks")
+                    .setName(BuffManagerModule_1.commands.Weeks.$index)
                     .setDescription("Shows you what buffs for the week, are set to.")
-                    .addSubcommand(subBuilder => subBuilder.setName("this_week").setDescription("Gets this week's buffs."))
-                    .addSubcommand(subBuilder => subBuilder.setName("next_week").setDescription("Gets next week's buffs"))),
+                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Weeks.ThisWeek).setDescription("Gets this week's buffs."))
+                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Weeks.NextWeek).setDescription("Gets next week's buffs"))),
                 run: async (interaction) => this.subCommandManager(interaction),
             },
         ];
@@ -78,6 +84,10 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         return this.buffManagerService.postDailyMessage(client);
     }
 };
+__decorate([
+    addCommandKeys(),
+    __metadata("design:type", Object)
+], BuffManagerModule, "commands", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
     injectable(),
     __metadata("design:paramtypes", [BuffManagerService])

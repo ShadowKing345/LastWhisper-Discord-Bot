@@ -5,6 +5,7 @@ import { BuffManagerModule } from "../modules/buffManager.module.js";
 import { EventManagerModule } from "../modules/eventManager.module.js";
 import { GardeningModule } from "../modules/gardening.module.js";
 import { ManagerUtilsModule } from "../modules/managerUtils.module.js";
+import { PermissionManagerModule } from "../modules/permissionManager.module.js";
 import { RoleManagerModule } from "../modules/roleManager.module.js";
 import { buildLogger } from "../utils/logger.js";
 const logger = buildLogger("ModuleConfiguration");
@@ -20,6 +21,7 @@ export function loadModules() {
         container.resolve(GardeningModule),
         container.resolve(ManagerUtilsModule),
         container.resolve(RoleManagerModule),
+        container.resolve(PermissionManagerModule),
     ];
 }
 async function runEvent(listeners, client, ...args) {
@@ -75,11 +77,11 @@ export function configureModules(client) {
             client.moduleListeners.set(listener.event, listeners);
         });
         logger.debug(`Setting up ${chalk.cyan("tasks")}...`, loggerMeta.moduleConfiguration);
-        module.tasks.forEach(task => {
-            client.tasks.set(task.name, task);
-            setInterval(task.run, task.timeout, client);
-            task.run(client).catch(err => console.error(err));
-        });
+        // module.tasks.forEach(task => {
+        //     client.tasks.set(task.name, task);
+        //     setInterval(task.run, task.timeout, client);
+        //     task.run(client).catch(err => console.error(err));
+        // });
     });
     logger.debug(`Setting up ${chalk.cyan("events")}...`, loggerMeta.moduleConfiguration);
     client.moduleListeners.forEach((listener, event) => {

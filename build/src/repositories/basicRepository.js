@@ -7,7 +7,11 @@ export class BasicRepository {
     async findOne(filter) {
         // For some reason due to the void call Webstorm is having issues seeing this method call.
         // noinspection JSVoidFunctionReturnValueUsed
-        return this.sanitiseOutput(await this.collection.findOne(filter));
+        const result = await this.collection.findOne(filter);
+        if (!result) {
+            return null;
+        }
+        return this.sanitiseOutput(result);
     }
     async find(filter) {
         return (await this.collection.find(filter).toArray()).map(config => this.sanitiseOutput(config));
