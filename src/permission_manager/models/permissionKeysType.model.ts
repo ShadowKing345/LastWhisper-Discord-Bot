@@ -1,4 +1,4 @@
-export interface PermissionKeys {
+export interface PermissionKeysType {
     $index: string,
 
     [key: string]: string | {

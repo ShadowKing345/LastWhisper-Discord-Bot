@@ -1,6 +1,6 @@
-import { PermissionKeys } from "./models/index.js";
+import { PermissionKeysType } from "./models/index.js";
 
-export const PermissionManagerKeys: PermissionKeys[] = [];
+export const PermissionKeys: PermissionKeysType[] = [];
 
 export function addCommandKeys() {
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -10,7 +10,7 @@ export function addCommandKeys() {
         if (!("$index" in val)) {
             throw new Error("Cannot find $index");
         }
-        PermissionManagerKeys.push(val);
+        PermissionKeys.push(val);
         return val;
     };
 }
