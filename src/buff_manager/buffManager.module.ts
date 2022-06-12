@@ -45,7 +45,7 @@ export class BuffManagerModule extends ModuleBase {
                                 .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Weeks.ThisWeek).setDescription("Gets this week's buffs."))
                                 .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Weeks.NextWeek).setDescription("Gets next week's buffs")),
                         ),
-                run: async interaction => this.subCommandManager(interaction),
+                run: async interaction => this.subcommandResolver(interaction),
             },
         ];
         this.tasks = [
@@ -57,7 +57,7 @@ export class BuffManagerModule extends ModuleBase {
         ];
     }
 
-    private subCommandManager(interaction: CommandInteraction): Promise<void> {
+    private subcommandResolver(interaction: CommandInteraction): Promise<void> {
         this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
 
         const group = interaction.options.getSubcommandGroup();
@@ -75,20 +75,60 @@ export class BuffManagerModule extends ModuleBase {
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
 
-        if (group === "buffs") {
-            return this.postBuff(interaction, subCommand);
-        } else {
-            return this.postWeeksBuffs(interaction, subCommand);
+        switch (group) {
+            case BuffManagerModule.commands.Buffs.$index:
+                switch (subCommand) {
+                    case BuffManagerModule.commands.Buffs.Today:
+                        return this.postTodayBuff(interaction);
+                    case BuffManagerModule.commands.Buffs.Tomorrow:
+                        return this.postTomorrowsBuff(interaction);
+                    default:
+                        this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand.`);
+                        return interaction.reply({
+                            content: "Cannot find subcommand.",
+                            ephemeral: true,
+                        });
+                }
+            case BuffManagerModule.commands.Weeks.$index:
+                switch (subCommand) {
+                    case BuffManagerModule.commands.Weeks.ThisWeek:
+                        return this.postThisWeeksBuffs(interaction);
+                    case BuffManagerModule.commands.Weeks.NextWeek:
+                        return this.postNextWeeksBuffs(interaction);
+                    default:
+                        this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand.`);
+                        return interaction.reply({
+                            content: "Cannot find subcommand.",
+                            ephemeral: true,
+                        });
+                }
+            default:
+                this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand group.`);
+                return interaction.reply({
+                    content: "Cannot find group.",
+                    ephemeral: true,
+                });
         }
     }
 
     @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Buffs.$index}.${BuffManagerModule.commands.Buffs.Today}`)
-    private postBuff(interaction: CommandInteraction, subCommand: string): Promise<void> {
-        return this.buffManagerService.postBuff(interaction, subCommand);
+    private postTodayBuff(interaction: CommandInteraction): Promise<void> {
+        return this.buffManagerService.postBuff(interaction);
     }
 
-    private postWeeksBuffs(interaction: CommandInteraction, subCommand: string): Promise<void> {
-        return this.buffManagerService.postWeeksBuffs(interaction, subCommand);
+    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Buffs.$index}.${BuffManagerModule.commands.Buffs.Tomorrow}`)
+    private postTomorrowsBuff(interaction: CommandInteraction): Promise<void> {
+        return this.buffManagerService.postBuff(interaction, false);
+    }
+
+    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Weeks.$index}.${BuffManagerModule.commands.Weeks.ThisWeek}`)
+    private postThisWeeksBuffs(interaction: CommandInteraction): Promise<void> {
+        return this.buffManagerService.postWeeksBuffs(interaction);
+    }
+
+    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Weeks.$index}.${BuffManagerModule.commands.Weeks.NextWeek}`)
+    private postNextWeeksBuffs(interaction: CommandInteraction): Promise<void> {
+        return this.buffManagerService.postWeeksBuffs(interaction, false);
     }
 
     private postDailyMessage(client: Client): Promise<void> {
