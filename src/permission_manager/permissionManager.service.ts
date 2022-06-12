@@ -58,7 +58,6 @@ export class PermissionManagerService {
     }
 
     public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        console.log(key);
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -211,7 +210,6 @@ export class PermissionManagerService {
     }
 
     private static keyExists(key: string): boolean {
-        console.log(PermissionKeys);
         const keys: string[] = key.split(".");
 
         const item = PermissionKeys.find(item => (item instanceof Object ? item.$index : item) === keys[0]);
