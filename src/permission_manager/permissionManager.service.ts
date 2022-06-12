@@ -4,7 +4,7 @@ import { injectable } from "tsyringe";
 
 import { buildLogger } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
-import { PermissionKeys } from "./addCommandKeys.js";
+import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 
@@ -166,7 +166,7 @@ export class PermissionManagerService {
         } else {
             const result = `\`\`\`\n${
                 PermissionKeys
-                    .map((key) => `${key.$index} {\n\t${
+                    .map((key) => key instanceof Object ? `${key.$index} {\n\t${
                         Object.entries(key)
                             .filter(([ k ]) => k !== "$index")
                             .map(([ , v ]) => v instanceof Object ?
@@ -178,7 +178,7 @@ export class PermissionManagerService {
                                 }\n\t}`
                                 : v)
                             .join(",\n\t")
-                    }\n}`)
+                    }\n}` : key)
                     .join(",\n")
             }\n\`\`\``;
             return interaction.reply({
@@ -207,22 +207,24 @@ export class PermissionManagerService {
     }
 
     public static removePermissionKey(prefix: string): void {
-        PermissionKeys.splice(PermissionKeys.findIndex(key => key.$index === prefix), 1);
+        PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === prefix), 1);
     }
 
     private static keyExists(key: string): boolean {
         const keys: string[] = key.split(".");
 
-        let item: any = PermissionKeys.find(item => item.$index === keys[0]);
-        for (const key of keys.filter(item => item !== keys[0])) {
-            if (!item) {
-                return false;
-            }
-            item = item[key];
+        const item = PermissionKeys.find(item => (item instanceof Object ? item.$index : item) === keys[0]);
+        if (keys.length <= 1) {
+            return Object.values(item).length !== 1;
         }
 
-        if (item instanceof Object) {
-            return !(keys.length === 0 && Object.values(item).length !== 1);
+        const sub = Object.values(item).find(value => (value instanceof Object ? value.$index : value) === keys[1]);
+        if (keys.length === 2) {
+            return sub instanceof Object ? Object.values(sub).length !== 1 : true;
+        }
+
+        if (keys.length === 3 && sub instanceof Object) {
+            return Object.values(sub).includes(keys[3]);
         }
     }
 }
