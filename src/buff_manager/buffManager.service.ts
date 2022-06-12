@@ -65,7 +65,7 @@ export class BuffManagerService {
         return [ config, true ];
     }
 
-    public async postBuff(interaction: CommandInteraction, subCommand: string): Promise<void> {
+    public async postBuff(interaction: CommandInteraction, today = true): Promise<void> {
         const [ config, flag ] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
@@ -73,7 +73,6 @@ export class BuffManagerService {
 
         this.logger.debug(`Command invoked for ${chalk.blue("buffs")}.`);
 
-        const today = subCommand === "today";
         const date = today ? DateTime.now() : DateTime.now().plus({ days: 1 });
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
 
@@ -94,7 +93,7 @@ export class BuffManagerService {
         await interaction.reply({ embeds: [ this.createBuffEmbed(title, buff, date) ] });
     }
 
-    public async postWeeksBuffs(interaction: CommandInteraction, subCommand: string): Promise<void> {
+    public async postWeeksBuffs(interaction: CommandInteraction, thisWeek = true): Promise<void> {
         const [ config, flag ] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
@@ -102,7 +101,6 @@ export class BuffManagerService {
 
         this.logger.debug(`Command invoked for ${chalk.blue("weeks")}.`);
 
-        const thisWeek = subCommand === "this_week";
         const date = thisWeek ? DateTime.now() : DateTime.now().plus({ week: 1 });
         const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
 
@@ -110,7 +108,7 @@ export class BuffManagerService {
         const filteredWeeks = config.weeks.filter(week => week.isEnabled);
         const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
         await interaction.reply({
-            embeds: [ this.createWeekEmbed(title, week, config.buffs, date) ]
+            embeds: [ this.createWeekEmbed(title, week, config.buffs, date) ],
         });
     }
 
@@ -163,7 +161,7 @@ export class BuffManagerService {
                 if (messageSettings.dow !== null && messageSettings.dow === now.weekday - 1) {
                     this.logger.debug(`Posting ${chalk.cyan("week message")}.`);
                     await channel.send({
-                        embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ]
+                        embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ],
                     });
                 }
             } catch (err) {
