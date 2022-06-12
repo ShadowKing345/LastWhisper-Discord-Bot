@@ -14,3 +14,11 @@ export class Permission {
     public mode?: PermissionMode = PermissionMode.ANY;
     public blackList?: boolean = false;
 }
+
+export type PermissionKeys = {
+    $index: string,
+    [key: string]: string | {
+        $index: string,
+        [key: string]: string
+    }
+}
