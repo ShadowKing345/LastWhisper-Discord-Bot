@@ -1,20 +1,34 @@
-import { CommandInteraction, Interaction } from "discord.js";
+import chalk from "chalk";
+import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js";
 import { injectable } from "tsyringe";
 
-import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permissionManagerConfig.model.js";
+import { Permission, PermissionKeys, PermissionManagerConfig, PermissionMode } from "../models/permissionManagerConfig.model.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
+import { buildLogger } from "../utils/logger.js";
 import { deepMerge } from "../utils/utils.js";
+
+export const PermissionManagerKeys: PermissionKeys[] = [];
 
 @injectable()
 export class PermissionManagerService {
+    private readonly logger = buildLogger(PermissionManagerService.name);
+
     constructor(private permissionManagerRepository: PermissionManagerRepository) {}
 
     public async isAuthorized(interaction: Interaction, key: string): Promise<boolean> {
-        if (!(interaction && key)) {
+        this.logger.debug(`Attempting to authorize for key ${key}`);
+        if (!PermissionManagerService.keyExists(key)) {
+            this.logger.debug(`${chalk.red("Expected Failure:")} Could not find key.`);
+            return false;
+        }
+
+        if (!interaction) {
+            this.logger.debug(`${chalk.red("Expected Failure:")} Interaction is null.`);
             return false;
         }
 
         if (interaction.guild.ownerId === interaction.user.id) {
+            this.logger.debug(`User is owner. Returning true.`);
             return true;
         }
 
@@ -23,6 +37,7 @@ export class PermissionManagerService {
 
         let result;
         if (permission.roles.length === 0) {
+            this.logger.debug(`Length is 0. Flag set to true.`);
             result = true;
         } else {
             const user = await interaction.guild.members.fetch(interaction.user.id);
@@ -38,14 +53,19 @@ export class PermissionManagerService {
             }
         }
 
+        this.logger.debug(`User is ${result && !permission.blackList ? "Authenticated" : "Unauthenticated"}.`);
         return result && !permission.blackList;
     }
 
-    public async addRole(interaction: CommandInteraction): Promise<void> {
-        const config = await this.findOneOrCreate(interaction.guildId);
-        const role = interaction.options.getRole("role", true);
-        const key = interaction.options.getString("key", true);
+    public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+        if (!PermissionManagerService.keyExists(key)) {
+            return interaction.reply({
+                content: "Cannot find key. Please input the correct key.",
+                ephemeral: true,
+            });
+        }
 
+        const config = await this.findOneOrCreate(interaction.guildId);
         const permissions = config.permissions[key] ??= new Permission();
 
         permissions.roles.push(role.id);
@@ -57,10 +77,14 @@ export class PermissionManagerService {
         });
     }
 
-    public async removeRole(interaction: CommandInteraction): Promise<void> {
+    public async removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+        if (!PermissionManagerService.keyExists(key)) {
+            return interaction.reply({
+                content: "Cannot find key. Please input the correct key.",
+                ephemeral: true,
+            });
+        }
         const config = await this.findOneOrCreate(interaction.guildId);
-        const role = interaction.options.getRole("role", true);
-        const key = interaction.options.getString("key", true);
 
         const permission = config.permissions[key];
         if (!permission) {
@@ -84,13 +108,24 @@ export class PermissionManagerService {
         });
     }
 
-    public async changeSettings(interaction: CommandInteraction): Promise<void> {
+    public async config(interaction: CommandInteraction, key: string): Promise<void> {
+        if (!PermissionManagerService.keyExists(key)) {
+            return interaction.reply({
+                content: "Cannot find key. Please input the correct key.",
+                ephemeral: true,
+            });
+        }
         console.log(interaction);
     }
 
-    public async resetPermissions(interaction: CommandInteraction): Promise<void> {
+    public async reset(interaction: CommandInteraction, key: string): Promise<void> {
+        if (!PermissionManagerService.keyExists(key)) {
+            return interaction.reply({
+                content: "Cannot find key. Please input the correct key.",
+                ephemeral: true,
+            });
+        }
         const config = await this.findOneOrCreate(interaction.guildId);
-        const key = interaction.options.getString("key", true);
 
         if (!config.permissions[key]) {
             return interaction.reply({
@@ -107,8 +142,53 @@ export class PermissionManagerService {
         });
     }
 
-    public async listPermissions(interaction: CommandInteraction): Promise<void> {
-        console.log(interaction);
+    public async listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
+        if (key) {
+            if (!PermissionManagerService.keyExists(key)) {
+                return interaction.reply({
+                    content: "Cannot find key. Please input the correct key.",
+                    ephemeral: true,
+                });
+            }
+
+            const config = await this.findOneOrCreate(interaction.guildId);
+            const permission = config.permissions[key] ?? new Permission();
+
+            return interaction.reply({
+                embeds: [ new MessageEmbed({
+                    title: `Settings for Permission ${key}`,
+                    description: `\`\`\`\nMode:\t\t${PermissionMode[permission.mode]},\nBlacklist:   ${permission.blackList},\nRoles:\t   [ ${permission.roles.join(", ")} ]\n\`\`\``,
+                    color: "RANDOM",
+                }) ],
+                ephemeral: true,
+            });
+        } else {
+            const result = `\`\`\`\n${
+                PermissionManagerKeys
+                    .map((key) => `${key.$index} {\n\t${
+                        Object.entries(key)
+                            .filter(([ k ]) => k !== "$index")
+                            .map(([ , v ]) => v instanceof Object ?
+                                `${v.$index} {\n\t\t${
+                                    Object.entries(v)
+                                        .filter(([ k ]) => k !== "$index")
+                                        .map(([ , v ]) => v)
+                                        .join(",\n\t\t")
+                                }\n\t}`
+                                : v)
+                            .join(",\n\t")
+                    }\n}`)
+                    .join(",\n")
+            }\n\`\`\``;
+            return interaction.reply({
+                embeds: [ new MessageEmbed({
+                    title: "List of PermissionKeys",
+                    description: result,
+                    color: "RANDOM",
+                }) ],
+                ephemeral: true,
+            });
+        }
     }
 
     private async findOneOrCreate(id: string): Promise<PermissionManagerConfig> {
@@ -119,5 +199,39 @@ export class PermissionManagerService {
         result.guildId = id;
 
         return await this.permissionManagerRepository.save(result);
+    }
+
+    public static addPermissionKeys(keys: PermissionKeys): void {
+        PermissionManagerKeys.push(keys);
+    }
+
+    public static removePermissionKey(prefix: string): void {
+        PermissionManagerKeys.splice(PermissionManagerKeys.findIndex(key => key.$index === prefix), 1);
+    }
+
+    private static keyExists(key: string): boolean {
+        const split: string[] = key.split(".");
+
+        const prefix = PermissionManagerKeys.find(k => k.$index === split[0]);
+        if (!prefix) {
+            return false;
+        }
+
+        if (split.length === 2) {
+            return Object.values(prefix).includes(split[1]);
+        }
+        if (split.length === 3) {
+            for (const v of Object.values(prefix)) {
+                if (!(v instanceof Object)) {
+                    continue;
+                }
+
+                if (v.$index === split[1]) {
+                    return Object.values(v).includes(split[2]);
+                }
+            }
+        }
+
+        return false;
     }
 }
