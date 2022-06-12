@@ -3,14 +3,14 @@ import { CommandInteraction, Role } from "discord.js";
 import { injectable } from "tsyringe";
 
 import { ModuleBase } from "../classes/moduleBase.js";
-import { PermissionKeys, PermissionMode } from "../models/permissionManagerConfig.model.js";
+import { PermissionMode } from "../models/permissionManagerConfig.model.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { addCommandKeys } from "../utils/addCommandKeys.js";
 
 @injectable()
 export class PermissionManagerModule extends ModuleBase {
     @addCommandKeys()
-    private static readonly commands: PermissionKeys = {
+    private static readonly commands = {
         $index: "permission",
         List: "list_permissions",
         AddRole: "add_role",
