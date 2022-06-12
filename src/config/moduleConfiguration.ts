@@ -2,17 +2,17 @@ import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { container } from "tsyringe";
 
-import { Client } from "../classes/client.js";
-import { BuildCommand, Command } from "../classes/command.js";
-import { Listener } from "../classes/listener.js";
-import { ModuleBase } from "../classes/moduleBase.js";
-import { BuffManagerModule } from "../modules/buffManager.module.js";
-import { EventManagerModule } from "../modules/eventManager.module.js";
-import { GardeningModule } from "../modules/gardening.module.js";
-import { ManagerUtilsModule } from "../modules/managerUtils.module.js";
-import { PermissionManagerModule } from "../modules/permissionManager.module.js";
-import { RoleManagerModule } from "../modules/roleManager.module.js";
-import { buildLogger } from "../utils/logger.js";
+import { BuffManagerModule } from "../buff_manager/index.js";
+import { EventManagerModule } from "../event_manager/index.js";
+import { GardeningManagerModule } from "../gardening_manager/index.js";
+import { ManagerUtilsModule } from "../manager_utils/index.js";
+import { PermissionManagerModule } from "../permission_manager/index.js";
+import { RoleManagerModule } from "../role_manager/index.js";
+import { buildLogger } from "../shared/logger.js";
+import { Client } from "../shared/models/client.js";
+import { BuildCommand, Command } from "../shared/models/command.js";
+import { Listener } from "../shared/models/listener.js";
+import { ModuleBase } from "../shared/models/moduleBase.js";
 
 const logger = buildLogger("ModuleConfiguration");
 const loggerMeta = {
@@ -26,7 +26,7 @@ export function loadModules(): ModuleBase[] {
     return loadedModules ??= [
         container.resolve(BuffManagerModule),
         container.resolve(EventManagerModule),
-        container.resolve(GardeningModule),
+        container.resolve(GardeningManagerModule),
         container.resolve(ManagerUtilsModule),
         container.resolve(RoleManagerModule),
         container.resolve(PermissionManagerModule),
