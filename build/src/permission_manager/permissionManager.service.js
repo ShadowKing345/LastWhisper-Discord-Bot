@@ -13,7 +13,7 @@ import { MessageEmbed } from "discord.js";
 import { injectable } from "tsyringe";
 import { buildLogger } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
-import { PermissionManagerKeys } from "./addCommandKeys.js";
+import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService {
@@ -150,8 +150,8 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             });
         }
         else {
-            const result = `\`\`\`\n${PermissionManagerKeys
-                .map((key) => `${key.$index} {\n\t${Object.entries(key)
+            const result = `\`\`\`\n${PermissionKeys
+                .map((key) => key instanceof Object ? `${key.$index} {\n\t${Object.entries(key)
                 .filter(([k]) => k !== "$index")
                 .map(([, v]) => v instanceof Object ?
                 `${v.$index} {\n\t\t${Object.entries(v)
@@ -159,7 +159,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                     .map(([, v]) => v)
                     .join(",\n\t\t")}\n\t}`
                 : v)
-                .join(",\n\t")}\n}`)
+                .join(",\n\t")}\n}` : key)
                 .join(",\n")}\n\`\`\``;
             return interaction.reply({
                 embeds: [new MessageEmbed({
@@ -180,31 +180,24 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         return await this.permissionManagerRepository.save(result);
     }
     static addPermissionKeys(keys) {
-        PermissionManagerKeys.push(keys);
+        PermissionKeys.push(keys);
     }
     static removePermissionKey(prefix) {
-        PermissionManagerKeys.splice(PermissionManagerKeys.findIndex(key => key.$index === prefix), 1);
+        PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === prefix), 1);
     }
     static keyExists(key) {
-        const split = key.split(".");
-        const prefix = PermissionManagerKeys.find(k => k.$index === split[0]);
-        if (!prefix) {
-            return false;
+        const keys = key.split(".");
+        const item = PermissionKeys.find(item => (item instanceof Object ? item.$index : item) === keys[0]);
+        if (keys.length <= 1) {
+            return Object.values(item).length !== 1;
         }
-        if (split.length === 2) {
-            return Object.values(prefix).includes(split[1]);
+        const sub = Object.values(item).find(value => (value instanceof Object ? value.$index : value) === keys[1]);
+        if (keys.length === 2) {
+            return sub instanceof Object ? Object.values(sub).length !== 1 : true;
         }
-        if (split.length === 3) {
-            for (const v of Object.values(prefix)) {
-                if (!(v instanceof Object)) {
-                    continue;
-                }
-                if (v.$index === split[1]) {
-                    return Object.values(v).includes(split[2]);
-                }
-            }
+        if (keys.length === 3 && sub instanceof Object) {
+            return Object.values(sub).includes(keys[2]);
         }
-        return false;
     }
 };
 PermissionManagerService = PermissionManagerService_1 = __decorate([

@@ -8,13 +8,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var PermissionManagerModule_1;
+import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
 import { ModuleBase } from "../shared/models/moduleBase.js";
-import { addCommandKeys } from "./addCommandKeys.js";
+import { addCommandKeys } from "./addCommandKeys.decorator.js";
+import { authorize } from "./authorize.decorator.js";
 import { PermissionMode } from "./models/index.js";
 import { PermissionManagerService } from "./permissionManager.service.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
-    permissionManagerService;
+    permissionManager;
     static commands = {
         $index: "permission",
         List: "list_permissions",
@@ -23,9 +25,9 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         Config: "set_config",
         Reset: "reset_permission",
     };
-    constructor(permissionManagerService) {
+    constructor(permissionManager) {
         super();
-        this.permissionManagerService = permissionManagerService;
+        this.permissionManager = permissionManager;
         this.moduleName = "PermissionManager";
         this.commands = [{
                 command: builder => builder
@@ -83,12 +85,6 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         const subcommand = interaction.options.getSubcommand();
         const key = interaction.options.getString("key");
         const role = interaction.options.getRole("role");
-        if (!await this.permissionManagerService.isAuthorized(interaction, `${PermissionManagerModule_1.commands.$index}.${subcommand}`)) {
-            return interaction.reply({
-                content: "Sorry you do not have permission to use this command.",
-                ephemeral: true,
-            });
-        }
         switch (subcommand) {
             case PermissionManagerModule_1.commands.List:
                 return this.listPermissions(interaction, key);
@@ -105,24 +101,30 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         }
     }
     listPermissions(interaction, key) {
-        return this.permissionManagerService.listPermissions(interaction, key);
+        return this.permissionManager.listPermissions(interaction, key);
     }
     addRoles(interaction, key, role) {
-        return this.permissionManagerService.addRole(interaction, key, role);
+        return this.permissionManager.addRole(interaction, key, role);
     }
     removeRoles(interaction, key, role) {
-        return this.permissionManagerService.removeRole(interaction, key, role);
+        return this.permissionManager.removeRole(interaction, key, role);
     }
     config(interaction, key) {
-        return this.permissionManagerService.config(interaction, key);
+        return this.permissionManager.config(interaction, key);
     }
     reset(interaction, key) {
-        return this.permissionManagerService.reset(interaction, key);
+        return this.permissionManager.reset(interaction, key);
     }
     static commandKeyHelperBuilder(input, boolOverride = true) {
         return input.setName("key").setDescription("Command permission Key.").setRequired(boolOverride);
     }
 };
+__decorate([
+    authorize(`${PermissionManagerModule_1.commands.$index}.${PermissionManagerModule_1.commands.List}`),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "listPermissions", null);
 __decorate([
     addCommandKeys(),
     __metadata("design:type", Object)

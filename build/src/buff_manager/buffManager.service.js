@@ -64,13 +64,12 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         this.logger.debug(`${chalk.green("Success:")} Returning results.`);
         return [config, true];
     }
-    async postBuff(interaction, subCommand) {
+    async postBuff(interaction, today = true) {
         const [config, flag] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
         }
         this.logger.debug(`Command invoked for ${chalk.blue("buffs")}.`);
-        const today = subCommand === "today";
         const date = today ? DateTime.now() : DateTime.now().plus({ days: 1 });
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
         this.logger.debug(`Posting ${chalk.blue("buff")} message for the date ${chalk.yellow(date.toISO())}`);
@@ -87,20 +86,19 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         }
         await interaction.reply({ embeds: [this.createBuffEmbed(title, buff, date)] });
     }
-    async postWeeksBuffs(interaction, subCommand) {
+    async postWeeksBuffs(interaction, thisWeek = true) {
         const [config, flag] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
         }
         this.logger.debug(`Command invoked for ${chalk.blue("weeks")}.`);
-        const thisWeek = subCommand === "this_week";
         const date = thisWeek ? DateTime.now() : DateTime.now().plus({ week: 1 });
         const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
         this.logger.debug(`Posting ${chalk.blue("week")} message for ${chalk.yellow(date.toISO())}`);
         const filteredWeeks = config.weeks.filter(week => week.isEnabled);
         const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
         await interaction.reply({
-            embeds: [this.createWeekEmbed(title, week, config.buffs, date)]
+            embeds: [this.createWeekEmbed(title, week, config.buffs, date)],
         });
     }
     async postDailyMessage(client) {
@@ -146,7 +144,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 if (messageSettings.dow !== null && messageSettings.dow === now.weekday - 1) {
                     this.logger.debug(`Posting ${chalk.cyan("week message")}.`);
                     await channel.send({
-                        embeds: [this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)]
+                        embeds: [this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)],
                     });
                 }
             }

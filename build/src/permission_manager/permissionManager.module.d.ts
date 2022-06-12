@@ -1,9 +1,9 @@
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { PermissionManagerService } from "./permissionManager.service.js";
 export declare class PermissionManagerModule extends ModuleBase {
-    private permissionManagerService;
+    private permissionManager;
     private static readonly commands;
-    constructor(permissionManagerService: PermissionManagerService);
+    constructor(permissionManager: PermissionManagerService);
     private subcommandResolver;
     private listPermissions;
     private addRoles;

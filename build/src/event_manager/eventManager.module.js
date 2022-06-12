@@ -7,19 +7,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var EventManagerModule_1;
+import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
+import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { EventManagerService } from "./eventManager.service.js";
-let EventManagerModule = class EventManagerModule extends ModuleBase {
+let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;
-    constructor(eventManagerService) {
+    permissionManager;
+    static commands = "event";
+    constructor(eventManagerService, permissionManager) {
         super();
         this.eventManagerService = eventManagerService;
+        this.permissionManager = permissionManager;
         this.moduleName = "EventManager";
         this.commands = [
             {
                 command: builder => builder
-                    .setName("event")
+                    .setName(EventManagerModule_1.commands)
                     .setDescription("Displays events.")
                     .addIntegerOption(option => option.setName("index").setDescription("The index for the event, starting at 0")),
                 run: async (interaction) => this.listEvents(interaction),
@@ -58,9 +64,20 @@ let EventManagerModule = class EventManagerModule extends ModuleBase {
         return this.eventManagerService.onReady(client);
     }
 };
-EventManagerModule = __decorate([
+__decorate([
+    authorize(EventManagerModule_1.commands),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:returntype", Promise)
+], EventManagerModule.prototype, "listEvents", null);
+__decorate([
+    addCommandKeys(),
+    __metadata("design:type", String)
+], EventManagerModule, "commands", void 0);
+EventManagerModule = EventManagerModule_1 = __decorate([
     injectable(),
-    __metadata("design:paramtypes", [EventManagerService])
+    __metadata("design:paramtypes", [EventManagerService,
+        PermissionManagerService])
 ], EventManagerModule);
 export { EventManagerModule };
 //# sourceMappingURL=eventManager.module.js.map

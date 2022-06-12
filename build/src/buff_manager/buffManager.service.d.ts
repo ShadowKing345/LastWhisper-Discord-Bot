@@ -11,8 +11,8 @@ export declare class BuffManagerService {
     createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed;
     createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed;
     tryGetConfig(interaction: CommandInteraction): Promise<[BuffManagerConfig, boolean]>;
-    postBuff(interaction: CommandInteraction, subCommand: string): Promise<void>;
-    postWeeksBuffs(interaction: CommandInteraction, subCommand: string): Promise<void>;
+    postBuff(interaction: CommandInteraction, today?: boolean): Promise<void>;
+    postWeeksBuffs(interaction: CommandInteraction, thisWeek?: boolean): Promise<void>;
     postDailyMessage(client: Client): Promise<void>;
     private findOneOrCreate;
 }

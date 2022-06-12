@@ -1,5 +1,5 @@
 import { CommandInteraction, Interaction, Role } from "discord.js";
-import { PermissionKeys } from "./models/index.js";
+import { PermissionKeysType } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 export declare class PermissionManagerService {
     private permissionManagerRepository;
@@ -12,7 +12,7 @@ export declare class PermissionManagerService {
     reset(interaction: CommandInteraction, key: string): Promise<void>;
     listPermissions(interaction: CommandInteraction, key?: string): Promise<void>;
     private findOneOrCreate;
-    static addPermissionKeys(keys: PermissionKeys): void;
+    static addPermissionKeys(keys: PermissionKeysType): void;
     static removePermissionKey(prefix: string): void;
     private static keyExists;
 }

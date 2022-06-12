@@ -1,8 +1,8 @@
-export interface PermissionKeys {
+export declare type PermissionKeysType = {
     $index: string;
     [key: string]: string | {
         $index: string;
         [key: string]: string;
     };
-}
-//# sourceMappingURL=permissionKeys.model.d.ts.map
+} | string;
+//# sourceMappingURL=permissionKeysType.model.d.ts.map
