@@ -3,7 +3,8 @@ import { CommandInteraction, Role } from "discord.js";
 import { injectable } from "tsyringe";
 
 import { ModuleBase } from "../shared/models/moduleBase.js";
-import { addCommandKeys } from "./addCommandKeys.js";
+import { addCommandKeys } from "./addCommandKeys.decorator.js";
+import { authorize } from "./authorize.decorator.js";
 import { PermissionMode } from "./models/index.js";
 import { PermissionManagerService } from "./permissionManager.service.js";
 
@@ -19,7 +20,7 @@ export class PermissionManagerModule extends ModuleBase {
         Reset: "reset_permission",
     };
 
-    constructor(private permissionManagerService: PermissionManagerService) {
+    constructor(private permissionManager: PermissionManagerService) {
         super();
 
         this.moduleName = "PermissionManager";
@@ -91,13 +92,6 @@ export class PermissionManagerModule extends ModuleBase {
         const key: string = interaction.options.getString("key");
         const role: Role = interaction.options.getRole("role") as Role;
 
-        if (!await this.permissionManagerService.isAuthorized(interaction, `${PermissionManagerModule.commands.$index}.${subcommand}`)) {
-            return interaction.reply({
-                content: "Sorry you do not have permission to use this command.",
-                ephemeral: true,
-            });
-        }
-
         switch (subcommand) {
             case PermissionManagerModule.commands.List:
                 return this.listPermissions(interaction, key);
@@ -114,24 +108,25 @@ export class PermissionManagerModule extends ModuleBase {
         }
     }
 
+    @authorize(`${PermissionManagerModule.commands.$index}.${PermissionManagerModule.commands.List}`)
     private listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
-        return this.permissionManagerService.listPermissions(interaction, key);
+        return this.permissionManager.listPermissions(interaction, key);
     }
 
     private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        return this.permissionManagerService.addRole(interaction, key, role);
+        return this.permissionManager.addRole(interaction, key, role);
     }
 
     private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        return this.permissionManagerService.removeRole(interaction, key, role);
+        return this.permissionManager.removeRole(interaction, key, role);
     }
 
     private config(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManagerService.config(interaction, key);
+        return this.permissionManager.config(interaction, key);
     }
 
     private reset(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManagerService.reset(interaction, key);
+        return this.permissionManager.reset(interaction, key);
     }
 
     private static commandKeyHelperBuilder(input: SlashCommandStringOption, boolOverride = true): SlashCommandStringOption {

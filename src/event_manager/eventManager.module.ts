@@ -1,20 +1,18 @@
 import { Client, CommandInteraction, Message } from "discord.js";
 import { injectable } from "tsyringe";
 
-import { addCommandKeys, PermissionManagerService } from "../permission_manager/index.js";
+import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { EventManagerService } from "./eventManager.service.js";
 
 @injectable()
 export class EventManagerModule extends ModuleBase {
     @addCommandKeys()
-    private static readonly commands = {
-        $index: "event"
-    }
+    private static readonly commands: string = "event";
 
     constructor(
         private eventManagerService: EventManagerService,
-        private permissionManager: PermissionManagerService
+        private permissionManager: PermissionManagerService,
     ) {
         super();
 
@@ -22,7 +20,7 @@ export class EventManagerModule extends ModuleBase {
         this.commands = [
             {
                 command: builder => builder
-                    .setName(EventManagerModule.commands.$index)
+                    .setName(EventManagerModule.commands)
                     .setDescription("Displays events.")
                     .addIntegerOption(option => option.setName("index").setDescription("The index for the event, starting at 0")),
                 run: async interaction => this.listEvents(interaction),
@@ -59,7 +57,8 @@ export class EventManagerModule extends ModuleBase {
         return this.eventManagerService.reminderLoop(client);
     }
 
-    private async listEvents(interaction: CommandInteraction): Promise<void> {
+    @authorize(EventManagerModule.commands)
+    private listEvents(interaction: CommandInteraction): Promise<void> {
         return this.eventManagerService.listEvents(interaction);
     }
 

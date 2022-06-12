@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
 
-import { addCommandKeys } from "../permission_manager/index.js";
+import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { buildLogger } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
@@ -18,7 +18,10 @@ export class BuffManagerModule extends ModuleBase {
     };
     private readonly logger = buildLogger(BuffManagerModule.name);
 
-    constructor(private buffManagerService: BuffManagerService) {
+    constructor(
+        private buffManagerService: BuffManagerService,
+        private permissionManager: PermissionManagerService,
+    ) {
         super();
 
         this.moduleName = "BuffManager";
@@ -79,6 +82,7 @@ export class BuffManagerModule extends ModuleBase {
         }
     }
 
+    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Buffs.$index}.${BuffManagerModule.commands.Buffs.Today}`)
     private postBuff(interaction: CommandInteraction, subCommand: string): Promise<void> {
         return this.buffManagerService.postBuff(interaction, subCommand);
     }
