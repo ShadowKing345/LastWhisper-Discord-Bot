@@ -1,0 +1,1 @@
+{"version":3,"file":"reminderTrigger.model.js","sourceRoot":"","sources":["../../../../src/event_manager/models/reminderTrigger.model.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,eAAe;IACjB,OAAO,GAAW,IAAI,CAAC;IACvB,SAAS,GAAW,IAAI,CAAC;IAEhC,YAAY,OAAe,EAAE,SAAiB;QAC1C,IAAI,CAAC,OAAO,GAAG,OAAO,CAAC;QACvB,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC;IAC/B,CAAC;CACJ"}

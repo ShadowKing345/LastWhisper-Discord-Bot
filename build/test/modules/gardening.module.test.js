@@ -11,9 +11,8 @@ import { test } from "tap";
 import { ImportMock } from "ts-mock-imports";
 import { container, injectable } from "tsyringe";
 import { Database } from "../../src/config/databaseConfiguration.js";
-import { Reason, Reservation, Slot } from "../../src/models/gardeningConfig.model.js";
-import { GardeningManagerService } from "../../src/services/gardeningManager.service.js";
-import { InvalidArgumentError } from "../../src/utils/errors.js";
+import { GardeningManagerService, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
+import { InvalidArgumentError } from "../../src/shared/models/errors.js";
 let MockModule = class MockModule extends GardeningManagerService {
     validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist = true) {
         return GardeningManagerService.validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist);

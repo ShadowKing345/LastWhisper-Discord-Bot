@@ -1,9 +1,9 @@
 import chalk from "chalk";
-import { Client } from "./classes/client.js";
 import { CONFIGS, initConfigs } from "./config/appConfigs.js";
 import { connectClient } from "./config/databaseConfiguration.js";
 import { configureModules } from "./config/moduleConfiguration.js";
-import { buildLogger } from "./utils/logger.js";
+import { buildLogger } from "./shared/logger.js";
+import { Client } from "./shared/models/client.js";
 export class App {
     client;
     logger = buildLogger(App.name);

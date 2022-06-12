@@ -1,0 +1,1 @@
+{"version":3,"file":"permission.model.js","sourceRoot":"","sources":["../../../../src/permission_manager/models/permission.model.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,UAAU;IACZ,KAAK,GAAa,EAAE,CAAC;IACrB,IAAI,GAAoB,cAAc,CAAC,GAAG,CAAC;IAC3C,SAAS,GAAa,KAAK,CAAC;CACtC;AAED,MAAM,CAAN,IAAY,cAGX;AAHD,WAAY,cAAc;IACtB,iDAAG,CAAA;IACH,uDAAM,CAAA;AACV,CAAC,EAHW,cAAc,KAAd,cAAc,QAGzB"}

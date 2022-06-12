@@ -1,8 +1,8 @@
 import { REST } from "@discordjs/rest";
 import chalk from "chalk";
 import { Routes } from "discord-api-types/v9";
-import { BuildCommand } from "../classes/command.js";
-import { buildLogger } from "../utils/logger.js";
+import { buildLogger } from "../shared/logger.js";
+import { BuildCommand } from "../shared/models/command.js";
 import { initConfigs } from "./appConfigs.js";
 import { connectClient } from "./databaseConfiguration.js";
 import { loadModules } from "./moduleConfiguration.js";
