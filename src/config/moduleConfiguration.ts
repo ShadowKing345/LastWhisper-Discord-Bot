@@ -92,11 +92,11 @@ export function configureModules(client: Client) {
         });
 
         logger.debug(`Setting up ${chalk.cyan("tasks")}...`, loggerMeta.moduleConfiguration);
-        // module.tasks.forEach(task => {
-        //     client.tasks.set(task.name, task);
-        //     setInterval(task.run, task.timeout, client);
-        //     task.run(client).catch(err => console.error(err));
-        // });
+        module.tasks.forEach(task => {
+            client.tasks.set(task.name, task);
+            setInterval(task.run, task.timeout, client);
+            task.run(client).catch(err => console.error(err));
+        });
     });
 
     logger.debug(`Setting up ${chalk.cyan("events")}...`, loggerMeta.moduleConfiguration);
