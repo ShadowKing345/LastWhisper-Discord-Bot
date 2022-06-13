@@ -7,20 +7,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var PermissionManagerService_1;
 import chalk from "chalk";
 import { MessageEmbed } from "discord.js";
-import { singleton } from "tsyringe";
-import { buildLogger } from "../shared/logger.js";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService {
     permissionManagerRepository;
-    logger = buildLogger(PermissionManagerService_1.name);
-    constructor(permissionManagerRepository) {
+    logger;
+    constructor(permissionManagerRepository, logger) {
         this.permissionManagerRepository = permissionManagerRepository;
+        this.logger = logger;
     }
     async isAuthorized(interaction, key) {
         this.logger.debug(`Attempting to authorize for key ${key}`);
@@ -216,7 +221,8 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
 };
 PermissionManagerService = PermissionManagerService_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [PermissionManagerRepository])
+    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, PermissionManagerService_1.name)),
+    __metadata("design:paramtypes", [PermissionManagerRepository, Object])
 ], PermissionManagerService);
 export { PermissionManagerService };
 //# sourceMappingURL=permissionManager.service.js.map

@@ -7,9 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var ModuleConfiguration_1;
 import chalk from "chalk";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 import { BuffManagerModule } from "../buff_manager/index.js";
 import { EventManagerModule } from "../event_manager/index.js";
 import { GardeningManagerModule } from "../gardening_manager/index.js";
@@ -17,7 +21,7 @@ import { ManagerUtilsModule } from "../manager_utils/index.js";
 import { PermissionManagerModule } from "../permission_manager/index.js";
 import { RoleManagerModule } from "../role_manager/index.js";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
 let ModuleConfiguration = ModuleConfiguration_1 = class ModuleConfiguration extends ConfigurationClass {
     buffManagerModule;
@@ -26,12 +30,12 @@ let ModuleConfiguration = ModuleConfiguration_1 = class ModuleConfiguration exte
     managerUtilsModule;
     roleManagerModule;
     permissionManagerModule;
-    logger = buildLogger("ModuleConfiguration");
+    logger;
     static loggerMeta = {
         moduleConfiguration: { context: "ModuleConfiguration" },
         interaction: { context: "InteractionInvoking" },
     };
-    constructor(buffManagerModule, eventManagerModule, gardeningManagerModule, managerUtilsModule, roleManagerModule, permissionManagerModule) {
+    constructor(buffManagerModule, eventManagerModule, gardeningManagerModule, managerUtilsModule, roleManagerModule, permissionManagerModule, logger) {
         super();
         this.buffManagerModule = buffManagerModule;
         this.eventManagerModule = eventManagerModule;
@@ -39,6 +43,7 @@ let ModuleConfiguration = ModuleConfiguration_1 = class ModuleConfiguration exte
         this.managerUtilsModule = managerUtilsModule;
         this.roleManagerModule = roleManagerModule;
         this.permissionManagerModule = permissionManagerModule;
+        this.logger = logger;
     }
     get modules() {
         return [
@@ -124,12 +129,13 @@ let ModuleConfiguration = ModuleConfiguration_1 = class ModuleConfiguration exte
 };
 ModuleConfiguration = ModuleConfiguration_1 = __decorate([
     singleton(),
+    __param(6, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, ModuleConfiguration_1.name)),
     __metadata("design:paramtypes", [BuffManagerModule,
         EventManagerModule,
         GardeningManagerModule,
         ManagerUtilsModule,
         RoleManagerModule,
-        PermissionManagerModule])
+        PermissionManagerModule, Object])
 ], ModuleConfiguration);
 export { ModuleConfiguration };
 //# sourceMappingURL=moduleConfiguration.js.map

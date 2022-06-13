@@ -7,19 +7,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var RoleManagerService_1;
 import chalk from "chalk";
-import { singleton } from "tsyringe";
-import { buildLogger } from "../shared/logger.js";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
     roleManagerConfigRepository;
-    logger = buildLogger(RoleManagerService_1.name);
+    logger;
     collectors = {};
-    constructor(roleManagerConfigRepository) {
+    constructor(roleManagerConfigRepository, logger) {
         this.roleManagerConfigRepository = roleManagerConfigRepository;
+        this.logger = logger;
     }
     static async alterMembersRoles(member, roleId) {
         if (member.roles.cache.has(roleId)) {
@@ -168,7 +173,8 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
 };
 RoleManagerService = RoleManagerService_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [RoleManagerRepository])
+    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerService_1.name)),
+    __metadata("design:paramtypes", [RoleManagerRepository, Object])
 ], RoleManagerService);
 export { RoleManagerService };
 //# sourceMappingURL=roleManager.service.js.map

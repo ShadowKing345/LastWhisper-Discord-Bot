@@ -7,21 +7,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var BuffManagerService_1;
 import chalk from "chalk";
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
-import { buildLogger } from "../shared/logger.js";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
 import { BuffManagerConfig, Days } from "./models/index.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
     buffManagerConfigRepository;
-    logger = buildLogger(BuffManagerService_1.name);
+    logger;
     daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    constructor(buffManagerConfigRepository) {
+    constructor(buffManagerConfigRepository, logger) {
         this.buffManagerConfigRepository = buffManagerConfigRepository;
+        this.logger = logger;
     }
     createBuffEmbed(title, day, date) {
         this.logger.debug(`Creating ${chalk.cyan("Buff Embed")}.`);
@@ -166,7 +171,8 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
 };
 BuffManagerService = BuffManagerService_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [BuffManagerRepository])
+    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerService_1.name)),
+    __metadata("design:paramtypes", [BuffManagerRepository, Object])
 ], BuffManagerService);
 export { BuffManagerService };
 //# sourceMappingURL=buffManager.service.js.map

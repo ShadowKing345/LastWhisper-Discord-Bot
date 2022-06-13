@@ -7,28 +7,33 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var RoleManagerModule_1;
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
     permissionManager;
+    logger;
     static commands = {
         $index: "role_manager",
         RevokeRole: "revoke_role",
         RegisterMessage: "register_message",
         UnregisterMessage: "unregister_message",
     };
-    logger = buildLogger(RoleManagerModule_1.name);
-    constructor(roleManagerService, permissionManager) {
+    constructor(roleManagerService, permissionManager, logger) {
         super();
         this.roleManagerService = roleManagerService;
         this.permissionManager = permissionManager;
+        this.logger = logger;
         this.moduleName = "RoleManager";
         this.listeners = [
             { event: "ready", run: async (client) => this.onReady(client) },
@@ -122,8 +127,9 @@ __decorate([
 ], RoleManagerModule, "commands", void 0);
 RoleManagerModule = RoleManagerModule_1 = __decorate([
     singleton(),
+    __param(2, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerModule_1.name)),
     __metadata("design:paramtypes", [RoleManagerService,
-        PermissionManagerService])
+        PermissionManagerService, Object])
 ], RoleManagerModule);
 export { RoleManagerModule };
 //# sourceMappingURL=roleManager.module.js.map

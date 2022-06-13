@@ -1,17 +1,18 @@
+import { pino } from "pino";
+import { Transform } from "tsyringe/dist/typings/types/index.js";
+import { AppConfigs } from "../config/app_configs/index.js";
 export declare enum LOGGING_LEVELS {
     debug = "debug",
     info = "info",
     warn = "warn",
     error = "error"
 }
-export declare function buildLogger(name: string): import("pino").Logger<{
-    name: string;
-    transport: {
-        target: string;
-        options: {
-            translateTime: string;
-            ignore: string;
-        };
-    };
-}>;
+export declare class LoggerFactory {
+    private appConfigs;
+    constructor(appConfigs: AppConfigs);
+    buildLogger(name: string): pino.Logger;
+}
+export declare class LoggerFactoryTransformer implements Transform<LoggerFactory, pino.Logger> {
+    transform(incoming: LoggerFactory, args: any): pino.Logger;
+}
 //# sourceMappingURL=logger.d.ts.map

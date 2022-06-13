@@ -11,13 +11,11 @@ var AppConfigs_1;
 import fs from "fs";
 import { singleton } from "tsyringe";
 import { ConfigurationClass } from "../../shared/configuration.class.js";
-import { buildLogger } from "../../shared/logger.js";
 import { AppConfig } from "./models/index.js";
 let AppConfigs = AppConfigs_1 = class AppConfigs extends ConfigurationClass {
     static configPath = "./appConfigs.json";
     static devConfigPath = "./appConfigs-dev.json";
     _config = null;
-    logger = buildLogger(AppConfigs_1.name);
     constructor() {
         super();
         this.initConfigs();
@@ -31,7 +29,6 @@ let AppConfigs = AppConfigs_1 = class AppConfigs extends ConfigurationClass {
         return Object.assign(config, JSON.parse(fs.readFileSync(devPath, "utf-8")));
     }
     initConfigs() {
-        this.logger.info("Loading Configurations", { context: "ClientSetup" });
         if (!fs.existsSync(AppConfigs_1.configPath)) {
             throw new Error("Configuration file was not found. You can create one with the generate-config script.");
         }

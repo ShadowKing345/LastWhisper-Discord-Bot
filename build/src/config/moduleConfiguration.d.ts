@@ -1,3 +1,4 @@
+import { pino } from "pino";
 import { BuffManagerModule } from "../buff_manager/index.js";
 import { EventManagerModule } from "../event_manager/index.js";
 import { GardeningManagerModule } from "../gardening_manager/index.js";
@@ -15,9 +16,9 @@ export declare class ModuleConfiguration extends ConfigurationClass {
     private managerUtilsModule;
     private roleManagerModule;
     private permissionManagerModule;
-    private readonly logger;
+    private logger;
     private static readonly loggerMeta;
-    constructor(buffManagerModule: BuffManagerModule, eventManagerModule: EventManagerModule, gardeningManagerModule: GardeningManagerModule, managerUtilsModule: ManagerUtilsModule, roleManagerModule: RoleManagerModule, permissionManagerModule: PermissionManagerModule);
+    constructor(buffManagerModule: BuffManagerModule, eventManagerModule: EventManagerModule, gardeningManagerModule: GardeningManagerModule, managerUtilsModule: ManagerUtilsModule, roleManagerModule: RoleManagerModule, permissionManagerModule: PermissionManagerModule, logger: pino.Logger);
     get modules(): ModuleBase[];
     runEvent(listeners: Listener[], client: Client, ...args: any[]): Promise<void>;
     configureModules(client: Client): void;

@@ -1,11 +1,12 @@
 import { CommandInteraction, MessageReaction, User } from "discord.js";
+import { pino } from "pino";
 import { Client } from "../shared/models/client.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
 export declare class RoleManagerService {
     private roleManagerConfigRepository;
-    private readonly logger;
+    private logger;
     private collectors;
-    constructor(roleManagerConfigRepository: RoleManagerRepository);
+    constructor(roleManagerConfigRepository: RoleManagerRepository, logger: pino.Logger);
     private static alterMembersRoles;
     private static processMessageReactions;
     private registerReactionCollector;

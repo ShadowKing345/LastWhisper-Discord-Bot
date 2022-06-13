@@ -7,21 +7,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var DatabaseConfiguration_1;
 import { Db, MongoClient } from "mongodb";
-import { container, singleton } from "tsyringe";
+import { pino } from "pino";
+import { container, injectWithTransform, singleton } from "tsyringe";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { AppConfigs, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 export class Database extends Db {
 }
-let DatabaseConfiguration = class DatabaseConfiguration extends ConfigurationClass {
+let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguration extends ConfigurationClass {
     appConfigs;
-    logger = buildLogger("Database");
+    logger;
     _client;
     _db;
-    constructor(appConfigs) {
+    constructor(appConfigs, logger) {
         super();
         this.appConfigs = appConfigs;
+        this.logger = logger;
     }
     parseUrl(dbConfig) {
         if (dbConfig.url) {
@@ -69,9 +75,10 @@ let DatabaseConfiguration = class DatabaseConfiguration extends ConfigurationCla
         return this._client;
     }
 };
-DatabaseConfiguration = __decorate([
+DatabaseConfiguration = DatabaseConfiguration_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [AppConfigs])
+    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, DatabaseConfiguration_1.name)),
+    __metadata("design:paramtypes", [AppConfigs, Object])
 ], DatabaseConfiguration);
 export { DatabaseConfiguration };
 //# sourceMappingURL=databaseConfiguration.js.map

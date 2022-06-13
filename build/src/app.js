@@ -7,24 +7,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var App_1;
 import chalk from "chalk";
-import { container, singleton } from "tsyringe";
+import { pino } from "pino";
+import { container, injectWithTransform, singleton } from "tsyringe";
 import { AppConfigs } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { buildLogger } from "./shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "./shared/logger.js";
 import { Client } from "./shared/models/client.js";
 let App = App_1 = class App {
     appConfigs;
     databaseService;
     moduleConfiguration;
+    logger;
     client;
-    logger = buildLogger(App_1.name);
-    constructor(appConfigs, databaseService, moduleConfiguration) {
+    constructor(appConfigs, databaseService, moduleConfiguration, logger) {
         this.appConfigs = appConfigs;
         this.databaseService = databaseService;
         this.moduleConfiguration = moduleConfiguration;
+        this.logger = logger;
         this.client = new Client();
     }
     async init() {
@@ -49,9 +54,10 @@ let App = App_1 = class App {
 };
 App = App_1 = __decorate([
     singleton(),
+    __param(3, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, App_1.name)),
     __metadata("design:paramtypes", [AppConfigs,
         DatabaseConfiguration,
-        ModuleConfiguration])
+        ModuleConfiguration, Object])
 ], App);
 export { App };
 export async function botMain() {

@@ -1,11 +1,12 @@
 import { CommandInteraction, EmbedFieldData } from "discord.js";
+import { pino } from "pino";
 import { Client } from "../shared/models/client.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
 import { GardeningConfig, Plot, Reason, Slot } from "./models/index.js";
 export declare class GardeningManagerService {
     private gardeningConfigRepository;
-    private readonly logger;
-    constructor(gardeningConfigRepository: GardeningManagerRepository);
+    private logger;
+    constructor(gardeningConfigRepository: GardeningManagerRepository, logger: pino.Logger);
     protected static validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist?: boolean): Promise<null | [Plot, Slot]>;
     protected static printPlotInfo(plot: Plot, plotNum: number, detailed?: boolean, indent?: number): string;
     protected static printSlotInfo(slot: Slot, slotNum: number, indent?: number): string;

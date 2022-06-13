@@ -1,13 +1,14 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
+import { pino } from "pino";
 import { Client } from "../shared/models/client.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
 import { Buff, BuffManagerConfig, Week } from "./models/index.js";
 export declare class BuffManagerService {
     private buffManagerConfigRepository;
-    private readonly logger;
+    private logger;
     private readonly daysOfWeek;
-    constructor(buffManagerConfigRepository: BuffManagerRepository);
+    constructor(buffManagerConfigRepository: BuffManagerRepository, logger: pino.Logger);
     createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed;
     createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed;
     tryGetConfig(interaction: CommandInteraction): Promise<[BuffManagerConfig, boolean]>;

@@ -7,19 +7,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var GardeningManagerService_1;
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
-import { buildLogger } from "../shared/logger.js";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
 import { GardeningConfig, Reservation, Slot } from "./models/index.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService {
     gardeningConfigRepository;
-    logger = buildLogger(GardeningManagerService_1.name);
-    constructor(gardeningConfigRepository) {
+    logger;
+    constructor(gardeningConfigRepository, logger) {
         this.gardeningConfigRepository = gardeningConfigRepository;
+        this.logger = logger;
     }
     static async validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist = true) {
         if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
@@ -246,7 +251,8 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
 };
 GardeningManagerService = GardeningManagerService_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [GardeningManagerRepository])
+    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, GardeningManagerService_1.name)),
+    __metadata("design:paramtypes", [GardeningManagerRepository, Object])
 ], GardeningManagerService);
 export { GardeningManagerService };
 class MessagePostArgs {

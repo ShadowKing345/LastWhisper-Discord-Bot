@@ -1,10 +1,11 @@
 import { CommandInteraction, Interaction, Role } from "discord.js";
+import { pino } from "pino";
 import { PermissionKeysType } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 export declare class PermissionManagerService {
     private permissionManagerRepository;
-    private readonly logger;
-    constructor(permissionManagerRepository: PermissionManagerRepository);
+    private logger;
+    constructor(permissionManagerRepository: PermissionManagerRepository, logger: pino.Logger);
     isAuthorized(interaction: Interaction, key: string): Promise<boolean>;
     addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void>;
     removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<void>;

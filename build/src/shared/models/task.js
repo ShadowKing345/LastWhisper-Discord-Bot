@@ -1,7 +1,8 @@
 import chalk from "chalk";
-import { buildLogger } from "../logger.js";
+import { container } from "tsyringe";
+import { LoggerFactory } from "../logger.js";
 export class Task {
-    static logger = buildLogger(Task.name);
+    static logger = container.resolve(LoggerFactory).buildLogger(Task.name);
     name;
     timeout;
     run;

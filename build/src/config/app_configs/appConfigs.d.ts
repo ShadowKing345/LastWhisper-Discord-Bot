@@ -4,7 +4,6 @@ export declare class AppConfigs extends ConfigurationClass {
     static readonly configPath = "./appConfigs.json";
     static readonly devConfigPath = "./appConfigs-dev.json";
     private _config;
-    private readonly logger;
     constructor();
     static parseConfigFile(path: string, devPath?: string): AppConfig;
     initConfigs(): AppConfig;
