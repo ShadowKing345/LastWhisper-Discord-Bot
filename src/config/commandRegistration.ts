@@ -4,7 +4,7 @@ import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 
 import { App } from "../app.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory } from "../shared/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
 import { AppConfig, AppConfigs, CommandRegistrationConfiguration } from "./app_configs/index.js";
 
@@ -21,7 +21,7 @@ type CommandRegistrationArgs = {
 
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
     const app = container.resolve(App);
-    const logger = buildLogger("CommandRegistration");
+    const logger = container.resolve(LoggerFactory).buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
 
     const appConfigs: AppConfig = container.resolve(AppConfigs).config;

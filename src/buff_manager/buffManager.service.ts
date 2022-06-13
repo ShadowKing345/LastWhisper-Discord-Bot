@@ -1,9 +1,10 @@
 import chalk from "chalk";
 import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
@@ -11,10 +12,12 @@ import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "./models/i
 
 @singleton()
 export class BuffManagerService {
-    private readonly logger = buildLogger(BuffManagerService.name);
     private readonly daysOfWeek: string[] = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
 
-    constructor(private buffManagerConfigRepository: BuffManagerRepository) {
+    constructor(
+        private buffManagerConfigRepository: BuffManagerRepository,
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerService.name) private logger: pino.Logger,
+    ) {
     }
 
     public createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed {

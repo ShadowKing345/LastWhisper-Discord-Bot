@@ -1,9 +1,10 @@
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { BuffManagerService } from "./buffManager.service.js";
@@ -16,11 +17,11 @@ export class BuffManagerModule extends ModuleBase {
         Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
         Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
     };
-    private readonly logger = buildLogger(BuffManagerModule.name);
 
     constructor(
         private buffManagerService: BuffManagerService,
         private permissionManager: PermissionManagerService,
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerModule.name) private logger: pino.Logger,
     ) {
         super();
 

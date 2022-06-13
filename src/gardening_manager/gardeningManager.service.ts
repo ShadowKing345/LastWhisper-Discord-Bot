@@ -1,8 +1,9 @@
 import { CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
@@ -10,9 +11,10 @@ import { GardeningConfig, Plot, Reason, Reservation, Slot } from "./models/index
 
 @singleton()
 export class GardeningManagerService {
-    private readonly logger = buildLogger(GardeningManagerService.name);
-
-    constructor(private gardeningConfigRepository: GardeningManagerRepository) {
+    constructor(
+        private gardeningConfigRepository: GardeningManagerRepository,
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, GardeningManagerService.name) private logger: pino.Logger,
+    ) {
     }
 
     protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [ Plot, Slot ]> {

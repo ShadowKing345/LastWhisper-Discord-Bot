@@ -1,5 +1,6 @@
-import Logger, { pino } from "pino";
+import { pino } from "pino";
 import { singleton } from "tsyringe";
+import { Transform } from "tsyringe/dist/typings/types/index.js";
 
 import { AppConfigs } from "../config/app_configs/index.js";
 
@@ -29,5 +30,11 @@ export class LoggerFactory {
                 },
             },
         });
+    }
+}
+
+export class LoggerFactoryTransformer implements Transform<LoggerFactory, pino.Logger> {
+    public transform(incoming: LoggerFactory, args: any): pino.Logger {
+        return incoming.buildLogger(args);
     }
 }

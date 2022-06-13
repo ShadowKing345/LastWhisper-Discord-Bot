@@ -1,11 +1,12 @@
 import chalk from "chalk";
 import { Client as DiscordClient } from "discord.js";
+import { container } from "tsyringe";
 
-import { buildLogger } from "../logger.js";
+import { LoggerFactory } from "../logger.js";
 import { Client } from "./client.js";
 
 export class Task {
-    private static readonly logger = buildLogger(Task.name);
+    private static readonly logger = container.resolve(LoggerFactory).buildLogger(Task.name);
     public name: string;
     public timeout: number;
     public run: (client: Client) => Promise<void>;

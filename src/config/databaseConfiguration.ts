@@ -1,8 +1,9 @@
 import { Db, MongoClient } from "mongodb";
-import { container, singleton } from "tsyringe";
+import { pino } from "pino";
+import { container, injectWithTransform, singleton } from "tsyringe";
 
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { AppConfigs, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 
 export class Database extends Db {
@@ -10,13 +11,12 @@ export class Database extends Db {
 
 @singleton()
 export class DatabaseConfiguration extends ConfigurationClass {
-    private readonly logger = buildLogger("Database");
-
     private _client: MongoClient;
     private _db: Database;
 
     constructor(
-        private appConfigs: AppConfigs
+        private appConfigs: AppConfigs,
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, DatabaseConfiguration.name) private logger: pino.Logger,
     ) {
         super();
     }

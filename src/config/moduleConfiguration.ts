@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 
 import { BuffManagerModule } from "../buff_manager/index.js";
 import { EventManagerModule } from "../event_manager/index.js";
@@ -9,7 +10,7 @@ import { ManagerUtilsModule } from "../manager_utils/index.js";
 import { PermissionManagerModule } from "../permission_manager/index.js";
 import { RoleManagerModule } from "../role_manager/index.js";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { buildLogger } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { BuildCommand, Command } from "../shared/models/command.js";
 import { Listener } from "../shared/models/listener.js";
@@ -17,7 +18,6 @@ import { ModuleBase } from "../shared/models/moduleBase.js";
 
 @singleton()
 export class ModuleConfiguration extends ConfigurationClass {
-    private readonly logger = buildLogger("ModuleConfiguration");
     private static readonly loggerMeta = {
         moduleConfiguration: { context: "ModuleConfiguration" },
         interaction: { context: "InteractionInvoking" },
@@ -29,7 +29,8 @@ export class ModuleConfiguration extends ConfigurationClass {
         private gardeningManagerModule: GardeningManagerModule,
         private managerUtilsModule: ManagerUtilsModule,
         private roleManagerModule: RoleManagerModule,
-        private permissionManagerModule: PermissionManagerModule
+        private permissionManagerModule: PermissionManagerModule,
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, ModuleConfiguration.name) private logger: pino.Logger,
     ) {
         super();
     }

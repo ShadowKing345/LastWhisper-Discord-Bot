@@ -1,13 +1,13 @@
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
-import { LoggerFactory } from "../shared/logger.js";
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
-import { pino } from "pino";
 
 @singleton()
 export class RoleManagerModule extends ModuleBase {
@@ -18,15 +18,12 @@ export class RoleManagerModule extends ModuleBase {
         RegisterMessage: "register_message",
         UnregisterMessage: "unregister_message",
     }
-    private readonly logger: pino.Logger;
-
     constructor(
         private roleManagerService: RoleManagerService,
         private permissionManager: PermissionManagerService,
-        private loggerFactory: LoggerFactory
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerModule.name) private logger: pino.Logger,
     ) {
         super();
-        this.logger = loggerFactory.buildLogger(RoleManagerModule.name);
 
         this.moduleName = "RoleManager";
         this.listeners = [

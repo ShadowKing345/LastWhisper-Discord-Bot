@@ -1,24 +1,22 @@
 import chalk from "chalk";
 import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User } from "discord.js";
-import { singleton } from "tsyringe";
+import { pino } from "pino";
+import { injectWithTransform, singleton } from "tsyringe";
 
+import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
-import { pino } from "pino";
-import { LoggerFactory } from "../shared/logger.js";
 
 @singleton()
 export class RoleManagerService {
-    private readonly logger: pino.Logger;
     private collectors: { [key: string]: ReactionCollector } = {};
 
     constructor(
         private roleManagerConfigRepository: RoleManagerRepository,
-        private loggerFactory: LoggerFactory,
+        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerService.name) private logger: pino.Logger,
     ) {
-        this.logger = loggerFactory.buildLogger(RoleManagerService.name);
     }
 
     private static async alterMembersRoles(member: GuildMember, roleId: string) {
