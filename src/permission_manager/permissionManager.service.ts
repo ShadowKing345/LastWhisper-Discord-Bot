@@ -115,7 +115,25 @@ export class PermissionManagerService {
                 ephemeral: true,
             });
         }
-        console.log(interaction);
+
+        const config = await this.findOneOrCreate(interaction.guildId);
+        const permission = config.permissions[key] ??= new Permission();
+
+        const mode: number = interaction.options.getInteger("mode", false);
+
+        if (mode != null) {
+            permission.mode = mode;
+        }
+        const black_list: boolean = interaction.options.getBoolean("black_list");
+        if (black_list != null) {
+            permission.blackList = black_list;
+        }
+
+        await this.permissionManagerRepository.save(config);
+        return interaction.reply({
+            content: "Config set.",
+            ephemeral: true,
+        })
     }
 
     public async reset(interaction: CommandInteraction, key: string): Promise<void> {
