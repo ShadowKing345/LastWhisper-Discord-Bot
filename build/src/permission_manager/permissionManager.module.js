@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var PermissionManagerModule_1;
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, Role } from "discord.js";
 import { injectable } from "tsyringe";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { addCommandKeys } from "./addCommandKeys.decorator.js";
@@ -120,11 +120,35 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
     }
 };
 __decorate([
-    authorize(`${PermissionManagerModule_1.commands.$index}.${PermissionManagerModule_1.commands.List}`),
+    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.List),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction, String]),
     __metadata("design:returntype", Promise)
 ], PermissionManagerModule.prototype, "listPermissions", null);
+__decorate([
+    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.AddRole),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String, Role]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "addRoles", null);
+__decorate([
+    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.RemoveRole),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String, Role]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "removeRoles", null);
+__decorate([
+    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.Config),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "config", null);
+__decorate([
+    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.Reset),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "reset", null);
 __decorate([
     addCommandKeys(),
     __metadata("design:type", Object)

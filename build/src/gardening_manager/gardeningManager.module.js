@@ -7,22 +7,33 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var GardeningManagerModule_1;
+import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
+import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 import { Reason } from "./models/index.js";
-let GardeningManagerModule = class GardeningManagerModule extends ModuleBase {
+let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends ModuleBase {
     gardeningManagerService;
-    constructor(gardeningManagerService) {
+    permissionManager;
+    static command = {
+        $index: "gardening",
+        Reserve: "reserve",
+        Cancel: "cancel",
+        List: "list",
+    };
+    constructor(gardeningManagerService, permissionManager) {
         super();
         this.gardeningManagerService = gardeningManagerService;
+        this.permissionManager = permissionManager;
         this.moduleName = "GardeningModule";
         this.commands = [{
                 command: builder => builder
-                    .setName("gardening")
+                    .setName(GardeningManagerModule_1.command.$index)
                     .setDescription("gardening module.")
                     .addSubcommand(subComBuilder => subComBuilder
-                    .setName("reserve")
+                    .setName(GardeningManagerModule_1.command.Reserve)
                     .setDescription("Reserve a slot in a plot to be used by you.")
                     .addIntegerOption(optionBuilder => optionBuilder
                     .setName("plot")
@@ -50,7 +61,7 @@ let GardeningManagerModule = class GardeningManagerModule extends ModuleBase {
                     value,
                 ]))))
                     .addSubcommand(subComBuilder => subComBuilder
-                    .setName("cancel")
+                    .setName(GardeningManagerModule_1.command.Cancel)
                     .setDescription("Cancel any reservations you have made to a slot in a plot.")
                     .addIntegerOption(optionBuilder => optionBuilder
                     .setName("plot")
@@ -65,7 +76,7 @@ let GardeningManagerModule = class GardeningManagerModule extends ModuleBase {
                     .setDescription("The name of the plant you wish to cancel for.")
                     .setRequired(true)))
                     .addSubcommand(subComBuilder => subComBuilder
-                    .setName("list")
+                    .setName(GardeningManagerModule_1.command.List)
                     .setDescription("Shows all plots and their states.")
                     .addIntegerOption(optionBuilder => optionBuilder
                     .setName("plot")
@@ -116,9 +127,32 @@ let GardeningManagerModule = class GardeningManagerModule extends ModuleBase {
         }
     }
 };
-GardeningManagerModule = __decorate([
+__decorate([
+    authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.Reserve),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String, String, Number, String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], GardeningManagerModule.prototype, "register", null);
+__decorate([
+    authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.Cancel),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, String, String, Number, Number]),
+    __metadata("design:returntype", Promise)
+], GardeningManagerModule.prototype, "cancel", null);
+__decorate([
+    authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.List),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction, Number, Number]),
+    __metadata("design:returntype", void 0)
+], GardeningManagerModule.prototype, "list", null);
+__decorate([
+    addCommandKeys(),
+    __metadata("design:type", Object)
+], GardeningManagerModule, "command", void 0);
+GardeningManagerModule = GardeningManagerModule_1 = __decorate([
     injectable(),
-    __metadata("design:paramtypes", [GardeningManagerService])
+    __metadata("design:paramtypes", [GardeningManagerService,
+        PermissionManagerService])
 ], GardeningManagerModule);
 export { GardeningManagerModule };
 //# sourceMappingURL=gardeningManager.module.js.map

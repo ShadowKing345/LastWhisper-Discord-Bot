@@ -56,7 +56,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             }
         }
         this.logger.debug(`User is ${result && !permission.blackList ? "Authenticated" : "Unauthenticated"}.`);
-        return result && !permission.blackList;
+        return permission.blackList ? !result : result;
     }
     async addRole(interaction, key, role) {
         if (!PermissionManagerService_1.keyExists(key)) {
@@ -107,7 +107,21 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                 ephemeral: true,
             });
         }
-        console.log(interaction);
+        const config = await this.findOneOrCreate(interaction.guildId);
+        const permission = config.permissions[key] ??= new Permission();
+        const mode = interaction.options.getInteger("mode", false);
+        if (mode != null) {
+            permission.mode = mode;
+        }
+        const black_list = interaction.options.getBoolean("black_list");
+        if (black_list != null) {
+            permission.blackList = black_list;
+        }
+        await this.permissionManagerRepository.save(config);
+        return interaction.reply({
+            content: "Config set.",
+            ephemeral: true,
+        });
     }
     async reset(interaction, key) {
         if (!PermissionManagerService_1.keyExists(key)) {

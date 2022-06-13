@@ -1,8 +1,11 @@
+import { PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 export declare class GardeningManagerModule extends ModuleBase {
     private gardeningManagerService;
-    constructor(gardeningManagerService: GardeningManagerService);
+    private permissionManager;
+    private static readonly command;
+    constructor(gardeningManagerService: GardeningManagerService, permissionManager: PermissionManagerService);
     private register;
     private cancel;
     private list;

@@ -122,25 +122,25 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
     }
 };
 __decorate([
-    authorize(`${BuffManagerModule_1.commands.$index}.${BuffManagerModule_1.commands.Buffs.$index}.${BuffManagerModule_1.commands.Buffs.Today}`),
+    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Buffs.$index, BuffManagerModule_1.commands.Buffs.Today),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postTodayBuff", null);
 __decorate([
-    authorize(`${BuffManagerModule_1.commands.$index}.${BuffManagerModule_1.commands.Buffs.$index}.${BuffManagerModule_1.commands.Buffs.Tomorrow}`),
+    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Buffs.$index, BuffManagerModule_1.commands.Buffs.Tomorrow),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postTomorrowsBuff", null);
 __decorate([
-    authorize(`${BuffManagerModule_1.commands.$index}.${BuffManagerModule_1.commands.Weeks.$index}.${BuffManagerModule_1.commands.Weeks.ThisWeek}`),
+    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Weeks.$index, BuffManagerModule_1.commands.Weeks.ThisWeek),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postThisWeeksBuffs", null);
 __decorate([
-    authorize(`${BuffManagerModule_1.commands.$index}.${BuffManagerModule_1.commands.Weeks.$index}.${BuffManagerModule_1.commands.Weeks.NextWeek}`),
+    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Weeks.$index, BuffManagerModule_1.commands.Weeks.NextWeek),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
