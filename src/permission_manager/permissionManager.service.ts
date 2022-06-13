@@ -2,17 +2,21 @@ import chalk from "chalk";
 import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js";
 import { singleton } from "tsyringe";
 
-import { buildLogger } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
+import { pino } from "pino";
+import { LoggerFactory } from "../shared/logger.js";
 
 @singleton()
 export class PermissionManagerService {
-    private readonly logger = buildLogger(PermissionManagerService.name);
+    private readonly logger: pino.Logger;
 
-    constructor(private permissionManagerRepository: PermissionManagerRepository) {
+    constructor(
+        private permissionManagerRepository: PermissionManagerRepository,
+        private loggerFactory: LoggerFactory,
+    ) {
     }
 
     public async isAuthorized(interaction: Interaction, key: string): Promise<boolean> {

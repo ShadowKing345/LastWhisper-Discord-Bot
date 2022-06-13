@@ -4,21 +4,24 @@ import { container, singleton } from "tsyringe";
 import { AppConfigs } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { buildLogger } from "./shared/logger.js";
+import { LoggerFactory } from "./shared/logger.js";
 import { Client } from "./shared/models/client.js";
 import { ModuleBase } from "./shared/models/moduleBase.js";
+import { pino } from "pino";
 
 @singleton()
 export class App {
     private readonly client: Client;
-    private logger = buildLogger(App.name);
+    private readonly logger: pino.Logger;
 
     constructor(
         private appConfigs: AppConfigs,
         private databaseService: DatabaseConfiguration,
         private moduleConfiguration: ModuleConfiguration,
+        private loggerFactory: LoggerFactory
     ) {
         this.client = new Client();
+        this.logger = loggerFactory.buildLogger(App.name);
     }
 
     public async init() {
