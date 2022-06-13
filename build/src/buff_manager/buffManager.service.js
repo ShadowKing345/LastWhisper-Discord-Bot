@@ -11,7 +11,7 @@ var BuffManagerService_1;
 import chalk from "chalk";
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { buildLogger } from "../shared/logger.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
@@ -165,7 +165,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
     }
 };
 BuffManagerService = BuffManagerService_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [BuffManagerRepository])
 ], BuffManagerService);
 export { BuffManagerService };

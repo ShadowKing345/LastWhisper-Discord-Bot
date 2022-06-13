@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var RoleManagerModule_1;
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { buildLogger } from "../shared/logger.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
@@ -121,7 +121,7 @@ __decorate([
     __metadata("design:type", Object)
 ], RoleManagerModule, "commands", void 0);
 RoleManagerModule = RoleManagerModule_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [RoleManagerService,
         PermissionManagerService])
 ], RoleManagerModule);

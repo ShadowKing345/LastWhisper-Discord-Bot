@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { ManagerUtilsConfig } from "./managerUtils.model.js";
 import { ManagerUtilsRepository } from "./managerUtils.repository.js";
 let ManagerUtilsService = class ManagerUtilsService {
@@ -81,7 +81,7 @@ let ManagerUtilsService = class ManagerUtilsService {
     }
 };
 ManagerUtilsService = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [ManagerUtilsRepository])
 ], ManagerUtilsService);
 export { ManagerUtilsService };

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var PermissionManagerModule_1;
 import { CommandInteraction, Role } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { addCommandKeys } from "./addCommandKeys.decorator.js";
 import { authorize } from "./authorize.decorator.js";
@@ -154,7 +154,7 @@ __decorate([
     __metadata("design:type", Object)
 ], PermissionManagerModule, "commands", void 0);
 PermissionManagerModule = PermissionManagerModule_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [PermissionManagerService])
 ], PermissionManagerModule);
 export { PermissionManagerModule };

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var RoleManagerService_1;
 import chalk from "chalk";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { buildLogger } from "../shared/logger.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
@@ -167,7 +167,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
     }
 };
 RoleManagerService = RoleManagerService_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [RoleManagerRepository])
 ], RoleManagerService);
 export { RoleManagerService };

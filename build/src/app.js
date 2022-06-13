@@ -1,22 +1,37 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var App_1;
 import chalk from "chalk";
-import { CONFIGS, initConfigs } from "./config/appConfigs.js";
-import { connectClient } from "./config/databaseConfiguration.js";
-import { configureModules } from "./config/moduleConfiguration.js";
+import { container, singleton } from "tsyringe";
+import { AppConfigs } from "./config/app_configs/index.js";
+import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
+import { ModuleConfiguration } from "./config/moduleConfiguration.js";
 import { buildLogger } from "./shared/logger.js";
 import { Client } from "./shared/models/client.js";
-export class App {
+let App = App_1 = class App {
+    appConfigs;
+    databaseService;
+    moduleConfiguration;
     client;
-    logger = buildLogger(App.name);
-    constructor() {
+    logger = buildLogger(App_1.name);
+    constructor(appConfigs, databaseService, moduleConfiguration) {
+        this.appConfigs = appConfigs;
+        this.databaseService = databaseService;
+        this.moduleConfiguration = moduleConfiguration;
         this.client = new Client();
     }
     async init() {
-        this.logger.info("Loading Configurations", { context: "ClientSetup" });
-        initConfigs();
         this.logger.info("Creating Db Client", { context: "ClientSetup" });
-        await connectClient();
+        await this.databaseService.connectClient();
         this.logger.info("Loading modules.", { context: "ClientSetup" });
-        configureModules(this.client);
+        this.moduleConfiguration.configureModules(this.client);
         this.client.once("ready", () => {
             this.logger.info(chalk.magentaBright("Bot is up and ready to roll!"), { context: "ClientRuntime" });
         });
@@ -26,12 +41,23 @@ export class App {
         this.logger.info(`Done loading. ${chalk.green("Ready to run.")}`, { context: "ClientSetup" });
     }
     async run() {
-        return this.client.login(CONFIGS.token);
+        return this.client.login(this.appConfigs.config.token);
     }
-}
+    get modules() {
+        return this.moduleConfiguration?.modules ?? [];
+    }
+};
+App = App_1 = __decorate([
+    singleton(),
+    __metadata("design:paramtypes", [AppConfigs,
+        DatabaseConfiguration,
+        ModuleConfiguration])
+], App);
+export { App };
 export async function botMain() {
+    process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
-    const app = new App();
+    const app = container.resolve(App);
     await app.init();
     await app.run();
 }

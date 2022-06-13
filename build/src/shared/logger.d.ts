@@ -6,7 +6,6 @@ export declare enum LOGGING_LEVELS {
 }
 export declare function buildLogger(name: string): import("pino").Logger<{
     name: string;
-    level: string;
     transport: {
         target: string;
         options: {

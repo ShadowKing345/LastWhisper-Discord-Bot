@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var GardeningManagerService_1;
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { buildLogger } from "../shared/logger.js";
 import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
@@ -245,7 +245,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
     }
 };
 GardeningManagerService = GardeningManagerService_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [GardeningManagerRepository])
 ], GardeningManagerService);
 export { GardeningManagerService };

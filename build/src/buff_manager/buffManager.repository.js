@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { injectable } from "tsyringe";
-import { Database } from "../config/databaseConfiguration.js";
+import { singleton } from "tsyringe";
+import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
 import { BasicRepository } from "../shared/basicRepository.js";
 import { deepMerge } from "../shared/utils.js";
 import { BuffManagerConfig } from "./models/index.js";
@@ -18,15 +18,17 @@ let BuffManagerRepository = class BuffManagerRepository extends BasicRepository 
     constructor(db) {
         super();
         this.db = db;
-        this.collection = db.collection(this.collectionName);
     }
     sanitiseOutput(config) {
         return deepMerge(new BuffManagerConfig(), config);
     }
+    get collection() {
+        return this.db?.db?.collection(this.collectionName);
+    }
 };
 BuffManagerRepository = __decorate([
-    injectable(),
-    __metadata("design:paramtypes", [Database])
+    singleton(),
+    __metadata("design:paramtypes", [DatabaseConfiguration])
 ], BuffManagerRepository);
 export { BuffManagerRepository };
 //# sourceMappingURL=buffManager.repository.js.map

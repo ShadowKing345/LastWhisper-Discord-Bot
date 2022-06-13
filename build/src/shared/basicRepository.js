@@ -1,5 +1,4 @@
 export class BasicRepository {
-    collection;
     async save(config) {
         const result = await this.collection.findOneAndReplace({ _id: config._id }, config, { upsert: true });
         return result.ok ? this.sanitiseOutput(result.value) : null;

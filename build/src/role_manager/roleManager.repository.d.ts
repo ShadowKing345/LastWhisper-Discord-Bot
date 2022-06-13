@@ -1,10 +1,12 @@
-import { Database } from "../config/databaseConfiguration.js";
+import { Collection } from "mongodb";
+import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
 import { BasicRepository } from "../shared/basicRepository.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 export declare class RoleManagerRepository extends BasicRepository<RoleManagerConfig> {
-    protected db: Database;
+    private db;
     private readonly collectionName;
-    constructor(db: Database);
+    constructor(db: DatabaseConfiguration);
     protected sanitiseOutput(config: RoleManagerConfig): RoleManagerConfig;
+    protected get collection(): Collection<RoleManagerConfig>;
 }
 //# sourceMappingURL=roleManager.repository.d.ts.map

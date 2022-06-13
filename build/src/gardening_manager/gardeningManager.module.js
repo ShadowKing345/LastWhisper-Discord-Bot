@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var GardeningManagerModule_1;
 import { CommandInteraction } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
@@ -150,7 +150,7 @@ __decorate([
     __metadata("design:type", Object)
 ], GardeningManagerModule, "command", void 0);
 GardeningManagerModule = GardeningManagerModule_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [GardeningManagerService,
         PermissionManagerService])
 ], GardeningManagerModule);

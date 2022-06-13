@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var EventManagerModule_1;
 import { CommandInteraction } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { EventManagerService } from "./eventManager.service.js";
@@ -75,7 +75,7 @@ __decorate([
     __metadata("design:type", String)
 ], EventManagerModule, "commands", void 0);
 EventManagerModule = EventManagerModule_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [EventManagerService,
         PermissionManagerService])
 ], EventManagerModule);

@@ -1,17 +1,17 @@
 import { REST } from "@discordjs/rest";
 import chalk from "chalk";
 import { Routes } from "discord-api-types/v9";
+import { container } from "tsyringe";
+import { App } from "../app.js";
 import { buildLogger } from "../shared/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
-import { initConfigs } from "./appConfigs.js";
-import { connectClient } from "./databaseConfiguration.js";
-import { loadModules } from "./moduleConfiguration.js";
+import { AppConfigs } from "./app_configs/index.js";
 const loggerMeta = { context: "CommandRegistration" };
 export async function commandRegistration(args) {
-    await connectClient();
+    const app = container.resolve(App);
     const logger = buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
-    const appConfigs = initConfigs();
+    const appConfigs = container.resolve(AppConfigs).config;
     const commandConfigs = appConfigs.commandRegistration;
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
     if (args.token)
@@ -42,7 +42,7 @@ export async function commandRegistration(args) {
         else {
             logger.info(`${chalk.cyan("Generating")} ${isForGlobal()}`, loggerMeta);
             const commands = [];
-            loadModules().forEach(module => {
+            app.modules.forEach(module => {
                 for (const command of module.commands) {
                     commands.push(BuildCommand(command).toJSON());
                 }

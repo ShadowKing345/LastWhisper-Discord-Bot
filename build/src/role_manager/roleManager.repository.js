@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { injectable } from "tsyringe";
-import { Database } from "../config/databaseConfiguration.js";
+import { singleton } from "tsyringe";
+import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
 import { BasicRepository } from "../shared/basicRepository.js";
 import { deepMerge } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
@@ -18,15 +18,17 @@ let RoleManagerRepository = class RoleManagerRepository extends BasicRepository 
     constructor(db) {
         super();
         this.db = db;
-        this.collection = db.collection(this.collectionName);
     }
     sanitiseOutput(config) {
         return deepMerge(new RoleManagerConfig(), config);
     }
+    get collection() {
+        return this.db?.db?.collection(this.collectionName);
+    }
 };
 RoleManagerRepository = __decorate([
-    injectable(),
-    __metadata("design:paramtypes", [Database])
+    singleton(),
+    __metadata("design:paramtypes", [DatabaseConfiguration])
 ], RoleManagerRepository);
 export { RoleManagerRepository };
 //# sourceMappingURL=roleManager.repository.js.map

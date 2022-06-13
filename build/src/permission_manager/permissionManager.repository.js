@@ -7,8 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { injectable } from "tsyringe";
-import { Database } from "../config/databaseConfiguration.js";
+import { singleton } from "tsyringe";
+import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
 import { BasicRepository } from "../shared/basicRepository.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionManagerConfig } from "./models/index.js";
@@ -18,15 +18,17 @@ let PermissionManagerRepository = class PermissionManagerRepository extends Basi
     constructor(db) {
         super();
         this.db = db;
-        this.collection = db.collection(this.collectionName);
     }
     sanitiseOutput(config) {
         return deepMerge(new PermissionManagerConfig(), config);
     }
+    get collection() {
+        return this.db?.db?.collection(this.collectionName);
+    }
 };
 PermissionManagerRepository = __decorate([
-    injectable(),
-    __metadata("design:paramtypes", [Database])
+    singleton(),
+    __metadata("design:paramtypes", [DatabaseConfiguration])
 ], PermissionManagerRepository);
 export { PermissionManagerRepository };
 //# sourceMappingURL=permissionManager.repository.js.map

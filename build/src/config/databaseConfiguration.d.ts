@@ -1,9 +1,17 @@
 import { Db, MongoClient } from "mongodb";
-import { DatabaseConfiguration } from "./appConfigs.js";
+import { ConfigurationClass } from "../shared/configuration.class.js";
+import { AppConfigs, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 export declare class Database extends Db {
 }
-export declare let CLIENT: MongoClient;
-export declare let DB: Database;
-export declare function parseUrl(dbConfig: DatabaseConfiguration): string;
-export declare function connectClient(): Promise<MongoClient>;
+export declare class DatabaseConfiguration extends ConfigurationClass {
+    private appConfigs;
+    private readonly logger;
+    private _client;
+    private _db;
+    constructor(appConfigs: AppConfigs);
+    parseUrl(dbConfig: DbConfig): string;
+    connectClient(): Promise<MongoClient>;
+    get db(): Database;
+    get client(): MongoClient;
+}
 //# sourceMappingURL=databaseConfiguration.d.ts.map

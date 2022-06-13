@@ -5,11 +5,11 @@ import { existsSync } from "fs";
 import inquirer from "inquirer";
 import * as os from "os";
 import { botMain } from "./app.js";
-import { configPath } from "./config/appConfigs.js";
+import { AppConfigs } from "./config/app_configs/index.js";
 import { commandRegistration } from "./config/commandRegistration.js";
 import { generateConfigs } from "./config/generator/generateConfiguration.js";
 console.log(`Welcome ${os.userInfo().username}.`);
-const configCheck = () => !existsSync(configPath) ? inquirer.prompt({
+const configCheck = () => !existsSync(AppConfigs.configPath) ? inquirer.prompt({
     name: "result",
     message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
     type: "confirm",

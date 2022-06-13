@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var PermissionManagerService_1;
 import chalk from "chalk";
 import { MessageEmbed } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { buildLogger } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionKeys } from "./addCommandKeys.decorator.js";
@@ -215,7 +215,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
     }
 };
 PermissionManagerService = PermissionManagerService_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [PermissionManagerRepository])
 ], PermissionManagerService);
 export { PermissionManagerService };

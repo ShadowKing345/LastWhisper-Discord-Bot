@@ -7,7 +7,7 @@ export interface IRepository<T> {
     bulkSave(config: T[]): Promise<void>;
 }
 export declare abstract class BasicRepository<T extends BasicModel> implements IRepository<T> {
-    protected collection: Collection<T>;
+    protected abstract get collection(): Collection<T>;
     save(config: T): Promise<T>;
     findOne(filter: Filter<T>): Promise<T>;
     find(filter: Filter<T>): Promise<T[]>;

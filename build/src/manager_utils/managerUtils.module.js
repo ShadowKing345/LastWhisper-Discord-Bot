@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { ManagerUtilsService } from "./managerUtils.service.js";
 let ManagerUtilsModule = class ManagerUtilsModule extends ModuleBase {
@@ -29,7 +29,7 @@ let ManagerUtilsModule = class ManagerUtilsModule extends ModuleBase {
     }
 };
 ManagerUtilsModule = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [ManagerUtilsService])
 ], ManagerUtilsModule);
 export { ManagerUtilsModule };

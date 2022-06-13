@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var EventManagerService_1;
 import { MessageEmbed } from "discord.js";
 import { DateTime, Duration } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 import { Task } from "../shared/models/task.js";
 import { fetchMessages } from "../shared/utils.js";
 import { EventManagerRepository } from "./eventManager.repository.js";
@@ -240,7 +240,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
     }
 };
 EventManagerService = EventManagerService_1 = __decorate([
-    injectable(),
+    singleton(),
     __metadata("design:paramtypes", [EventManagerRepository])
 ], EventManagerService);
 export { EventManagerService };

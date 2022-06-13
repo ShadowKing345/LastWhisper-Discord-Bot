@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import inquirer from "inquirer";
 import { LOGGING_LEVELS } from "../../shared/logger.js";
 import { deepMerge } from "../../shared/utils.js";
-import { AppConfigs, configPath, devConfigPath } from "../appConfigs.js";
+import { AppConfigs } from "../app_configs/index.js";
 import { inquireBoolean, inquireDictionary, inquireInput, inquireOptions } from "./utils.js";
 const levels = Object.keys(LOGGING_LEVELS).filter(level => isNaN(Number(level)));
 var Options;
@@ -320,8 +320,8 @@ async function full(config) {
 export async function generateConfigs(args) {
     console.log("Welcome again to the configuration tool provided by the bot.");
     console.log(`Current configuration method is set do ${args.dev ? "Development" : "Production"}`);
-    const path = args.dev ? devConfigPath : configPath;
-    const config = new AppConfigs();
+    const path = args.dev ? AppConfigs.devConfigPath : AppConfigs.configPath;
+    const config = new AppConfigs().config;
     const newConfig = !args.new && existsSync(path);
     console.log(newConfig ? "New configuration will be created." : "An existing configuration has been found and will be used overwritten.");
     if (newConfig)
