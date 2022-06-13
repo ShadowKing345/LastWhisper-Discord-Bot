@@ -54,7 +54,7 @@ export class PermissionManagerService {
         }
 
         this.logger.debug(`User is ${result && !permission.blackList ? "Authenticated" : "Unauthenticated"}.`);
-        return result && !permission.blackList;
+        return permission.blackList ? !result : result;
     }
 
     public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
