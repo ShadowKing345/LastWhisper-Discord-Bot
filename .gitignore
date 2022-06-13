@@ -3,7 +3,7 @@
 node_modules
 
 # Standard files.
-appConfigs*
+appConfigs*.json
 
 # Development.
 tsconfig.tsbuildinfo
