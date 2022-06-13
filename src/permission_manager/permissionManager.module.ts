@@ -108,27 +108,27 @@ export class PermissionManagerModule extends ModuleBase {
         }
     }
 
-    @authorize(`${PermissionManagerModule.commands.$index}.${PermissionManagerModule.commands.List}`)
+    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.List)
     private listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
         return this.permissionManager.listPermissions(interaction, key);
     }
 
-    @authorize(`${PermissionManagerModule.commands.$index}.${PermissionManagerModule.commands.AddRole}`)
+    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.AddRole)
     private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
         return this.permissionManager.addRole(interaction, key, role);
     }
 
-    @authorize(`${PermissionManagerModule.commands.$index}.${PermissionManagerModule.commands.RemoveRole}`)
+    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.RemoveRole)
     private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
         return this.permissionManager.removeRole(interaction, key, role);
     }
 
-    @authorize(`${PermissionManagerModule.commands.$index}.${PermissionManagerModule.commands.Config}`)
+    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Config)
     private config(interaction: CommandInteraction, key: string): Promise<void> {
         return this.permissionManager.config(interaction, key);
     }
 
-    @authorize(`${PermissionManagerModule.commands.$index}.${PermissionManagerModule.commands.Reset}`)
+    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Reset)
     private reset(interaction: CommandInteraction, key: string): Promise<void> {
         return this.permissionManager.reset(interaction, key);
     }

@@ -1,6 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
 
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
@@ -8,17 +9,25 @@ import { Reason } from "./models/index.js";
 
 @injectable()
 export class GardeningManagerModule extends ModuleBase {
+    @addCommandKeys()
+    private static readonly command = {
+        $index: "gardening",
+        Reserve: "reserve",
+        Cancel: "cancel",
+        List: "list",
+    }
+
     constructor(private gardeningManagerService: GardeningManagerService) {
         super();
 
         this.moduleName = "GardeningModule";
         this.commands = [ {
             command: builder => builder
-                .setName("gardening")
+                .setName(GardeningManagerModule.command.$index)
                 .setDescription("gardening module.")
                 .addSubcommand(
                     subComBuilder => subComBuilder
-                        .setName("reserve")
+                        .setName(GardeningManagerModule.command.Reserve)
                         .setDescription("Reserve a slot in a plot to be used by you.")
                         .addIntegerOption(
                             optionBuilder => optionBuilder
@@ -64,7 +73,7 @@ export class GardeningManagerModule extends ModuleBase {
                 )
                 .addSubcommand(subComBuilder =>
                     subComBuilder
-                        .setName("cancel")
+                        .setName(GardeningManagerModule.command.Cancel)
                         .setDescription("Cancel any reservations you have made to a slot in a plot.")
                         .addIntegerOption(optionBuilder =>
                             optionBuilder
@@ -87,7 +96,7 @@ export class GardeningManagerModule extends ModuleBase {
                 )
                 .addSubcommand(subComBuilder =>
                     subComBuilder
-                        .setName("list")
+                        .setName(GardeningManagerModule.command.List)
                         .setDescription("Shows all plots and their states.")
                         .addIntegerOption(optionBuilder =>
                             optionBuilder
@@ -113,14 +122,17 @@ export class GardeningManagerModule extends ModuleBase {
         ];
     }
 
+    @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.Reserve)
     private register(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
         return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
     }
 
+    @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.Cancel)
     private cancel(interaction: CommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
         return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
     }
 
+    @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.List)
     private list(interaction: CommandInteraction, plotNum: number, slotNum: number) {
         return this.gardeningManagerService.list(interaction, plotNum, slotNum);
     }

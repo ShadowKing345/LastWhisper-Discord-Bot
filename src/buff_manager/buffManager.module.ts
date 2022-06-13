@@ -111,22 +111,22 @@ export class BuffManagerModule extends ModuleBase {
         }
     }
 
-    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Buffs.$index}.${BuffManagerModule.commands.Buffs.Today}`)
+    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Buffs.$index, BuffManagerModule.commands.Buffs.Today)
     private postTodayBuff(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postBuff(interaction);
     }
 
-    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Buffs.$index}.${BuffManagerModule.commands.Buffs.Tomorrow}`)
+    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Buffs.$index, BuffManagerModule.commands.Buffs.Tomorrow)
     private postTomorrowsBuff(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postBuff(interaction, false);
     }
 
-    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Weeks.$index}.${BuffManagerModule.commands.Weeks.ThisWeek}`)
+    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Weeks.$index, BuffManagerModule.commands.Weeks.ThisWeek)
     private postThisWeeksBuffs(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postWeeksBuffs(interaction);
     }
 
-    @authorize(`${BuffManagerModule.commands.$index}.${BuffManagerModule.commands.Weeks.$index}.${BuffManagerModule.commands.Weeks.NextWeek}`)
+    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Weeks.$index, BuffManagerModule.commands.Weeks.NextWeek)
     private postNextWeeksBuffs(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postWeeksBuffs(interaction, false);
     }

@@ -2,6 +2,7 @@ import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
 
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { buildLogger } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
@@ -9,6 +10,13 @@ import { RoleManagerService } from "./roleManager.service.js";
 
 @injectable()
 export class RoleManagerModule extends ModuleBase {
+    @addCommandKeys()
+    private static readonly commands = {
+        $index: "role_manager",
+        RevokeRole: "revoke_role",
+        RegisterMessage: "register_message",
+        UnregisterMessage: "unregister_message",
+    }
     private readonly logger = buildLogger(RoleManagerModule.name);
 
     constructor(private roleManagerService: RoleManagerService) {
@@ -21,14 +29,14 @@ export class RoleManagerModule extends ModuleBase {
         this.commands = [
             {
                 command: builder => builder
-                    .setName("role_manager")
+                    .setName(RoleManagerModule.commands.$index)
                     .setDescription("Manages roles within a guild.")
                     .addSubcommand(sBuilder => sBuilder
-                        .setName("revoke_role")
+                        .setName(RoleManagerModule.commands.RevokeRole)
                         .setDescription("Revokes the role for all uses.")
                     )
                     .addSubcommand(sBuilder => sBuilder
-                        .setName("register_message")
+                        .setName(RoleManagerModule.commands.RegisterMessage)
                         .setDescription("Registers a message to be reacted to.")
                         .addStringOption(iBuilder => iBuilder
                             .setName("message_id")
@@ -37,7 +45,7 @@ export class RoleManagerModule extends ModuleBase {
                         )
                     )
                     .addSubcommand(sBuilder => sBuilder
-                        .setName("unregister_message")
+                        .setName(RoleManagerModule.commands.UnregisterMessage)
                         .setDescription("Unregisters a message to be reacted to.")
                         .addStringOption(iBuilder => iBuilder
                             .setName("message_id")
@@ -84,16 +92,18 @@ export class RoleManagerModule extends ModuleBase {
         }
     }
 
+    @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RevokeRole)
     private revokeRole(interaction: CommandInteraction): Promise<void> {
         return this.roleManagerService.revokeRole(interaction)
     }
 
+    @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RegisterMessage)
     private registerMessage(interaction: CommandInteraction): Promise<void> {
         return this.roleManagerService.registerMessage(interaction);
     }
 
+    @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.UnregisterMessage)
     private unregisterMessage(interaction: CommandInteraction): Promise<void> {
         return this.roleManagerService.unregisterMessage(interaction);
-
     }
 }
