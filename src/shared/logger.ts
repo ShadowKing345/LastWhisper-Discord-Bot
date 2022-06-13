@@ -1,7 +1,5 @@
 import { pino } from "pino";
 
-import { initConfigs } from "../config/appConfigs.js";
-
 export enum LOGGING_LEVELS {
     debug = "debug",
     info = "info",
@@ -12,7 +10,8 @@ export enum LOGGING_LEVELS {
 export function buildLogger(name: string) {
     return pino({
         name: name,
-        level: initConfigs()?.logging_level ?? LOGGING_LEVELS.info,
+        // Todo: reimplement the logging level.
+        // level: container.resolve(AppConfigs).config?.logging_level ?? LOGGING_LEVELS.info,
         transport: {
             target: "pino-pretty",
             options: {

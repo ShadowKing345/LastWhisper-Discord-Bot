@@ -1,20 +1,24 @@
-import { injectable } from "tsyringe";
+import { Collection } from "mongodb";
+import { singleton } from "tsyringe";
 
-import { Database } from "../config/databaseConfiguration.js";
+import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
 import { BasicRepository } from "../shared/basicRepository.js";
 import { deepMerge } from "../shared/utils.js";
 import { GardeningConfig } from "./models/index.js";
 
-@injectable()
+@singleton()
 export class GardeningManagerRepository extends BasicRepository<GardeningConfig> {
     private readonly collectionName: string = "gardening_manager";
 
-    constructor(protected db: Database) {
+    constructor(private db: DatabaseConfiguration) {
         super();
-        this.collection = db.collection(this.collectionName);
     }
 
     protected sanitiseOutput(config: GardeningConfig): GardeningConfig {
         return deepMerge(new GardeningConfig(), config);
+    }
+
+    protected get collection(): Collection<GardeningConfig> {
+        return this.db?.db?.collection(this.collectionName);
     }
 }

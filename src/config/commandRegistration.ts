@@ -1,12 +1,12 @@
 import { REST } from "@discordjs/rest";
 import chalk from "chalk";
 import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
+import { container } from "tsyringe";
 
+import { App } from "../app.js";
 import { buildLogger } from "../shared/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
-import { AppConfigs, CommandRegistrationConfiguration, initConfigs } from "./appConfigs.js";
-import { connectClient } from "./databaseConfiguration.js";
-import { loadModules } from "./moduleConfiguration.js";
+import { AppConfig, AppConfigs, CommandRegistrationConfiguration } from "./app_configs/index.js";
 
 const loggerMeta = { context: "CommandRegistration" };
 
@@ -20,11 +20,11 @@ type CommandRegistrationArgs = {
 }
 
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
-    await connectClient();
+    const app = container.resolve(App);
     const logger = buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
 
-    const appConfigs: AppConfigs = initConfigs();
+    const appConfigs: AppConfig = container.resolve(AppConfigs).config;
     const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
 
@@ -56,7 +56,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
         } else {
             logger.info(`${chalk.cyan("Generating")} ${isForGlobal()}`, loggerMeta);
             const commands: toJsonResult[] = [];
-            loadModules().forEach(module => {
+            app.modules.forEach(module => {
                 for (const command of module.commands) {
                     commands.push(BuildCommand(command).toJSON() as unknown as toJsonResult);
                 }

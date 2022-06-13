@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { buildLogger } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
@@ -8,7 +8,7 @@ import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
 
-@injectable()
+@singleton()
 export class RoleManagerService {
     private readonly logger = buildLogger(RoleManagerService.name);
     private collectors: { [key: string]: ReactionCollector } = {};

@@ -1,20 +1,25 @@
-import { injectable } from "tsyringe";
+import { Collection } from "mongodb";
+import { singleton } from "tsyringe";
 
-import { Database } from "../config/databaseConfiguration.js";
+import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
 import { BasicRepository } from "../shared/basicRepository.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionManagerConfig } from "./models/index.js";
 
-@injectable()
+@singleton()
 export class PermissionManagerRepository extends BasicRepository<PermissionManagerConfig> {
     private readonly collectionName: string = "permission_manager";
 
-    constructor(private db: Database) {
+    constructor(private db: DatabaseConfiguration) {
         super();
-        this.collection = db.collection(this.collectionName);
     }
 
     protected sanitiseOutput(config: PermissionManagerConfig): PermissionManagerConfig {
         return deepMerge(new PermissionManagerConfig(), config);
     }
+
+    protected get collection(): Collection<PermissionManagerConfig> {
+        return this.db?.db?.collection(this.collectionName);
+    }
+
 }

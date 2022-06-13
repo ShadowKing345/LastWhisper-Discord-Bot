@@ -1,11 +1,11 @@
 import { Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
 import { DateTime } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { ManagerUtilsConfig } from "./managerUtils.model.js";
 import { ManagerUtilsRepository } from "./managerUtils.repository.js";
 
-@injectable()
+@singleton()
 export class ManagerUtilsService {
 
     constructor(private managerUtilsConfigRepository: ManagerUtilsRepository) {

@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { buildLogger } from "../shared/logger.js";
 import { deepMerge } from "../shared/utils.js";
@@ -8,7 +8,7 @@ import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";
 import { PermissionManagerRepository } from "./permissionManager.repository.js";
 
-@injectable()
+@singleton()
 export class PermissionManagerService {
     private readonly logger = buildLogger(PermissionManagerService.name);
 

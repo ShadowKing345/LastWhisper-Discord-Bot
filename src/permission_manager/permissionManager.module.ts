@@ -1,6 +1,6 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
 import { CommandInteraction, Role } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { addCommandKeys } from "./addCommandKeys.decorator.js";
@@ -8,7 +8,7 @@ import { authorize } from "./authorize.decorator.js";
 import { PermissionMode } from "./models/index.js";
 import { PermissionManagerService } from "./permissionManager.service.js";
 
-@injectable()
+@singleton()
 export class PermissionManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly commands = {

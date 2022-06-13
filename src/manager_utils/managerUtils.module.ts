@@ -1,10 +1,10 @@
 import { GuildBan, GuildMember } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { ManagerUtilsService } from "./managerUtils.service.js";
 
-@injectable()
+@singleton()
 export class ManagerUtilsModule extends ModuleBase {
 
     constructor(private managerUtilsService: ManagerUtilsService) {

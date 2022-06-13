@@ -1,6 +1,6 @@
 import { CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { buildLogger } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
@@ -8,7 +8,7 @@ import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
 import { GardeningConfig, Plot, Reason, Reservation, Slot } from "./models/index.js";
 
-@injectable()
+@singleton()
 export class GardeningManagerService {
     private readonly logger = buildLogger(GardeningManagerService.name);
 

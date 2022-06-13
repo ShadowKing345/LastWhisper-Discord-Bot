@@ -13,7 +13,7 @@ export interface IRepository<T> {
 }
 
 export abstract class BasicRepository<T extends BasicModel> implements IRepository<T> {
-    protected collection: Collection<T>;
+    protected abstract get collection(): Collection<T>;
 
     public async save(config: T): Promise<T> {
         const result = await this.collection.findOneAndReplace({ _id: config._id }, config, { upsert: true });

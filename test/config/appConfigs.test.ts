@@ -1,6 +1,6 @@
 import { test } from "tap";
 
-import { AppConfigs, parseConfigFile } from "../../src/config/appConfigs.js";
+import { AppConfigs } from "../../src/config/app_configs/index.js";
 
 test("appConfigs.ts", t => {
     t.test("Config file parsing", t => {
@@ -8,7 +8,7 @@ test("appConfigs.ts", t => {
             "./appConfigs.json": JSON.stringify(new AppConfigs()),
         });
 
-        const result = parseConfigFile(`${dir}/appConfigs.json`, `${dir}/appConfigs=dev.json`);
+        const result = AppConfigs.parseConfigFile(`${dir}/appConfigs.json`, `${dir}/appConfigs=dev.json`);
         t.ok(result);
         t.end();
     });

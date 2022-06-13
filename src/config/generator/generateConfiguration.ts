@@ -3,7 +3,7 @@ import inquirer from "inquirer";
 
 import { LOGGING_LEVELS } from "../../shared/logger.js";
 import { deepMerge } from "../../shared/utils.js";
-import { AppConfigs, configPath, devConfigPath } from "../appConfigs.js";
+import { AppConfig, AppConfigs } from "../app_configs/index.js";
 import { inquireBoolean, inquireDictionary, inquireInput, inquireOptions } from "./utils.js";
 
 const levels = Object.keys(LOGGING_LEVELS).filter(level => isNaN(Number(level)));
@@ -66,10 +66,10 @@ const defaultOptions = [
     },
 ];
 
-async function minimal(config: AppConfigs): Promise<boolean> {
+async function minimal(config: AppConfig): Promise<boolean> {
     console.log("Welcome to minimal configuration.\nYou will only be able to configure a select number of fields.");
     for (; ;) {
-        const {action} = await inquirer.prompt<{ action: Options }>([
+        const { action } = await inquirer.prompt<{ action: Options }>([
             {
                 name: "action",
                 message: "Configuration",
@@ -116,9 +116,9 @@ async function minimal(config: AppConfigs): Promise<boolean> {
     }
 }
 
-async function command({commandRegistration}: AppConfigs): Promise<void> {
+async function command({ commandRegistration }: AppConfig): Promise<void> {
     for (; ;) {
-        const {action} = await inquirer.prompt<{ action: Options }>([
+        const { action } = await inquirer.prompt<{ action: Options }>([
             {
                 name: "action",
                 message: "Command Registration Configuration. Select what you wish to configure.",
@@ -180,9 +180,9 @@ async function command({commandRegistration}: AppConfigs): Promise<void> {
     }
 }
 
-async function database({database}: AppConfigs): Promise<void> {
+async function database({ database }: AppConfig): Promise<void> {
     for (; ;) {
-        const {action} = await inquirer.prompt<{ action: Options }>([
+        const { action } = await inquirer.prompt<{ action: Options }>([
             {
                 name: "action",
                 message: "Database Configuration. Select what you wish to configure.",
@@ -276,10 +276,10 @@ async function database({database}: AppConfigs): Promise<void> {
     }
 }
 
-async function full(config: AppConfigs): Promise<boolean> {
+async function full(config: AppConfig): Promise<boolean> {
     console.log("Welcome to full configuration.\nYou will have access to all configurations available.")
     for (; ;) {
-        const {action} = await inquirer.prompt<{ action: Options }>([
+        const { action } = await inquirer.prompt<{ action: Options }>([
             {
                 name: "action",
                 message: "Full Configuration. Select what you wish to configure.",
@@ -335,10 +335,10 @@ async function full(config: AppConfigs): Promise<boolean> {
 export async function generateConfigs(args: GenerateConfigsArgs): Promise<void> {
     console.log("Welcome again to the configuration tool provided by the bot.");
     console.log(`Current configuration method is set do ${args.dev ? "Development" : "Production"}`);
-    const path = args.dev ? devConfigPath : configPath;
+    const path = args.dev ? AppConfigs.devConfigPath : AppConfigs.configPath;
 
 
-    const config = new AppConfigs();
+    const config = new AppConfigs().config;
     const newConfig = !args.new && existsSync(path);
     console.log(newConfig ? "New configuration will be created." : "An existing configuration has been found and will be used overwritten.");
     if (newConfig) deepMerge(config, JSON.parse(readFileSync(path, "utf-8")));

@@ -1,59 +1,77 @@
 import { Db, MongoClient } from "mongodb";
-import { container } from "tsyringe";
+import { container, singleton } from "tsyringe";
 
+import { ConfigurationClass } from "../shared/configuration.class.js";
 import { buildLogger } from "../shared/logger.js";
-import { CONFIGS, DatabaseConfiguration } from "./appConfigs.js";
+import { AppConfigs, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 
 export class Database extends Db {
 }
 
-const logger = buildLogger("Database");
+@singleton()
+export class DatabaseConfiguration extends ConfigurationClass {
+    private readonly logger = buildLogger("Database");
 
-export let CLIENT: MongoClient;
-export let DB: Database;
+    private _client: MongoClient;
+    private _db: Database;
 
-export function parseUrl(dbConfig: DatabaseConfiguration): string {
-    if (dbConfig.url) {
-        return dbConfig.url;
+    constructor(
+        private appConfigs: AppConfigs
+    ) {
+        super();
     }
 
-    let url = `mongodb${dbConfig?.useDns && "+srv"}://`;
-    url += `${encodeURIComponent(dbConfig.username)}:${encodeURIComponent(dbConfig.password)}`;
-    url += `@${dbConfig.host}`;
-    if (dbConfig.port) {
-        url += `:${dbConfig.port}`;
-    }
-    if (dbConfig.database) {
-        url += `/${encodeURIComponent(dbConfig.database)}`;
-    }
-    if (dbConfig.query) {
-        const queryArray = Object.entries(dbConfig.query);
-        if (queryArray.length > 0) {
-            url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
+    parseUrl(dbConfig: DbConfig): string {
+        if (dbConfig.url) {
+            return dbConfig.url;
         }
-    }
-    return url;
-}
 
-export async function connectClient(): Promise<MongoClient> {
-    const url = parseUrl(CONFIGS.database ?? new DatabaseConfiguration());
-
-    if (!CLIENT) {
-        CLIENT = await MongoClient.connect(url);
-        CLIENT.on("error", error => {
-            logger.error(error.message, { context: "DatabaseConfiguration" });
-            CLIENT.close();
-        });
-        container.register<MongoClient>(MongoClient, { useValue: CLIENT });
-
-        process.once("SIGINT", () => CLIENT.close());
-        process.once("SIGTERM", () => CLIENT.close());
-    }
-
-    if (!DB) {
-        DB = CLIENT.db(CONFIGS.database?.database);
-        container.register<Database>(Database, { useValue: DB });
+        let url = `mongodb${dbConfig?.useDns && "+srv"}://`;
+        url += `${encodeURIComponent(dbConfig.username)}:${encodeURIComponent(dbConfig.password)}`;
+        url += `@${dbConfig.host}`;
+        if (dbConfig.port) {
+            url += `:${dbConfig.port}`;
+        }
+        if (dbConfig.database) {
+            url += `/${encodeURIComponent(dbConfig.database)}`;
+        }
+        if (dbConfig.query) {
+            const queryArray = Object.entries(dbConfig.query);
+            if (queryArray.length > 0) {
+                url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
+            }
+        }
+        return url;
     }
 
-    return CLIENT;
+    async connectClient(): Promise<MongoClient> {
+        const url = this.parseUrl(this.appConfigs.config.database ?? new DbConfig());
+
+        if (!this._client) {
+            this._client = await MongoClient.connect(url);
+            this._client.on("error", error => {
+                this.logger.error(error.message, { context: "DatabaseConfiguration" });
+                this._client.close();
+            });
+            container.register<MongoClient>(MongoClient, { useValue: this._client });
+
+            process.once("SIGINT", () => this._client.close());
+            process.once("SIGTERM", () => this._client.close());
+        }
+
+        if (!this._db) {
+            this._db = this._client.db(this.appConfigs.config.database?.database);
+            container.register<Database>(Database, { useValue: this._db });
+        }
+
+        return this._client;
+    }
+
+    public get db(): Database {
+        return this._db
+    }
+
+    public get client(): MongoClient {
+        return this._client;
+    }
 }

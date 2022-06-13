@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { buildLogger } from "../shared/logger.js";
@@ -8,7 +8,7 @@ import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
 
-@injectable()
+@singleton()
 export class RoleManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly commands = {

@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { buildLogger } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
@@ -9,7 +9,7 @@ import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
 import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "./models/index.js";
 
-@injectable()
+@singleton()
 export class BuffManagerService {
     private readonly logger = buildLogger(BuffManagerService.name);
     private readonly daysOfWeek: string[] = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];

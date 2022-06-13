@@ -1,13 +1,13 @@
 import { Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime, Duration } from "luxon";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { Task } from "../shared/models/task.js";
 import { fetchMessages } from "../shared/utils.js";
 import { EventManagerRepository } from "./eventManager.repository.js";
 import { EventManagerConfig, EventObj, Tags } from "./models/index.js";
 
-@injectable()
+@singleton()
 export class EventManagerService {
 
     constructor(private eventManagerRepository: EventManagerRepository) {

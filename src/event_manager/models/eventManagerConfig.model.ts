@@ -7,7 +7,7 @@ export class EventManagerConfig extends BasicModel {
     public guildId: string = null;
     public listenerChannelId: string | null = null;
     public postingChannelId: string | null = null;
-    public delimiterCharacters: [string, string] = ["[", "]"];
+    public delimiterCharacters: [ string, string ] = [ "[", "]" ];
     public tags: Tags = new Tags();
     public dateTimeFormat: string = null;
     public events: EventObj[] = [];

@@ -14,7 +14,7 @@ export async function inquireOptions(message: string, options: any[]): Promise<n
         type: "list",
         message,
         choices: [
-            ...options.map((option, index) => ({name: option, value: index})),
+            ...options.map((option, index) => ({ name: option, value: index })),
             {
                 type: "separator"
             },
@@ -68,7 +68,7 @@ export async function inquireDictionary(result: { [key: string]: any } = {}): Pr
             value: index,
         }))
 
-        const {action} = await inquirer.prompt<{ action: DictionaryQuestionResult }>({
+        const { action } = await inquirer.prompt<{ action: DictionaryQuestionResult }>({
             name: "action",
             message: "Create dictionary.",
             type: "list",
@@ -104,7 +104,7 @@ export async function inquireDictionary(result: { [key: string]: any } = {}): Pr
         let res;
         switch (action) {
             case DictionaryQuestionResult.NEW:
-                [key, value] = [await inquireInput("Key name."), await inquireInput("Value.")];
+                [ key, value ] = [ await inquireInput("Key name."), await inquireInput("Value.") ];
                 result[key] = value;
                 break;
             case DictionaryQuestionResult.DELETE:
@@ -112,7 +112,7 @@ export async function inquireDictionary(result: { [key: string]: any } = {}): Pr
                     name: "index",
                     message: "Which item would you like to delete?",
                     type: "list",
-                    choices: [...entriesMap, {type: "separator",}, {name: "Cancel", value: -1}],
+                    choices: [ ...entriesMap, { type: "separator", }, { name: "Cancel", value: -1 } ],
                 })).index;
 
                 if (res > -1) {

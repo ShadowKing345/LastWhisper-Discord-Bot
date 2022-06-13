@@ -1,11 +1,11 @@
 import { Client, CommandInteraction, Message } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { EventManagerService } from "./eventManager.service.js";
 
-@injectable()
+@singleton()
 export class EventManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly commands: string = "event";

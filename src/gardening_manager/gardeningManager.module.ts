@@ -1,5 +1,5 @@
 import { CommandInteraction } from "discord.js";
-import { injectable } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { Client } from "../shared/models/client.js";
@@ -7,7 +7,7 @@ import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 import { Reason } from "./models/index.js";
 
-@injectable()
+@singleton()
 export class GardeningManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly command = {
