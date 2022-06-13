@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
@@ -17,7 +17,10 @@ export class GardeningManagerModule extends ModuleBase {
         List: "list",
     }
 
-    constructor(private gardeningManagerService: GardeningManagerService) {
+    constructor(
+        private gardeningManagerService: GardeningManagerService,
+        private permissionManager: PermissionManagerService
+    ) {
         super();
 
         this.moduleName = "GardeningModule";

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { injectable } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
 import { buildLogger } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
@@ -19,7 +19,10 @@ export class RoleManagerModule extends ModuleBase {
     }
     private readonly logger = buildLogger(RoleManagerModule.name);
 
-    constructor(private roleManagerService: RoleManagerService) {
+    constructor(
+        private roleManagerService: RoleManagerService,
+        private permissionManager: PermissionManagerService
+    ) {
         super();
 
         this.moduleName = "RoleManager";
