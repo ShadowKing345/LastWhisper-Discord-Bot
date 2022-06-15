@@ -1,4 +1,4 @@
-import { Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
+import { CommandInteraction, Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -85,5 +85,38 @@ export class ManagerUtilsService {
         result.guildId = id;
 
         return await this.managerUtilsConfigRepository.save(result);
+    }
+
+    public async clearChannelMessages(interaction: CommandInteraction): Promise<void> {
+        const config = await this.findOneOrCreate(interaction.guildId);
+
+        if (config.clearChannelBlacklist.includes(interaction.channelId)) {
+            return interaction.reply({
+                content: "Wo hold it. No! Sorry this channel was blacklisted from the clear command to prevent accidental deletion.",
+                ephemeral: true,
+            });
+        }
+
+        await interaction.deferReply({ ephemeral: true });
+
+        const all = interaction.options.getBoolean("all");
+        let amount: number = all ? 1000 : interaction.options.getNumber("amount") ?? 10;
+
+        let amountDeleted = 0;
+        for (amount; amount > 0; amount -= 100) {
+            const messages = await (interaction.channel as TextChannel).messages.fetch({ limit: Math.min(amount, 100) });
+
+            for (const message of messages.values()) {
+                await message.delete();
+            }
+
+            amountDeleted += messages.size;
+
+            if (messages.size !== 100) {
+                break;
+            }
+        }
+
+        await interaction.editReply({ content: `Done. Deleted **${amountDeleted}** messages.` });
     }
 }
