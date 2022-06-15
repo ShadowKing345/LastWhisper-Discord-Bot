@@ -79,10 +79,18 @@ export class ModuleConfiguration extends ConfigurationClass {
                     await command.run(interaction);
                 }
             } catch (err) {
-                await (interaction as CommandInteraction).reply({
-                    content: "There was an internal issue executing the command",
-                    ephemeral: true,
-                });
+                if (interaction instanceof CommandInteraction && !interaction.replied) {
+                    if (interaction.deferred) {
+                        await interaction.editReply({
+                            content: "There was an internal issue executing the command",
+                        });
+                    } else {
+                        await interaction.reply({
+                            content: "There was an internal issue executing the command",
+                            ephemeral: true,
+                        });
+                    }
+                }
                 this.logger.error((err as Error).stack, ModuleConfiguration.loggerMeta.interaction);
             }
         });
