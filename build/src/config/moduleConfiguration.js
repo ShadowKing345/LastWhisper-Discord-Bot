@@ -12,6 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var ModuleConfiguration_1;
 import chalk from "chalk";
+import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { injectWithTransform, singleton } from "tsyringe";
 import { BuffManagerModule } from "../buff_manager/index.js";
@@ -86,10 +87,19 @@ let ModuleConfiguration = ModuleConfiguration_1 = class ModuleConfiguration exte
                 }
             }
             catch (err) {
-                await interaction.reply({
-                    content: "There was an internal issue executing the command",
-                    ephemeral: true,
-                });
+                if (interaction instanceof CommandInteraction && !interaction.replied) {
+                    if (interaction.deferred) {
+                        await interaction.editReply({
+                            content: "There was an internal issue executing the command",
+                        });
+                    }
+                    else {
+                        await interaction.reply({
+                            content: "There was an internal issue executing the command",
+                            ephemeral: true,
+                        });
+                    }
+                }
                 this.logger.error(err.stack, ModuleConfiguration_1.loggerMeta.interaction);
             }
         });

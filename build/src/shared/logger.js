@@ -29,7 +29,7 @@ let LoggerFactory = class LoggerFactory {
             transport: {
                 target: "pino-pretty",
                 options: {
-                    translateTime: "yyyy-MM-dd hh:mm:ss",
+                    translateTime: "yyyy-mm-dd hh:MM:ss",
                     ignore: "pid,hostname",
                 },
             },

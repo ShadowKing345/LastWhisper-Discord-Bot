@@ -35,7 +35,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             title: title,
             description: day.text,
             thumbnail: { url: day.imageUrl },
-            footer: { text: date.toFormat("dddd Do MMMM YYYY") },
+            footer: { text: date.toFormat("DDDD") },
         });
     }
     createWeekEmbed(title, week, days, date) {
