@@ -28,7 +28,7 @@ program.command("deploy", { isDefault: true })
     .description("Runs to bot.")
     .action(() => configCheck().then(botMain));
 
-program.command("register-command")
+program.command("register-commands")
     .description("Runs the command register script.")
     .option("-t, --token <string>", "Token for bot.")
     .option("-c, --client <string>", "Client ID.")
