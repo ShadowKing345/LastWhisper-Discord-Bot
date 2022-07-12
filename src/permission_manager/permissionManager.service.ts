@@ -70,6 +70,13 @@ export class PermissionManagerService {
         const config = await this.findOneOrCreate(interaction.guildId);
         const permissions = config.permissions[key] ??= new Permission();
 
+        if (permissions.roles.includes(role.id)) {
+            return interaction.reply({
+                content: `Role is already there. Will not add again.`,
+                ephemeral: true,
+            });
+        }
+
         permissions.roles.push(role.id);
         await this.permissionManagerRepository.save(config);
 
