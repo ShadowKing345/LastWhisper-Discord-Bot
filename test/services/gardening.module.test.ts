@@ -9,7 +9,9 @@ import { container, injectable } from "tsyringe";
 
 import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
 import { GardeningConfig, GardeningManagerService, Plot, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
+import { Client } from "../../src/shared/models/client.js";
 import { InvalidArgumentError } from "../../src/shared/models/errors.js";
+import { deepMerge } from "../../src/shared/utils.js";
 
 @injectable()
 class MockModule extends GardeningManagerService {
@@ -60,9 +62,11 @@ test("Gardening Module Tests:", async t => {
                             return config;
                         },
                         findOne: async () => config,
-                        find: async () => [ config ],
+                        find: () => ({
+                            toArray: async () => [ config ]
+                        }),
                         replaceOne: async (obj) => {
-                            Object.assign(config, obj);
+                            deepMerge(config, obj);
                             return config;
                         },
                     };
@@ -76,7 +80,7 @@ test("Gardening Module Tests:", async t => {
     });
     const module = container.resolve(MockModule);
 
-    const options = {};
+    let options = {};
 
     const interaction = {
         reply: fake(),
@@ -118,6 +122,7 @@ test("Gardening Module Tests:", async t => {
             messagePostingChannelId: "",
             plots: [],
         };
+        options = {};
         (<SinonSpy>interaction.reply).resetHistory();
         sandbox.reset();
     });
@@ -207,7 +212,6 @@ test("Gardening Module Tests:", async t => {
         });
 
         await t.test("should trow without a:", async t => {
-            t.throws(() => module.printSlotInfo(null, slotNum, 1), InvalidArgumentError, "Slot.");
             t.throws(() => module.printSlotInfo(slot, null, 1), InvalidArgumentError, "Slot Number.");
             t.throws(() => module.printSlotInfo(slot, slotNum, null), InvalidArgumentError, "Indent.");
         });
@@ -401,15 +405,57 @@ test("Gardening Module Tests:", async t => {
             }, "Expected reply");
         });
 
-        await t.todo("should post the information about a plot.");
-        await t.todo("should post the detailed information about a plot.");
+        await t.test("should post the information about a plot.", async t => {
+            plot.name = "Fish";
+            config.plots.push(plot);
 
-        await t.todo("should post the information about a slot.");
-        await t.todo("should post the detailed information about a slot.");
+            await module.list(interaction, 0, null);
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}\`\`\``, "Was called with the right options.")
+        });
+        await t.test("should post the detailed information about a plot.", async t => {
+            config.plots.push(plot);
 
-        await t.todo("should post the next reservations.");
+            options["detailed"] = true;
+            await module.list(interaction, 0, null);
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0, true)}\`\`\``, "Was called with the right options.")
+        });
 
-        await t.todo("should post slot unoccupied.");
+        await t.test("should post the information about a slot.", async t => {
+            plot.name = "Fish";
+            config.plots.push(plot);
+            plot.slots.push(slot);
+
+            await module.list(interaction, 0, 0);
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0, 1)}\`\`\``, "Was called with the right options.")
+        });
+
+        await t.test("should post the next reservations.", async t => {
+            plot.name = "Fish";
+            config.plots.push(plot);
+            plot.slots.push(slot);
+
+            const reservation = new Reservation("shadowking1243", "Test", 10, Reason.GROWING);
+            slot.next.push(reservation);
+
+            await module.list(interaction, 0, 0);
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0, 1)}\`\`\``, "Was called with the right options.")
+        });
+
+        await t.test("should post slot unoccupied.", async t => {
+            config.plots.push(plot);
+            plot.slots.push(null);
+            plot.slots.push(null);
+            plot.slots.push(null);
+
+            options["detailed"] = true;
+            await module.list(interaction, 0, null);
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0, true)}\`\`\``, "Was called with the right options.")
+        });
 
         await t.test("should not post when plot is null.", async t => {
             config.plots.push(plot);
@@ -424,8 +470,35 @@ test("Gardening Module Tests:", async t => {
     });
 
     await t.test("Ticking", async t => {
-        await t.todo("should remove slots when time has expired.");
-        await t.todo("should remove slots and set next when time has expired.");
+        await t.test("should remove slots when time has expired.", async t => {
+            slot.started = DateTime.now().toUnixInteger();
+            slot.duration = 300;
+            const slot2 = new Slot("Test", "Test", -3, Reason.GROWING, DateTime.now().toUnixInteger());
+
+            plot.slots.push(slot);
+            plot.slots.push(slot2);
+            config.plots.push(plot);
+
+            await module.tick({ guilds: { cache: { has: () => true } } } as unknown as Client);
+            t.equal(config.plots[0].slots.length, 2);
+            t.strictSame(config.plots[0].slots[0], slot);
+            t.strictSame(config.plots[0].slots[1], null);
+        });
+        await t.todo("should remove slots and set next when time has expired.", async t => {
+            const reservation = new Reservation("Test", "Test", 400, Reason.GROWING);
+            const newSlot = new Slot(reservation.player, reservation.plant, reservation.duration, reservation.reason, DateTime.now().toUnixInteger());
+
+            slot.started = DateTime.now().toUnixInteger();
+            slot.duration = -3;
+
+            slot.next.push(reservation);
+            plot.slots.push(slot);
+            config.plots.push(plot);
+
+            await module.tick({ guilds: { cache: { has: () => true } } } as unknown as Client);
+            t.equal(config.plots[0].slots[0].next.length, 0);
+            t.strictSame(config.plots[0].slots[0], newSlot);
+        });
 
         await t.todo("should post message when reservation has expired.");
     });
