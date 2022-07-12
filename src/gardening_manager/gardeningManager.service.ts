@@ -51,10 +51,10 @@ export class GardeningManagerService {
 
         let result = `${" ".repeat(2 * Math.max(indent - 1, 0))}Plot ${plotNum}:\n`;
 
-        if (detailed) {
-            plot.slots?.forEach((slot, index) => {
-                result += GardeningManagerService.printSlotInfo(slot, index, indent + 1);
-            });
+        if (detailed && plot.slots) {
+            for (let i = 0; i < plot.slots.length; i++) {
+                result += GardeningManagerService.printSlotInfo(plot.slots[i], i, indent + 1);
+            }
         }
 
         result += `${indentStr}Slot Count: ${plot.slots.length}\n`;
@@ -63,18 +63,22 @@ export class GardeningManagerService {
     }
 
     protected static printSlotInfo(slot: Slot, slotNum: number, indent = 1): string {
-        if (!(slot && slotNum != null && indent != null)) {
+        if (!(slotNum != null && indent != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
-        const indentStr = " ".repeat(2 * indent);
 
+        const indentStr = " ".repeat(2 * indent);
         let result = `${" ".repeat(2 * Math.max(indent - 1, 0))}Slot ${slotNum}:\n`;
-        result += `${indentStr}Player: ${slot.player}\n`;
-        result += `${indentStr}Plant: ${slot.plant}\n`;
-        result += `${indentStr}Reason: ${slot.reason}\n`;
-        result += `${indentStr}Started: ${slot.started}\n`;
-        result += `${indentStr}Duration: ${slot.duration}\n`;
-        result += `${indentStr}Next Queue Size: ${slot.next.length}\n`;
+        if (slot) {
+            result += `${indentStr}Player: ${slot.player}\n`;
+            result += `${indentStr}Plant: ${slot.plant}\n`;
+            result += `${indentStr}Reason: ${slot.reason}\n`;
+            result += `${indentStr}Started: ${slot.started}\n`;
+            result += `${indentStr}Duration: ${slot.duration}\n`;
+            result += `${indentStr}Next Queue Size: ${slot.next.length}\n`;
+        } else {
+            result += `${indentStr}Empty\n`;
+        }
 
         return result;
     }
@@ -185,22 +189,25 @@ export class GardeningManagerService {
 
         let text = "```\n";
 
-        if (plotNum !== null) {
+        if (plotNum != null) {
             if (plotNum >= config.plots.length) return interaction.reply({
                 content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}`,
                 ephemeral: true,
             });
+
             const plot = config.plots[plotNum];
-            if (slotNum !== null) {
+
+            text += GardeningManagerService.printPlotInfo(plot, plotNum, showDetailed);
+
+            if (slotNum != null && !showDetailed) {
                 if (slotNum >= plot.slots.length) return interaction.reply({
                     content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}`,
                     ephemeral: true,
                 });
-                text += GardeningManagerService.printPlotInfo(plot, plotNum);
+
                 text += GardeningManagerService.printSlotInfo(plot.slots[slotNum], slotNum, 1);
-            } else {
-                text += GardeningManagerService.printPlotInfo(plot, plotNum, true);
             }
+
         } else {
             for (let plotNum = 0; plotNum < config.plots.length; plotNum++) {
                 const plot = config.plots[plotNum];
@@ -225,20 +232,20 @@ export class GardeningManagerService {
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId)) continue;
 
-            config.plots.forEach(plot => {
-                plot.slots.forEach((slot, index, array) => {
-                    if (!slot) return;
-                    if (slot.started + slot.duration > now) return;
+
+            for (const plot of config.plots) {
+                for (let index = 0; index < plot.slots.length; index++) {
+                    const slot = plot.slots[index]
+                    if (!slot) continue;
+                    if (slot.started + slot.duration > now) continue;
 
                     const nextReserved = slot.next;
                     const next = nextReserved.pop();
 
-                    array[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null;
-                    if (altered.findIndex((item: GardeningConfig) => item.guildId === config.guildId) === -1) {
-                        altered.push(config);
-                    }
-                });
-            });
+                    plot.slots[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null;
+                    altered.push(config);
+                }
+            }
         }
 
         for (const config of altered) {
