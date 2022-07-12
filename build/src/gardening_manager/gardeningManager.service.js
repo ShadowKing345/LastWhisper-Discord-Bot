@@ -54,26 +54,31 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         }
         const indentStr = " ".repeat(2 * indent);
         let result = `${" ".repeat(2 * Math.max(indent - 1, 0))}Plot ${plotNum}:\n`;
-        if (detailed) {
-            plot.slots?.forEach((slot, index) => {
-                result += GardeningManagerService_1.printSlotInfo(slot, index, indent + 1);
-            });
+        if (detailed && plot.slots) {
+            for (let i = 0; i < plot.slots.length; i++) {
+                result += GardeningManagerService_1.printSlotInfo(plot.slots[i], i, indent + 1);
+            }
         }
         result += `${indentStr}Slot Count: ${plot.slots.length}\n`;
         return result;
     }
     static printSlotInfo(slot, slotNum, indent = 1) {
-        if (!(slot && slotNum != null && indent != null)) {
+        if (!(slotNum != null && indent != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
         const indentStr = " ".repeat(2 * indent);
         let result = `${" ".repeat(2 * Math.max(indent - 1, 0))}Slot ${slotNum}:\n`;
-        result += `${indentStr}Player: ${slot.player}\n`;
-        result += `${indentStr}Plant: ${slot.plant}\n`;
-        result += `${indentStr}Reason: ${slot.reason}\n`;
-        result += `${indentStr}Started: ${slot.started}\n`;
-        result += `${indentStr}Duration: ${slot.duration}\n`;
-        result += `${indentStr}Next Queue Size: ${slot.next.length}\n`;
+        if (slot) {
+            result += `${indentStr}Player: ${slot.player}\n`;
+            result += `${indentStr}Plant: ${slot.plant}\n`;
+            result += `${indentStr}Reason: ${slot.reason}\n`;
+            result += `${indentStr}Started: ${slot.started}\n`;
+            result += `${indentStr}Duration: ${slot.duration}\n`;
+            result += `${indentStr}Next Queue Size: ${slot.next.length}\n`;
+        }
+        else {
+            result += `${indentStr}Empty\n`;
+        }
         return result;
     }
     async register(interaction, player, plant, duration, reason, plotNum, slotNum) {
@@ -160,24 +165,34 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
     async list(interaction, plotNum, slotNum) {
         const config = await this.findOneOrCreate(interaction.guildId);
         const showDetailed = interaction.options.getBoolean("detailed") ?? false;
-        if (plotNum === null && slotNum !== null)
+        if (config.plots.length === 0) {
+            return interaction.reply({
+                content: "No plot and slot information has been set. Kindly contact the management if this is an issue.",
+                ephemeral: true,
+            });
+        }
+        if (plotNum == null && slotNum != null) {
             return interaction.reply({
                 content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
                 ephemeral: true,
             });
+        }
         let text = "```\n";
-        if (plotNum !== null) {
-            if (plotNum > config.plots.length)
-                return interaction.reply({ content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}` });
+        if (plotNum != null) {
+            if (plotNum >= config.plots.length)
+                return interaction.reply({
+                    content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}`,
+                    ephemeral: true,
+                });
             const plot = config.plots[plotNum];
-            if (slotNum !== null) {
+            text += GardeningManagerService_1.printPlotInfo(plot, plotNum, showDetailed);
+            if (slotNum != null && !showDetailed) {
                 if (slotNum >= plot.slots.length)
-                    return interaction.reply({ content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}` });
-                text += GardeningManagerService_1.printPlotInfo(plot, plotNum);
+                    return interaction.reply({
+                        content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}`,
+                        ephemeral: true,
+                    });
                 text += GardeningManagerService_1.printSlotInfo(plot.slots[slotNum], slotNum, 1);
-            }
-            else {
-                text += GardeningManagerService_1.printPlotInfo(plot, plotNum, true);
             }
         }
         else {
@@ -201,20 +216,19 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId))
                 continue;
-            config.plots.forEach(plot => {
-                plot.slots.forEach((slot, index, array) => {
+            for (const plot of config.plots) {
+                for (let index = 0; index < plot.slots.length; index++) {
+                    const slot = plot.slots[index];
                     if (!slot)
-                        return;
+                        continue;
                     if (slot.started + slot.duration > now)
-                        return;
+                        continue;
                     const nextReserved = slot.next;
                     const next = nextReserved.pop();
-                    array[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null;
-                    if (altered.findIndex((item) => item.guildId === config.guildId) === -1) {
-                        altered.push(config);
-                    }
-                });
-            });
+                    plot.slots[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null;
+                    altered.push(config);
+                }
+            }
         }
         for (const config of altered) {
             this.gardeningConfigRepository.save(config).catch(err => this.logger.error(err));

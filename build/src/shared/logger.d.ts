@@ -1,6 +1,6 @@
 import { pino } from "pino";
 import { Transform } from "tsyringe/dist/typings/types/index.js";
-import { AppConfigs } from "../config/app_configs/index.js";
+import { AppConfig } from "../config/app_configs/index.js";
 export declare enum LOGGING_LEVELS {
     debug = "debug",
     info = "info",
@@ -9,7 +9,7 @@ export declare enum LOGGING_LEVELS {
 }
 export declare class LoggerFactory {
     private appConfigs;
-    constructor(appConfigs: AppConfigs);
+    constructor(appConfigs: AppConfig);
     buildLogger(name: string): pino.Logger;
 }
 export declare class LoggerFactoryTransformer implements Transform<LoggerFactory, pino.Logger> {

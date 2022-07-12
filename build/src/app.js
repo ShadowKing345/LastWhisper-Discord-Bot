@@ -14,19 +14,19 @@ var App_1;
 import chalk from "chalk";
 import { pino } from "pino";
 import { container, injectWithTransform, singleton } from "tsyringe";
-import { AppConfigs } from "./config/app_configs/index.js";
+import { AppConfig } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
 import { LoggerFactory, LoggerFactoryTransformer } from "./shared/logger.js";
 import { Client } from "./shared/models/client.js";
 let App = App_1 = class App {
-    appConfigs;
+    appConfig;
     databaseService;
     moduleConfiguration;
     logger;
     client;
-    constructor(appConfigs, databaseService, moduleConfiguration, logger) {
-        this.appConfigs = appConfigs;
+    constructor(appConfig, databaseService, moduleConfiguration, logger) {
+        this.appConfig = appConfig;
         this.databaseService = databaseService;
         this.moduleConfiguration = moduleConfiguration;
         this.logger = logger;
@@ -46,7 +46,7 @@ let App = App_1 = class App {
         this.logger.info(`Done loading. ${chalk.green("Ready to run.")}`, { context: "ClientSetup" });
     }
     async run() {
-        return this.client.login(this.appConfigs.config.token);
+        return this.client.login(this.appConfig.token);
     }
     get modules() {
         return this.moduleConfiguration?.modules ?? [];
@@ -55,7 +55,7 @@ let App = App_1 = class App {
 App = App_1 = __decorate([
     singleton(),
     __param(3, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, App_1.name)),
-    __metadata("design:paramtypes", [AppConfigs,
+    __metadata("design:paramtypes", [AppConfig,
         DatabaseConfiguration,
         ModuleConfiguration, Object])
 ], App);

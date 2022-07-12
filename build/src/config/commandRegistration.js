@@ -5,13 +5,13 @@ import { container } from "tsyringe";
 import { App } from "../app.js";
 import { LoggerFactory } from "../shared/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
-import { AppConfigs } from "./app_configs/index.js";
+import { AppConfig } from "./app_configs/index.js";
 const loggerMeta = { context: "CommandRegistration" };
 export async function commandRegistration(args) {
     const app = container.resolve(App);
     const logger = container.resolve(LoggerFactory).buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
-    const appConfigs = container.resolve(AppConfigs).config;
+    const appConfigs = container.resolve(AppConfig);
     const commandConfigs = appConfigs.commandRegistration;
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
     if (args.token)

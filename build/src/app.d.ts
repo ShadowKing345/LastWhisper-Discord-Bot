@@ -1,15 +1,15 @@
 import { pino } from "pino";
-import { AppConfigs } from "./config/app_configs/index.js";
+import { AppConfig } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
 import { ModuleBase } from "./shared/models/moduleBase.js";
 export declare class App {
-    private appConfigs;
+    private appConfig;
     private databaseService;
     private moduleConfiguration;
     private logger;
     private readonly client;
-    constructor(appConfigs: AppConfigs, databaseService: DatabaseConfiguration, moduleConfiguration: ModuleConfiguration, logger: pino.Logger);
+    constructor(appConfig: AppConfig, databaseService: DatabaseConfiguration, moduleConfiguration: ModuleConfiguration, logger: pino.Logger);
     init(): Promise<void>;
     run(): Promise<string>;
     get modules(): ModuleBase[];

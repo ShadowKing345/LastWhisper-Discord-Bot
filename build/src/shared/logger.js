@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { AppConfigs } from "../config/app_configs/index.js";
+import { AppConfig } from "../config/app_configs/index.js";
 export var LOGGING_LEVELS;
 (function (LOGGING_LEVELS) {
     LOGGING_LEVELS["debug"] = "debug";
@@ -25,7 +25,7 @@ let LoggerFactory = class LoggerFactory {
     buildLogger(name) {
         return pino({
             name: name,
-            level: this.appConfigs?.config?.logging_level ?? LOGGING_LEVELS.info,
+            level: this.appConfigs.logging_level ?? LOGGING_LEVELS.info,
             transport: {
                 target: "pino-pretty",
                 options: {
@@ -38,7 +38,7 @@ let LoggerFactory = class LoggerFactory {
 };
 LoggerFactory = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [AppConfigs])
+    __metadata("design:paramtypes", [AppConfig])
 ], LoggerFactory);
 export { LoggerFactory };
 export class LoggerFactoryTransformer {

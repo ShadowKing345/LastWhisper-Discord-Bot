@@ -16,7 +16,7 @@ import { pino } from "pino";
 import { container, injectWithTransform, singleton } from "tsyringe";
 import { ConfigurationClass } from "../shared/configuration.class.js";
 import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
-import { AppConfigs, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
+import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 export class Database extends Db {
 }
 let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguration extends ConfigurationClass {
@@ -51,7 +51,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
         return url;
     }
     async connectClient() {
-        const url = this.parseUrl(this.appConfigs.config.database ?? new DbConfig());
+        const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
         if (!this._client) {
             this._client = await MongoClient.connect(url);
             this._client.on("error", error => {
@@ -63,7 +63,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
             process.once("SIGTERM", () => this._client.close());
         }
         if (!this._db) {
-            this._db = this._client.db(this.appConfigs.config.database?.database);
+            this._db = this._client.db(this.appConfigs.database?.database);
             container.register(Database, { useValue: this._db });
         }
         return this._client;
@@ -78,7 +78,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
 DatabaseConfiguration = DatabaseConfiguration_1 = __decorate([
     singleton(),
     __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, DatabaseConfiguration_1.name)),
-    __metadata("design:paramtypes", [AppConfigs, Object])
+    __metadata("design:paramtypes", [AppConfig, Object])
 ], DatabaseConfiguration);
 export { DatabaseConfiguration };
 //# sourceMappingURL=databaseConfiguration.js.map
