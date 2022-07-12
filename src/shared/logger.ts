@@ -2,7 +2,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { Transform } from "tsyringe/dist/typings/types/index.js";
 
-import { AppConfigs } from "../config/app_configs/index.js";
+import { AppConfig } from "../config/app_configs/index.js";
 
 export enum LOGGING_LEVELS {
     debug = "debug",
@@ -14,14 +14,14 @@ export enum LOGGING_LEVELS {
 @singleton()
 export class LoggerFactory {
     constructor(
-        private appConfigs: AppConfigs,
+        private appConfigs: AppConfig,
     ) {
     }
 
     buildLogger(name: string): pino.Logger {
         return pino({
             name: name,
-            level: this.appConfigs?.config?.logging_level ?? LOGGING_LEVELS.info,
+            level: this.appConfigs.logging_level ?? LOGGING_LEVELS.info,
             transport: {
                 target: "pino-pretty",
                 options: {

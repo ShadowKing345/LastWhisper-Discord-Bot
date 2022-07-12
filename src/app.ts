@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { pino } from "pino";
 import { container, injectWithTransform, singleton } from "tsyringe";
 
-import { AppConfigs } from "./config/app_configs/index.js";
+import { AppConfig } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
 import { LoggerFactory, LoggerFactoryTransformer } from "./shared/logger.js";
@@ -14,7 +14,7 @@ export class App {
     private readonly client: Client;
 
     constructor(
-        private appConfigs: AppConfigs,
+        private appConfig: AppConfig,
         private databaseService: DatabaseConfiguration,
         private moduleConfiguration: ModuleConfiguration,
         @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, App.name) private logger: pino.Logger,
@@ -40,7 +40,7 @@ export class App {
     }
 
     public async run() {
-        return this.client.login(this.appConfigs.config.token);
+        return this.client.login(this.appConfig.token);
     }
 
     public get modules(): ModuleBase[] {

@@ -6,7 +6,7 @@ import { container } from "tsyringe";
 import { App } from "../app.js";
 import { LoggerFactory } from "../shared/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
-import { AppConfig, AppConfigs, CommandRegistrationConfiguration } from "./app_configs/index.js";
+import { AppConfig, CommandRegistrationConfiguration } from "./app_configs/index.js";
 
 const loggerMeta = { context: "CommandRegistration" };
 
@@ -24,7 +24,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
     const logger = container.resolve(LoggerFactory).buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
 
-    const appConfigs: AppConfig = container.resolve(AppConfigs).config;
+    const appConfigs: AppConfig = container.resolve(AppConfig);
     const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
 

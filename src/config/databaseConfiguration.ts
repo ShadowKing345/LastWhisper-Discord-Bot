@@ -4,7 +4,7 @@ import { container, injectWithTransform, singleton } from "tsyringe";
 
 import { ConfigurationClass } from "../shared/configuration.class.js";
 import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
-import { AppConfigs, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
+import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 
 export class Database extends Db {
 }
@@ -15,7 +15,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     private _db: Database;
 
     constructor(
-        private appConfigs: AppConfigs,
+        private appConfigs: AppConfig,
         @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, DatabaseConfiguration.name) private logger: pino.Logger,
     ) {
         super();
@@ -45,7 +45,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     }
 
     async connectClient(): Promise<MongoClient> {
-        const url = this.parseUrl(this.appConfigs.config.database ?? new DbConfig());
+        const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
 
         if (!this._client) {
             this._client = await MongoClient.connect(url);
@@ -60,7 +60,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
         }
 
         if (!this._db) {
-            this._db = this._client.db(this.appConfigs.config.database?.database);
+            this._db = this._client.db(this.appConfigs.database?.database);
             container.register<Database>(Database, { useValue: this._db });
         }
 
