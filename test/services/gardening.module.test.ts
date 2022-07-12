@@ -7,7 +7,7 @@ import { test } from "tap";
 import { ImportMock } from "ts-mock-imports";
 import { container, injectable } from "tsyringe";
 
-import { Database } from "../../src/config/databaseConfiguration.js";
+import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
 import { GardeningConfig, GardeningManagerService, Plot, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
 import { InvalidArgumentError } from "../../src/shared/models/errors.js";
 
@@ -50,23 +50,29 @@ test("Gardening Module Tests:", async t => {
         plots: [],
     };
 
-    container.register<Database>(Database, {
-        useValue: {
-            collection: () => {
-                return {
-                    findOneAndReplace: async (_, obj) => {
-                        Object.assign(config, obj);
-                        return config;
-                    },
-                    findOne: async () => config,
-                    find: async () => [ config ],
-                    replaceOne: async (obj) => {
-                        Object.assign(config, obj);
-                        return config;
-                    },
-                };
-            },
-        } as unknown as Database,
+    class mockDb {
+        get db() {
+            return {
+                collection: () => {
+                    return {
+                        findOneAndReplace: async (_, obj) => {
+                            Object.assign(config, obj);
+                            return config;
+                        },
+                        findOne: async () => config,
+                        find: async () => [ config ],
+                        replaceOne: async (obj) => {
+                            Object.assign(config, obj);
+                            return config;
+                        },
+                    };
+                }
+            };
+        }
+    }
+
+    container.register<DatabaseConfiguration>(DatabaseConfiguration, {
+        useValue: new mockDb() as unknown as DatabaseConfiguration,
     });
     const module = container.resolve(MockModule);
 
@@ -112,7 +118,7 @@ test("Gardening Module Tests:", async t => {
             messagePostingChannelId: "",
             plots: [],
         };
-        (<SinonSpy> interaction.reply).resetHistory();
+        (<SinonSpy>interaction.reply).resetHistory();
         sandbox.reset();
     });
 
@@ -132,8 +138,8 @@ test("Gardening Module Tests:", async t => {
         await t.test("should return void when no plots.", async t => {
             const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
-            t.ok((<SinonStub> interaction.reply).called, "Interaction was called.");
-            t.ok((<SinonStub> interaction.reply).calledWith({
+            t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
+            t.ok((<SinonStub>interaction.reply).calledWith({
                 content: `Sorry but the plot number has to be from 0 to ${config.plots.length - 1}.`,
                 ephemeral: true,
             }), "Called with correct message.");
@@ -143,8 +149,8 @@ test("Gardening Module Tests:", async t => {
 
             const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
-            t.ok((<SinonStub> interaction.reply).called, "Interaction was called.");
-            t.ok((<SinonStub> interaction.reply).calledWith({
+            t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
+            t.ok((<SinonStub>interaction.reply).calledWith({
                 content: `Sorry but the slot number has to be from 0 to ${plot.slots.length}.`,
                 ephemeral: true,
             }), "Called with correct message.");
@@ -378,7 +384,7 @@ test("Gardening Module Tests:", async t => {
             plot.slots.push(slot);
             await module.list(interaction, 0, 0);
 
-            const reply = <SinonStub> interaction.reply;
+            const reply = <SinonStub>interaction.reply;
 
             t.ok(reply.called, "Reply message was called.");
             t.equal(reply.getCall(0).firstArg, "```\n" + `${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0)}` + "```", "Expected reply");
@@ -386,11 +392,11 @@ test("Gardening Module Tests:", async t => {
         await t.test("should show no plots set message when there are no configured slots.", async t => {
             await module.list(interaction, 0, 0);
 
-            const reply = <SinonStub> interaction.reply;
+            const reply = <SinonStub>interaction.reply;
 
             t.ok(reply.called, "Reply message was called.");
-            t.equal(reply.getCall(0).firstArg, {
-                content: "No plot and slot information has been set. Kindly contract the management if this is an issue.",
+            t.strictSame(reply.getCall(0).firstArg, {
+                content: "No plot and slot information has been set. Kindly contact the management if this is an issue.",
                 ephemeral: true,
             }, "Expected reply");
         });
@@ -405,13 +411,15 @@ test("Gardening Module Tests:", async t => {
 
         await t.todo("should post slot unoccupied.");
 
-        await t.test("should not post when plot is null. ", async t => {
+        await t.test("should not post when plot is null.", async t => {
+            config.plots.push(plot);
+
             await module.list(interaction, null, 0);
-            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
-            t.ok((<SinonStub> interaction.reply).calledWith({
+            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, {
                 content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
                 ephemeral: true,
-            }), "Was called with the right options.");
+            }, "Was called with the right options.");
         });
     });
 
