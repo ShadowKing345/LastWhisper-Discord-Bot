@@ -169,18 +169,33 @@ export class GardeningManagerService {
         const config: GardeningConfig = await this.findOneOrCreate(interaction.guildId);
         const showDetailed: boolean = interaction.options.getBoolean("detailed") ?? false;
 
-        if (plotNum === null && slotNum !== null) return interaction.reply({
-            content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
-            ephemeral: true,
-        });
+        if (config.plots.length === 0) {
+            return interaction.reply({
+                content: "No plot and slot information has been set. Kindly contact the management if this is an issue.",
+                ephemeral: true,
+            });
+        }
+
+        if (plotNum == null && slotNum != null) {
+            return interaction.reply({
+                content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
+                ephemeral: true,
+            });
+        }
 
         let text = "```\n";
 
         if (plotNum !== null) {
-            if (plotNum > config.plots.length) return interaction.reply({ content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}` });
+            if (plotNum >= config.plots.length) return interaction.reply({
+                content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}`,
+                ephemeral: true,
+            });
             const plot = config.plots[plotNum];
             if (slotNum !== null) {
-                if (slotNum >= plot.slots.length) return interaction.reply({ content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}` });
+                if (slotNum >= plot.slots.length) return interaction.reply({
+                    content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}`,
+                    ephemeral: true,
+                });
                 text += GardeningManagerService.printPlotInfo(plot, plotNum);
                 text += GardeningManagerService.printSlotInfo(plot.slots[slotNum], slotNum, 1);
             } else {
