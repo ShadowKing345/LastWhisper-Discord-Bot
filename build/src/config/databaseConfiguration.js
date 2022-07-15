@@ -51,16 +51,15 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
         return url;
     }
     async connectClient() {
+        this.logger.info("Creating Db Client");
         const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
         if (!this._client) {
             this._client = await MongoClient.connect(url);
-            this._client.on("error", error => {
-                this.logger.error(error.message, { context: "DatabaseConfiguration" });
-                this._client.close();
+            this._client.on("error", async (error) => {
+                this.logger.error(error + error.stack);
+                await this._client?.close();
             });
             container.register(MongoClient, { useValue: this._client });
-            process.once("SIGINT", () => this._client.close());
-            process.once("SIGTERM", () => this._client.close());
         }
         if (!this._db) {
             this._db = this._client.db(this.appConfigs.database?.database);
@@ -73,6 +72,10 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
     }
     get client() {
         return this._client;
+    }
+    disconnect() {
+        this.logger.info("Disconnecting from database.");
+        return this._client?.close();
     }
 };
 DatabaseConfiguration = DatabaseConfiguration_1 = __decorate([

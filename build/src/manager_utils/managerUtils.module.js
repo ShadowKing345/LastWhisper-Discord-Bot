@@ -10,20 +10,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var ManagerUtilsModule_1;
 import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { ManagerUtilsService } from "./managerUtils.service.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends ModuleBase {
     managerUtilsService;
-    permissionManager;
     static commands = {
         $index: "manager_utils",
         Clear: "clear",
     };
-    constructor(managerUtilsService, permissionManager) {
+    constructor(managerUtilsService) {
         super();
         this.managerUtilsService = managerUtilsService;
-        this.permissionManager = permissionManager;
         this.moduleName = "ManagerUtils";
         this.commands = [{
                 command: builder => builder
@@ -36,7 +34,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
                     .setName("amount")
                     .setDescription("The amount of messages to clear. Default 10.")
                     .setRequired(false))),
-                run: interaction => this.subcommandResolver(interaction)
+                run: interaction => this.subcommandResolver(interaction),
             }];
         this.listeners = [
             { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
@@ -81,8 +79,7 @@ __decorate([
 ], ManagerUtilsModule, "commands", void 0);
 ManagerUtilsModule = ManagerUtilsModule_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [ManagerUtilsService,
-        PermissionManagerService])
+    __metadata("design:paramtypes", [ManagerUtilsService])
 ], ManagerUtilsModule);
 export { ManagerUtilsModule };
 //# sourceMappingURL=managerUtils.module.js.map

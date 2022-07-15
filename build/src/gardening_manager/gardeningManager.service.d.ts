@@ -17,12 +17,11 @@ export declare class GardeningManagerService {
     postChannelMessage(client: Client, config: GardeningConfig, messageArgs: MessagePostArgs): Promise<void>;
     private findOneOrCreate;
 }
-declare class MessagePostArgs {
+export declare class MessagePostArgs {
     title: string;
     description: string;
     memberUrl: string;
     slot?: Slot;
     fields: EmbedFieldData[];
 }
-export {};
 //# sourceMappingURL=gardeningManager.service.d.ts.map

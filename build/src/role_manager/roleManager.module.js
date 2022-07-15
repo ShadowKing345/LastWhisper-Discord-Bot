@@ -21,7 +21,6 @@ import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
-    permissionManager;
     logger;
     static commands = {
         $index: "role_manager",
@@ -32,7 +31,6 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
     constructor(roleManagerService, permissionManager, logger) {
         super();
         this.roleManagerService = roleManagerService;
-        this.permissionManager = permissionManager;
         this.logger = logger;
         this.moduleName = "RoleManager";
         this.listeners = [

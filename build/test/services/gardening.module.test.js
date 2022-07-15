@@ -31,6 +31,7 @@ MockModule = __decorate([
 test("Gardening Module Tests:", async (t) => {
     let clock;
     let sandbox;
+    let mockedFunction;
     let slot = {
         player: "Shadowking124",
         duration: 3,
@@ -61,14 +62,14 @@ test("Gardening Module Tests:", async (t) => {
                         },
                         findOne: async () => config,
                         find: () => ({
-                            toArray: async () => [config]
+                            toArray: async () => [config],
                         }),
                         replaceOne: async (obj) => {
                             deepMerge(config, obj);
                             return config;
                         },
                     };
-                }
+                },
             };
         }
     }
@@ -90,10 +91,12 @@ test("Gardening Module Tests:", async (t) => {
     t.before(() => {
         clock = useFakeTimers();
         sandbox = createSandbox();
+        mockedFunction = ImportMock.mockFunction(module, "postChannelMessage", null);
     });
     t.teardown(() => {
         clock.restore();
         sandbox.restore();
+        mockedFunction?.reset();
     });
     t.beforeEach(() => {
         slot = {
@@ -196,13 +199,6 @@ test("Gardening Module Tests:", async (t) => {
         });
     });
     await t.test("Slot registering", async (t) => {
-        let mockedFunction;
-        t.before(() => {
-            mockedFunction = ImportMock.mockFunction(module, "postChannelMessage", null);
-        });
-        t.teardown(() => {
-            mockedFunction?.reset();
-        });
         const player = "shadowking1243";
         const plant = "Test";
         const duration = 10;
@@ -414,7 +410,7 @@ test("Gardening Module Tests:", async (t) => {
             t.strictSame(config.plots[0].slots[0], slot);
             t.strictSame(config.plots[0].slots[1], null);
         });
-        await t.todo("should remove slots and set next when time has expired.", async (t) => {
+        await t.test("should remove slots and set next when time has expired.", async (t) => {
             const reservation = new Reservation("Test", "Test", 400, Reason.GROWING);
             const newSlot = new Slot(reservation.player, reservation.plant, reservation.duration, reservation.reason, DateTime.now().toUnixInteger());
             slot.started = DateTime.now().toUnixInteger();
@@ -426,7 +422,19 @@ test("Gardening Module Tests:", async (t) => {
             t.equal(config.plots[0].slots[0].next.length, 0);
             t.strictSame(config.plots[0].slots[0], newSlot);
         });
-        await t.todo("should post message when reservation has expired.");
+        await t.test("should post message when reservation has expired.", async (t) => {
+            const reservation = new Reservation("Test", "Test", 400, Reason.GROWING);
+            const newSlot = new Slot(reservation.player, reservation.plant, reservation.duration, reservation.reason, DateTime.now().toUnixInteger());
+            slot.started = DateTime.now().toUnixInteger();
+            slot.duration = -3;
+            slot.next.push(reservation);
+            plot.slots.push(slot);
+            config.plots.push(plot);
+            await module.tick({ guilds: { cache: { has: () => true } } });
+            t.equal(config.plots[0].slots[0].next.length, 0);
+            t.strictSame(config.plots[0].slots[0], newSlot);
+            t.ok(mockedFunction.called, "Function was called.");
+        });
     });
     await t.test("Posting channel message", async (t) => {
         await t.todo("should post message in correct channel when called.");

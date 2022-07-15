@@ -14,5 +14,6 @@ export declare class DatabaseConfiguration extends ConfigurationClass {
     connectClient(): Promise<MongoClient>;
     get db(): Database;
     get client(): MongoClient;
+    disconnect(): Promise<void>;
 }
 //# sourceMappingURL=databaseConfiguration.d.ts.map

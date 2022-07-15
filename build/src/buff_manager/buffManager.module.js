@@ -15,23 +15,21 @@ import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { injectWithTransform, singleton } from "tsyringe";
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { BuffManagerService } from "./buffManager.service.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
-    permissionManager;
     logger;
     static commands = {
         $index: "buff_manager",
         Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
         Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
     };
-    constructor(buffManagerService, permissionManager, logger) {
+    constructor(buffManagerService, logger) {
         super();
         this.buffManagerService = buffManagerService;
-        this.permissionManager = permissionManager;
         this.logger = logger;
         this.moduleName = "BuffManager";
         this.commands = [
@@ -156,9 +154,8 @@ __decorate([
 ], BuffManagerModule, "commands", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
     singleton(),
-    __param(2, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerModule_1.name)),
-    __metadata("design:paramtypes", [BuffManagerService,
-        PermissionManagerService, Object])
+    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerModule_1.name)),
+    __metadata("design:paramtypes", [BuffManagerService, Object])
 ], BuffManagerModule);
 export { BuffManagerModule };
 //# sourceMappingURL=buffManager.module.js.map

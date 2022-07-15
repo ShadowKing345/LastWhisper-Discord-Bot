@@ -4,7 +4,6 @@ import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
 export declare class RoleManagerModule extends ModuleBase {
     private roleManagerService;
-    private permissionManager;
     private logger;
     private static readonly commands;
     constructor(roleManagerService: RoleManagerService, permissionManager: PermissionManagerService, logger: pino.Logger);

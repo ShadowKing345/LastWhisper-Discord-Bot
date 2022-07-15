@@ -12,6 +12,7 @@ export declare class App {
     constructor(appConfig: AppConfig, databaseService: DatabaseConfiguration, moduleConfiguration: ModuleConfiguration, logger: pino.Logger);
     init(): Promise<void>;
     run(): Promise<string>;
+    stop(): Promise<void>;
     get modules(): ModuleBase[];
 }
 export declare function botMain(): Promise<void>;

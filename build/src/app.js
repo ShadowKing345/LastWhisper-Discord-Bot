@@ -33,20 +33,27 @@ let App = App_1 = class App {
         this.client = new Client();
     }
     async init() {
-        this.logger.info("Creating Db Client", { context: "ClientSetup" });
-        await this.databaseService.connectClient();
-        this.logger.info("Loading modules.", { context: "ClientSetup" });
-        this.moduleConfiguration.configureModules(this.client);
-        this.client.once("ready", () => {
-            this.logger.info(chalk.magentaBright("Bot is up and ready to roll!"), { context: "ClientRuntime" });
-        });
-        this.client.on("error", error => {
-            this.logger.info(`${error.name}: ${error.message}`, { context: "ClientRuntime" });
-        });
-        this.logger.info(`Done loading. ${chalk.green("Ready to run.")}`, { context: "ClientSetup" });
+        try {
+            await this.databaseService.connectClient();
+            this.moduleConfiguration.configureModules(this.client);
+            this.client.once("ready", () => this.logger.info(chalk.magentaBright("Bot is up and ready to roll!")));
+            this.client.on("error", error => this.logger.error(error + error.stack));
+            this.logger.info(`Done loading. ${chalk.green("Ready to run.")}`);
+        }
+        catch (error) {
+            this.logger.error("An expected error has resulted in the application failing to start.");
+            this.logger.error(error instanceof Error ? error + error.stack : error);
+        }
     }
     async run() {
         return this.client.login(this.appConfig.token);
+    }
+    async stop() {
+        this.logger.info("Stopping application.");
+        this.moduleConfiguration.cleanup();
+        this.client.destroy();
+        await this.databaseService.disconnect();
+        this.logger.info("Done. Have a nice day!");
     }
     get modules() {
         return this.moduleConfiguration?.modules ?? [];
@@ -63,8 +70,16 @@ export { App };
 export async function botMain() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
-    const app = container.resolve(App);
-    await app.init();
-    await app.run();
+    try {
+        const app = container.resolve(App);
+        await app.init();
+        process.on("SIGTERM", () => app.stop())
+            .on("SIGINT", () => app.stop())
+            .on("uncaughtException", () => app.stop());
+        await app.run();
+    }
+    catch (error) {
+        console.error(error instanceof Error ? error + error.stack : error);
+    }
 }
 //# sourceMappingURL=app.js.map

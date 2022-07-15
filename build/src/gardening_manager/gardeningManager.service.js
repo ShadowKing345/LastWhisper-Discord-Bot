@@ -232,6 +232,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         }
         for (const config of altered) {
             this.gardeningConfigRepository.save(config).catch(err => this.logger.error(err));
+            await this.postChannelMessage(client, config, {});
         }
     }
     async postChannelMessage(client, config, messageArgs) {
@@ -269,7 +270,7 @@ GardeningManagerService = GardeningManagerService_1 = __decorate([
     __metadata("design:paramtypes", [GardeningManagerRepository, Object])
 ], GardeningManagerService);
 export { GardeningManagerService };
-class MessagePostArgs {
+export class MessagePostArgs {
     title;
     description;
     memberUrl;

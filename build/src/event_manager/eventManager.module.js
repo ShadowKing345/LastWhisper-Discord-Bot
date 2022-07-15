@@ -10,17 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var EventManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { EventManagerService } from "./eventManager.service.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;
-    permissionManager;
     static commands = "event";
-    constructor(eventManagerService, permissionManager) {
+    constructor(eventManagerService) {
         super();
         this.eventManagerService = eventManagerService;
-        this.permissionManager = permissionManager;
         this.moduleName = "EventManager";
         this.commands = [
             {
@@ -41,7 +39,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             {
                 name: `${this.moduleName}#postMessageTask`,
                 timeout: 60000,
-                run: async (client) => await this.reminderLoop(client),
+                run: client => this.reminderLoop(client),
             },
         ];
     }
@@ -76,8 +74,7 @@ __decorate([
 ], EventManagerModule, "commands", void 0);
 EventManagerModule = EventManagerModule_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [EventManagerService,
-        PermissionManagerService])
+    __metadata("design:paramtypes", [EventManagerService])
 ], EventManagerModule);
 export { EventManagerModule };
 //# sourceMappingURL=eventManager.module.js.map

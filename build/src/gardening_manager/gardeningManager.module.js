@@ -10,23 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var GardeningManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 import { Reason } from "./models/index.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends ModuleBase {
     gardeningManagerService;
-    permissionManager;
     static command = {
         $index: "gardening",
         Reserve: "reserve",
         Cancel: "cancel",
         List: "list",
     };
-    constructor(gardeningManagerService, permissionManager) {
+    constructor(gardeningManagerService) {
         super();
         this.gardeningManagerService = gardeningManagerService;
-        this.permissionManager = permissionManager;
         this.moduleName = "GardeningModule";
         this.commands = [{
                 command: builder => builder
@@ -151,8 +149,7 @@ __decorate([
 ], GardeningManagerModule, "command", void 0);
 GardeningManagerModule = GardeningManagerModule_1 = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [GardeningManagerService,
-        PermissionManagerService])
+    __metadata("design:paramtypes", [GardeningManagerService])
 ], GardeningManagerModule);
 export { GardeningManagerModule };
 //# sourceMappingURL=gardeningManager.module.js.map
