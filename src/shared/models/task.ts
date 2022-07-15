@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { Client as DiscordClient } from "discord.js";
 import { container } from "tsyringe";
 
@@ -12,7 +11,7 @@ export class Task {
     public run: (client: Client) => Promise<void>;
 
     public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
-        Task.logger.debug(`Waiting for ${chalk.cyan("client")} to be ready.`, { context: "Task#WaitTillReady" });
+        Task.logger.debug(`Waiting for client to be ready.`);
         while (!client.isReady()) {
             await new Promise(resolve => setTimeout(resolve, checkAgainTime));
         }

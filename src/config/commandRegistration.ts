@@ -46,15 +46,15 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
             Routes.applicationCommands(commandConfigs.clientId);
 
         if (commandConfigs.unregister) {
-            logger.info(`${chalk.cyan("Acquiring")} ${isForGlobal()} for deletion.`, loggerMeta);
+            logger.info(`Acquiring ${isForGlobal()} for deletion.`, loggerMeta);
             const commands = await rest.get(route) as { id: string }[];
 
-            logger.info(`${chalk.cyan("Removing")} ${isForGlobal()}`, loggerMeta);
+            logger.info(`Removing ${isForGlobal()}`, loggerMeta);
             for (const command of commands) {
                 await rest.delete(`${route}/${command.id}`);
             }
         } else {
-            logger.info(`${chalk.cyan("Generating")} ${isForGlobal()}`, loggerMeta);
+            logger.info(`Generating ${isForGlobal()}`, loggerMeta);
             const commands: toJsonResult[] = [];
             app.modules.forEach(module => {
                 for (const command of module.commands) {
@@ -62,11 +62,11 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
                 }
             });
 
-            logger.info(`${chalk.cyan("Registering")} ${isForGlobal()}`, loggerMeta);
+            logger.info(`Registering ${isForGlobal()}`, loggerMeta);
             await rest.put(route, { body: commands });
         }
 
-        logger.info(`${chalk.green("Successfully")} ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
+        logger.info(`Successfully ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
     } catch (error) {
         logger.error(error.stack, loggerMeta);
     } finally {

@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -58,12 +57,12 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     private subcommandResolver(interaction: CommandInteraction): Promise<void> {
-        this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
+        this.logger.debug(`Command invoked, dealing with subcommand options.`);
 
         const group = interaction.options.getSubcommandGroup();
         const subCommand = interaction.options.getSubcommand();
         if (!(subCommand && group)) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} no ${chalk.blue("subcommand")} or ${chalk.blue("group")} was used.`);
+            this.logger.debug(`Expected Failure:")} no "subcommand" or group was used.`);
             return interaction.reply({
                 content: "Sorry you can only use the group or subcommands not the src command.",
                 ephemeral: true,
@@ -71,7 +70,7 @@ export class BuffManagerModule extends ModuleBase {
         }
 
         if (!interaction.guildId) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`);
+            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
 
@@ -83,7 +82,7 @@ export class BuffManagerModule extends ModuleBase {
                     case BuffManagerModule.commands.Buffs.Tomorrow:
                         return this.postTomorrowsBuff(interaction);
                     default:
-                        this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand.`);
+                        this.logger.debug(`Expected Failure: Cannot find subcommand.`);
                         return interaction.reply({
                             content: "Cannot find subcommand.",
                             ephemeral: true,
@@ -96,14 +95,14 @@ export class BuffManagerModule extends ModuleBase {
                     case BuffManagerModule.commands.Weeks.NextWeek:
                         return this.postNextWeeksBuffs(interaction);
                     default:
-                        this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand.`);
+                        this.logger.debug(`Expected Failure: Cannot find subcommand.`);
                         return interaction.reply({
                             content: "Cannot find subcommand.",
                             ephemeral: true,
                         });
                 }
             default:
-                this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand group.`);
+                this.logger.debug(`Expected Failure: Cannot find subcommand group.`);
                 return interaction.reply({
                     content: "Cannot find group.",
                     ephemeral: true,

@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -127,7 +126,7 @@ export class RoleManagerService {
         const channel: TextChannel = await interaction.guild.channels.fetch(config.reactionListeningChannel) as TextChannel;
 
         if (!channel) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find channel.`);
+            this.logger.debug(`Expected failure: Could not find channel.`);
             return interaction.reply({
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true
@@ -137,7 +136,7 @@ export class RoleManagerService {
         const message: Message = await channel.messages.fetch(message_id);
 
         if (!message) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find message.`);
+            this.logger.debug(`Expected failure: Could not find message.`);
             return interaction.reply({
                 content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
                 ephemeral: true
@@ -160,7 +159,7 @@ export class RoleManagerService {
         const channel: TextChannel = await interaction.guild.channels.fetch(config.reactionListeningChannel) as TextChannel;
 
         if (!channel) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find channel.`);
+            this.logger.debug(`Expected failure: Could not find channel.`);
             return interaction.reply({
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true
@@ -170,7 +169,7 @@ export class RoleManagerService {
         const message: Message = await channel.messages.fetch(message_id);
 
         if (!message) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find message.`);
+            this.logger.debug(`Expected failure: Could not find message.`);
             return interaction.reply({
                 content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
                 ephemeral: true

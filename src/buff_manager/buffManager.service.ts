@@ -21,7 +21,7 @@ export class BuffManagerService {
     }
 
     public createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed {
-        this.logger.debug(`Creating ${chalk.cyan("Buff Embed")}.`);
+        this.logger.debug(`Creating Buff Embed.`);
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
@@ -32,7 +32,7 @@ export class BuffManagerService {
     }
 
     public createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed {
-        this.logger.debug(`Creating ${chalk.cyan("Week Embed")}.`);
+        this.logger.debug(`Creating Week Embed.`);
         return new MessageEmbed({
             color: "RANDOM",
             title: title,
@@ -49,22 +49,22 @@ export class BuffManagerService {
 
     public async tryGetConfig(interaction: CommandInteraction): Promise<[ BuffManagerConfig, boolean ]> {
         const guildId = interaction.guildId;
-        this.logger.debug(`Attempting to acquire ${chalk.blue("configuration")} for guild ${chalk.yellow(guildId)}.`);
+        this.logger.debug(`Attempting to acquire configuration for guild ${guildId}.`);
         const config: BuffManagerConfig = await this.findOneOrCreate(guildId);
 
         if (config.buffs.length <= 0) {
             await interaction.reply({ content: "Sorry, there are not buffs set.", ephemeral: true });
-            this.logger.debug(`${chalk.red("Expected Failure:")} No ${chalk.blue("buffs")} were set in config.`);
+            this.logger.debug(`Expected Failure:")} No buffs were set in config.`);
             return [ null, false ];
         }
 
         if (config.weeks.filter(week => !("isEnabled" in week) || week.isEnabled).length <= 0) {
             await interaction.reply({ content: "Sorry, there are not enabled weeks set.", ephemeral: true });
-            this.logger.debug(`${chalk.red("Expected Failure:")} No ${chalk.blue("weeks")} were set in config.`);
+            this.logger.debug(`Expected Failure:")} No weeks were set in config.`);
             return [ null, false ];
         }
 
-        this.logger.debug(`${chalk.green("Success:")} Returning results.`);
+        this.logger.debug(`Success: Returning results.`);
         return [ config, true ];
     }
 
@@ -74,12 +74,12 @@ export class BuffManagerService {
             return;
         }
 
-        this.logger.debug(`Command invoked for ${chalk.blue("buffs")}.`);
+        this.logger.debug(`Command invoked for buffs.`);
 
         const date = today ? DateTime.now() : DateTime.now().plus({ days: 1 });
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
 
-        this.logger.debug(`Posting ${chalk.blue("buff")} message for the date ${chalk.yellow(date.toISO())}`);
+        this.logger.debug(`Posting buff message for the date ${chalk.yellow(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
         const buffId = Days.toArray(week.days)[date.get("weekday")];
         const buff = config.buffs.find(day => day.id === buffId);
@@ -89,7 +89,7 @@ export class BuffManagerService {
                 content: `Sorry, but the buff with id **${buffId}** does not actually exist!\nKindly contact your FC Admin / Manager to fix this issue.`,
                 ephemeral: true,
             });
-            this.logger.debug(`${chalk.red("Expected Failure:")} ${chalk.blue("Buff")} with id ${chalk.yellow(buffId)} does not exist.`);
+            this.logger.debug(`Expected Failure:")} Buff with id ${chalk.yellow(buffId)} does not exist.`);
             return;
         }
 
@@ -102,12 +102,12 @@ export class BuffManagerService {
             return;
         }
 
-        this.logger.debug(`Command invoked for ${chalk.blue("weeks")}.`);
+        this.logger.debug(`Command invoked for weeks.`);
 
         const date = thisWeek ? DateTime.now() : DateTime.now().plus({ week: 1 });
         const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
 
-        this.logger.debug(`Posting ${chalk.blue("week")} message for ${chalk.yellow(date.toISO())}`);
+        this.logger.debug(`Posting week message for ${date.toISO()}`);
         const filteredWeeks = config.weeks.filter(week => week.isEnabled);
         const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
         await interaction.reply({
@@ -127,13 +127,13 @@ export class BuffManagerService {
         for (const config of configs) {
             try {
                 if (!client.guilds.cache.has(config.guildId)) {
-                    this.logger.warn(`${chalk.red("Expected Failure:")} There is a ${chalk.blue("config")} listing for the guild with ID ${chalk.yellow(config.guildId)}, which the bot is currently not a member of. Please remove configuration. ${chalk.cyan("Skipping...")}`);
+                    this.logger.warn(`Expected Failure: There is a config listing for the guild with ID ${config.guildId}, which the bot is currently not a member of. Please remove configuration. Skipping...`);
                     continue;
                 }
 
                 const guild: Guild | null = await client.guilds.fetch(config.guildId);
                 if (!guild) {
-                    this.logger.error(`Fetch guild with ID ${chalk.yellow(config.guildId)} returned nothing. ${chalk.cyan("Skipping...")}`);
+                    this.logger.error(`Fetch guild with ID ${chalk.yellow(config.guildId)} returned nothing. Skipping...`);
                     continue;
                 }
 
@@ -144,7 +144,7 @@ export class BuffManagerService {
 
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
                 if (!channel?.isText) {
-                    this.logger.warn(`Invalid ${chalk.blue("channel")} ${chalk.yellow(messageSettings.channelId)}  ID for ${chalk.yellow(config.guildId)}. ${chalk.cyan("Skipping...")}`);
+                    this.logger.warn(`Invalid channel ${messageSettings.channelId}  ID for ${config.guildId}. Skipping...`);
                     continue;
                 }
 
@@ -154,15 +154,15 @@ export class BuffManagerService {
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {
-                    this.logger.warn(`Invalid ${chalk.blue("buff")} ID ${chalk.yellow(buffId)} for guild ${chalk.yellow(config.guildId)}. ${chalk.cyan("Skipping...")}`);
+                    this.logger.warn(`Invalid buff ID ${buffId} for guild ${config.guildId}. Skipping...`);
                     continue;
                 }
 
-                this.logger.debug(`Posting ${chalk.cyan("buff message")}.`);
+                this.logger.debug(`Posting buff message.`);
                 await channel.send({ embeds: [ this.createBuffEmbed(messageSettings.buffMessage, buff, now) ] });
 
                 if (messageSettings.dow !== null && messageSettings.dow === now.weekday - 1) {
-                    this.logger.debug(`Posting ${chalk.cyan("week message")}.`);
+                    this.logger.debug(`Posting week message.`);
                     await channel.send({
                         embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ],
                     });

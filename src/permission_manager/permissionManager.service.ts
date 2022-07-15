@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -20,12 +19,12 @@ export class PermissionManagerService {
     public async isAuthorized(interaction: Interaction, key: string): Promise<boolean> {
         this.logger.debug(`Attempting to authorize for key ${key}`);
         if (!PermissionManagerService.keyExists(key)) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Could not find key.`);
+            this.logger.debug(`Expected Failure: Could not find key.`);
             return false;
         }
 
         if (!interaction) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Interaction is null.`);
+            this.logger.debug(`Expected Failure: Interaction is null.`);
             return false;
         }
 

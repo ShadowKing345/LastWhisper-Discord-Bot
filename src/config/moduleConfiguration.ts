@@ -118,27 +118,27 @@ export class ModuleConfiguration extends ConfigurationClass {
                 this.loggers.module.info(`Setting up module ${chalk.blueBright(module.moduleName)}`);
                 client.modules.set(module.moduleName, module);
 
-                this.loggers.module.debug(`Setting up ${chalk.cyan("commands")}...`);
+                this.loggers.module.debug(`Setting up commands...`);
                 module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
 
-                this.loggers.module.debug(`Setting up ${chalk.cyan("listeners")}...`);
+                this.loggers.module.debug(`Setting up listeners...`);
                 module.listeners.forEach(listener => {
                     const listeners = client.moduleListeners.get(listener.event) ?? [];
                     listeners.push(listener);
                     client.moduleListeners.set(listener.event, listeners);
                 });
 
-                this.loggers.module.debug(`Setting up ${chalk.cyan("tasks")}...`);
+                this.loggers.module.debug(`Setting up tasks...`);
                 module.tasks.forEach(task => this.runTask(task, client));
             } catch (error: Error | unknown) {
                 this.loggers.module.error(error instanceof Error ? error + error.stack : error);
             }
         }
 
-        this.loggers.module.debug(`Setting up ${chalk.cyan("events")}...`);
+        this.loggers.module.debug(`Setting up events...`);
         client.moduleListeners.forEach((listener, event) => client.on(event, async (...args) => this.runEvent(listener, client, ...args)));
 
-        this.loggers.module.debug(`Setting up ${chalk.cyan("interaction event")}...`);
+        this.loggers.module.debug(`Setting up interaction event...`);
         client.on("interactionCreate", interaction => this.interactionEvent(interaction));
     }
 

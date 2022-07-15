@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -17,7 +16,8 @@ export class RoleManagerModule extends ModuleBase {
         RevokeRole: "revoke_role",
         RegisterMessage: "register_message",
         UnregisterMessage: "unregister_message",
-    }
+    };
+
     constructor(
         private roleManagerService: RoleManagerService,
         @createLogger(RoleManagerModule.name) private logger: pino.Logger,
@@ -35,7 +35,7 @@ export class RoleManagerModule extends ModuleBase {
                     .setDescription("Manages roles within a guild.")
                     .addSubcommand(sBuilder => sBuilder
                         .setName(RoleManagerModule.commands.RevokeRole)
-                        .setDescription("Revokes the role for all uses.")
+                        .setDescription("Revokes the role for all uses."),
                     )
                     .addSubcommand(sBuilder => sBuilder
                         .setName(RoleManagerModule.commands.RegisterMessage)
@@ -43,8 +43,8 @@ export class RoleManagerModule extends ModuleBase {
                         .addStringOption(iBuilder => iBuilder
                             .setName("message_id")
                             .setDescription("The ID for the message.")
-                            .setRequired(true)
-                        )
+                            .setRequired(true),
+                        ),
                     )
                     .addSubcommand(sBuilder => sBuilder
                         .setName(RoleManagerModule.commands.UnregisterMessage)
@@ -52,12 +52,12 @@ export class RoleManagerModule extends ModuleBase {
                         .addStringOption(iBuilder => iBuilder
                             .setName("message_id")
                             .setDescription("The ID for the message.")
-                            .setRequired(true)
-                        )
+                            .setRequired(true),
+                        ),
                     ),
-                run: interaction => this.subcommandResolver(interaction)
-            }
-        ]
+                run: interaction => this.subcommandResolver(interaction),
+            },
+        ];
     }
 
     private onReady(client: Client): Promise<void> {
@@ -65,11 +65,11 @@ export class RoleManagerModule extends ModuleBase {
     }
 
     private subcommandResolver(interaction: CommandInteraction): Promise<void> {
-        this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
+        this.logger.debug(`Command invoked, dealing with subcommand options.`);
 
         const subCommand = interaction.options.getSubcommand();
         if (!subCommand) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} no ${chalk.blue("subcommand")} was used.`);
+            this.logger.debug(`Expected Failure:")} no subcommand was used.`);
             return interaction.reply({
                 content: "Sorry you have to use a subcommand.",
                 ephemeral: true,
@@ -77,7 +77,7 @@ export class RoleManagerModule extends ModuleBase {
         }
 
         if (!interaction.guildId) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`);
+            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
 
@@ -89,14 +89,14 @@ export class RoleManagerModule extends ModuleBase {
             case "unregister_message":
                 return this.unregisterMessage(interaction);
             default:
-                this.logger.debug(`${chalk.red("Expected Failure:")} subcommand not found.`);
+                this.logger.debug(`Expected Failure: subcommand not found.`);
                 return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
     }
 
     @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RevokeRole)
     private revokeRole(interaction: CommandInteraction): Promise<void> {
-        return this.roleManagerService.revokeRole(interaction)
+        return this.roleManagerService.revokeRole(interaction);
     }
 
     @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RegisterMessage)
