@@ -50,9 +50,9 @@ export class DatabaseConfiguration extends ConfigurationClass {
 
         if (!this._client) {
             this._client = await MongoClient.connect(url);
-            this._client.on("error", error => {
-                this.logger.error(error.message, { context: "DatabaseConfiguration" });
-                this._client.close();
+            this._client.on("error", async error => {
+                this.logger.error(error + error.stack);
+                await this._client?.close();
             });
             container.register<MongoClient>(MongoClient, { useValue: this._client });
         }
