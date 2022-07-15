@@ -11,10 +11,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var RoleManagerService_1;
-import chalk from "chalk";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { singleton } from "tsyringe";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
@@ -118,7 +117,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
         const message_id = interaction.options.getString("message_id");
         const channel = await interaction.guild.channels.fetch(config.reactionListeningChannel);
         if (!channel) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find channel.`);
+            this.logger.debug(`Expected failure: Could not find channel.`);
             return interaction.reply({
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true
@@ -126,7 +125,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
         }
         const message = await channel.messages.fetch(message_id);
         if (!message) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find message.`);
+            this.logger.debug(`Expected failure: Could not find message.`);
             return interaction.reply({
                 content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
                 ephemeral: true
@@ -143,7 +142,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
         const message_id = interaction.options.getString("message_id");
         const channel = await interaction.guild.channels.fetch(config.reactionListeningChannel);
         if (!channel) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find channel.`);
+            this.logger.debug(`Expected failure: Could not find channel.`);
             return interaction.reply({
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true
@@ -151,7 +150,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
         }
         const message = await channel.messages.fetch(message_id);
         if (!message) {
-            this.logger.debug(`${chalk.red("Expected failure:")} Could not find message.`);
+            this.logger.debug(`Expected failure: Could not find message.`);
             return interaction.reply({
                 content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
                 ephemeral: true
@@ -173,7 +172,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
 };
 RoleManagerService = RoleManagerService_1 = __decorate([
     singleton(),
-    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerService_1.name)),
+    __param(1, createLogger(RoleManagerService_1.name)),
     __metadata("design:paramtypes", [RoleManagerRepository, Object])
 ], RoleManagerService);
 export { RoleManagerService };

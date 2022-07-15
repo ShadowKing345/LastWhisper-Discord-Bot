@@ -13,9 +13,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var DatabaseConfiguration_1;
 import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
-import { container, injectWithTransform, singleton } from "tsyringe";
+import { container, singleton } from "tsyringe";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { classes } from "../shared/logger/colors.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 export class Database extends Db {
 }
@@ -51,7 +52,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
         return url;
     }
     async connectClient() {
-        this.logger.info("Creating Db Client");
+        this.logger.info(`Connecting to ${classes("Database")}`);
         const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
         if (!this._client) {
             this._client = await MongoClient.connect(url);
@@ -80,7 +81,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
 };
 DatabaseConfiguration = DatabaseConfiguration_1 = __decorate([
     singleton(),
-    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, DatabaseConfiguration_1.name)),
+    __param(1, createLogger(DatabaseConfiguration_1.name)),
     __metadata("design:paramtypes", [AppConfig, Object])
 ], DatabaseConfiguration);
 export { DatabaseConfiguration };

@@ -11,12 +11,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var RoleManagerModule_1;
-import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { singleton } from "tsyringe";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
@@ -28,7 +27,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
         RegisterMessage: "register_message",
         UnregisterMessage: "unregister_message",
     };
-    constructor(roleManagerService, permissionManager, logger) {
+    constructor(roleManagerService, logger) {
         super();
         this.roleManagerService = roleManagerService;
         this.logger = logger;
@@ -58,25 +57,25 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                     .setName("message_id")
                     .setDescription("The ID for the message.")
                     .setRequired(true))),
-                run: interaction => this.subcommandResolver(interaction)
-            }
+                run: interaction => this.subcommandResolver(interaction),
+            },
         ];
     }
     onReady(client) {
         return this.roleManagerService.onReady(client);
     }
     subcommandResolver(interaction) {
-        this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
+        this.logger.debug(`Command invoked, dealing with subcommand options.`);
         const subCommand = interaction.options.getSubcommand();
         if (!subCommand) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} no ${chalk.blue("subcommand")} was used.`);
+            this.logger.debug(`Expected Failure:")} no subcommand was used.`);
             return interaction.reply({
                 content: "Sorry you have to use a subcommand.",
                 ephemeral: true,
             });
         }
         if (!interaction.guildId) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`);
+            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
         switch (subCommand) {
@@ -87,7 +86,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
             case "unregister_message":
                 return this.unregisterMessage(interaction);
             default:
-                this.logger.debug(`${chalk.red("Expected Failure:")} subcommand not found.`);
+                this.logger.debug(`Expected Failure: subcommand not found.`);
                 return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
     }
@@ -125,9 +124,8 @@ __decorate([
 ], RoleManagerModule, "commands", void 0);
 RoleManagerModule = RoleManagerModule_1 = __decorate([
     singleton(),
-    __param(2, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerModule_1.name)),
-    __metadata("design:paramtypes", [RoleManagerService,
-        PermissionManagerService, Object])
+    __param(1, createLogger(RoleManagerModule_1.name)),
+    __metadata("design:paramtypes", [RoleManagerService, Object])
 ], RoleManagerModule);
 export { RoleManagerModule };
 //# sourceMappingURL=roleManager.module.js.map

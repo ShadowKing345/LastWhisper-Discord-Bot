@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import inquirer from "inquirer";
 import { container } from "tsyringe";
-import { LOGGING_LEVELS } from "../../shared/logger.js";
+import { LOGGING_LEVELS } from "../../shared/logger/logger.js";
 import { deepMerge } from "../../shared/utils.js";
 import { AppConfig, configPath, devConfigPath } from "../app_configs/index.js";
 import { inquireBoolean, inquireDictionary, inquireInput, inquireOptions } from "./utils.js";

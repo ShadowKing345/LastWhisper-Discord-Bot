@@ -11,11 +11,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var PermissionManagerService_1;
-import chalk from "chalk";
 import { MessageEmbed } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { singleton } from "tsyringe";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "./models/index.js";
@@ -30,11 +29,11 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
     async isAuthorized(interaction, key) {
         this.logger.debug(`Attempting to authorize for key ${key}`);
         if (!PermissionManagerService_1.keyExists(key)) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Could not find key.`);
+            this.logger.debug(`Expected Failure: Could not find key.`);
             return false;
         }
         if (!interaction) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Interaction is null.`);
+            this.logger.debug(`Expected Failure: Interaction is null.`);
             return false;
         }
         if (interaction.guild.ownerId === interaction.user.id) {
@@ -227,7 +226,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
 };
 PermissionManagerService = PermissionManagerService_1 = __decorate([
     singleton(),
-    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, PermissionManagerService_1.name)),
+    __param(1, createLogger(PermissionManagerService_1.name)),
     __metadata("design:paramtypes", [PermissionManagerRepository, Object])
 ], PermissionManagerService);
 export { PermissionManagerService };

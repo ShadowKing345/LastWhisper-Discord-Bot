@@ -14,8 +14,8 @@ var GardeningManagerService_1;
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { singleton } from "tsyringe";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
 import { GardeningConfig, Reservation, Slot } from "./models/index.js";
@@ -266,7 +266,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
 };
 GardeningManagerService = GardeningManagerService_1 = __decorate([
     singleton(),
-    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, GardeningManagerService_1.name)),
+    __param(1, createLogger(GardeningManagerService_1.name)),
     __metadata("design:paramtypes", [GardeningManagerRepository, Object])
 ], GardeningManagerService);
 export { GardeningManagerService };

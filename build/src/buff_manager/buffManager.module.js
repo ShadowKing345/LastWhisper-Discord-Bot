@@ -11,12 +11,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var BuffManagerModule_1;
-import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { BuffManagerService } from "./buffManager.service.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
@@ -59,18 +58,18 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         ];
     }
     subcommandResolver(interaction) {
-        this.logger.debug(`${chalk.cyan("Command invoked")}, dealing with subcommand options.`);
+        this.logger.debug(`Command invoked, dealing with subcommand options.`);
         const group = interaction.options.getSubcommandGroup();
         const subCommand = interaction.options.getSubcommand();
         if (!(subCommand && group)) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} no ${chalk.blue("subcommand")} or ${chalk.blue("group")} was used.`);
+            this.logger.debug(`Expected Failure:")} no "subcommand" or group was used.`);
             return interaction.reply({
                 content: "Sorry you can only use the group or subcommands not the src command.",
                 ephemeral: true,
             });
         }
         if (!interaction.guildId) {
-            this.logger.debug(`${chalk.red("Expected Failure:")} Command was attempted to be invoked inside of a direct message.`);
+            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
         switch (group) {
@@ -81,7 +80,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                     case BuffManagerModule_1.commands.Buffs.Tomorrow:
                         return this.postTomorrowsBuff(interaction);
                     default:
-                        this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand.`);
+                        this.logger.debug(`Expected Failure: Cannot find subcommand.`);
                         return interaction.reply({
                             content: "Cannot find subcommand.",
                             ephemeral: true,
@@ -94,14 +93,14 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                     case BuffManagerModule_1.commands.Weeks.NextWeek:
                         return this.postNextWeeksBuffs(interaction);
                     default:
-                        this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand.`);
+                        this.logger.debug(`Expected Failure: Cannot find subcommand.`);
                         return interaction.reply({
                             content: "Cannot find subcommand.",
                             ephemeral: true,
                         });
                 }
             default:
-                this.logger.debug(`${chalk.red("Expected Failure:")} Cannot find subcommand group.`);
+                this.logger.debug(`Expected Failure: Cannot find subcommand group.`);
                 return interaction.reply({
                     content: "Cannot find group.",
                     ephemeral: true,
@@ -154,7 +153,7 @@ __decorate([
 ], BuffManagerModule, "commands", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
     singleton(),
-    __param(1, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerModule_1.name)),
+    __param(1, createLogger(BuffManagerModule_1.name)),
     __metadata("design:paramtypes", [BuffManagerService, Object])
 ], BuffManagerModule);
 export { BuffManagerModule };

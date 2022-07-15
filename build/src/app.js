@@ -13,11 +13,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var App_1;
 import chalk from "chalk";
 import { pino } from "pino";
-import { container, injectWithTransform, singleton } from "tsyringe";
+import { container, singleton } from "tsyringe";
 import { AppConfig } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "./shared/logger.js";
+import { createLogger } from "./shared/logger/logger.decorator.js";
 import { Client } from "./shared/models/client.js";
 let App = App_1 = class App {
     appConfig;
@@ -38,10 +38,10 @@ let App = App_1 = class App {
             this.moduleConfiguration.configureModules(this.client);
             this.client.once("ready", () => this.logger.info(chalk.magentaBright("Bot is up and ready to roll!")));
             this.client.on("error", error => this.logger.error(error + error.stack));
-            this.logger.info(`Done loading. ${chalk.green("Ready to run.")}`);
+            this.logger.info(chalk.magenta("Done loading. Ready to run."));
         }
         catch (error) {
-            this.logger.error("An expected error has resulted in the application failing to start.");
+            this.logger.error(chalk.red("An unexpected error has resulted in the application failing to start."));
             this.logger.error(error instanceof Error ? error + error.stack : error);
         }
     }
@@ -61,7 +61,7 @@ let App = App_1 = class App {
 };
 App = App_1 = __decorate([
     singleton(),
-    __param(3, injectWithTransform(LoggerFactory, LoggerFactoryTransformer, App_1.name)),
+    __param(3, createLogger(App_1.name)),
     __metadata("design:paramtypes", [AppConfig,
         DatabaseConfiguration,
         ModuleConfiguration, Object])

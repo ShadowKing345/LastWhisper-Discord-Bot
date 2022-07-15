@@ -5,7 +5,7 @@ import { ManagerUtilsModule } from "../manager_utils/index.js";
 import { PermissionManagerModule } from "../permission_manager/index.js";
 import { RoleManagerModule } from "../role_manager/index.js";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { LoggerFactory } from "../shared/logger.js";
+import { LoggerFactory } from "../shared/logger/logger.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 export declare class ModuleConfiguration extends ConfigurationClass {
