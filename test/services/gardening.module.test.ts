@@ -31,6 +31,7 @@ class MockModule extends GardeningManagerService {
 test("Gardening Module Tests:", async t => {
     let clock: SinonFakeTimers;
     let sandbox: SinonSandbox;
+    let mockedFunction: SinonStub;
 
     let slot: Slot = {
         player: "Shadowking124",
@@ -63,14 +64,14 @@ test("Gardening Module Tests:", async t => {
                         },
                         findOne: async () => config,
                         find: () => ({
-                            toArray: async () => [ config ]
+                            toArray: async () => [ config ],
                         }),
                         replaceOne: async (obj) => {
                             deepMerge(config, obj);
                             return config;
                         },
                     };
-                }
+                },
             };
         }
     }
@@ -96,10 +97,12 @@ test("Gardening Module Tests:", async t => {
     t.before(() => {
         clock = useFakeTimers();
         sandbox = createSandbox();
+        mockedFunction = ImportMock.mockFunction(module, "postChannelMessage", null);
     });
     t.teardown(() => {
         clock.restore();
         sandbox.restore();
+        mockedFunction?.reset();
     });
 
     t.beforeEach(() => {
@@ -123,7 +126,7 @@ test("Gardening Module Tests:", async t => {
             plots: [],
         };
         options = {};
-        (<SinonSpy>interaction.reply).resetHistory();
+        (<SinonSpy> interaction.reply).resetHistory();
         sandbox.reset();
     });
 
@@ -143,8 +146,8 @@ test("Gardening Module Tests:", async t => {
         await t.test("should return void when no plots.", async t => {
             const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
-            t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
-            t.ok((<SinonStub>interaction.reply).calledWith({
+            t.ok((<SinonStub> interaction.reply).called, "Interaction was called.");
+            t.ok((<SinonStub> interaction.reply).calledWith({
                 content: `Sorry but the plot number has to be from 0 to ${config.plots.length - 1}.`,
                 ephemeral: true,
             }), "Called with correct message.");
@@ -154,8 +157,8 @@ test("Gardening Module Tests:", async t => {
 
             const result = await module.validatePlotAndSlot(interaction, config, plotNum, slotNum, true);
             t.notOk(result, "Is null.");
-            t.ok((<SinonStub>interaction.reply).called, "Interaction was called.");
-            t.ok((<SinonStub>interaction.reply).calledWith({
+            t.ok((<SinonStub> interaction.reply).called, "Interaction was called.");
+            t.ok((<SinonStub> interaction.reply).calledWith({
                 content: `Sorry but the slot number has to be from 0 to ${plot.slots.length}.`,
                 ephemeral: true,
             }), "Called with correct message.");
@@ -218,16 +221,6 @@ test("Gardening Module Tests:", async t => {
     });
 
     await t.test("Slot registering", async t => {
-        let mockedFunction: SinonStub;
-
-        t.before(() => {
-            mockedFunction = ImportMock.mockFunction(module, "postChannelMessage", null);
-        });
-
-        t.teardown(() => {
-            mockedFunction?.reset();
-        });
-
         const player = "shadowking1243";
         const plant = "Test";
         const duration = 10;
@@ -388,7 +381,7 @@ test("Gardening Module Tests:", async t => {
             plot.slots.push(slot);
             await module.list(interaction, 0, 0);
 
-            const reply = <SinonStub>interaction.reply;
+            const reply = <SinonStub> interaction.reply;
 
             t.ok(reply.called, "Reply message was called.");
             t.equal(reply.getCall(0).firstArg, "```\n" + `${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0)}` + "```", "Expected reply");
@@ -396,7 +389,7 @@ test("Gardening Module Tests:", async t => {
         await t.test("should show no plots set message when there are no configured slots.", async t => {
             await module.list(interaction, 0, 0);
 
-            const reply = <SinonStub>interaction.reply;
+            const reply = <SinonStub> interaction.reply;
 
             t.ok(reply.called, "Reply message was called.");
             t.strictSame(reply.getCall(0).firstArg, {
@@ -410,16 +403,16 @@ test("Gardening Module Tests:", async t => {
             config.plots.push(plot);
 
             await module.list(interaction, 0, null);
-            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
-            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}\`\`\``, "Was called with the right options.")
+            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub> interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}\`\`\``, "Was called with the right options.");
         });
         await t.test("should post the detailed information about a plot.", async t => {
             config.plots.push(plot);
 
             options["detailed"] = true;
             await module.list(interaction, 0, null);
-            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
-            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0, true)}\`\`\``, "Was called with the right options.")
+            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub> interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0, true)}\`\`\``, "Was called with the right options.");
         });
 
         await t.test("should post the information about a slot.", async t => {
@@ -428,8 +421,8 @@ test("Gardening Module Tests:", async t => {
             plot.slots.push(slot);
 
             await module.list(interaction, 0, 0);
-            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
-            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0, 1)}\`\`\``, "Was called with the right options.")
+            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub> interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0, 1)}\`\`\``, "Was called with the right options.");
         });
 
         await t.test("should post the next reservations.", async t => {
@@ -441,8 +434,8 @@ test("Gardening Module Tests:", async t => {
             slot.next.push(reservation);
 
             await module.list(interaction, 0, 0);
-            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
-            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0, 1)}\`\`\``, "Was called with the right options.")
+            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub> interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0)}${module.printSlotInfo(slot, 0, 1)}\`\`\``, "Was called with the right options.");
         });
 
         await t.test("should post slot unoccupied.", async t => {
@@ -453,16 +446,16 @@ test("Gardening Module Tests:", async t => {
 
             options["detailed"] = true;
             await module.list(interaction, 0, null);
-            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
-            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0, true)}\`\`\``, "Was called with the right options.")
+            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub> interaction.reply).getCall(0).firstArg, `\`\`\`\n${module.printPlotInfo(plot, 0, true)}\`\`\``, "Was called with the right options.");
         });
 
         await t.test("should not post when plot is null.", async t => {
             config.plots.push(plot);
 
             await module.list(interaction, null, 0);
-            t.ok((<SinonStub>interaction.reply).called, "Had the interaction called.");
-            t.strictSame((<SinonStub>interaction.reply).getCall(0).firstArg, {
+            t.ok((<SinonStub> interaction.reply).called, "Had the interaction called.");
+            t.strictSame((<SinonStub> interaction.reply).getCall(0).firstArg, {
                 content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
                 ephemeral: true,
             }, "Was called with the right options.");
@@ -484,7 +477,7 @@ test("Gardening Module Tests:", async t => {
             t.strictSame(config.plots[0].slots[0], slot);
             t.strictSame(config.plots[0].slots[1], null);
         });
-        await t.todo("should remove slots and set next when time has expired.", async t => {
+        await t.test("should remove slots and set next when time has expired.", async t => {
             const reservation = new Reservation("Test", "Test", 400, Reason.GROWING);
             const newSlot = new Slot(reservation.player, reservation.plant, reservation.duration, reservation.reason, DateTime.now().toUnixInteger());
 
@@ -500,7 +493,23 @@ test("Gardening Module Tests:", async t => {
             t.strictSame(config.plots[0].slots[0], newSlot);
         });
 
-        await t.todo("should post message when reservation has expired.");
+        await t.test("should post message when reservation has expired.", async t => {
+            const reservation = new Reservation("Test", "Test", 400, Reason.GROWING);
+            const newSlot = new Slot(reservation.player, reservation.plant, reservation.duration, reservation.reason, DateTime.now().toUnixInteger());
+
+            slot.started = DateTime.now().toUnixInteger();
+            slot.duration = -3;
+
+            slot.next.push(reservation);
+            plot.slots.push(slot);
+            config.plots.push(plot);
+
+            await module.tick({ guilds: { cache: { has: () => true } } } as unknown as Client);
+            t.equal(config.plots[0].slots[0].next.length, 0);
+            t.strictSame(config.plots[0].slots[0], newSlot);
+
+            t.ok(mockedFunction.called, "Function was called.");
+        });
     });
 
     await t.test("Posting channel message", async t => {

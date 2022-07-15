@@ -232,10 +232,9 @@ export class GardeningManagerService {
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId)) continue;
 
-
             for (const plot of config.plots) {
                 for (let index = 0; index < plot.slots.length; index++) {
-                    const slot = plot.slots[index]
+                    const slot = plot.slots[index];
                     if (!slot) continue;
                     if (slot.started + slot.duration > now) continue;
 
@@ -250,6 +249,7 @@ export class GardeningManagerService {
 
         for (const config of altered) {
             this.gardeningConfigRepository.save(config).catch(err => this.logger.error(err));
+            await this.postChannelMessage(client, config, {} as unknown as MessagePostArgs);
         }
     }
 
@@ -286,7 +286,7 @@ export class GardeningManagerService {
     }
 }
 
-class MessagePostArgs {
+export class MessagePostArgs {
     public title: string;
     public description: string;
     public memberUrl: string;
