@@ -4,11 +4,14 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
+import { classes, event, value } from "../shared/logger/colors.js";
 import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
 import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "./models/index.js";
+
+const skipping = event("Skipping");
 
 @singleton()
 export class BuffManagerService {
@@ -49,22 +52,22 @@ export class BuffManagerService {
 
     public async tryGetConfig(interaction: CommandInteraction): Promise<[ BuffManagerConfig, boolean ]> {
         const guildId = interaction.guildId;
-        this.logger.debug(`Attempting to acquire configuration for guild ${guildId}.`);
+        this.logger.debug(`Attempting to acquire configuration for guild ${value(guildId)}.`);
         const config: BuffManagerConfig = await this.findOneOrCreate(guildId);
 
         if (config.buffs.length <= 0) {
             await interaction.reply({ content: "Sorry, there are not buffs set.", ephemeral: true });
-            this.logger.debug(`Expected Failure:")} No buffs were set in config.`);
+            this.logger.debug(`No ${classes("buffs")} were set in config.`);
             return [ null, false ];
         }
 
         if (config.weeks.filter(week => !("isEnabled" in week) || week.isEnabled).length <= 0) {
             await interaction.reply({ content: "Sorry, there are not enabled weeks set.", ephemeral: true });
-            this.logger.debug(`Expected Failure:")} No weeks were set in config.`);
+            this.logger.debug(`No ${classes("weeks")} were set in config.`);
             return [ null, false ];
         }
 
-        this.logger.debug(`Success: Returning results.`);
+        this.logger.debug(`Returning results.`);
         return [ config, true ];
     }
 
@@ -74,12 +77,12 @@ export class BuffManagerService {
             return;
         }
 
-        this.logger.debug(`Command invoked for buffs.`);
+        this.logger.debug(`Command invoked for ${classes("buffs")}.`);
 
         const date = today ? DateTime.now() : DateTime.now().plus({ days: 1 });
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
 
-        this.logger.debug(`Posting buff message for the date ${chalk.yellow(date.toISO())}`);
+        this.logger.debug(`Posting ${classes("buff message")} for the date ${value(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
         const buffId = Days.toArray(week.days)[date.get("weekday")];
         const buff = config.buffs.find(day => day.id === buffId);
@@ -89,7 +92,7 @@ export class BuffManagerService {
                 content: `Sorry, but the buff with id **${buffId}** does not actually exist!\nKindly contact your FC Admin / Manager to fix this issue.`,
                 ephemeral: true,
             });
-            this.logger.debug(`Expected Failure:")} Buff with id ${chalk.yellow(buffId)} does not exist.`);
+            this.logger.debug(`${classes("Buff")} with id ${value(buffId)} does not exist.`);
             return;
         }
 
@@ -102,24 +105,22 @@ export class BuffManagerService {
             return;
         }
 
-        this.logger.debug(`Command invoked for weeks.`);
+        this.logger.debug(`Command invoked for ${classes("weeks")}.`);
 
         const date = thisWeek ? DateTime.now() : DateTime.now().plus({ week: 1 });
         const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
 
-        this.logger.debug(`Posting week message for ${date.toISO()}`);
+        this.logger.debug(`Posting ${classes("week message")} for ${value(date.toISO())}`);
         const filteredWeeks = config.weeks.filter(week => week.isEnabled);
         const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
-        await interaction.reply({
-            embeds: [ this.createWeekEmbed(title, week, config.buffs, date) ],
-        });
+        await interaction.reply({ embeds: [ this.createWeekEmbed(title, week, config.buffs, date) ] });
     }
 
     public async postDailyMessage(client: Client): Promise<void> {
         if (!client.isReady()) {
             await Task.waitTillReady(client);
         }
-        this.logger.debug(chalk.cyan("TASK: ") + "Posting daily buff message.");
+        this.logger.debug("Posting daily buff message.");
 
         const configs: BuffManagerConfig[] = await this.buffManagerConfigRepository.getAll();
         const now: DateTime = DateTime.now();
@@ -127,13 +128,13 @@ export class BuffManagerService {
         for (const config of configs) {
             try {
                 if (!client.guilds.cache.has(config.guildId)) {
-                    this.logger.warn(`Expected Failure: There is a config listing for the guild with ID ${config.guildId}, which the bot is currently not a member of. Please remove configuration. Skipping...`);
+                    this.logger.warn(`There is a configuration for the ${classes("guild")} with ID ${value(config.guildId)}, which the bot is currently not a member of. Please remove configuration. ${skipping}...`);
                     continue;
                 }
 
                 const guild: Guild | null = await client.guilds.fetch(config.guildId);
                 if (!guild) {
-                    this.logger.error(`Fetch guild with ID ${chalk.yellow(config.guildId)} returned nothing. Skipping...`);
+                    this.logger.error(`Fetch guild with ID ${chalk.yellow(config.guildId)} returned nothing. ${skipping}...`);
                     continue;
                 }
 
@@ -144,7 +145,7 @@ export class BuffManagerService {
 
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
                 if (!channel?.isText) {
-                    this.logger.warn(`Invalid channel ${messageSettings.channelId}  ID for ${config.guildId}. Skipping...`);
+                    this.logger.warn(`Invalid channel ${value(messageSettings.channelId)}  ID for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);
                     continue;
                 }
 
@@ -154,7 +155,7 @@ export class BuffManagerService {
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {
-                    this.logger.warn(`Invalid buff ID ${buffId} for guild ${config.guildId}. Skipping...`);
+                    this.logger.warn(`Invalid buff ID ${value(buffId)} for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);
                     continue;
                 }
 
@@ -167,10 +168,8 @@ export class BuffManagerService {
                         embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ],
                     });
                 }
-            } catch (err) {
-                if (err instanceof Error) {
-                    this.logger.error(err.stack);
-                }
+            } catch (error: Error | unknown) {
+                this.logger.error(error instanceof Error ? error + error.stack : error);
             }
         }
     }

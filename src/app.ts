@@ -30,9 +30,9 @@ export class App {
             this.client.once("ready", () => this.logger.info(chalk.magentaBright("Bot is up and ready to roll!")));
             this.client.on("error", error => this.logger.error(error + error.stack));
 
-            this.logger.info(`Done loading. Ready to run.`);
+            this.logger.info(chalk.magenta("Done loading. Ready to run."));
         } catch (error: Error | unknown) {
-            this.logger.error("An expected error has resulted in the application failing to start.");
+            this.logger.error(chalk.red("An unexpected error has resulted in the application failing to start."));
             this.logger.error(error instanceof Error ? error + error.stack : error);
         }
     }

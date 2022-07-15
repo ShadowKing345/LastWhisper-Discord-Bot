@@ -178,18 +178,11 @@ For the logger level:
 
 For the logger message:
 
-***Todo: Change colors to make more visual sense***
-
-| Color          | Meaning or Usage                                                                          |
-|----------------|-------------------------------------------------------------------------------------------|
-| Bright Blue    | Modules, Services, or Repositories.                                                       |
-| Blue           | Models or Class objects.                                                                  |
-| Bright Yellow  | Context color.                                                                            |
-| Yellow         | Information provided by the client. Eg, guildId, clientId, messageID.                     |
-| Bright Magenta | Bot event specific actions. Eg, ready message, interaction invocation, on error messages. |
-| Cyan           | Actions executed internally. Setup of commands for example.                               |
-| Green          | Successfully execution or initialization. Think of it as something good has happened.     |
-| Red            | Failure of execution or initialization. Think of it as something bad has happened.        |
+| Color  | Meaning or Usage          |
+|--------|---------------------------|
+| Yellow | Any object value          |
+| Red    | Classes                   |
+| Green  | Events (Skipping, etc...) |
 
 In case of too many logger calls preventing your for seeing the information in the terminal property, you can use a
 background color such as bgRed. This however should only be used for at the time debugging information and should not be
