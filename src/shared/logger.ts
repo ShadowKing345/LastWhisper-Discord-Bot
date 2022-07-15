@@ -13,9 +13,7 @@ export enum LOGGING_LEVELS {
 
 @singleton()
 export class LoggerFactory {
-    constructor(
-        private appConfigs: AppConfig,
-    ) {
+    constructor(private appConfigs: AppConfig) {
     }
 
     buildLogger(name: string): pino.Logger {
