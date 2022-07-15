@@ -1,8 +1,7 @@
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { Transform } from "tsyringe/dist/typings/types/index.js";
 
-import { AppConfig } from "../config/app_configs/index.js";
+import { AppConfig } from "../../config/app_configs/index.js";
 
 export enum LOGGING_LEVELS {
     debug = "debug",
@@ -31,8 +30,3 @@ export class LoggerFactory {
     }
 }
 
-export class LoggerFactoryTransformer implements Transform<LoggerFactory, pino.Logger> {
-    public transform(incoming: LoggerFactory, args: any): pino.Logger {
-        return incoming.buildLogger(args);
-    }
-}

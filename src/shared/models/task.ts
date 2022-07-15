@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { Client as DiscordClient } from "discord.js";
 import { container } from "tsyringe";
 
-import { LoggerFactory } from "../logger.js";
+import { LoggerFactory } from "../logger/logger.js";
 import { Client } from "./client.js";
 
 export class Task {

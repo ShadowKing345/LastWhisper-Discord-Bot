@@ -5,7 +5,7 @@ import { container, singleton } from "tsyringe";
 import { AppConfig } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { createLogger } from "./shared/logger.decorator.js";
+import { createLogger } from "./shared/logger/logger.decorator.js";
 import { Client } from "./shared/models/client.js";
 import { ModuleBase } from "./shared/models/moduleBase.js";
 

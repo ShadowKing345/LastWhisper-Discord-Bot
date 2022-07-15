@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../shared/logger.decorator.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";

@@ -3,7 +3,7 @@ import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { createLogger } from "../shared/logger.decorator.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 
 export class Database extends Db {

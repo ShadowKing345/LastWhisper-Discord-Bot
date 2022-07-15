@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../shared/logger.decorator.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";

@@ -4,7 +4,7 @@ import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 
 import { App } from "../app.js";
-import { LoggerFactory } from "../shared/logger.js";
+import { LoggerFactory } from "../shared/logger/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
 import { AppConfig, CommandRegistrationConfiguration } from "./app_configs/index.js";
 

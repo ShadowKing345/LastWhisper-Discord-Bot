@@ -3,7 +3,7 @@ import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, React
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../shared/logger.decorator.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";

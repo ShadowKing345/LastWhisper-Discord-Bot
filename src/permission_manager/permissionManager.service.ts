@@ -3,7 +3,7 @@ import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js"
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../shared/logger.decorator.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";

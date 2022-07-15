@@ -11,7 +11,7 @@ import { ManagerUtilsModule } from "../manager_utils/index.js";
 import { PermissionManagerModule } from "../permission_manager/index.js";
 import { RoleManagerModule } from "../role_manager/index.js";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { LoggerFactory } from "../shared/logger.js";
+import { LoggerFactory } from "../shared/logger/logger.js";
 import { Client } from "../shared/models/client.js";
 import { BuildCommand, Command } from "../shared/models/command.js";
 import { Listener } from "../shared/models/listener.js";

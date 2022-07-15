@@ -4,7 +4,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { createLogger } from "../shared/logger.decorator.js";
+import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { BuffManagerService } from "./buffManager.service.js";
