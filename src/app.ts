@@ -41,6 +41,14 @@ export class App {
         return this.client.login(this.appConfig.token);
     }
 
+    public async stop(): Promise<void> {
+        this.logger.info("Stopping application.");
+        this.moduleConfiguration.cleanup();
+        this.client.destroy();
+        await this.databaseService.disconnect();
+        this.logger.info("Done. Have a nice day!");
+    }
+
     public get modules(): ModuleBase[] {
         return this.moduleConfiguration?.modules ?? [];
     }
@@ -54,10 +62,13 @@ export async function botMain() {
         const app: App = container.resolve(App);
         await app.init();
 
+        process.on("SIGTERM", () => app.stop())
+            .on("SIGINT", () => app.stop())
+            .on("SIGKILL", () => app.stop())
+            .on("uncaughtException", () => app.stop());
+
         await app.run();
     } catch (error: Error | unknown) {
         console.error(error instanceof Error ? error + error.stack : error);
-    } finally {
-        console.log("Good bye!");
     }
 }

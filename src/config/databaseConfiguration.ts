@@ -55,9 +55,6 @@ export class DatabaseConfiguration extends ConfigurationClass {
                 this._client.close();
             });
             container.register<MongoClient>(MongoClient, { useValue: this._client });
-
-            process.once("SIGINT", () => this._client.close());
-            process.once("SIGTERM", () => this._client.close());
         }
 
         if (!this._db) {
@@ -74,5 +71,10 @@ export class DatabaseConfiguration extends ConfigurationClass {
 
     public get client(): MongoClient {
         return this._client;
+    }
+
+    public disconnect(): Promise<void> {
+        this.logger.info("Disconnecting from database.");
+        return this._client?.close();
     }
 }

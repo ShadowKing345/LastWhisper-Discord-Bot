@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
 import { pino } from "pino";
+import { clearInterval } from "timers";
 import { singleton } from "tsyringe";
 
 import { BuffManagerModule } from "../buff_manager/index.js";
@@ -138,6 +139,12 @@ export class ModuleConfiguration extends ConfigurationClass {
 
         this.loggers.module.debug(`Setting up ${chalk.cyan("interaction event")}...`);
         client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+    }
+
+    public cleanup() {
+        this.loggers.module.info("Cleaning up module configurations.");
+        clearTimeout();
+        clearInterval();
     }
 
     public get modules(): ModuleBase[] {
