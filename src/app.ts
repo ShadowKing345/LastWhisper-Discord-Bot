@@ -64,7 +64,6 @@ export async function botMain() {
 
         process.on("SIGTERM", () => app.stop())
             .on("SIGINT", () => app.stop())
-            .on("SIGKILL", () => app.stop())
             .on("uncaughtException", () => app.stop());
 
         await app.run();
