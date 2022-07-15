@@ -20,7 +20,7 @@ export class RoleManagerModule extends ModuleBase {
     }
     constructor(
         private roleManagerService: RoleManagerService,
-        private permissionManager: PermissionManagerService,
+        permissionManager: PermissionManagerService,
         @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerModule.name) private logger: pino.Logger,
     ) {
         super();

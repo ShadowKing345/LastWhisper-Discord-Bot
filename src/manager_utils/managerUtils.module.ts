@@ -1,7 +1,7 @@
 import { CommandInteraction, GuildBan, GuildMember } from "discord.js";
 import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { ManagerUtilsService } from "./managerUtils.service.js";
 
@@ -12,12 +12,9 @@ export class ManagerUtilsModule extends ModuleBase {
     private static readonly commands = {
         $index: "manager_utils",
         Clear: "clear",
-    }
+    };
 
-    constructor(
-        private managerUtilsService: ManagerUtilsService,
-        private permissionManager: PermissionManagerService,
-    ) {
+    constructor(private managerUtilsService: ManagerUtilsService) {
         super();
 
         this.moduleName = "ManagerUtils";
@@ -31,10 +28,10 @@ export class ManagerUtilsModule extends ModuleBase {
                     .addNumberOption(option => option
                         .setName("amount")
                         .setDescription("The amount of messages to clear. Default 10.")
-                        .setRequired(false)
-                    )
+                        .setRequired(false),
+                    ),
                 ),
-            run: interaction => this.subcommandResolver(interaction)
+            run: interaction => this.subcommandResolver(interaction),
         } ];
         this.listeners = [
             { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
