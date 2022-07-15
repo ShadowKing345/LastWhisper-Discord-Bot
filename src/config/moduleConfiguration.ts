@@ -1,7 +1,7 @@
 import chalk from "chalk";
-import { CommandInteraction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { BuffManagerModule } from "../buff_manager/index.js";
 import { EventManagerModule } from "../event_manager/index.js";
@@ -10,126 +10,136 @@ import { ManagerUtilsModule } from "../manager_utils/index.js";
 import { PermissionManagerModule } from "../permission_manager/index.js";
 import { RoleManagerModule } from "../role_manager/index.js";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { LoggerFactory } from "../shared/logger.js";
 import { Client } from "../shared/models/client.js";
 import { BuildCommand, Command } from "../shared/models/command.js";
 import { Listener } from "../shared/models/listener.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
+import { Task } from "../shared/models/task.js";
 
 @singleton()
 export class ModuleConfiguration extends ConfigurationClass {
-    private static readonly loggerMeta = {
-        moduleConfiguration: { context: "ModuleConfiguration" },
-        interaction: { context: "InteractionInvoking" },
-    };
+    private readonly _modules: ModuleBase[];
+    private readonly loggers: { module: pino.Logger, interaction: pino.Logger, event: pino.Logger, task: pino.Logger };
 
     constructor(
-        private buffManagerModule: BuffManagerModule,
-        private eventManagerModule: EventManagerModule,
-        private gardeningManagerModule: GardeningManagerModule,
-        private managerUtilsModule: ManagerUtilsModule,
-        private roleManagerModule: RoleManagerModule,
-        private permissionManagerModule: PermissionManagerModule,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, ModuleConfiguration.name) private logger: pino.Logger,
+        buffManagerModule: BuffManagerModule,
+        eventManagerModule: EventManagerModule,
+        gardeningManagerModule: GardeningManagerModule,
+        managerUtilsModule: ManagerUtilsModule,
+        roleManagerModule: RoleManagerModule,
+        permissionManagerModule: PermissionManagerModule,
+        loggerFactory: LoggerFactory,
     ) {
         super();
-    }
-
-    get modules(): ModuleBase[] {
-        return [
-            this.buffManagerModule,
-            this.eventManagerModule,
-            this.gardeningManagerModule,
-            this.managerUtilsModule,
-            this.roleManagerModule,
-            this.permissionManagerModule,
+        this.loggers = {
+            module: loggerFactory.buildLogger("ModuleConfiguration"),
+            interaction: loggerFactory.buildLogger("InteractionExecution"),
+            event: loggerFactory.buildLogger("EventExecution"),
+            task: loggerFactory.buildLogger("TimerExecution"),
+        };
+        this._modules = [
+            buffManagerModule,
+            eventManagerModule,
+            gardeningManagerModule,
+            managerUtilsModule,
+            roleManagerModule,
+            permissionManagerModule,
         ];
     }
 
-    async runEvent(listeners: Listener[], client: Client, ...args: any[]) {
-        for (let i = 0; i < listeners.length; i++) {
-            try {
-                await listeners[i].run(client, ...args);
-            } catch (error) {
-                if (error instanceof Error) {
-                    this.logger.error(error.stack, { context: "EventRunner" });
+    private async interactionEvent(interaction: Interaction): Promise<void> {
+        this.loggers.module.debug(chalk.magentaBright("Interaction Innovated"));
+
+        try {
+            if (interaction.isButton()) {
+                this.loggers.module.debug(chalk.magentaBright("Confirmed Button Interaction."));
+                // todo: setup buttons.
+            }
+
+            if (interaction.isCommand()) {
+                this.loggers.module.debug(chalk.magentaBright("Confirmed Command Interaction."));
+                const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
+                if (!command) {
+                    this.loggers.module.debug(`No command found with name: ${chalk.yellow(interaction.commandName)}.`);
+                    return;
+                }
+
+                await command.run(interaction);
+            }
+        } catch (error: Error | unknown) {
+            this.loggers.interaction.error(error instanceof Error ? error + error.stack : error);
+
+            if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
+                if (interaction.deferred) {
+                    await interaction.editReply({ content: "There was an internal error that occurred when using this interaction." });
+                } else {
+                    await interaction.reply({
+                        content: "There was an internal error that occurred when using this interaction.",
+                        ephemeral: true,
+                    });
                 }
             }
         }
     }
 
-    configureModules(client: Client) {
-        client.on("interactionCreate", async (interaction) => {
-            this.logger.debug(chalk.magentaBright("Interaction Innovated"), ModuleConfiguration.loggerMeta.interaction);
-
+    private async runEvent(listeners: Listener[], client: Client, ...args: any[]): Promise<void> {
+        for (let i = 0; i < listeners.length; i++) {
             try {
-                if (interaction.isButton()) {
-                    this.logger.debug(chalk.magentaBright("Confirmed Button Interaction."), ModuleConfiguration.loggerMeta.interaction);
-                    // todo: setup buttons.
-                }
-
-                if (interaction.isCommand()) {
-                    this.logger.debug(chalk.magentaBright("Confirmed Command Interaction."), ModuleConfiguration.loggerMeta.interaction);
-                    const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
-                    if (!command) {
-                        this.logger.debug(`No command found with name: ${chalk.yellow(interaction.commandName)}.`, ModuleConfiguration.loggerMeta.interaction);
-                        return;
-                    }
-
-                    await command.run(interaction);
-                }
-            } catch (err) {
-                if (interaction instanceof CommandInteraction && !interaction.replied) {
-                    if (interaction.deferred) {
-                        await interaction.editReply({
-                            content: "There was an internal issue executing the command",
-                        });
-                    } else {
-                        await interaction.reply({
-                            content: "There was an internal issue executing the command",
-                            ephemeral: true,
-                        });
-                    }
-                }
-                this.logger.error((err as Error).stack, ModuleConfiguration.loggerMeta.interaction);
+                await listeners[i].run(client, ...args);
+            } catch (error: Error | unknown) {
+                this.loggers.event.error(error instanceof Error ? error + error.stack : error);
             }
-        });
+        }
+    }
 
-        this.modules.forEach(module => {
-            this.logger.info(`Setting up module ${chalk.blueBright(module.moduleName)}`, ModuleConfiguration.loggerMeta.moduleConfiguration);
-            client.modules.set(module.moduleName, module);
-
-            this.logger.debug(`Setting up ${chalk.cyan("commands")}...`, ModuleConfiguration.loggerMeta.moduleConfiguration);
-            module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
-
-            this.logger.debug(`Setting up ${chalk.cyan("listeners")}...`, ModuleConfiguration.loggerMeta.moduleConfiguration);
-            module.listeners.forEach(listener => {
-                let listeners = client.moduleListeners.get(listener.event);
-                if (!listeners) {
-                    listeners = [];
+    private async runTask(task: Task, client: Client): Promise<void> {
+        try {
+            client.tasks.set(task.name, task);
+            setInterval(async () => {
+                try {
+                    await task.run(client);
+                } catch (error: Error | unknown) {
+                    this.loggers.task.error(error instanceof Error ? error + error.stack : error);
                 }
-                listeners.push(listener);
-                client.moduleListeners.set(listener.event, listeners);
-            });
+            }, task.timeout, client);
+            await task.run(client);
+        } catch (error: Error | unknown) {
+            this.loggers.task.error(error instanceof Error ? error + error.stack : error);
+        }
+    }
 
-            this.logger.debug(`Setting up ${chalk.cyan("tasks")}...`, ModuleConfiguration.loggerMeta.moduleConfiguration);
-            module.tasks.forEach(task => {
-                client.tasks.set(task.name, task);
-                setInterval(task.run, task.timeout, client);
-                task.run(client).catch(err => console.error(err));
-            });
-        });
+    public configureModules(client: Client): void {
+        for (const module of this.modules) {
+            try {
+                this.loggers.module.info(`Setting up module ${chalk.blueBright(module.moduleName)}`);
+                client.modules.set(module.moduleName, module);
 
-        this.logger.debug(`Setting up ${chalk.cyan("events")}...`, ModuleConfiguration.loggerMeta.moduleConfiguration);
-        client.moduleListeners.forEach((listener, event) => {
-            switch (event) {
-                case "ready":
-                    client.once(event, async (...args) => this.runEvent(listener, client, ...args));
-                    break;
-                default:
-                    client.on(event, async (...args) => this.runEvent(listener, client, ...args));
-                    break;
+                this.loggers.module.debug(`Setting up ${chalk.cyan("commands")}...`);
+                module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
+
+                this.loggers.module.debug(`Setting up ${chalk.cyan("listeners")}...`);
+                module.listeners.forEach(listener => {
+                    const listeners = client.moduleListeners.get(listener.event) ?? [];
+                    listeners.push(listener);
+                    client.moduleListeners.set(listener.event, listeners);
+                });
+
+                this.loggers.module.debug(`Setting up ${chalk.cyan("tasks")}...`);
+                module.tasks.forEach(task => this.runTask(task, client));
+            } catch (error: Error | unknown) {
+                this.loggers.module.error(error instanceof Error ? error + error.stack : error);
             }
-        });
+        }
+
+        this.loggers.module.debug(`Setting up ${chalk.cyan("events")}...`);
+        client.moduleListeners.forEach((listener, event) => client.on(event, async (...args) => this.runEvent(listener, client, ...args)));
+
+        this.loggers.module.debug(`Setting up ${chalk.cyan("interaction event")}...`);
+        client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+    }
+
+    private get modules(): ModuleBase[] {
+        return this._modules;
     }
 }
