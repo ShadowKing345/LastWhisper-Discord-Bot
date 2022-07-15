@@ -1,9 +1,9 @@
 import chalk from "chalk";
 import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { createLogger } from "../shared/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
@@ -15,7 +15,7 @@ export class RoleManagerService {
 
     constructor(
         private roleManagerConfigRepository: RoleManagerRepository,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerService.name) private logger: pino.Logger,
+        @createLogger(RoleManagerService.name) private logger: pino.Logger,
     ) {
     }
 

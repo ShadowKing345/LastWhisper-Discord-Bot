@@ -2,9 +2,9 @@ import chalk from "chalk";
 import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { createLogger } from "../shared/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
@@ -16,7 +16,7 @@ export class BuffManagerService {
 
     constructor(
         private buffManagerConfigRepository: BuffManagerRepository,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, BuffManagerService.name) private logger: pino.Logger,
+        @createLogger(BuffManagerService.name) private logger: pino.Logger,
     ) {
     }
 

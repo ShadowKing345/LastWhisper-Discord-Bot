@@ -1,9 +1,9 @@
 import { CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { createLogger } from "../shared/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { InvalidArgumentError } from "../shared/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
@@ -13,7 +13,7 @@ import { GardeningConfig, Plot, Reason, Reservation, Slot } from "./models/index
 export class GardeningManagerService {
     constructor(
         private gardeningConfigRepository: GardeningManagerRepository,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, GardeningManagerService.name) private logger: pino.Logger,
+        @createLogger(GardeningManagerService.name) private logger: pino.Logger,
     ) {
     }
 

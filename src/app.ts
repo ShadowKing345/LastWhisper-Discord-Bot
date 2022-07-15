@@ -1,11 +1,11 @@
 import chalk from "chalk";
 import { pino } from "pino";
-import { container, injectWithTransform, singleton } from "tsyringe";
+import { container, singleton } from "tsyringe";
 
 import { AppConfig } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "./shared/logger.js";
+import { createLogger } from "./shared/logger.decorator.js";
 import { Client } from "./shared/models/client.js";
 import { ModuleBase } from "./shared/models/moduleBase.js";
 
@@ -17,7 +17,7 @@ export class App {
         private appConfig: AppConfig,
         private databaseService: DatabaseConfiguration,
         private moduleConfiguration: ModuleConfiguration,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, App.name) private logger: pino.Logger,
+        @createLogger(App.name) private logger: pino.Logger,
     ) {
         this.client = new Client();
     }

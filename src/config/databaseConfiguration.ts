@@ -1,9 +1,9 @@
 import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
-import { container, injectWithTransform, singleton } from "tsyringe";
+import { container, singleton } from "tsyringe";
 
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { createLogger } from "../shared/logger.decorator.js";
 import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 
 export class Database extends Db {
@@ -16,7 +16,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
 
     constructor(
         private appConfigs: AppConfig,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, DatabaseConfiguration.name) private logger: pino.Logger,
+        @createLogger(DatabaseConfiguration.name) private logger: pino.Logger,
     ) {
         super();
     }
@@ -45,7 +45,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     }
 
     async connectClient(): Promise<MongoClient> {
-        this.logger.info("Creating Db Client");
+        this.logger.info("Creating Db Client.");
         const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
 
         if (!this._client) {

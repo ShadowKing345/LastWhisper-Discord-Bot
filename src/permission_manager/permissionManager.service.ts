@@ -1,9 +1,9 @@
 import chalk from "chalk";
 import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { createLogger } from "../shared/logger.decorator.js";
 import { deepMerge } from "../shared/utils.js";
 import { PermissionKeys } from "./addCommandKeys.decorator.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";
@@ -13,7 +13,7 @@ import { PermissionManagerRepository } from "./permissionManager.repository.js";
 export class PermissionManagerService {
     constructor(
         private permissionManagerRepository: PermissionManagerRepository,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, PermissionManagerService.name) private logger: pino.Logger,
+        @createLogger(PermissionManagerService.name) private logger: pino.Logger,
     ) {
     }
 

@@ -1,10 +1,10 @@
 import chalk from "chalk";
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { injectWithTransform, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize, PermissionManagerService } from "../permission_manager/index.js";
-import { LoggerFactory, LoggerFactoryTransformer } from "../shared/logger.js";
+import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { createLogger } from "../shared/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { RoleManagerService } from "./roleManager.service.js";
@@ -20,8 +20,7 @@ export class RoleManagerModule extends ModuleBase {
     }
     constructor(
         private roleManagerService: RoleManagerService,
-        permissionManager: PermissionManagerService,
-        @injectWithTransform(LoggerFactory, LoggerFactoryTransformer, RoleManagerModule.name) private logger: pino.Logger,
+        @createLogger(RoleManagerModule.name) private logger: pino.Logger,
     ) {
         super();
 
