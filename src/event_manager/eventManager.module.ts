@@ -36,7 +36,7 @@ export class EventManagerModule extends ModuleBase {
             {
                 name: `${this.moduleName}#postMessageTask`,
                 timeout: 60000,
-                run: async client => await this.reminderLoop(client),
+                run: client => this.reminderLoop(client),
             },
         ];
     }

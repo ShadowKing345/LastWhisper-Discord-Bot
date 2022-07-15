@@ -45,6 +45,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     }
 
     async connectClient(): Promise<MongoClient> {
+        this.logger.info("Creating Db Client");
         const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
 
         if (!this._client) {
@@ -68,7 +69,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     }
 
     public get db(): Database {
-        return this._db
+        return this._db;
     }
 
     public get client(): MongoClient {

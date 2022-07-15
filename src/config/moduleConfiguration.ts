@@ -110,6 +110,7 @@ export class ModuleConfiguration extends ConfigurationClass {
     }
 
     public configureModules(client: Client): void {
+        this.loggers.module.info("Loading modules.");
         for (const module of this.modules) {
             try {
                 this.loggers.module.info(`Setting up module ${chalk.blueBright(module.moduleName)}`);
@@ -139,7 +140,7 @@ export class ModuleConfiguration extends ConfigurationClass {
         client.on("interactionCreate", interaction => this.interactionEvent(interaction));
     }
 
-    private get modules(): ModuleBase[] {
+    public get modules(): ModuleBase[] {
         return this._modules;
     }
 }
