@@ -20,6 +20,7 @@ import { Task } from "../shared/models/task.js";
 
 @singleton()
 export class ModuleConfiguration extends ConfigurationClass {
+    private readonly intervalIds: number[] = [];
     private readonly _modules: ModuleBase[];
     private readonly loggers: { module: pino.Logger, interaction: pino.Logger, event: pino.Logger, task: pino.Logger };
 
@@ -97,13 +98,13 @@ export class ModuleConfiguration extends ConfigurationClass {
     private async runTask(task: Task, client: Client): Promise<void> {
         try {
             client.tasks.set(task.name, task);
-            setInterval(async () => {
+            this.intervalIds.push(setInterval(async () => {
                 try {
                     await task.run(client);
                 } catch (error: Error | unknown) {
                     this.loggers.task.error(error instanceof Error ? error + error.stack : error);
                 }
-            }, task.timeout, client);
+            }, task.timeout, client));
             await task.run(client);
         } catch (error: Error | unknown) {
             this.loggers.task.error(error instanceof Error ? error + error.stack : error);
@@ -143,8 +144,9 @@ export class ModuleConfiguration extends ConfigurationClass {
 
     public cleanup() {
         this.loggers.module.info("Cleaning up module configurations.");
-        clearTimeout();
-        clearInterval();
+        for (const id of this.intervalIds) {
+            clearInterval(id);
+        }
     }
 
     public get modules(): ModuleBase[] {
