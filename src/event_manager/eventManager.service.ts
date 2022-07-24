@@ -13,7 +13,7 @@ export class EventManagerService {
     constructor(private eventManagerRepository: EventManagerRepository) {
     }
 
-    private static parseTriggerDuration(triggerTime: string) {
+    protected static parseTriggerDuration(triggerTime: string) {
         const hold = DateTime.fromFormat(triggerTime, "HH:mm");
         return Duration.fromObject({ hours: hold.get("hour"), minutes: hold.get("minute") });
     }
@@ -166,7 +166,8 @@ export class EventManagerService {
                         for (const event of config.events) {
                             const eventTime = DateTime.fromSeconds(event.dateTime);
                             if (Math.abs(eventTime.diff(now, "days").get("day")) > 1) continue;
-                            if (eventTime.get("minute") === triggerTime.as("minutes")) {
+                            const difference = eventTime.minus(triggerTime);
+                            if (difference.get("hour") === now.get("hour") && difference.get("minute") === now.get("minute")) {
                                 const messageValues: { [key: string]: string } = {
                                     "%everyone%": "@everyone",
                                     "%eventName%": event.name,
