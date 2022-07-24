@@ -169,7 +169,8 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
                             const eventTime = DateTime.fromSeconds(event.dateTime);
                             if (Math.abs(eventTime.diff(now, "days").get("day")) > 1)
                                 continue;
-                            if (eventTime.get("minute") === triggerTime.as("minutes")) {
+                            const difference = eventTime.minus(triggerTime);
+                            if (difference.get("hour") === now.get("hour") && difference.get("minute") === now.get("minute")) {
                                 const messageValues = {
                                     "%everyone%": "@everyone",
                                     "%eventName%": event.name,
