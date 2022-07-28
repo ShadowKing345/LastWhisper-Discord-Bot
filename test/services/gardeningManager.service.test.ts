@@ -3,16 +3,22 @@ import "reflect-metadata";
 import { jest } from "@jest/globals";
 import { CommandInteraction } from "discord.js";
 import { DateTime } from "luxon";
-import { container, injectable } from "tsyringe";
+import { pino } from "pino";
+import { container, singleton } from "tsyringe";
 
 import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
-import { GardeningConfig, GardeningManagerService, Plot, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
+import { GardeningConfig, GardeningManagerRepository, GardeningManagerService, Plot, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
+import { createLogger } from "../../src/shared/logger/logger.decorator.js";
 import { Client } from "../../src/shared/models/client.js";
 import { InvalidArgumentError } from "../../src/shared/models/errors.js";
-import { deepMerge } from "../../src/shared/utils.js";
+import { MockDatabase } from "../utils/mockDatabase.js";
 
-@injectable()
+@singleton()
 class MockModule extends GardeningManagerService {
+    constructor(gardeningConfigRepository: GardeningManagerRepository, @createLogger(GardeningManagerService.name) logger: pino.Logger) {
+        super(gardeningConfigRepository, logger);
+    }
+
     public postChannelMessage = jest.fn() as any;
 
     public validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true) {
@@ -28,7 +34,7 @@ class MockModule extends GardeningManagerService {
     }
 }
 
-describe("Gardening Module Tests:", () => {
+describe("The garden service's", () => {
     let slot: Slot = {
         player: "Shadowking124",
         duration: 3,
@@ -49,33 +55,8 @@ describe("Gardening Module Tests:", () => {
         plots: [],
     };
 
-    class mockDb {
-        get db() {
-            return {
-                collection: () => {
-                    return {
-                        findOneAndReplace: async (_, obj) => {
-                            Object.assign(config, obj);
-                            return config;
-                        },
-                        findOne: async () => config,
-                        find: () => ({
-                            toArray: async () => [ config ],
-                        }),
-                        replaceOne: async (obj) => {
-                            deepMerge(config, obj);
-                            return config;
-                        },
-                    };
-                },
-            };
-        }
-    }
-
-    container.register<DatabaseConfiguration>(DatabaseConfiguration, {
-        useValue: new mockDb() as unknown as DatabaseConfiguration,
-    });
-    const module = container.resolve(MockModule);
+    const mockDb: MockDatabase = container.registerSingleton(DatabaseConfiguration, MockDatabase).resolve(DatabaseConfiguration) as MockDatabase;
+    const module: MockModule = container.resolve(MockModule);
 
     let options = {};
 
@@ -83,19 +64,11 @@ describe("Gardening Module Tests:", () => {
         reply: jest.fn(),
         client: {},
         member: { displayName: "", displayAvatarURL: () => "" },
-        options: {
-            getBoolean: (key: string) => {
-                return options[key] ?? null;
-            },
-        },
+        options: { getBoolean: (key: string) => { return options[key] ?? null; } },
     } as unknown as CommandInteraction;
 
-    beforeAll(() => {
-        jest.useFakeTimers();
-    });
-    afterAll(() => {
-        jest.useRealTimers();
-    });
+    beforeAll(() => jest.useFakeTimers());
+    afterAll(() => jest.useRealTimers());
 
     beforeEach(() => {
         slot = {
@@ -118,8 +91,9 @@ describe("Gardening Module Tests:", () => {
             plots: [],
         };
         options = {};
+        mockDb.config = config;
         (interaction.reply as jest.Mock).mockReset();
-        module.postChannelMessage.mockReset();
+        (module.postChannelMessage as jest.Mock).mockReset();
     });
 
     describe("Validation of Plots and Slots", () => {
@@ -154,10 +128,10 @@ describe("Gardening Module Tests:", () => {
             expect(result[1]).toBeFalsy();
         });
 
-        test("should throw when argument is null:", async () => {
-            await expect(module.validatePlotAndSlot(interaction, config, null, slotNum)).rejects.toThrow(InvalidArgumentError);
-            await expect(module.validatePlotAndSlot(interaction, config, plotNum, null)).rejects.toThrow(InvalidArgumentError);
-            await expect(module.validatePlotAndSlot(interaction, config, plotNum, slotNum, null)).rejects.toThrow(InvalidArgumentError);
+        describe("should throw when argument", () => {
+            test("plotNum is null.", async () => await expect(module.validatePlotAndSlot(interaction, config, null, slotNum)).rejects.toThrow(InvalidArgumentError));
+            test("slotNum is null.", async () => await expect(module.validatePlotAndSlot(interaction, config, plotNum, null)).rejects.toThrow(InvalidArgumentError));
+            test("slotShouldExist is null.", async () => await expect(module.validatePlotAndSlot(interaction, config, plotNum, slotNum, null)).rejects.toThrow(InvalidArgumentError));
         });
     });
 
@@ -274,7 +248,7 @@ describe("Gardening Module Tests:", () => {
             plot.slots.push(slot);
 
             await module.cancel(interaction, player, plant, plotNum, slotNum);
-            expect(plot.slots.filter(value => !!value).length).not.toEqual(1)
+            expect(plot.slots.filter(value => !!value).length).not.toEqual(1);
         });
         test("should not cancel when the player is wrong.", async () => {
             config.plots.push(plot);
