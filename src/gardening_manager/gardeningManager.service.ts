@@ -154,7 +154,7 @@ export class GardeningManagerService {
             const nextReserved = slot.next;
             const next = nextReserved.pop();
 
-            slot = typeof next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved) : undefined;
+            slot = next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved) : undefined;
             plot.slots[plotNum] = slot;
         } else {
             const next = slot.next.find(reservation => reservation.player === player && reservation.plant === plant);
