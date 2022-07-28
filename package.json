@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc -b",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint . --ext .ts --max-warnings=0",
+    "lint": "eslint . --ext .ts --max-warnings=0"
   },
   "repository": {
     "type": "git",
