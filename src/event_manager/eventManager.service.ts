@@ -13,7 +13,7 @@ export class EventManagerService {
     constructor(private eventManagerRepository: EventManagerRepository) {
     }
 
-    protected static parseTriggerDuration(triggerTime: string) {
+    protected static parseTriggerDuration(triggerTime: string): Duration {
         const hold = DateTime.fromFormat(triggerTime, "HH:mm");
         return Duration.fromObject({ hours: hold.get("hour"), minutes: hold.get("minute") });
     }
