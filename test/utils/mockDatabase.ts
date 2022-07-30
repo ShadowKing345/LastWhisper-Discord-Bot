@@ -29,6 +29,10 @@ export class MockDatabase extends DatabaseConfiguration {
         } as unknown as Db;
     }
 
+    public get config() {
+        return this._config;
+    }
+
     public set config(value: any) {
         this._config = value;
     }
