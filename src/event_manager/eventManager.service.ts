@@ -5,7 +5,7 @@ import { singleton } from "tsyringe";
 import { Task } from "../shared/models/task.js";
 import { fetchMessages } from "../shared/utils.js";
 import { EventManagerRepository } from "./eventManager.repository.js";
-import { EventManagerConfig, EventObj, Tags } from "./models/index.js";
+import { EventManagerConfig, EventObj } from "./models/index.js";
 
 @singleton()
 export class EventManagerService {
@@ -22,15 +22,13 @@ export class EventManagerService {
         const event = new EventObj(messageId);
         const hammerRegex = /<.*:(\d+):.*>/;
         const [ l, r ] = config.delimiterCharacters as [ string, string ];
-        const re = new RegExp(`${l}(.*)${r}([^${l}]*)`, "gm");
+        const re = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
+        let match = re.exec(content);
 
-        const patternSplit: [ string | null, string | null ][] = (content?.match(re) ?? []).map(l => {
-            re.lastIndex = 0;
-            const match = re.exec(l).slice(1, 3) ?? [ null, null ];
-            return [ match[0]?.trim(), match[1]?.trim() ];
-        });
+        while (match != null) {
+            const key = match[1]?.trim();
+            const value = match[2]?.trim();
 
-        for (const [ key, value ] of patternSplit) {
             let date: DateTime, matchedResult: RegExpMatchArray, unixTimeStr: string, number: number;
             switch (key) {
                 case config.tags.announcement:
@@ -69,6 +67,8 @@ export class EventManagerService {
                     event.additional.push([ key, value ]);
                     break;
             }
+
+            match = re.exec(content);
         }
 
         return event;
@@ -88,12 +88,25 @@ export class EventManagerService {
         if (config.listenerChannelId !== message.channelId) return;
         const [ l, r ]: string[] = config.delimiterCharacters as string[];
 
-        const matchTags: string[] = (message.content?.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
-        if (!matchTags.includes((config.tags as Tags).announcement)) return;
+        const regex = new RegExp(`${l}(.*?)${r}`, "g");
+        let flag = false;
+        let match = regex.exec(message.content);
+
+        while (match != null) {
+            if (match[1] === config.tags.announcement) {
+                flag = true;
+                break;
+            }
+            match = regex.exec(message.content);
+        }
+
+        if (!flag) {
+            return;
+        }
 
         const event: EventObj = this.parseMessage(message.id, message.content, config);
         try {
-            if (EventObj.isValid(event)) {
+            if (EventObj.isValid(event) && event.dateTime > DateTime.now().toUnixInteger()) {
                 config.events.push(event);
                 await message.react("✅");
                 await this.eventManagerRepository.save(config);
