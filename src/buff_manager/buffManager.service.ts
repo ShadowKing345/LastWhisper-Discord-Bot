@@ -15,7 +15,7 @@ const skipping = event("Skipping");
 
 @singleton()
 export class BuffManagerService {
-    private readonly daysOfWeek: string[] = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
+    private readonly daysOfWeek: string[] = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ];
 
     constructor(
         private buffManagerConfigRepository: BuffManagerRepository,
@@ -84,7 +84,7 @@ export class BuffManagerService {
 
         this.logger.debug(`Posting ${classes("buff message")} for the date ${value(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
-        const buffId = Days.toArray(week.days)[date.get("weekday")];
+        const buffId = Days.toArray(week.days)[date.get("weekday") - 1];
         const buff = config.buffs.find(day => day.id === buffId);
 
         if (!buff) {
