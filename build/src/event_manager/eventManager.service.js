@@ -28,13 +28,11 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         const event = new EventObj(messageId);
         const hammerRegex = /<.*:(\d+):.*>/;
         const [l, r] = config.delimiterCharacters;
-        const re = new RegExp(`${l}(.*)${r}([^${l}]*)`, "gm");
-        const patternSplit = (content?.match(re) ?? []).map(l => {
-            re.lastIndex = 0;
-            const match = re.exec(l).slice(1, 3) ?? [null, null];
-            return [match[0]?.trim(), match[1]?.trim()];
-        });
-        for (const [key, value] of patternSplit) {
+        const re = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
+        let match = re.exec(content);
+        while (match != null) {
+            const key = match[1]?.trim();
+            const value = match[2]?.trim();
             let date, matchedResult, unixTimeStr, number;
             switch (key) {
                 case config.tags.announcement:
@@ -72,6 +70,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
                     event.additional.push([key, value]);
                     break;
             }
+            match = re.exec(content);
         }
         return event;
     }
@@ -89,12 +88,22 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         if (config.listenerChannelId !== message.channelId)
             return;
         const [l, r] = config.delimiterCharacters;
-        const matchTags = (message.content?.match(new RegExp(`(?<=${l})(.*?)(?=${r})`, "g")) ?? []).map(l => l.trim());
-        if (!matchTags.includes(config.tags.announcement))
+        const regex = new RegExp(`${l}(.*?)${r}`, "g");
+        let flag = false;
+        let match = regex.exec(message.content);
+        while (match != null) {
+            if (match[1] === config.tags.announcement) {
+                flag = true;
+                break;
+            }
+            match = regex.exec(message.content);
+        }
+        if (!flag) {
             return;
+        }
         const event = this.parseMessage(message.id, message.content, config);
         try {
-            if (EventObj.isValid(event)) {
+            if (EventObj.isValid(event) && event.dateTime > DateTime.now().toUnixInteger()) {
                 config.events.push(event);
                 await message.react("✅");
                 await this.eventManagerRepository.save(config);

@@ -25,7 +25,7 @@ const skipping = event("Skipping");
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
     buffManagerConfigRepository;
     logger;
-    daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     constructor(buffManagerConfigRepository, logger) {
         this.buffManagerConfigRepository = buffManagerConfigRepository;
         this.logger = logger;
@@ -81,7 +81,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
         this.logger.debug(`Posting ${classes("buff message")} for the date ${value(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
-        const buffId = Days.toArray(week.days)[date.get("weekday")];
+        const buffId = Days.toArray(week.days)[date.get("weekday") - 1];
         const buff = config.buffs.find(day => day.id === buffId);
         if (!buff) {
             await interaction.reply({

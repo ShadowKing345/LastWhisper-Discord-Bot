@@ -147,7 +147,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         if (slot.player === player && slot.plant === plant) {
             const nextReserved = slot.next;
             const next = nextReserved.pop();
-            slot = typeof next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved) : undefined;
+            slot = next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved) : undefined;
             plot.slots[plotNum] = slot;
         }
         else {
