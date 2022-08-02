@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Guild, Message, MessageEmbed, TextChannel } from "discord.js";
+import { Client, CommandInteraction, Message, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -161,34 +161,28 @@ export class EventManagerService {
         await Task.waitTillReady(client);
 
         const now: DateTime = DateTime.now();
-        const configs = await this.eventManagerRepository.find({});
+        const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0);
         const alteredConfigs = [];
 
         for (const config of configs) {
             try {
-                if (!client.guilds.cache.has(config.guildId)) continue;
-                const postingGuild: Guild = await client.guilds.fetch(config.guildId);
-                if (!postingGuild) continue;
-                if (config.events.length > 0 && config.postingChannelId) {
-                    const postingChannel: TextChannel | null = await postingGuild.channels.fetch(config.postingChannelId) as TextChannel | null;
-                    if (!postingChannel) continue;
+                if (client.guilds.cache.has(config.guildId) && client.channels.cache.has(config.postingChannelId)) {
+                    const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId) as TextChannel | null;
+                    if (postingChannel) {
+                        for (const trigger of config.reminders.filter(trigger => trigger.timeDelta)) {
+                            const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
+                            for (const event of config.events.filter(event => Duration.fromObject({ seconds: Math.abs(event.dateTime - now.toUnixInteger()) }).get("day") < 1)) {
+                                const difference = DateTime.fromSeconds(event.dateTime).minus(triggerTime);
+                                if (difference.get("hour") === now.get("hour") && difference.get("minute") === now.get("minute")) {
+                                    const messageValues: { [key: string]: string } = {
+                                        "%everyone%": "@everyone",
+                                        "%eventName%": event.name,
+                                        "%hourDiff%": triggerTime.get("hours").toString(),
+                                        "%minuteDiff%": triggerTime.get("minutes").toString(),
+                                    };
 
-                    for (const trigger of config.reminders) {
-                        if (!trigger.timeDelta) continue;
-                        const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
-                        for (const event of config.events) {
-                            const eventTime = DateTime.fromSeconds(event.dateTime);
-                            if (Math.abs(eventTime.diff(now, "days").get("day")) > 1) continue;
-                            const difference = eventTime.minus(triggerTime);
-                            if (difference.get("hour") === now.get("hour") && difference.get("minute") === now.get("minute")) {
-                                const messageValues: { [key: string]: string } = {
-                                    "%everyone%": "@everyone",
-                                    "%eventName%": event.name,
-                                    "%hourDiff%": triggerTime.get("hours").toString(),
-                                    "%minuteDiff%": triggerTime.get("minutes").toString(),
-                                };
-
-                                await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
+                                    await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
+                                }
                             }
                         }
                     }
@@ -196,12 +190,13 @@ export class EventManagerService {
 
                 const before = config.events.length;
 
-                for (const past of config.events.filter(event => now >= DateTime.fromSeconds(event.dateTime)))
+                for (const past of config.events.filter(event => now.toUnixInteger() >= event.dateTime))
                     config.events.splice(config.events.indexOf(past), 1);
 
                 if (before !== config.events.length)
                     alteredConfigs.push(config);
-            } catch (err) {
+            } catch
+                (err) {
                 console.error(err);
             }
         }
@@ -253,7 +248,8 @@ export class EventManagerService {
         }
     }
 
-    private async findOneOrCreate(id: string): Promise<EventManagerConfig> {
+    private async findOneOrCreate(id: string):
+        Promise<EventManagerConfig> {
         let result = await this.eventManagerRepository.findOne({ guildId: id });
         if (result) return result;
 
