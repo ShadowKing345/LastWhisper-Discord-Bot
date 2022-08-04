@@ -93,7 +93,7 @@ export class EventManagerService {
         let match = regex.exec(message.content);
 
         while (match != null) {
-            if (match[1] === config.tags.announcement) {
+            if (match[1].trim() === config.tags.announcement) {
                 flag = true;
                 break;
             }
