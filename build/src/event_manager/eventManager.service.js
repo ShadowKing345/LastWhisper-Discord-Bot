@@ -231,7 +231,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         for (const config of configs) {
             if (!config.listenerChannelId || !config.events.length)
                 continue;
-            await fetchMessages(client, config.listenerChannelId, config.events.map(event => event.messageId));
+            await fetchMessages(client, config.guildId, config.listenerChannelId, config.events.map(event => event.messageId));
         }
     }
     async findOneOrCreate(id) {
