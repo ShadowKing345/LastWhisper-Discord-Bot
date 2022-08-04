@@ -16,5 +16,6 @@ export class Task {
         while (!client.isReady()) {
             await new Promise(resolve => setTimeout(resolve, checkAgainTime));
         }
+        Task.logger.debug(`${classes("Client")} is ready.`);
     }
 }
