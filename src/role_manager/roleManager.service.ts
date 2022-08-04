@@ -63,7 +63,7 @@ export class RoleManagerService {
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId)) continue;
             if (!config.reactionListeningChannel || !config.reactionMessageIds.length) continue;
-            const messages: Message[] | void = await fetchMessages(client, config.guildId, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
+            const messages: Message[] | void = await fetchMessages(client, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
 
             if (!messages) continue;
             const guild: Guild | null = await client.guilds.fetch(config.guildId);
