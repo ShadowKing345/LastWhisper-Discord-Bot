@@ -66,7 +66,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
                 continue;
             if (!config.reactionListeningChannel || !config.reactionMessageIds.length)
                 continue;
-            const messages = await fetchMessages(client, config.guildId, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
+            const messages = await fetchMessages(client, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
             if (!messages)
                 continue;
             const guild = await client.guilds.fetch(config.guildId);

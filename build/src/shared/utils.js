@@ -1,16 +1,11 @@
-export async function fetchMessages(client, guildId, channelId, messageIds) {
+export async function fetchMessages(client, channelId, messageIds) {
     const result = [];
-    if (!client.guilds.cache.has(guildId))
-        return;
-    const guild = await client.guilds.fetch(guildId);
-    if (!guild)
-        return result;
     if (!client.channels.cache.has(channelId))
         return;
-    const channel = await guild.channels.fetch(channelId);
-    if (!channel)
+    const channel = await client.channels.fetch(channelId);
+    if (!channel || !channel.isText)
         return result;
-    for (const id of messageIds) {
+    for (const id of messageIds.filter(id => channel.messages.cache.has(id))) {
         const message = await channel.messages.fetch(id);
         if (message)
             result.push(message);
