@@ -131,8 +131,8 @@ export class BuffManagerService {
                 if (!messageSettings.channelId || !messageSettings.hour) continue;
                 if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) continue;
 
-                const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
-                if (!channel?.isText) {
+                const channel: TextChannel | null = await client.channels.fetch(messageSettings.channelId) as TextChannel | null;
+                if (!(channel?.isText && channel.guildId === config.guildId)) {
                     this.logger.warn(`Invalid channel ${value(messageSettings.channelId)}  ID for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);
                     continue;
                 }
