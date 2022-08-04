@@ -168,7 +168,7 @@ export class EventManagerService {
             try {
                 if (client.guilds.cache.has(config.guildId) && client.channels.cache.has(config.postingChannelId)) {
                     const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId) as TextChannel | null;
-                    if (postingChannel) {
+                    if (postingChannel && postingChannel.guildId === config.postingChannelId) {
                         for (const trigger of config.reminders.filter(trigger => trigger.timeDelta)) {
                             const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
                             for (const event of config.events.filter(event => Duration.fromObject({ seconds: Math.abs(event.dateTime - now.toUnixInteger()) }).get("day") < 1)) {
