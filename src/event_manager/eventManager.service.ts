@@ -161,7 +161,7 @@ export class EventManagerService {
         await Task.waitTillReady(client);
 
         const now: DateTime = DateTime.now();
-        const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0);
+        const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId));
         const alteredConfigs = [];
 
         for (const config of configs) {
