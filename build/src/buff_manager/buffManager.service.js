@@ -11,7 +11,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var BuffManagerService_1;
-import chalk from "chalk";
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
@@ -111,34 +110,24 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             await Task.waitTillReady(client);
         }
         this.logger.debug("Posting daily buff message.");
-        const configs = await this.buffManagerConfigRepository.getAll();
+        const configs = (await this.buffManagerConfigRepository.getAll())
+            .filter(config => client.guilds.cache.has(config.guildId) && config.buffs.length > 0);
         const now = DateTime.now();
         for (const config of configs) {
             try {
-                if (!client.guilds.cache.has(config.guildId)) {
-                    this.logger.warn(`There is a configuration for the ${classes("guild")} with ID ${value(config.guildId)}, which the bot is currently not a member of. Please remove configuration. ${skipping}...`);
-                    continue;
-                }
-                const guild = await client.guilds.fetch(config.guildId);
-                if (!guild) {
-                    this.logger.error(`Fetch guild with ID ${chalk.yellow(config.guildId)} returned nothing. ${skipping}...`);
-                    continue;
-                }
                 const messageSettings = config.messageSettings;
                 if (!messageSettings.channelId || !messageSettings.hour)
                     continue;
                 if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute"))
                     continue;
-                if (!config.buffs.length || !config.weeks.length)
-                    continue;
-                const channel = await guild.channels.fetch(messageSettings.channelId);
-                if (!channel?.isText) {
+                const channel = await client.channels.fetch(messageSettings.channelId);
+                if (!(channel?.isText && channel.guildId === config.guildId)) {
                     this.logger.warn(`Invalid channel ${value(messageSettings.channelId)}  ID for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);
                     continue;
                 }
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
-                const week = filteredWeeks[now.get("weekNumber") % filteredWeeks.length];
-                const buffId = Days.toArray(week.days)[now.get("weekday")];
+                const week = filteredWeeks[now.weekNumber % filteredWeeks.length];
+                const buffId = Days.toArray(week.days)[now.weekday];
                 const buff = config.buffs.find(day => day.id === buffId);
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID ${value(buffId)} for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);
@@ -146,7 +135,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 }
                 this.logger.debug(`Posting buff message.`);
                 await channel.send({ embeds: [this.createBuffEmbed(messageSettings.buffMessage, buff, now)] });
-                if (messageSettings.dow !== null && messageSettings.dow === now.weekday - 1) {
+                if (messageSettings.dow !== null && messageSettings.dow === now.weekday) {
                     this.logger.debug(`Posting week message.`);
                     await channel.send({
                         embeds: [this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)],
