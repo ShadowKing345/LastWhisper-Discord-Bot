@@ -238,6 +238,7 @@ describe("The event manager service's", () => {
                     has: () => true,
                 },
                 fetch: () => ({
+                    guildId: "3",
                     send: channelSendFunction,
                 }),
             },
