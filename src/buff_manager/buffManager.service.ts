@@ -138,8 +138,8 @@ export class BuffManagerService {
                 }
 
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
-                const week: Week = filteredWeeks[now.get("weekNumber") % filteredWeeks.length];
-                const buffId: string = Days.toArray(week.days)[now.get("weekday")];
+                const week: Week = filteredWeeks[now.weekNumber % filteredWeeks.length];
+                const buffId: string = Days.toArray(week.days)[now.weekday];
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {
@@ -150,7 +150,7 @@ export class BuffManagerService {
                 this.logger.debug(`Posting buff message.`);
                 await channel.send({ embeds: [ this.createBuffEmbed(messageSettings.buffMessage, buff, now) ] });
 
-                if (messageSettings.dow !== null && messageSettings.dow === now.weekday - 1) {
+                if (messageSettings.dow !== null && messageSettings.dow === now.weekday) {
                     this.logger.debug(`Posting week message.`);
                     await channel.send({
                         embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ],
