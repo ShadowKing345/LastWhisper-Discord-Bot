@@ -25,6 +25,17 @@ let MockDatabase = class MockDatabase extends DatabaseConfiguration {
                         deepMerge(this._config, obj);
                         return this._config;
                     },
+                    initializeOrderedBulkOp: () => ({
+                        find: () => ({
+                            upsert: () => ({
+                                replaceOne: (obj) => {
+                                    Object.assign(this._config, obj);
+                                    return this._config;
+                                }
+                            }),
+                        }),
+                        execute: () => null,
+                    }),
                 };
             },
         };

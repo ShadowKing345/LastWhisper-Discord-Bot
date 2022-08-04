@@ -92,7 +92,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         let flag = false;
         let match = regex.exec(message.content);
         while (match != null) {
-            if (match[1] === config.tags.announcement) {
+            if (match[1].trim() === config.tags.announcement) {
                 flag = true;
                 break;
             }
@@ -157,45 +157,39 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
     async reminderLoop(client) {
         await Task.waitTillReady(client);
         const now = DateTime.now();
-        const configs = await this.eventManagerRepository.find({});
+        const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId));
         const alteredConfigs = [];
         for (const config of configs) {
             try {
-                if (!client.guilds.cache.has(config.guildId))
-                    continue;
-                const postingGuild = await client.guilds.fetch(config.guildId);
-                if (!postingGuild)
-                    continue;
-                if (config.events.length > 0 && config.postingChannelId) {
-                    const postingChannel = await postingGuild.channels.fetch(config.postingChannelId);
-                    if (!postingChannel)
-                        continue;
-                    for (const trigger of config.reminders) {
-                        if (!trigger.timeDelta)
-                            continue;
-                        const triggerTime = EventManagerService_1.parseTriggerDuration(trigger.timeDelta);
-                        for (const event of config.events) {
-                            const eventTime = DateTime.fromSeconds(event.dateTime);
-                            if (Math.abs(eventTime.diff(now, "days").get("day")) > 1)
-                                continue;
-                            const difference = eventTime.minus(triggerTime);
-                            if (difference.get("hour") === now.get("hour") && difference.get("minute") === now.get("minute")) {
-                                const messageValues = {
-                                    "%everyone%": "@everyone",
-                                    "%eventName%": event.name,
-                                    "%hourDiff%": triggerTime.get("hours").toString(),
-                                    "%minuteDiff%": triggerTime.get("minutes").toString(),
-                                };
-                                await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
+                if (client.channels.cache.has(config.postingChannelId)) {
+                    const postingChannel = await client.channels.fetch(config.postingChannelId);
+                    if (postingChannel && postingChannel.guildId === config.guildId) {
+                        for (const trigger of config.reminders.filter(trigger => trigger.timeDelta)) {
+                            const triggerTime = EventManagerService_1.parseTriggerDuration(trigger.timeDelta);
+                            for (const event of config.events.filter(event => Duration.fromObject({ seconds: Math.abs(event.dateTime - now.toUnixInteger()) }).get("day") < 1)) {
+                                const difference = DateTime.fromSeconds(event.dateTime).minus(triggerTime);
+                                if (difference.get("hour") === now.get("hour") && difference.get("minute") === now.get("minute")) {
+                                    const messageValues = {
+                                        "%everyone%": "@everyone",
+                                        "%eventName%": event.name,
+                                        "%hourDiff%": triggerTime.get("hours").toString(),
+                                        "%minuteDiff%": triggerTime.get("minutes").toString(),
+                                    };
+                                    await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
+                                }
                             }
                         }
                     }
                 }
                 const before = config.events.length;
-                for (const past of config.events.filter(event => now >= DateTime.fromSeconds(event.dateTime)))
-                    config.events.splice(config.events.indexOf(past), 1);
-                if (before !== config.events.length)
+                config.events.forEach((event, index, array) => {
+                    if (event.dateTime <= now.toUnixInteger()) {
+                        array.splice(index, 1);
+                    }
+                });
+                if (before !== config.events.length) {
                     alteredConfigs.push(config);
+                }
             }
             catch (err) {
                 console.error(err);
