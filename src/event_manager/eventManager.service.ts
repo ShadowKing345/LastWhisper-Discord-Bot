@@ -190,13 +190,16 @@ export class EventManagerService {
 
                 const before = config.events.length;
 
-                for (const past of config.events.filter(event => now.toUnixInteger() >= event.dateTime))
-                    config.events.splice(config.events.indexOf(past), 1);
+                config.events.forEach((event, index, array) => {
+                    if (event.dateTime <= now.toUnixInteger()) {
+                        array.splice(index, 1);
+                    }
+                });
 
-                if (before !== config.events.length)
+                if (before !== config.events.length) {
                     alteredConfigs.push(config);
-            } catch
-                (err) {
+                }
+            } catch (err: Error | unknown) {
                 console.error(err);
             }
         }
