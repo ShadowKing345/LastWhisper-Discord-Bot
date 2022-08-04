@@ -1,5 +1,4 @@
-import chalk from "chalk";
-import { CommandInteraction, Guild, MessageEmbed, TextChannel } from "discord.js";
+import { CommandInteraction, MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -122,26 +121,15 @@ export class BuffManagerService {
         }
         this.logger.debug("Posting daily buff message.");
 
-        const configs: BuffManagerConfig[] = await this.buffManagerConfigRepository.getAll();
+        const configs: BuffManagerConfig[] = (await this.buffManagerConfigRepository.getAll())
+            .filter(config => client.guilds.cache.has(config.guildId) && config.buffs.length > 0);
         const now: DateTime = DateTime.now();
 
         for (const config of configs) {
             try {
-                if (!client.guilds.cache.has(config.guildId)) {
-                    this.logger.warn(`There is a configuration for the ${classes("guild")} with ID ${value(config.guildId)}, which the bot is currently not a member of. Please remove configuration. ${skipping}...`);
-                    continue;
-                }
-
-                const guild: Guild | null = await client.guilds.fetch(config.guildId);
-                if (!guild) {
-                    this.logger.error(`Fetch guild with ID ${chalk.yellow(config.guildId)} returned nothing. ${skipping}...`);
-                    continue;
-                }
-
                 const messageSettings: MessageSettings = config.messageSettings as MessageSettings;
                 if (!messageSettings.channelId || !messageSettings.hour) continue;
                 if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) continue;
-                if (!config.buffs.length || !config.weeks.length) continue;
 
                 const channel: TextChannel | null = await guild.channels.fetch(messageSettings.channelId) as TextChannel | null;
                 if (!channel?.isText) {
