@@ -4,6 +4,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Client } from "../shared/models/client.js";
+import { Task } from "../shared/models/task.js";
 import { fetchMessages } from "../shared/utils.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
@@ -58,20 +59,24 @@ export class RoleManagerService {
     }
 
     public async onReady(client: Client) {
-        const configs: RoleManagerConfig[] = await this.roleManagerConfigRepository.getAll();
+        await Task.waitTillReady(client);
+        const configs: RoleManagerConfig[] = (await this.roleManagerConfigRepository.getAll())
+            .filter(config => client.guilds.cache.has(config.guildId)
+                && config.reactionListeningChannel
+                && config.acceptedRoleId
+                && config.reactionMessageIds.length > 0);
 
         for (const config of configs) {
-            if (!client.guilds.cache.has(config.guildId)) continue;
-            if (!config.reactionListeningChannel || !config.reactionMessageIds.length) continue;
-            const messages: Message[] | void = await fetchMessages(client, config.reactionListeningChannel, config.reactionMessageIds).catch(error => console.error(error));
+            try {
+                const messages: Message[] | void = await fetchMessages(client, config.reactionListeningChannel, config.reactionMessageIds)
+                if (!messages) continue;
 
-            if (!messages) continue;
-            const guild: Guild | null = await client.guilds.fetch(config.guildId);
-            if (!guild) continue;
-
-            for (const message of messages) {
-                await RoleManagerService.processMessageReactions(message, config);
-                this.registerReactionCollector(message, config);
+                for (const message of messages) {
+                    await RoleManagerService.processMessageReactions(message, config);
+                    this.registerReactionCollector(message, config);
+                }
+            } catch (error: Error | unknown) {
+                this.logger.error(error instanceof Error ? error + error.stack : error);
             }
         }
     }
