@@ -171,8 +171,12 @@ export class EventManagerService {
                     if (postingChannel && postingChannel.guildId === config.guildId) {
                         for (const trigger of config.reminders.filter(trigger => trigger.timeDelta)) {
                             const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
-                            for (const event of config.events.filter(event => now.toUnixInteger() <= event.dateTime && now.diff(DateTime.fromSeconds(event.dateTime), "days").days <= 1)) {
-                                const difference = DateTime.fromSeconds(event.dateTime).minus(triggerTime);
+                            for (const event of config.events) {
+                                const eventTime = DateTime.fromSeconds(event.dateTime);
+                                if (now > eventTime || eventTime.diff(now).days > 1) {
+                                    continue;
+                                }
+                                const difference = eventTime.minus(triggerTime);
                                 if (difference.hour === now.hour && difference.minute === now.minute) {
                                     const messageValues: { [key: string]: string } = {
                                         "%everyone%": "@everyone",
