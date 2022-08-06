@@ -139,7 +139,7 @@ export class BuffManagerService {
 
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week: Week = filteredWeeks[now.weekNumber % filteredWeeks.length];
-                const buffId: string = Days.toArray(week.days)[now.weekday];
+                const buffId: string = Days.toArray(week.days)[now.weekday - 1];
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {
