@@ -127,7 +127,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 }
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week = filteredWeeks[now.weekNumber % filteredWeeks.length];
-                const buffId = Days.toArray(week.days)[now.weekday];
+                const buffId = Days.toArray(week.days)[now.weekday - 1];
                 const buff = config.buffs.find(day => day.id === buffId);
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID ${value(buffId)} for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);
