@@ -19,7 +19,7 @@ import { classes, event, value } from "../shared/logger/colors.js";
 import { createLogger } from "../shared/logger/logger.decorator.js";
 import { Task } from "../shared/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
-import { BuffManagerConfig, Days } from "./models/index.js";
+import { BuffManagerConfig } from "./models/index.js";
 const skipping = event("Skipping");
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
     buffManagerConfigRepository;
@@ -28,6 +28,12 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
     constructor(buffManagerConfigRepository, logger) {
         this.buffManagerConfigRepository = buffManagerConfigRepository;
         this.logger = logger;
+    }
+    static getBuffId(week, date) {
+        return BuffManagerService_1.daysToArray(week.days)[date.weekday - 1];
+    }
+    static daysToArray(days) {
+        return [days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday, days.sunday];
     }
     createBuffEmbed(title, day, date) {
         this.logger.debug(`Creating Buff Embed.`);
@@ -45,7 +51,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             color: "RANDOM",
             title: title,
             description: week.title,
-            fields: Days.toArray(week.days).map((dayId, index) => {
+            fields: BuffManagerService_1.daysToArray(week.days).map((dayId, index) => {
                 const dow = this.daysOfWeek[index];
                 const day = days.find(entry => entry.id === dayId) ?? { text: "No Buff Found!" };
                 return { name: dow, value: day.text, inline: true };
@@ -80,7 +86,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         const title = `${today ? "Today's" : "Tomorrow's"} Buff Shall Be:`;
         this.logger.debug(`Posting ${classes("buff message")} for the date ${value(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
-        const buffId = Days.toArray(week.days)[date.get("weekday") - 1];
+        const buffId = BuffManagerService_1.getBuffId(week, date);
         const buff = config.buffs.find(day => day.id === buffId);
         if (!buff) {
             await interaction.reply({
@@ -127,7 +133,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 }
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week = filteredWeeks[now.weekNumber % filteredWeeks.length];
-                const buffId = Days.toArray(week.days)[now.weekday - 1];
+                const buffId = BuffManagerService_1.getBuffId(week, now);
                 const buff = config.buffs.find(day => day.id === buffId);
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID ${value(buffId)} for ${classes("guild")} ${value(config.guildId)}. ${skipping}...`);

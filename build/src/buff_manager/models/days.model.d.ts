@@ -6,6 +6,5 @@ export declare class Days {
     friday: string;
     saturday: string;
     sunday: string;
-    static toArray(days: Days): string[];
 }
 //# sourceMappingURL=days.model.d.ts.map

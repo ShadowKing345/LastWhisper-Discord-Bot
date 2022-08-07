@@ -9,6 +9,8 @@ export declare class BuffManagerService {
     private logger;
     private readonly daysOfWeek;
     constructor(buffManagerConfigRepository: BuffManagerRepository, logger: pino.Logger);
+    private static getBuffId;
+    private static daysToArray;
     createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed;
     createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed;
     tryGetConfig(interaction: CommandInteraction): Promise<[BuffManagerConfig, boolean]>;
