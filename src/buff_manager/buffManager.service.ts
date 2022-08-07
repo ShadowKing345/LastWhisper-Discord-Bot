@@ -22,6 +22,14 @@ export class BuffManagerService {
     ) {
     }
 
+    private static getBuffId(week: Week, date: DateTime): string {
+        return BuffManagerService.daysToArray(week.days)[date.weekday - 1];
+    }
+
+    private static daysToArray(days: Days): string[] {
+        return [ days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday, days.sunday ];
+    }
+
     public createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed {
         this.logger.debug(`Creating Buff Embed.`);
         return new MessageEmbed({
@@ -39,7 +47,7 @@ export class BuffManagerService {
             color: "RANDOM",
             title: title,
             description: week.title,
-            fields: Days.toArray(week.days).map((dayId, index) => {
+            fields: BuffManagerService.daysToArray(week.days).map((dayId, index) => {
                 const dow: string = this.daysOfWeek[index];
                 const day: Buff = days.find(entry => entry.id === dayId) ?? { text: "No Buff Found!" } as Buff;
 
@@ -83,7 +91,7 @@ export class BuffManagerService {
 
         this.logger.debug(`Posting ${classes("buff message")} for the date ${value(date.toISO())}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
-        const buffId = Days.toArray(week.days)[date.get("weekday") - 1];
+        const buffId = BuffManagerService.getBuffId(week, date);
         const buff = config.buffs.find(day => day.id === buffId);
 
         if (!buff) {
@@ -139,7 +147,7 @@ export class BuffManagerService {
 
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week: Week = filteredWeeks[now.weekNumber % filteredWeeks.length];
-                const buffId: string = Days.toArray(week.days)[now.weekday - 1];
+                const buffId: string = BuffManagerService.getBuffId(week, now);
                 const buff: Buff = config.buffs.find(day => day.id === buffId);
 
                 if (!buff) {

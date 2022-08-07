@@ -6,8 +6,4 @@ export class Days {
     public friday: string;
     public saturday: string;
     public sunday: string;
-
-    public static toArray(days: Days): string[] {
-        return [ days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday, days.sunday ];
-    }
 }
