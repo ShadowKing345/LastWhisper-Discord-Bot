@@ -173,9 +173,8 @@ export class EventManagerService {
                             const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
                             for (const event of config.events) {
                                 const eventTime = DateTime.fromSeconds(event.dateTime);
-                                if (now > eventTime || eventTime.diff(now).days > 1) {
-                                    continue;
-                                }
+                                if (eventTime.diff(now, [ "days" ]).days > 1) continue;
+
                                 const difference = eventTime.minus(triggerTime);
                                 if (difference.hour === now.hour && difference.minute === now.minute) {
                                     const messageValues: { [key: string]: string } = {
