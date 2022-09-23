@@ -2,19 +2,23 @@ import chalk from "chalk";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
-import { AppConfig } from "./config/app_configs/index.js";
+import { ProjectConfiguration } from "./config/app_configs/index.js";
 import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
 import { ModuleConfiguration } from "./config/moduleConfiguration.js";
 import { createLogger } from "./shared/logger/logger.decorator.js";
 import { Client } from "./shared/models/client.js";
 import { ModuleBase } from "./shared/models/moduleBase.js";
 
+/**
+ * Application class.
+ * To simplify dependency injection this class is used and can be easily resolved.
+ */
 @singleton()
 export class App {
     private readonly client: Client;
 
     constructor(
-        private appConfig: AppConfig,
+        private appConfig: ProjectConfiguration,
         private databaseService: DatabaseConfiguration,
         private moduleConfiguration: ModuleConfiguration,
         @createLogger(App.name) private logger: pino.Logger,
@@ -22,6 +26,9 @@ export class App {
         this.client = new Client();
     }
 
+    /**
+     * Main function to initialize application.
+     */
     public async init(): Promise<void> {
         try {
             await this.databaseService.connectClient();
@@ -37,10 +44,16 @@ export class App {
         }
     }
 
+    /**
+     * Runs the bot.
+     */
     public async run(): Promise<string> {
         return this.client.login(this.appConfig.token);
     }
 
+    /**
+     * Stops everything and cleans up.
+     */
     public async stop(): Promise<void> {
         this.logger.info("Stopping application.");
         this.moduleConfiguration.cleanup();
@@ -49,12 +62,19 @@ export class App {
         this.logger.info("Done. Have a nice day!");
     }
 
+    /**
+     * Returns all the registered modules from the module class.
+     */
     public get modules(): ModuleBase[] {
         return this.moduleConfiguration?.modules ?? [];
     }
 }
 
-export async function botMain() {
+/**
+ * Main function of application.
+ * Should be used as starting point if bot needs to be started.
+ */
+export async function main() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
