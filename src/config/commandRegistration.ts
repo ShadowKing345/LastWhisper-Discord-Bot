@@ -1,5 +1,4 @@
 import { REST } from "@discordjs/rest";
-import chalk from "chalk";
 import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 
@@ -57,8 +56,8 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
     const rest = new REST({ version: "9" }).setToken(appConfigs.token);
 
-    const isForRegistering = (done = false) => commandConfigs.unregister ? chalk.red(done ? "removed" : "removal") : chalk.green(done ? "registered" : "registration");
-    const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${chalk.yellow(commandConfigs.guildId)}` : chalk.yellow("global commands");
+    const isForRegistering = (done = false) => commandConfigs.unregister ? done ? "removed" : "removal" : done ? "registered" : "registration";
+    const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${commandConfigs.guildId}` : "global commands";
 
     try {
         logger.info(`Beginning ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
