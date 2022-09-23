@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { AppConfig } from "../../config/app_configs/index.js";
+import { ProjectConfiguration } from "../../config/app_configs/index.js";
 export var LOGGING_LEVELS;
 (function (LOGGING_LEVELS) {
     LOGGING_LEVELS["debug"] = "debug";
@@ -38,7 +38,7 @@ let LoggerFactory = class LoggerFactory {
 };
 LoggerFactory = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [AppConfig])
+    __metadata("design:paramtypes", [ProjectConfiguration])
 ], LoggerFactory);
 export { LoggerFactory };
 //# sourceMappingURL=logger.js.map

@@ -1,9 +1,9 @@
 import { CommandRegistrationConfiguration } from "./commandRegistrationConfiguration.model.js";
 import { DatabaseConfiguration } from "./databaseConfiguration.model.js";
-export declare class AppConfig {
+export declare class ProjectConfiguration {
     token?: string;
     database?: DatabaseConfiguration;
     logging_level?: string;
     commandRegistration?: CommandRegistrationConfiguration;
 }
-//# sourceMappingURL=appConfigs.model.d.ts.map
+//# sourceMappingURL=projectConfiguration.model.d.ts.map
