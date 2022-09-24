@@ -15,9 +15,8 @@ import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { classes } from "../shared/logger/colors.js";
 import { createLogger } from "../shared/logger/logger.decorator.js";
-import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
+import { ProjectConfiguration, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 export class Database extends Db {
 }
 let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguration extends ConfigurationClass {
@@ -52,7 +51,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
         return url;
     }
     async connectClient() {
-        this.logger.info(`Connecting to ${classes("Database")}`);
+        this.logger.info(`Connecting to Database`);
         const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
         if (!this._client) {
             this._client = await MongoClient.connect(url);
@@ -82,7 +81,7 @@ let DatabaseConfiguration = DatabaseConfiguration_1 = class DatabaseConfiguratio
 DatabaseConfiguration = DatabaseConfiguration_1 = __decorate([
     singleton(),
     __param(1, createLogger(DatabaseConfiguration_1.name)),
-    __metadata("design:paramtypes", [AppConfig, Object])
+    __metadata("design:paramtypes", [ProjectConfiguration, Object])
 ], DatabaseConfiguration);
 export { DatabaseConfiguration };
 //# sourceMappingURL=databaseConfiguration.js.map

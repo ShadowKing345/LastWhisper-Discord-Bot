@@ -11,7 +11,6 @@ import { ManagerUtilsModule } from "../manager_utils/index.js";
 import { PermissionManagerModule } from "../permission_manager/index.js";
 import { RoleManagerModule } from "../role_manager/index.js";
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { classes, event } from "../shared/logger/colors.js";
 import { LoggerFactory } from "../shared/logger/logger.js";
 import { Client } from "../shared/models/client.js";
 import { BuildCommand, Command } from "../shared/models/command.js";
@@ -19,7 +18,7 @@ import { Listener } from "../shared/models/listener.js";
 import { ModuleBase } from "../shared/models/moduleBase.js";
 import { Task } from "../shared/models/task.js";
 
-const settingUp = event("Setting up");
+const settingUp = "Setting up";
 
 @singleton()
 export class ModuleConfiguration extends ConfigurationClass {
@@ -118,35 +117,35 @@ export class ModuleConfiguration extends ConfigurationClass {
         this.loggers.module.info("Loading modules.");
         for (const module of this.modules) {
             try {
-                this.loggers.module.info(`${settingUp} module ${classes(module.moduleName)}`);
+                this.loggers.module.info(`${settingUp} module ${module.moduleName}`);
                 client.modules.set(module.moduleName, module);
 
-                this.loggers.module.debug(`${settingUp} ${classes("commands")}...`);
+                this.loggers.module.debug(`${settingUp} commands...`);
                 module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
 
-                this.loggers.module.debug(`${settingUp} ${classes("listeners")}...`);
+                this.loggers.module.debug(`${settingUp} listeners...`);
                 module.listeners.forEach(listener => {
                     const listeners = client.moduleListeners.get(listener.event) ?? [];
                     listeners.push(listener);
                     client.moduleListeners.set(listener.event, listeners);
                 });
 
-                this.loggers.module.debug(`${settingUp} ${classes("tasks")}...`);
+                this.loggers.module.debug(`${settingUp} tasks...`);
                 module.tasks.forEach(task => this.runTask(task, client));
             } catch (error: Error | unknown) {
                 this.loggers.module.error(error instanceof Error ? error + error.stack : error);
             }
         }
 
-        this.loggers.module.debug(`${settingUp} ${classes("events")}...`);
+        this.loggers.module.debug(`${settingUp} events...`);
         client.moduleListeners.forEach((listener, event) => client.on(event, async (...args) => this.runEvent(listener, client, ...args)));
 
-        this.loggers.module.debug(`${settingUp} ${classes("interaction event")}...`);
+        this.loggers.module.debug(`${settingUp} interaction event...`);
         client.on("interactionCreate", interaction => this.interactionEvent(interaction));
     }
 
     public cleanup() {
-        this.loggers.module.info(`Cleaning up ${classes("module configurations.")}`);
+        this.loggers.module.info(`Cleaning up module configurations.`);
         for (const id of this.intervalIds) {
             clearInterval(id);
         }

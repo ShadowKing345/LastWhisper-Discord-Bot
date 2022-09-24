@@ -1,7 +1,7 @@
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { AppConfig } from "../../config/app_configs/index.js";
+import { ProjectConfiguration } from "../../config/app_configs/index.js";
 
 export enum LOGGING_LEVELS {
     debug = "debug",
@@ -12,7 +12,7 @@ export enum LOGGING_LEVELS {
 
 @singleton()
 export class LoggerFactory {
-    constructor(private appConfigs: AppConfig) {
+    constructor(private appConfigs: ProjectConfiguration) {
     }
 
     buildLogger(name: string): pino.Logger {

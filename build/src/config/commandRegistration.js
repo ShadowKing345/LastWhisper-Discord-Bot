@@ -1,19 +1,21 @@
 import { REST } from "@discordjs/rest";
-import chalk from "chalk";
 import { Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 import { App } from "../app.js";
 import { LoggerFactory } from "../shared/logger/logger.js";
 import { BuildCommand } from "../shared/models/command.js";
-import { AppConfig } from "./app_configs/index.js";
+import { ProjectConfiguration } from "./app_configs/index.js";
 const loggerMeta = { context: "CommandRegistration" };
+/**
+ * Command that attempted to register the slash command to the bot.
+ * @param args Arguments for command registration.
+ */
 export async function commandRegistration(args) {
     const app = container.resolve(App);
     const logger = container.resolve(LoggerFactory).buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
-    const appConfigs = container.resolve(AppConfig);
+    const appConfigs = container.resolve(ProjectConfiguration);
     const commandConfigs = appConfigs.commandRegistration;
-    const rest = new REST({ version: "9" }).setToken(appConfigs.token);
     if (args.token)
         appConfigs.token = args.token;
     if (args.client)
@@ -24,8 +26,9 @@ export async function commandRegistration(args) {
     }
     if (args.unregister)
         commandConfigs.unregister = true;
-    const isForRegistering = (done = false) => commandConfigs.unregister ? chalk.red(done ? "removed" : "removal") : chalk.green(done ? "registered" : "registration");
-    const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${chalk.yellow(commandConfigs.guildId)}` : chalk.yellow("global commands");
+    const rest = new REST({ version: "9" }).setToken(appConfigs.token);
+    const isForRegistering = (done = false) => commandConfigs.unregister ? done ? "removed" : "removal" : done ? "registered" : "registration";
+    const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${commandConfigs.guildId}` : "global commands";
     try {
         logger.info(`Beginning ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
         const route = commandConfigs.registerForGuild ?

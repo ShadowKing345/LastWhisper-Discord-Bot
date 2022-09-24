@@ -1,7 +1,6 @@
 import { Client as DiscordClient } from "discord.js";
 import { container } from "tsyringe";
 
-import { classes, event } from "../logger/colors.js";
 import { LoggerFactory } from "../logger/logger.js";
 import { Client } from "./client.js";
 
@@ -12,10 +11,10 @@ export class Task {
     public run: (client: Client) => Promise<void>;
 
     public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
-        Task.logger.debug(`${event("Waiting")} for ${classes("client")} to be ready.`);
+        Task.logger.debug(`Waiting for client to be ready.`);
         while (!client.isReady()) {
             await new Promise(resolve => setTimeout(resolve, checkAgainTime));
         }
-        Task.logger.debug(`${classes("Client")} is ready.`);
+        Task.logger.debug(`Client is ready.`);
     }
 }

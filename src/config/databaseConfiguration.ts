@@ -3,9 +3,8 @@ import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
 import { ConfigurationClass } from "../shared/configuration.class.js";
-import { classes } from "../shared/logger/colors.js";
 import { createLogger } from "../shared/logger/logger.decorator.js";
-import { AppConfig, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
+import { ProjectConfiguration, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
 
 export class Database extends Db {
 }
@@ -16,7 +15,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     private _db: Database;
 
     constructor(
-        private appConfigs: AppConfig,
+        private appConfigs: ProjectConfiguration,
         @createLogger(DatabaseConfiguration.name) private logger: pino.Logger,
     ) {
         super();
@@ -46,7 +45,7 @@ export class DatabaseConfiguration extends ConfigurationClass {
     }
 
     async connectClient(): Promise<MongoClient> {
-        this.logger.info(`Connecting to ${classes("Database")}`);
+        this.logger.info(`Connecting to Database`);
         const url = this.parseUrl(this.appConfigs.database ?? new DbConfig());
 
         if (!this._client) {
