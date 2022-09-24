@@ -24,7 +24,7 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
  * @param str Json string.
  * @return Newly created object.
  */
-export function toJson<T>(t: T, str: string): T {
+export function toJson<T>(t: { new(): T }, str: string): T {
     if (t instanceof ToJsonBase) {
         return t.fromJson(str) as unknown as T;
     }
