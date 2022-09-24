@@ -11,7 +11,7 @@ var GardeningManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 import { Reason } from "./models/index.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends ModuleBase {

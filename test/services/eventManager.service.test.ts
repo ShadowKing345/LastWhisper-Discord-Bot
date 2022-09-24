@@ -5,9 +5,9 @@ import { Message } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { container, injectable } from "tsyringe";
 
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
-import { EventManagerConfig, EventManagerService, EventObj, ReminderTrigger } from "../../src/event_manager/index.js";
-import { Client } from "../../src/shared/models/client.js";
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
+import { EventManagerConfig, EventManagerService, EventObj, ReminderTrigger } from "../../src/models/event_manager/index.js";
+import { Client } from "../../src/utils/models/client.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
 
 @injectable()
@@ -18,7 +18,7 @@ class Module extends EventManagerService {
 }
 
 describe("The event manager service's", () => {
-    const mockDb: MockDatabase = container.registerSingleton(DatabaseConfiguration, MockDatabase).resolve(DatabaseConfiguration) as MockDatabase;
+    const mockDb: MockDatabase = container.registerSingleton(DatabaseConfigurationService, MockDatabase).resolve(DatabaseConfigurationService) as MockDatabase;
     const module = container.resolve(Module);
     const config: EventManagerConfig = {
         _id: undefined,

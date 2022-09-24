@@ -1,4 +1,4 @@
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "./eventManager.service.js";
 export declare class EventManagerModule extends ModuleBase {
     private eventManagerService;

@@ -1,8 +1,7 @@
 import { pino } from "pino";
-import { ProjectConfiguration } from "./config/app_configs/index.js";
-import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
-import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { ModuleBase } from "./shared/models/moduleBase.js";
+import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
+import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
+import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
 /**
  * Application class.
  * To simplify dependency injection this class is used and can be easily resolved.
@@ -13,7 +12,7 @@ export declare class App {
     private moduleConfiguration;
     private logger;
     private readonly client;
-    constructor(appConfig: ProjectConfiguration, databaseService: DatabaseConfiguration, moduleConfiguration: ModuleConfiguration, logger: pino.Logger);
+    constructor(appConfig: ProjectConfiguration, databaseService: DatabaseConfigurationService, moduleConfiguration: ModuleConfiguration, logger: pino.Logger);
     /**
      * Main function to initialize application.
      */

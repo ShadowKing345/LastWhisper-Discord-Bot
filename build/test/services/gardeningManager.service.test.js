@@ -15,10 +15,10 @@ import { jest } from "@jest/globals";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
 import { GardeningManagerRepository, GardeningManagerService, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
-import { createLogger } from "../../src/shared/logger/logger.decorator.js";
-import { InvalidArgumentError } from "../../src/shared/models/errors.js";
+import { createLogger } from "../../src/utils/logger/logger.decorator.js";
+import { InvalidArgumentError } from "../../src/utils/models/errors.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
 let MockModule = class MockModule extends GardeningManagerService {
     constructor(gardeningConfigRepository, logger) {
@@ -60,7 +60,7 @@ describe("The garden service's", () => {
         messagePostingChannelId: "",
         plots: [],
     };
-    const mockDb = container.registerSingleton(DatabaseConfiguration, MockDatabase).resolve(DatabaseConfiguration);
+    const mockDb = container.registerSingleton(DatabaseConfigurationService, MockDatabase).resolve(DatabaseConfigurationService);
     const module = container.resolve(MockModule);
     let options = {};
     const interaction = {

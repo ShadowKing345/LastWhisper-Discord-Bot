@@ -8,7 +8,7 @@ import "reflect-metadata";
 import { jest } from "@jest/globals";
 import { DateTime, Duration } from "luxon";
 import { container, injectable } from "tsyringe";
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
 import { EventManagerService, EventObj, ReminderTrigger } from "../../src/event_manager/index.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
 let Module = class Module extends EventManagerService {
@@ -20,7 +20,7 @@ Module = __decorate([
     injectable()
 ], Module);
 describe("The event manager service's", () => {
-    const mockDb = container.registerSingleton(DatabaseConfiguration, MockDatabase).resolve(DatabaseConfiguration);
+    const mockDb = container.registerSingleton(DatabaseConfigurationService, MockDatabase).resolve(DatabaseConfigurationService);
     const module = container.resolve(Module);
     const config = {
         _id: undefined,

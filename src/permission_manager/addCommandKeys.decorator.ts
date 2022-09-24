@@ -1,4 +1,4 @@
-import { PermissionKeysType } from "./models/index.js";
+import { PermissionKeysType } from "../models/permission_manager/index.js";
 
 export const PermissionKeys: PermissionKeysType[] = [];
 

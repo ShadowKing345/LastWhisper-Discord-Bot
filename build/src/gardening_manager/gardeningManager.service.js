@@ -15,8 +15,8 @@ import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { createLogger } from "../shared/logger/logger.decorator.js";
-import { InvalidArgumentError } from "../shared/models/errors.js";
+import { createLogger } from "../utils/logger/logger.decorator.js";
+import { InvalidArgumentError } from "../utils/models/errors.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
 import { GardeningConfig, Reservation, Slot } from "./models/index.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService {

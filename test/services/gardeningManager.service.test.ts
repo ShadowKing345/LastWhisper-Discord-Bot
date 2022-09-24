@@ -6,11 +6,11 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
 import { GardeningConfig, GardeningManagerRepository, GardeningManagerService, Plot, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
-import { createLogger } from "../../src/shared/logger/logger.decorator.js";
-import { Client } from "../../src/shared/models/client.js";
-import { InvalidArgumentError } from "../../src/shared/models/errors.js";
+import { createLogger } from "../../src/utils/logger/logger.decorator.js";
+import { Client } from "../../src/utils/models/client.js";
+import { InvalidArgumentError } from "../../src/utils/models/errors.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
 
 @singleton()
@@ -55,7 +55,7 @@ describe("The garden service's", () => {
         plots: [],
     };
 
-    const mockDb: MockDatabase = container.registerSingleton(DatabaseConfiguration, MockDatabase).resolve(DatabaseConfiguration) as MockDatabase;
+    const mockDb: MockDatabase = container.registerSingleton(DatabaseConfigurationService, MockDatabase).resolve(DatabaseConfigurationService) as MockDatabase;
     const module: MockModule = container.resolve(MockModule);
 
     let options = {};

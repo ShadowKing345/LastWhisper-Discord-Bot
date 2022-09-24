@@ -1,4 +1,4 @@
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { PermissionManagerService } from "./permissionManager.service.js";
 export declare class PermissionManagerModule extends ModuleBase {
     private permissionManager;

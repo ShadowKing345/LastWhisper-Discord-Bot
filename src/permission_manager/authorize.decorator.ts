@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import { container } from "tsyringe";
 
-import { PermissionManagerService } from "./permissionManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 
 export function authorize(...key: string[]) {
     return function (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {

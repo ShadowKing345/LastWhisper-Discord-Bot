@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var PermissionManagerModule_1;
 import { CommandInteraction, Role } from "discord.js";
 import { singleton } from "tsyringe";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { addCommandKeys } from "./addCommandKeys.decorator.js";
 import { authorize } from "./authorize.decorator.js";
 import { PermissionMode } from "./models/index.js";

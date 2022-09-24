@@ -1,11 +1,11 @@
 import { Collection } from "mongodb";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
-export declare class RoleManagerRepository extends BasicRepository<RoleManagerConfig> {
+export declare class RoleManagerRepository extends RepositoryBase<RoleManagerConfig> {
     private db;
     private readonly collectionName;
-    constructor(db: DatabaseConfiguration);
+    constructor(db: DatabaseConfigurationService);
     protected sanitiseOutput(config: RoleManagerConfig): RoleManagerConfig;
     protected get collection(): Collection<RoleManagerConfig>;
 }

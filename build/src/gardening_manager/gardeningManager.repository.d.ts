@@ -1,11 +1,11 @@
 import { Collection } from "mongodb";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
 import { GardeningConfig } from "./models/index.js";
-export declare class GardeningManagerRepository extends BasicRepository<GardeningConfig> {
+export declare class GardeningManagerRepository extends RepositoryBase<GardeningConfig> {
     private db;
     private readonly collectionName;
-    constructor(db: DatabaseConfiguration);
+    constructor(db: DatabaseConfigurationService);
     protected sanitiseOutput(config: GardeningConfig): GardeningConfig;
     protected get collection(): Collection<GardeningConfig>;
 }

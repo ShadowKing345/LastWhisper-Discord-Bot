@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "./buffManager.service.js";
 export declare class BuffManagerModule extends ModuleBase {
     private buffManagerService;

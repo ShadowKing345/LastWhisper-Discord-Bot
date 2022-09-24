@@ -13,9 +13,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var RoleManagerService_1;
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { createLogger } from "../shared/logger/logger.decorator.js";
-import { Task } from "../shared/models/task.js";
-import { fetchMessages } from "../shared/utils.js";
+import { createLogger } from "../utils/logger/logger.decorator.js";
+import { Task } from "../utils/models/task.js";
+import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
 import { RoleManagerRepository } from "./roleManager.repository.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
