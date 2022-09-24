@@ -2,8 +2,8 @@ import { Client, CommandInteraction, Message, MessageEmbed, TextChannel } from "
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
-import { Task } from "../shared/models/task.js";
-import { fetchMessages } from "../shared/utils.js";
+import { Task } from "../utils/models/task.js";
+import { fetchMessages } from "../utils/utils.js";
 import { EventManagerRepository } from "./eventManager.repository.js";
 import { EventManagerConfig, EventObj } from "./models/index.js";
 

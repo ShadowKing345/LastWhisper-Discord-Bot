@@ -3,9 +3,9 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { createLogger } from "../shared/logger/logger.decorator.js";
-import { Client } from "../shared/models/client.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { createLogger } from "../utils/logger/logger.decorator.js";
+import { Client } from "../utils/models/client.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "./roleManager.service.js";
 
 @singleton()

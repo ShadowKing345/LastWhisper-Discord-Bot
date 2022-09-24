@@ -4,19 +4,19 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton } from "tsyringe";
 
-import { BuffManagerModule } from "../buff_manager/index.js";
-import { EventManagerModule } from "../event_manager/index.js";
-import { GardeningManagerModule } from "../gardening_manager/index.js";
-import { ManagerUtilsModule } from "../manager_utils/index.js";
-import { PermissionManagerModule } from "../permission_manager/index.js";
-import { RoleManagerModule } from "../role_manager/index.js";
-import { ConfigurationClass } from "../shared/configuration.class.js";
-import { LoggerFactory } from "../shared/logger/logger.js";
-import { Client } from "../shared/models/client.js";
-import { BuildCommand, Command } from "../shared/models/command.js";
-import { Listener } from "../shared/models/listener.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
-import { Task } from "../shared/models/task.js";
+import { BuffManagerModule } from "../../buff_manager/index.js";
+import { EventManagerModule } from "../../event_manager/index.js";
+import { GardeningManagerModule } from "../../gardening_manager/index.js";
+import { ManagerUtilsModule } from "../../manager_utils/index.js";
+import { PermissionManagerModule } from "../../permission_manager/index.js";
+import { RoleManagerModule } from "../../role_manager/index.js";
+import { ConfigurationClass } from "../configuration.class.js";
+import { LoggerFactory } from "../logger/logger.js";
+import { Client } from "../models/client.js";
+import { BuildCommand, Command } from "../models/command.js";
+import { Listener } from "../models/listener.js";
+import { ModuleBase } from "../models/index.js";
+import { Task } from "../models/task.js";
 
 const settingUp = "Setting up";
 

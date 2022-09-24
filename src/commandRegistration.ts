@@ -2,10 +2,10 @@ import { REST } from "@discordjs/rest";
 import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 
-import { App } from "../app.js";
-import { LoggerFactory } from "../shared/logger/logger.js";
-import { BuildCommand } from "../shared/models/command.js";
-import { ProjectConfiguration, CommandRegistrationConfiguration } from "./app_configs/index.js";
+import { App } from "./app.js";
+import { LoggerFactory } from "./utils/logger/logger.js";
+import { BuildCommand } from "./utils/models/command.js";
+import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
 
 const loggerMeta = { context: "CommandRegistration" };
 
@@ -15,22 +15,16 @@ type toJsonResult = { name: string, description: string, options: APIApplication
  * Command registration argument used when registering commands.
  */
 type CommandRegistrationArgs = {
-    /**
-     * Token for bot.
-     */
+    // Token for bot.
     token?: string,
-    /**
-     * Client discord id.
-     */
+    // Client discord id.
     client?: string,
     /**
      * Guild discord id.
      * Set to register commands for this guild only.
      */
     guild?: string,
-    /**
-     * Set to true if you wish to unregister.
-     */
+    // Set to true if you wish to unregister commands.
     unregister?: boolean
 }
 

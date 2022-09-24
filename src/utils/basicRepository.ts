@@ -1,6 +1,6 @@
 import { Collection, Filter } from "mongodb";
 
-import { BasicModel } from "./models/basicModel.js";
+import { BasicModel } from "./models/index.js";
 
 export interface IRepository<T> {
     findOne(filter: Filter<T>): Promise<T>;

@@ -3,9 +3,9 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../shared/logger/logger.decorator.js";
-import { Client } from "../shared/models/client.js";
-import { Task } from "../shared/models/task.js";
+import { createLogger } from "../utils/logger/logger.decorator.js";
+import { Client } from "../utils/models/client.js";
+import { Task } from "../utils/models/task.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
 import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "./models/index.js";
 

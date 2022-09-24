@@ -2,9 +2,9 @@ import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
-import { ConfigurationClass } from "../shared/configuration.class.js";
-import { createLogger } from "../shared/logger/logger.decorator.js";
-import { ProjectConfiguration, DatabaseConfiguration as DbConfig } from "./app_configs/index.js";
+import { ConfigurationClass } from "../configuration.class.js";
+import { createLogger } from "../logger/logger.decorator.js";
+import { ProjectConfiguration, DatabaseConfiguration as DbConfig } from "../models/index.js";
 
 export class Database extends Db {
 }

@@ -1,7 +1,7 @@
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { ProjectConfiguration } from "../../config/app_configs/index.js";
+import { ProjectConfiguration } from "../models/index.js";
 
 export enum LOGGING_LEVELS {
     debug = "debug",

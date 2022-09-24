@@ -2,8 +2,8 @@ import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { Client } from "../shared/models/client.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { Client } from "../utils/models/client.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 import { Reason } from "./models/index.js";
 

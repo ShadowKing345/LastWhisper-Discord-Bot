@@ -5,9 +5,9 @@ import { Message } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { container, injectable } from "tsyringe";
 
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
+import { DatabaseConfiguration } from "../../src/utils/config/databaseConfiguration.js";
 import { EventManagerConfig, EventManagerService, EventObj, ReminderTrigger } from "../../src/event_manager/index.js";
-import { Client } from "../../src/shared/models/client.js";
+import { Client } from "../../src/utils/models/client.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
 
 @injectable()

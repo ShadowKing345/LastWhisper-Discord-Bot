@@ -1,9 +1,9 @@
 import { Collection } from "mongodb";
 import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
-import { deepMerge } from "../shared/utils.js";
+import { DatabaseConfiguration } from "../utils/config/databaseConfiguration.js";
+import { BasicRepository } from "../utils/basicRepository.js";
+import { deepMerge } from "../utils/utils.js";
 import { EventManagerConfig } from "./models/index.js";
 
 @singleton()

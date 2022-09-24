@@ -2,12 +2,11 @@ import chalk from "chalk";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
-import { ProjectConfiguration } from "./config/app_configs/index.js";
-import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
-import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { createLogger } from "./shared/logger/logger.decorator.js";
-import { Client } from "./shared/models/client.js";
-import { ModuleBase } from "./shared/models/moduleBase.js";
+import { DatabaseConfiguration } from "./utils/config/databaseConfiguration.js";
+import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
+import { createLogger } from "./utils/logger/logger.decorator.js";
+import { Client } from "./utils/models/client.js";
+import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
 
 /**
  * Application class.

@@ -1,4 +1,4 @@
-import { BasicModel } from "../../shared/models/basicModel.js";
+import { BasicModel } from "../../utils/models/index.js";
 import { Permission } from "./permission.model.js";
 
 export class PermissionManagerConfig extends BasicModel {

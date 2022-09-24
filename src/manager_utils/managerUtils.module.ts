@@ -2,7 +2,7 @@ import { CommandInteraction, GuildBan, GuildMember } from "discord.js";
 import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "./managerUtils.service.js";
 
 @singleton()

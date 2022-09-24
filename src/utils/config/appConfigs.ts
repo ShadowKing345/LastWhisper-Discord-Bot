@@ -1,12 +1,17 @@
 import fs from "fs";
 import { container } from "tsyringe";
 
-import { ProjectConfiguration } from "./models/projectConfiguration.model.js";
+import { ProjectConfiguration } from "../models/index.js";
 
 export const configPath = "./appConfigs.json";
 export const devConfigPath = "./appConfigs-dev.json";
 
-
+/**
+ * Parses the Json configuration file into a ProjectConfiguration Object.
+ * @param path System path to config file.
+ * @param devPath System path to dev config file.
+ * @return New project configuration object.
+ */
 export function parseConfigFile(path: string, devPath?: string): ProjectConfiguration {
     if (!path || !fs.existsSync(path)) return null;
     const config = Object.assign<ProjectConfiguration, object>(new ProjectConfiguration(), JSON.parse(fs.readFileSync(path, "utf-8")));
