@@ -3,7 +3,7 @@ import { singleton } from "tsyringe";
 
 import { DatabaseConfiguration } from "../utils/config/databaseConfiguration.js";
 import { BasicRepository } from "../utils/basicRepository.js";
-import { deepMerge } from "../utils/utils.js";
+import { deepMerge } from "../utils/index.js";
 import { EventManagerConfig } from "./models/index.js";
 
 @singleton()

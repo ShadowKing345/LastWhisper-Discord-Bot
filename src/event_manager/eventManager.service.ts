@@ -3,7 +3,7 @@ import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
 import { Task } from "../utils/models/task.js";
-import { fetchMessages } from "../utils/utils.js";
+import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "./eventManager.repository.js";
 import { EventManagerConfig, EventObj } from "./models/index.js";
 
