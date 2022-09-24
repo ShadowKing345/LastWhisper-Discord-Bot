@@ -8,11 +8,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { singleton } from "tsyringe";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
-import { deepMerge } from "../shared/utils.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
+import { deepMerge } from "../utils/index.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
-let RoleManagerRepository = class RoleManagerRepository extends BasicRepository {
+let RoleManagerRepository = class RoleManagerRepository extends RepositoryBase {
     db;
     collectionName = "role_manager";
     constructor(db) {
@@ -28,7 +28,7 @@ let RoleManagerRepository = class RoleManagerRepository extends BasicRepository 
 };
 RoleManagerRepository = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [DatabaseConfiguration])
+    __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], RoleManagerRepository);
 export { RoleManagerRepository };
 //# sourceMappingURL=roleManager.repository.js.map

@@ -11,7 +11,7 @@ var EventManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "./eventManager.service.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;

@@ -15,8 +15,8 @@ import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { createLogger } from "../shared/logger/logger.decorator.js";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { createLogger } from "../utils/logger/logger.decorator.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "./buffManager.service.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;

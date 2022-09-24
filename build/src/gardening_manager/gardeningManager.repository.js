@@ -8,11 +8,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { singleton } from "tsyringe";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
-import { deepMerge } from "../shared/utils.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
+import { deepMerge } from "../utils/index.js";
 import { GardeningConfig } from "./models/index.js";
-let GardeningManagerRepository = class GardeningManagerRepository extends BasicRepository {
+let GardeningManagerRepository = class GardeningManagerRepository extends RepositoryBase {
     db;
     collectionName = "gardening_manager";
     constructor(db) {
@@ -28,7 +28,7 @@ let GardeningManagerRepository = class GardeningManagerRepository extends BasicR
 };
 GardeningManagerRepository = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [DatabaseConfiguration])
+    __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], GardeningManagerRepository);
 export { GardeningManagerRepository };
 //# sourceMappingURL=gardeningManager.repository.js.map

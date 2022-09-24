@@ -1,7 +1,7 @@
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { Client } from "../shared/models/client.js";
+import { Client } from "../utils/models/client.js";
 import { BuffManagerRepository } from "./buffManager.repository.js";
 import { Buff, BuffManagerConfig, Week } from "./models/index.js";
 export declare class BuffManagerService {

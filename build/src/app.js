@@ -14,11 +14,12 @@ var App_1;
 import chalk from "chalk";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
-import { ProjectConfiguration } from "./config/app_configs/index.js";
-import { DatabaseConfiguration } from "./config/databaseConfiguration.js";
-import { ModuleConfiguration } from "./config/moduleConfiguration.js";
-import { createLogger } from "./shared/logger/logger.decorator.js";
-import { Client } from "./shared/models/client.js";
+import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
+import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
+import { createLogger } from "./utils/logger/logger.decorator.js";
+import { Client } from "./utils/models/client.js";
+import { ProjectConfiguration } from "./utils/models/index.js";
+import { generateConfigObject } from "./utils/config/appConfigs.js";
 /**
  * Application class.
  * To simplify dependency injection this class is used and can be easily resolved.
@@ -41,7 +42,7 @@ let App = App_1 = class App {
      */
     async init() {
         try {
-            await this.databaseService.connectClient();
+            await this.databaseService.connect();
             this.moduleConfiguration.configureModules(this.client);
             this.client.once("ready", () => this.logger.info(chalk.magentaBright("Bot is up and ready to roll!")));
             this.client.on("error", error => this.logger.error(error + error.stack));
@@ -79,7 +80,7 @@ App = App_1 = __decorate([
     singleton(),
     __param(3, createLogger(App_1.name)),
     __metadata("design:paramtypes", [ProjectConfiguration,
-        DatabaseConfiguration,
+        DatabaseConfigurationService,
         ModuleConfiguration, Object])
 ], App);
 export { App };
@@ -91,12 +92,14 @@ export async function main() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
     try {
+        generateConfigObject();
         const app = container.resolve(App);
-        await app.init();
-        process.on("SIGTERM", () => app.stop())
-            .on("SIGINT", () => app.stop())
-            .on("uncaughtException", () => app.stop());
-        await app.run();
+        // await app.init();
+        // process.on("SIGTERM", () => app.stop())
+        //     .on("SIGINT", () => app.stop())
+        //     .on("uncaughtException", () => app.stop());
+        //
+        // await app.run();
     }
     catch (error) {
         console.error(error instanceof Error ? error + error.stack : error);

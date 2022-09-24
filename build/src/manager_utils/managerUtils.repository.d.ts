@@ -1,11 +1,11 @@
 import { Collection } from "mongodb";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
 import { ManagerUtilsConfig } from "./managerUtils.model.js";
-export declare class ManagerUtilsRepository extends BasicRepository<ManagerUtilsConfig> {
+export declare class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {
     private db;
     private readonly collectionName;
-    constructor(db: DatabaseConfiguration);
+    constructor(db: DatabaseConfigurationService);
     protected sanitiseOutput(config: ManagerUtilsConfig): ManagerUtilsConfig;
     protected get collection(): Collection<ManagerUtilsConfig>;
 }

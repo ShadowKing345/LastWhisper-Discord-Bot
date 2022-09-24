@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "./roleManager.service.js";
 export declare class RoleManagerModule extends ModuleBase {
     private roleManagerService;

@@ -1,4 +1,4 @@
-import { ModuleBase } from "../shared/models/moduleBase.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "./gardeningManager.service.js";
 export declare class GardeningManagerModule extends ModuleBase {
     private gardeningManagerService;

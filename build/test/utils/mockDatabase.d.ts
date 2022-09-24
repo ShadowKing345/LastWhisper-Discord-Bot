@@ -1,6 +1,6 @@
 import { Db } from "mongodb";
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
-export declare class MockDatabase extends DatabaseConfiguration {
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
+export declare class MockDatabase extends DatabaseConfigurationService {
     private _config;
     get db(): Db;
     get config(): any;

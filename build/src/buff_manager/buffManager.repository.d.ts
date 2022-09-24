@@ -1,11 +1,11 @@
 import { Collection } from "mongodb";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
 import { BuffManagerConfig } from "./models/index.js";
-export declare class BuffManagerRepository extends BasicRepository<BuffManagerConfig> {
+export declare class BuffManagerRepository extends RepositoryBase<BuffManagerConfig> {
     private db;
     private readonly collectionName;
-    constructor(db: DatabaseConfiguration);
+    constructor(db: DatabaseConfigurationService);
     protected sanitiseOutput(config: BuffManagerConfig): BuffManagerConfig;
     protected get collection(): Collection<BuffManagerConfig>;
 }

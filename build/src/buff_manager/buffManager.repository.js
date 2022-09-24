@@ -8,11 +8,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { singleton } from "tsyringe";
-import { DatabaseConfiguration } from "../config/databaseConfiguration.js";
-import { BasicRepository } from "../shared/basicRepository.js";
-import { deepMerge } from "../shared/utils.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { RepositoryBase } from "../utils/repository/repositoryBase.js";
+import { deepMerge } from "../utils/index.js";
 import { BuffManagerConfig } from "./models/index.js";
-let BuffManagerRepository = class BuffManagerRepository extends BasicRepository {
+let BuffManagerRepository = class BuffManagerRepository extends RepositoryBase {
     db;
     collectionName = "buff_manager";
     constructor(db) {
@@ -28,7 +28,7 @@ let BuffManagerRepository = class BuffManagerRepository extends BasicRepository 
 };
 BuffManagerRepository = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [DatabaseConfiguration])
+    __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], BuffManagerRepository);
 export { BuffManagerRepository };
 //# sourceMappingURL=buffManager.repository.js.map

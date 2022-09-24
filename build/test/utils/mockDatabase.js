@@ -5,9 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { singleton } from "tsyringe";
-import { DatabaseConfiguration } from "../../src/config/databaseConfiguration.js";
-import { deepMerge } from "../../src/shared/utils.js";
-let MockDatabase = class MockDatabase extends DatabaseConfiguration {
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
+import { deepMerge } from "../../src/utils/index.js";
+let MockDatabase = class MockDatabase extends DatabaseConfigurationService {
     _config = null;
     get db() {
         return {

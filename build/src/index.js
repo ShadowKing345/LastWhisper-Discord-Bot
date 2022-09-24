@@ -3,7 +3,7 @@ import "reflect-metadata";
 import { program } from "commander";
 import * as os from "os";
 import { main } from "./app.js";
-import { commandRegistration } from "./config/commandRegistration.js";
+import { commandRegistration } from "./commandRegistration.js";
 console.log(`Welcome ${os.userInfo().username}.`);
 // const configCheck = () => !existsSync(configPath) ? inquirer.prompt<{ result: boolean }>({
 //     name: "result",

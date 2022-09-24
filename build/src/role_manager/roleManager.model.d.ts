@@ -1,4 +1,4 @@
-import { BasicModel } from "../shared/models/basicModel.js";
+import { BasicModel } from "../utils/models/index.js";
 export declare class RoleManagerConfig extends BasicModel {
     guildId: string;
     acceptedRoleId: string;

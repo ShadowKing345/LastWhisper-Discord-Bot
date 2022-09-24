@@ -1,6 +1,6 @@
 import { CommandInteraction, EmbedFieldData } from "discord.js";
 import { pino } from "pino";
-import { Client } from "../shared/models/client.js";
+import { Client } from "../utils/models/client.js";
 import { GardeningManagerRepository } from "./gardeningManager.repository.js";
 import { GardeningConfig, Plot, Reason, Slot } from "./models/index.js";
 export declare class GardeningManagerService {
