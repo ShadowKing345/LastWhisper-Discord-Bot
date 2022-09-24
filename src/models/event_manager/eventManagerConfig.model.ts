@@ -1,9 +1,13 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { EventObj } from "./eventObj.model.js";
 import { ReminderTrigger } from "./reminderTrigger.model.js";
 import { Tags } from "./tags.model.js";
 
-export class EventManagerConfig extends BasicModel {
+/**
+ * Event manager configuration object.
+ */
+export class EventManagerConfig implements IEntity {
+    public _id;
     public guildId: string = null;
     public listenerChannelId: string | null = null;
     public postingChannelId: string | null = null;

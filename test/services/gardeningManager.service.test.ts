@@ -7,11 +7,13 @@ import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
-import { GardeningConfig, GardeningManagerRepository, GardeningManagerService, Plot, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
 import { createLogger } from "../../src/utils/logger/logger.decorator.js";
 import { Client } from "../../src/utils/models/client.js";
 import { InvalidArgumentError } from "../../src/utils/models/errors.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
+import { GardeningManagerService } from "../../src/services/gardeningManager.service.js";
+import { GardeningManagerRepository } from "../../src/repositories/gardeningManager.repository.js";
+import { GardeningModuleConfig, Plot, Slot, Reason, Reservation } from "../../src/models/gardening_manager/index.js";
 
 @singleton()
 class MockModule extends GardeningManagerService {
@@ -21,7 +23,7 @@ class MockModule extends GardeningManagerService {
 
     public postChannelMessage = jest.fn() as any;
 
-    public validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true) {
+    public validatePlotAndSlot(interaction: CommandInteraction, config: GardeningModuleConfig, plotNum: number, slotNum: number, slotShouldExist = true) {
         return GardeningManagerService.validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist);
     }
 

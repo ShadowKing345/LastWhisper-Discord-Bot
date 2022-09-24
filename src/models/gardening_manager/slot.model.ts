@@ -2,6 +2,9 @@ import { Reason } from "./reason.enum.js";
 import { Reservation } from "./reservation.model.js";
 import { ISlotBase } from "./slotBase.interface.js";
 
+/**
+ * Representation of a FFXIV gardening slot.
+ */
 export class Slot implements ISlotBase {
     public player: string;
     public duration: number;

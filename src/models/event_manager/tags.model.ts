@@ -1,3 +1,6 @@
+/**
+ * Tag names for the event message parser.
+ */
 export class Tags {
     public announcement: string = null;
     public description: string = null;

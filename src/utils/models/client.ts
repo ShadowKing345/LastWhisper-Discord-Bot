@@ -2,7 +2,7 @@ import { Client as DiscordClient, ClientEvents, Collection, Intents } from "disc
 
 import { Command } from "./command.js";
 import { Listener } from "./listener.js";
-import { ModuleBase } from "./moduleBase.js";
+import { ModuleBase } from "../objects/moduleBase.js";
 import { Task } from "./task.js";
 
 export class Client extends DiscordClient {

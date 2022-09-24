@@ -1,6 +1,9 @@
 import { Reason } from "./reason.enum.js";
 import { ISlotBase } from "./slotBase.interface.js";
 
+/**
+ * Reservation object.
+ */
 export class Reservation implements ISlotBase {
     public player: string;
     public duration: number;

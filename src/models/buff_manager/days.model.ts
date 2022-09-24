@@ -1,3 +1,6 @@
+/**
+ * Representation of one week's worth of buffs.
+ */
 export class Days {
     public monday: string;
     public tuesday: string;

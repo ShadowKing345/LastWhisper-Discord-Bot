@@ -1,6 +1,10 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
 
-export class ManagerUtilsConfig extends BasicModel {
+/**
+ * Manager utils configuration object.
+ */
+export class ManagerUtilsConfig implements IEntity {
+    public _id;
     public guildId: string;
     public loggingChannel: string;
     public clearChannelBlacklist: string[];

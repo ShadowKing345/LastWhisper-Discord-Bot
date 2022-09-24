@@ -3,7 +3,7 @@ import { singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
-import { ManagerUtilsConfig } from "../manager_utils/index.js";
+import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.js";
 
 @singleton()
 export class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {

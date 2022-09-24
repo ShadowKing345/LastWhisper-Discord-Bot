@@ -7,7 +7,7 @@ import { createLogger } from "../utils/logger/logger.decorator.js";
 import { Client } from "../utils/models/client.js";
 import { InvalidArgumentError } from "../utils/models/errors.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
-import { GardeningConfig, Plot, Reason, Reservation, Slot } from "../models/gardening_manager/index.js";
+import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../models/gardening_manager/index.js";
 
 @singleton()
 export class GardeningManagerService {
@@ -17,7 +17,7 @@ export class GardeningManagerService {
     ) {
     }
 
-    protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [ Plot, Slot ]> {
+    protected static async validatePlotAndSlot(interaction: CommandInteraction, config: GardeningModuleConfig, plotNum: number, slotNum: number, slotShouldExist = true): Promise<null | [ Plot, Slot ]> {
         if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
@@ -84,7 +84,7 @@ export class GardeningManagerService {
     }
 
     public async register(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
-        const config: GardeningConfig = await this.findOneOrCreate(interaction.guildId);
+        const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
 
         if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
@@ -134,7 +134,7 @@ export class GardeningManagerService {
     }
 
     public async cancel(interaction: CommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
-        const config: GardeningConfig = await this.findOneOrCreate(interaction.guildId);
+        const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
 
         if (!(player && plant && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
@@ -170,7 +170,7 @@ export class GardeningManagerService {
     }
 
     public async list(interaction: CommandInteraction, plotNum: number, slotNum: number) {
-        const config: GardeningConfig = await this.findOneOrCreate(interaction.guildId);
+        const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
         const showDetailed: boolean = interaction.options.getBoolean("detailed") ?? false;
 
         if (config.plots.length === 0) {
@@ -226,8 +226,8 @@ export class GardeningManagerService {
 
     public async tick(client: Client) {
         const now: number = DateTime.now().toUnixInteger();
-        const configs: GardeningConfig[] = await this.gardeningConfigRepository.getAll();
-        const altered: GardeningConfig[] = [];
+        const configs: GardeningModuleConfig[] = await this.gardeningConfigRepository.getAll();
+        const altered: GardeningModuleConfig[] = [];
 
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId)) continue;
@@ -253,7 +253,7 @@ export class GardeningManagerService {
         }
     }
 
-    public async postChannelMessage(client: Client, config: GardeningConfig, messageArgs: MessagePostArgs) {
+    public async postChannelMessage(client: Client, config: GardeningModuleConfig, messageArgs: MessagePostArgs) {
         if (!client.guilds.cache.has(config.guildId)) return;
         const guild = await client.guilds.fetch(config.guildId);
 
@@ -275,11 +275,11 @@ export class GardeningManagerService {
         await channel.send({ embeds: [ embed ] });
     }
 
-    private async findOneOrCreate(id: string): Promise<GardeningConfig> {
+    private async findOneOrCreate(id: string): Promise<GardeningModuleConfig> {
         let result = await this.gardeningConfigRepository.findOne({ guildId: id });
         if (result) return result;
 
-        result = new GardeningConfig();
+        result = new GardeningModuleConfig();
         result.guildId = id;
 
         return await this.gardeningConfigRepository.save(result);

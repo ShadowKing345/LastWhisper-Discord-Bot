@@ -1,3 +1,6 @@
+/**
+ * Event object.
+ */
 export class EventObj {
     public messageId: string = null;
     public name: string = null;

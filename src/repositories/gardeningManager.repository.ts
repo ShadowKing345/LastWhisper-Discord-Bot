@@ -3,14 +3,14 @@ import { singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
-import { GardeningConfig } from "../gardening_manager/index.js";
+import { GardeningModuleConfig } from "../models/gardening_manager/index.js";
 
 @singleton()
-export class GardeningManagerRepository extends RepositoryBase<GardeningConfig> {
+export class GardeningManagerRepository extends RepositoryBase<GardeningModuleConfig> {
     private readonly collectionName: string = "gardening_manager";
 
-    protected readonly sanitizedObject = GardeningConfig;
-    protected readonly collection: Collection<GardeningConfig>;
+    protected readonly sanitizedObject = GardeningModuleConfig;
+    protected readonly collection: Collection<GardeningModuleConfig>;
 
     constructor(db: DatabaseConfigurationService) {
         super();

@@ -1,3 +1,6 @@
+/**
+ * Reminder trigger. Used to calculate how long until an event reminder needs to be sent.
+ */
 export class ReminderTrigger {
     public message: string = null;
     public timeDelta: string = null;

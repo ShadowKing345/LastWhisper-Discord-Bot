@@ -16,10 +16,12 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
-import { GardeningManagerRepository, GardeningManagerService, Reason, Reservation, Slot } from "../../src/gardening_manager/index.js";
 import { createLogger } from "../../src/utils/logger/logger.decorator.js";
 import { InvalidArgumentError } from "../../src/utils/models/errors.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
+import { GardeningManagerService } from "../../src/services/gardeningManager.service.js";
+import { GardeningManagerRepository } from "../../src/repositories/gardeningManager.repository.js";
+import { Slot, Reason, Reservation } from "../../src/models/gardening_manager/index.js";
 let MockModule = class MockModule extends GardeningManagerService {
     constructor(gardeningConfigRepository, logger) {
         super(gardeningConfigRepository, logger);

@@ -1,6 +1,7 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
 
-export class RoleManagerConfig extends BasicModel {
+export class RoleManagerConfig implements IEntity {
+    public _id;
     public guildId: string;
     public acceptedRoleId: string;
     public reactionMessageIds: string[];

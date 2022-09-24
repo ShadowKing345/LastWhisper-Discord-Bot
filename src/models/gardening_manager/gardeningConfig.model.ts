@@ -1,7 +1,11 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { Plot } from "./plot.model.js";
 
-export class GardeningConfig extends BasicModel {
+/**
+ * Gardening module configuration object.
+ */
+export class GardeningModuleConfig implements IEntity {
+    public _id;
     public guildId: string;
     public plots: Plot[] = [];
     public messagePostingChannelId: string;

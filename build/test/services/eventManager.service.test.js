@@ -9,8 +9,9 @@ import { jest } from "@jest/globals";
 import { DateTime, Duration } from "luxon";
 import { container, injectable } from "tsyringe";
 import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
-import { EventManagerService, EventObj, ReminderTrigger } from "../../src/event_manager/index.js";
+import { EventObj, ReminderTrigger } from "../../src/models/event_manager/index.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
+import { EventManagerService } from "../../src/services/eventManager.service.js";
 let Module = class Module extends EventManagerService {
     static parseTriggerDuration(triggerTime) {
         return EventManagerService.parseTriggerDuration(triggerTime);

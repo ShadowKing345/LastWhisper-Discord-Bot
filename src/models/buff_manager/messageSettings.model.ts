@@ -1,3 +1,6 @@
+/**
+ * Settings for posting the daily messages.
+ */
 export class MessageSettings {
     public channelId: string;
     public hour: string;

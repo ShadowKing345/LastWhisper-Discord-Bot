@@ -1,7 +1,11 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { Permission } from "./permission.model.js";
 
-export class PermissionManagerConfig extends BasicModel {
+/**
+ * Permission manager configuration object.
+ */
+export class PermissionManagerConfig implements IEntity {
+    public _id;
     public guildId: string;
     public permissions: { [key: string]: Permission } = {};
 }

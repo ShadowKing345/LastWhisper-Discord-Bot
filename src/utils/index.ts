@@ -1,5 +1,6 @@
 import { Client, Message, Snowflake, TextChannel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
+import { SanitizeObjectBase } from "./objects/sanitizeObjectBase.js";
 
 export async function fetchMessages(client: Client, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
     const result: Message[] = [];
@@ -43,6 +44,14 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
     sources = sources.filter(source => source != null);
 
     if (sources.length <= 0) return target;
+
+    if (target instanceof SanitizeObjectBase) {
+        for (const source in sources) {
+            target.sanitizeObject(source);
+        }
+
+        return target;
+    }
 
     for (const source of sources) {
         for (const key in source) {

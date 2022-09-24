@@ -3,7 +3,7 @@ import { singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
-import { RoleManagerConfig } from "../role_manager/index.js";
+import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
 
 @singleton()
 export class RoleManagerRepository extends RepositoryBase<RoleManagerConfig> {

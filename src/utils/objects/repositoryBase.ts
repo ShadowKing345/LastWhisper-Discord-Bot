@@ -1,14 +1,20 @@
 import { Collection, Filter } from "mongodb";
 
-import { BasicModel } from "../models/index.js";
 import { SanitizeObjectBase } from "./sanitizeObjectBase.js";
 import { deepMerge } from "../index.js";
+
+/**
+ * Entity interface to help with repository processing.
+ */
+export interface IEntity {
+    _id;
+}
 
 /**
  * Base repository object.
  * Manages the majority of basic CRUD repository actions.
  */
-export abstract class RepositoryBase<T extends BasicModel> {
+export abstract class RepositoryBase<T extends IEntity> {
     // The actual collection to use.
     protected abstract readonly collection: Collection<T>;
     // A class to create a new object.
