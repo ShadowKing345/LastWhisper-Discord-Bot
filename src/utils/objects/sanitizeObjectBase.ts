@@ -1,7 +1,7 @@
 /**
  * Abstract class that provides additional creation functions.
  */
-export abstract class SanitizeObject {
+export abstract class SanitizeObjectBase {
     /**
      * Assigns all methods and functions into the current instance and returns it.
      * When extended it may perform additional steps in order to ensure the object was created properly.

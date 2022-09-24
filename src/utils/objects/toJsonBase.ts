@@ -1,9 +1,9 @@
-import { SanitizeObject } from "./sanitizeObject.js";
+import { SanitizeObjectBase } from "./sanitizeObjectBase.js";
 
 /**
  * Abstract class that acts as a base for quick JSON serialization and deserialization.
  */
-export abstract class ToJsonBase extends SanitizeObject {
+export abstract class ToJsonBase extends SanitizeObjectBase {
     /**
      * Stringifies the current object into a JSON formatted string.
      * @return JSON string.
