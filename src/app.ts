@@ -7,6 +7,7 @@ import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
 import { createLogger } from "./utils/logger/logger.decorator.js";
 import { Client } from "./utils/models/client.js";
 import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
+import { generateConfigObject } from "./utils/config/appConfigs.js";
 
 /**
  * Application class.
@@ -78,14 +79,17 @@ export async function main() {
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
     try {
+        generateConfigObject();
+
         const app: App = container.resolve(App);
-        await app.init();
 
-        process.on("SIGTERM", () => app.stop())
-            .on("SIGINT", () => app.stop())
-            .on("uncaughtException", () => app.stop());
+        // await app.init();
 
-        await app.run();
+        // process.on("SIGTERM", () => app.stop())
+        //     .on("SIGINT", () => app.stop())
+        //     .on("uncaughtException", () => app.stop());
+        //
+        // await app.run();
     } catch (error: Error | unknown) {
         console.error(error instanceof Error ? error + error.stack : error);
     }

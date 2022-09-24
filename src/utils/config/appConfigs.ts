@@ -1,10 +1,11 @@
 import fs from "fs";
-import { container } from "tsyringe";
 
 import { ProjectConfiguration } from "../models/index.js";
+import { toJson } from "../index.js";
+import { container as defaultContainer, DependencyContainer } from "tsyringe";
 
-export const configPath = "./appConfigs.json";
-export const devConfigPath = "./appConfigs-dev.json";
+export const configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";
+export const devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectConfiguration.dev.json";
 
 /**
  * Parses the Json configuration file into a ProjectConfiguration Object.
@@ -14,16 +15,18 @@ export const devConfigPath = "./appConfigs-dev.json";
  */
 export function parseConfigFile(path: string, devPath?: string): ProjectConfiguration {
     if (!path || !fs.existsSync(path)) return null;
-    const config = Object.assign<ProjectConfiguration, object>(new ProjectConfiguration(), JSON.parse(fs.readFileSync(path, "utf-8")));
+    const config = toJson(new ProjectConfiguration, fs.readFileSync(path, "utf-8"));
 
     if (!devPath || !fs.existsSync(devPath)) return config;
     return Object.assign<ProjectConfiguration, object>(config, JSON.parse(fs.readFileSync(devPath, "utf-8")));
 }
 
-if (!container.isRegistered(ProjectConfiguration)) {
-    if (!fs.existsSync(configPath)) {
-        throw new Error("Configuration file was not found. You can create one with the generate-config script.");
+/**
+ * Generates and registers a configuration object.
+ * @param container Dependency container to be used instead of the default one.
+ */
+export function generateConfigObject(container: DependencyContainer = defaultContainer): void {
+    if (!container.isRegistered(ProjectConfiguration)) {
+        container.register<ProjectConfiguration>(ProjectConfiguration, { useValue: parseConfigFile(configPath, devConfigPath) });
     }
-
-    container.register<ProjectConfiguration>(ProjectConfiguration, { useValue: parseConfigFile(configPath, devConfigPath) })
 }
