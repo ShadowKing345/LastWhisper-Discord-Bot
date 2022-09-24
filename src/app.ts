@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "./utils/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
 import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
 import { createLogger } from "./utils/logger/logger.decorator.js";
 import { Client } from "./utils/models/client.js";
@@ -19,7 +19,7 @@ export class App {
 
     constructor(
         private appConfig: ProjectConfiguration,
-        private databaseService: DatabaseConfiguration,
+        private databaseService: DatabaseConfigurationService,
         private moduleConfiguration: ModuleConfiguration,
         @createLogger(App.name) private logger: pino.Logger,
     ) {
@@ -31,7 +31,7 @@ export class App {
      */
     public async init(): Promise<void> {
         try {
-            await this.databaseService.connectClient();
+            await this.databaseService.connect();
             this.moduleConfiguration.configureModules(this.client);
 
             this.client.once("ready", () => this.logger.info(chalk.magentaBright("Bot is up and ready to roll!")));

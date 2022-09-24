@@ -1,7 +1,7 @@
 import { Collection } from "mongodb";
 import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../utils/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { BasicRepository } from "../utils/basicRepository.js";
 import { deepMerge } from "../utils/index.js";
 import { ManagerUtilsConfig } from "./managerUtils.model.js";
@@ -10,7 +10,7 @@ import { ManagerUtilsConfig } from "./managerUtils.model.js";
 export class ManagerUtilsRepository extends BasicRepository<ManagerUtilsConfig> {
     private readonly collectionName: string = "manager_utils";
 
-    constructor(private db: DatabaseConfiguration) {
+    constructor(private db: DatabaseConfigurationService) {
         super();
     }
 

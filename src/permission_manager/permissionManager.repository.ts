@@ -1,7 +1,7 @@
 import { Collection } from "mongodb";
 import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../utils/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { BasicRepository } from "../utils/basicRepository.js";
 import { deepMerge } from "../utils/index.js";
 import { PermissionManagerConfig } from "./models/index.js";
@@ -10,7 +10,7 @@ import { PermissionManagerConfig } from "./models/index.js";
 export class PermissionManagerRepository extends BasicRepository<PermissionManagerConfig> {
     private readonly collectionName: string = "permission_manager";
 
-    constructor(private db: DatabaseConfiguration) {
+    constructor(private db: DatabaseConfigurationService) {
         super();
     }
 

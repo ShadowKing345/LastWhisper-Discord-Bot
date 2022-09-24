@@ -1,7 +1,7 @@
 import { Collection } from "mongodb";
 import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../utils/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { BasicRepository } from "../utils/basicRepository.js";
 import { deepMerge } from "../utils/index.js";
 import { EventManagerConfig } from "./models/index.js";
@@ -10,7 +10,7 @@ import { EventManagerConfig } from "./models/index.js";
 export class EventManagerRepository extends BasicRepository<EventManagerConfig> {
     private readonly collectionName: string = "event_manager";
 
-    constructor(private db: DatabaseConfiguration) {
+    constructor(private db: DatabaseConfigurationService) {
         super();
     }
 

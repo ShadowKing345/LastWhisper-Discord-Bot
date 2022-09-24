@@ -1,7 +1,7 @@
 import { Collection } from "mongodb";
 import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../utils/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { BasicRepository } from "../utils/basicRepository.js";
 import { deepMerge } from "../utils/index.js";
 import { RoleManagerConfig } from "./roleManager.model.js";
@@ -10,7 +10,7 @@ import { RoleManagerConfig } from "./roleManager.model.js";
 export class RoleManagerRepository extends BasicRepository<RoleManagerConfig> {
     private readonly collectionName: string = "role_manager";
 
-    constructor(private db: DatabaseConfiguration) {
+    constructor(private db: DatabaseConfigurationService) {
         super();
     }
 

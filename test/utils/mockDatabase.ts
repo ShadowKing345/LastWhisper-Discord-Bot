@@ -1,11 +1,11 @@
 import { Db } from "mongodb";
 import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../../src/utils/config/databaseConfiguration.js";
+import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
 import { deepMerge } from "../../src/utils/index.js";
 
 @singleton()
-export class MockDatabase extends DatabaseConfiguration {
+export class MockDatabase extends DatabaseConfigurationService {
     private _config: any = null;
 
     public get db() {
