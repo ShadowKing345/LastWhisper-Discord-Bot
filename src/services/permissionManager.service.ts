@@ -4,9 +4,9 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/logger/logger.decorator.js";
 import { deepMerge } from "../utils/index.js";
-import { PermissionKeys } from "./addCommandKeys.decorator.js";
-import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "./models/index.js";
-import { PermissionManagerRepository } from "./permissionManager.repository.js";
+import { PermissionKeys } from "../permission_manager/addCommandKeys.decorator.js";
+import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
+import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 
 @singleton()
 export class PermissionManagerService {

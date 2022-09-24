@@ -4,8 +4,8 @@ import { singleton } from "tsyringe";
 
 import { Task } from "../utils/models/task.js";
 import { fetchMessages } from "../utils/index.js";
-import { EventManagerRepository } from "./eventManager.repository.js";
-import { EventManagerConfig, EventObj } from "./models/index.js";
+import { EventManagerRepository } from "../repositories/eventManager.repository.js";
+import { EventManagerConfig, EventObj } from "../models/event_manager/index.js";
 
 @singleton()
 export class EventManagerService {
@@ -246,7 +246,7 @@ export class EventManagerService {
     }
 
     public async onReady(client: Client) {
-        const configs: EventManagerConfig[] = await this.eventManagerRepository.find({});
+        const configs: EventManagerConfig[] = await this.eventManagerRepository.findAll({});
 
         for (const config of configs) {
             if (!config.listenerChannelId || !config.events.length) continue;

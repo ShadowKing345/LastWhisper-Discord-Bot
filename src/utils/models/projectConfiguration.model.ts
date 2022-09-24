@@ -6,7 +6,7 @@ import { deepMerge } from "../index.js";
 /**
  * Default configuration object for the application.
  */
-export class ProjectConfiguration extends ToJsonBase {
+export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     // Discord application token.
     public token?: string = null;
     // Database settings.

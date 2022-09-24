@@ -4,8 +4,8 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton } from "tsyringe";
 
-import { BuffManagerModule } from "../../buff_manager/index.js";
-import { EventManagerModule } from "../../event_manager/index.js";
+import { BuffManagerModule } from "../../models/buff_manager/index.js";
+import { EventManagerModule } from "../../models/event_manager/index.js";
 import { GardeningManagerModule } from "../../gardening_manager/index.js";
 import { ManagerUtilsModule } from "../../manager_utils/index.js";
 import { PermissionManagerModule } from "../../permission_manager/index.js";

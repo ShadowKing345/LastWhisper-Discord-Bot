@@ -6,8 +6,8 @@ import { singleton } from "tsyringe";
 import { createLogger } from "../utils/logger/logger.decorator.js";
 import { Client } from "../utils/models/client.js";
 import { Task } from "../utils/models/task.js";
-import { BuffManagerRepository } from "./buffManager.repository.js";
-import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "./models/index.js";
+import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
+import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "../models/buff_manager/index.js";
 
 const skipping = "Skipping";
 

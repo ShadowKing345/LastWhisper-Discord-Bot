@@ -6,7 +6,7 @@ import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { createLogger } from "../utils/logger/logger.decorator.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
-import { RoleManagerService } from "./roleManager.service.js";
+import { RoleManagerService } from "../services/roleManager.service.js";
 
 @singleton()
 export class RoleManagerModule extends ModuleBase {

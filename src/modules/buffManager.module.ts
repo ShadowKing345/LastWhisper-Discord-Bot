@@ -6,7 +6,7 @@ import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { createLogger } from "../utils/logger/logger.decorator.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
-import { BuffManagerService } from "./buffManager.service.js";
+import { BuffManagerService } from "../services/buffManager.service.js";
 
 @singleton()
 export class BuffManagerModule extends ModuleBase {

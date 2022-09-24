@@ -3,7 +3,7 @@ import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { ModuleBase } from "../utils/models/index.js";
-import { EventManagerService } from "./eventManager.service.js";
+import { EventManagerService } from "../services/eventManager.service.js";
 
 @singleton()
 export class EventManagerModule extends ModuleBase {

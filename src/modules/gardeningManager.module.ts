@@ -4,8 +4,8 @@ import { singleton } from "tsyringe";
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
-import { GardeningManagerService } from "./gardeningManager.service.js";
-import { Reason } from "./models/index.js";
+import { GardeningManagerService } from "../services/gardeningManager.service.js";
+import { Reason } from "../models/gardening_manager/index.js";
 
 @singleton()
 export class GardeningManagerModule extends ModuleBase {

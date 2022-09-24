@@ -6,8 +6,8 @@ import { createLogger } from "../utils/logger/logger.decorator.js";
 import { Client } from "../utils/models/client.js";
 import { Task } from "../utils/models/task.js";
 import { fetchMessages } from "../utils/index.js";
-import { RoleManagerConfig } from "./roleManager.model.js";
-import { RoleManagerRepository } from "./roleManager.repository.js";
+import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
+import { RoleManagerRepository } from "../repositories/roleManager.repository.js";
 
 @singleton()
 export class RoleManagerService {

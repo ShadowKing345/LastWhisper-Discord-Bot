@@ -2,8 +2,8 @@ import { CommandInteraction, Guild, GuildBan, GuildMember, MessageEmbed, TextCha
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
-import { ManagerUtilsConfig } from "./managerUtils.model.js";
-import { ManagerUtilsRepository } from "./managerUtils.repository.js";
+import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.js";
+import { ManagerUtilsRepository } from "../repositories/managerUtils.repository.js";
 
 @singleton()
 export class ManagerUtilsService {

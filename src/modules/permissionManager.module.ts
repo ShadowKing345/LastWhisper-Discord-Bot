@@ -3,10 +3,10 @@ import { CommandInteraction, Role } from "discord.js";
 import { singleton } from "tsyringe";
 
 import { ModuleBase } from "../utils/models/index.js";
-import { addCommandKeys } from "./addCommandKeys.decorator.js";
-import { authorize } from "./authorize.decorator.js";
-import { PermissionMode } from "./models/index.js";
-import { PermissionManagerService } from "./permissionManager.service.js";
+import { addCommandKeys } from "../permission_manager/addCommandKeys.decorator.js";
+import { authorize } from "../permission_manager/authorize.decorator.js";
+import { PermissionMode } from "../models/permission_manager/index.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 
 @singleton()
 export class PermissionManagerModule extends ModuleBase {

@@ -6,7 +6,7 @@ import { DateTime, Duration } from "luxon";
 import { container, injectable } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
-import { EventManagerConfig, EventManagerService, EventObj, ReminderTrigger } from "../../src/event_manager/index.js";
+import { EventManagerConfig, EventManagerService, EventObj, ReminderTrigger } from "../../src/models/event_manager/index.js";
 import { Client } from "../../src/utils/models/client.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
 
