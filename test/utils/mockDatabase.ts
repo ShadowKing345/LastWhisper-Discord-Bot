@@ -2,7 +2,7 @@ import { Db } from "mongodb";
 import { singleton } from "tsyringe";
 
 import { DatabaseConfiguration } from "../../src/utils/config/databaseConfiguration.js";
-import { deepMerge } from "../../src/utils/utils.js";
+import { deepMerge } from "../../src/utils/index.js";
 
 @singleton()
 export class MockDatabase extends DatabaseConfiguration {
