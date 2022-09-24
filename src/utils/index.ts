@@ -40,20 +40,20 @@ export function toJson<T>(t: { new(): T }, str: string): T {
  * @return The newly created object.
  */
 export function deepMerge<T, O>(target: T, ...sources: O[]): T {
-    if (!sources.length) return target;
+    sources = sources.filter(source => source != null);
+
+    if (sources.length <= 0) return target;
 
     for (const source of sources) {
-        if (target && source) {
-            for (const key in source) {
-                if (source[key]) {
-                    if (!target[key.valueOf()]) {
-                        target[key.valueOf()] = source[key];
+        for (const key in source) {
+            if (source[key]) {
+                if (!target[key.valueOf()]) {
+                    target[key.valueOf()] = source[key];
+                } else {
+                    if (typeof target[key.valueOf()] === "object") {
+                        deepMerge(target[key.valueOf()], source[key]);
                     } else {
-                        if (typeof target[key.valueOf()] === "object") {
-                            deepMerge(target[key.valueOf()], source[key]);
-                        } else {
-                            target[key.valueOf()] = source[key];
-                        }
+                        target[key.valueOf()] = source[key];
                     }
                 }
             }
