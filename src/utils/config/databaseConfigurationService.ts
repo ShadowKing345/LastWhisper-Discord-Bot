@@ -1,6 +1,6 @@
 import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
-import { container, singleton } from "tsyringe";
+import { singleton } from "tsyringe";
 
 import { ConfigurationClass } from "../configuration.class.js";
 import { createLogger } from "../logger/logger.decorator.js";
@@ -56,7 +56,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
     async connect(): Promise<void> {
         try {
             this.logger.info(`Connecting to Database`);
-            if (this._client) {
+            if (this.isConnected) {
                 this.logger.error("Connection already active. Please disconnect first before attempting to connect.");
                 return;
             }
@@ -68,7 +68,6 @@ export class DatabaseConfigurationService extends ConfigurationClass {
                 this.logger.error(error + error.stack);
                 await this._client?.close();
             });
-            container.register<MongoClient>(MongoClient, { useValue: this._client });
 
             this._db = this._client.db(this.appConfigs.database?.database);
         } catch (error: Error | unknown) {
