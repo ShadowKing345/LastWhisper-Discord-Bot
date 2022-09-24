@@ -16,7 +16,7 @@ export class ProjectConfiguration extends ToJsonBase {
     // Configuration for command registration.
     public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
 
-    public sanitizeJson(obj: object): ProjectConfiguration {
+    public sanitizeObject(obj: object): ProjectConfiguration {
         Object.assign(this, obj);
 
         this.database = deepMerge(new DatabaseConfiguration, this.database);

@@ -19,6 +19,6 @@ export abstract class ToJsonBase extends SanitizeObject {
      * @return The newly created object.
      */
     public fromJson(str: string): object {
-        return this.sanitizeJson(JSON.parse(str));
+        return this.sanitizeObject(JSON.parse(str));
     }
 }

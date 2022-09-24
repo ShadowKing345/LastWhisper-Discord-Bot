@@ -8,7 +8,7 @@ export abstract class SanitizeObject {
      * @param newObj New object to assign values from.
      * @return Object with the assigned values.
      */
-    public sanitizeJson(newObj: object): object {
+    public sanitizeObject(newObj: object): object {
         return Object.assign(this, newObj);
     }
 }
