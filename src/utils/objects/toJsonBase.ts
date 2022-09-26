@@ -1,9 +1,9 @@
-import { SanitizeObjectBase } from "./sanitizeObjectBase.js";
+import { MergeableObjectBase } from "./mergeableObjectBase.js";
 
 /**
  * Abstract class that acts as a base for quick JSON serialization and deserialization.
  */
-export abstract class ToJsonBase<T> extends SanitizeObjectBase<T> {
+export abstract class ToJsonBase<T> extends MergeableObjectBase<T> {
     /**
      * Stringifies the current object into a JSON formatted string.
      * @return JSON string.
@@ -19,6 +19,6 @@ export abstract class ToJsonBase<T> extends SanitizeObjectBase<T> {
      * @return The newly created object.
      */
     public fromJson(str: string): T {
-        return this.sanitizeObject(JSON.parse(str));
+        return this.merge(JSON.parse(str));
     }
 }

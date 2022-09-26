@@ -1,6 +1,6 @@
 import { Collection, Filter } from "mongodb";
 
-import { SanitizeObjectBase } from "./sanitizeObjectBase.js";
+import { MergeableObjectBase } from "./mergeableObjectBase.js";
 import { deepMerge } from "../index.js";
 
 /**
@@ -87,8 +87,8 @@ export abstract class RepositoryBase<T extends IEntity> {
     protected map(source: object): T {
         const result = new this.sanitizedObject();
 
-        if (result instanceof SanitizeObjectBase) {
-            return result.sanitizeObject(source);
+        if (result instanceof MergeableObjectBase) {
+            return result.merge(source);
         }
 
         return deepMerge(result, source);

@@ -15,12 +15,26 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
     public buffs: Buff[] = [];
     public weeks: Week[] = [];
 
-    public sanitizeObject(newObj: BuffManagerConfig): BuffManagerConfig {
-        super.sanitizeObject(newObj);
+    public merge(obj: BuffManagerConfig): BuffManagerConfig {
+        if (obj._id) {
+            this._id = obj._id;
+        }
 
-        this.messageSettings = deepMerge(new MessageSettings, this.messageSettings);
-        this.buffs = this.buffs.map(buff => deepMerge(new Buff, buff));
-        this.weeks = this.weeks.map(week => deepMerge(new Week, week));
+        if (obj.guildId) {
+            this.guildId = obj.guildId;
+        }
+
+        if (obj.messageSettings) {
+            this.messageSettings = deepMerge(this.messageSettings ?? new MessageSettings, this.messageSettings);
+        }
+
+        if (obj.buffs) {
+            this.buffs = (this.buffs ?? []).map(buff => deepMerge(new Buff, buff));
+        }
+
+        if (obj.weeks) {
+            this.weeks = (this.weeks ?? []).map(week => deepMerge(new Week, week));
+        }
 
         return this;
     }

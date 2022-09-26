@@ -16,11 +16,22 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     // Configuration for command registration.
     public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
 
-    public sanitizeObject(obj: object): ProjectConfiguration {
-        Object.assign(this, obj);
+    public merge(obj: ProjectConfiguration): ProjectConfiguration {
+        if (obj.token) {
+            this.token = obj.token;
+        }
 
-        this.database = deepMerge(new DatabaseConfiguration, this.database);
-        this.commandRegistration = deepMerge(new CommandRegistrationConfiguration, this.database);
+        if (obj.logging_level) {
+            this.logging_level = obj.logging_level;
+        }
+
+        if (obj.database) {
+            this.database = deepMerge(this.database ?? new DatabaseConfiguration, obj.database);
+        }
+
+        if (obj.commandRegistration) {
+            this.commandRegistration = deepMerge(this.commandRegistration ?? new CommandRegistrationConfiguration, this.commandRegistration);
+        }
 
         return this;
     }

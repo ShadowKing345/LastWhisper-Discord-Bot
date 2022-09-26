@@ -1,19 +1,27 @@
 import { Days } from "./days.model.js";
-import { SanitizeObjectBase } from "../../utils/objects/sanitizeObjectBase.js";
+import { MergeableObjectBase } from "../../utils/objects/mergeableObjectBase.js";
 import { deepMerge } from "../../utils/index.js";
 
 /**
  * Information about a week.
  */
-export class Week extends SanitizeObjectBase<Week> {
+export class Week extends MergeableObjectBase<Week> {
     public isEnabled: boolean;
     public title: string;
     public days: Days = new Days();
 
-    public sanitizeObject(newObj: Week): Week {
-        super.sanitizeObject(newObj);
+    public merge(obj: Week): Week {
+        if (obj.isEnabled) {
+            this.isEnabled = obj.isEnabled;
+        }
 
-        this.days = deepMerge(new Days, this.days);
+        if (obj.title) {
+            this.title = obj.title;
+        }
+
+        if (obj.days) {
+            this.days = deepMerge(this.days ?? new Days, this.days);
+        }
 
         return this;
     }
