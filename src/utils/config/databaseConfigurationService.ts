@@ -16,7 +16,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
     private _db: Db;
 
     constructor(
-        private appConfigs: ProjectConfiguration,
+        private projectConfig: ProjectConfiguration,
         @createLogger(DatabaseConfigurationService.name) private logger: pino.Logger,
     ) {
         super();
@@ -61,7 +61,8 @@ export class DatabaseConfigurationService extends ConfigurationClass {
                 return;
             }
 
-            const url = DatabaseConfigurationService.parseUrl(this.appConfigs.database ?? new DatabaseConfiguration());
+            const url = DatabaseConfigurationService.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
+            console.log(url);
 
             this._client = await MongoClient.connect(url);
             this._client.on("error", async error => {
@@ -69,7 +70,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
                 await this._client?.close();
             });
 
-            this._db = this._client.db(this.appConfigs.database?.database);
+            this._db = this._client.db(this.projectConfig.database?.database);
         } catch (error: Error | unknown) {
             this.logger.error(error instanceof Error ? error + error.stack : error);
             this._client = null;
@@ -102,7 +103,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
             return null;
         }
 
-        this._db = this._client.db(this.appConfigs.database?.database);
+        this._db = this._client.db(this.projectConfig.database?.database);
         return this._db;
     }
 
