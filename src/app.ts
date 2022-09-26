@@ -82,16 +82,15 @@ export async function main() {
     try {
         generateConfigObject();
 
-        console.log(container.resolve(BuffManagerRepository).getAll());
-
         const app: App = container.resolve(App);
+        const db = container.resolve<BuffManagerRepository>(BuffManagerRepository);
 
         // await app.init();
 
-        // process.on("SIGTERM", () => app.stop())
-        //     .on("SIGINT", () => app.stop())
-        //     .on("uncaughtException", () => app.stop());
-        //
+        process.on("SIGTERM", () => app.stop())
+            .on("SIGINT", () => app.stop())
+            .on("uncaughtException", () => app.stop());
+
         // await app.run();
     } catch (error: Error | unknown) {
         console.error(error instanceof Error ? error + error.stack : error);
