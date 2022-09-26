@@ -13,10 +13,10 @@ export const devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectCon
 export function parseConfigFile(path, devPath) {
     if (!path || !fs.existsSync(path))
         return null;
-    const config = toJson(ProjectConfiguration, fs.readFileSync(path, "utf-8"));
+    const config = toJson(new ProjectConfiguration(), fs.readFileSync(path, "utf-8"));
     if (!devPath || !fs.existsSync(devPath))
         return config;
-    return Object.assign(config, JSON.parse(fs.readFileSync(devPath, "utf-8")));
+    return toJson(config, fs.readFileSync(devPath, "utf-8"));
 }
 /**
  * Generates and registers a configuration object.

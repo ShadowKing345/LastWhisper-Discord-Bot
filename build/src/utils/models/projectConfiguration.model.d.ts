@@ -4,11 +4,11 @@ import { ToJsonBase } from "../objects/toJsonBase.js";
 /**
  * Default configuration object for the application.
  */
-export declare class ProjectConfiguration extends ToJsonBase {
+export declare class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     token?: string;
     database?: DatabaseConfiguration;
     logging_level?: string;
     commandRegistration?: CommandRegistrationConfiguration;
-    sanitizeObject(obj: object): ProjectConfiguration;
+    merge(obj: ProjectConfiguration): ProjectConfiguration;
 }
 //# sourceMappingURL=projectConfiguration.model.d.ts.map

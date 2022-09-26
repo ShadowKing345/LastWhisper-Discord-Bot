@@ -1,7 +1,7 @@
 import { Client as DiscordClient, ClientEvents, Collection } from "discord.js";
 import { Command } from "./command.js";
 import { Listener } from "./listener.js";
-import { ModuleBase } from "./moduleBase.js";
+import { ModuleBase } from "../objects/moduleBase.js";
 import { Task } from "./task.js";
 export declare class Client extends DiscordClient {
     private readonly _modules;

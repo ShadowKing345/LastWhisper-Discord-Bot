@@ -1,4 +1,5 @@
 import { ToJsonBase } from "./objects/toJsonBase.js";
+import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
 export async function fetchMessages(client, channelId, messageIds) {
     const result = [];
     if (!client.channels.cache.has(channelId))
@@ -35,22 +36,27 @@ export function toJson(t, str) {
  * @return The newly created object.
  */
 export function deepMerge(target, ...sources) {
-    if (!sources.length)
+    sources = sources.filter(source => source != null);
+    if (sources.length <= 0)
         return target;
+    if (target instanceof MergeableObjectBase) {
+        for (const source of sources) {
+            target.merge(source);
+        }
+        return target;
+    }
     for (const source of sources) {
-        if (target && source) {
-            for (const key in source) {
-                if (source[key]) {
-                    if (!target[key.valueOf()]) {
-                        target[key.valueOf()] = source[key];
+        for (const key in source) {
+            if (source[key]) {
+                if (!target[key.valueOf()]) {
+                    target[key.valueOf()] = source[key];
+                }
+                else {
+                    if (typeof target[key.valueOf()] === "object") {
+                        deepMerge(target[key.valueOf()], source[key]);
                     }
                     else {
-                        if (typeof target[key.valueOf()] === "object") {
-                            deepMerge(target[key.valueOf()], source[key]);
-                        }
-                        else {
-                            target[key.valueOf()] = source[key];
-                        }
+                        target[key.valueOf()] = source[key];
                     }
                 }
             }

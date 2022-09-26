@@ -7,11 +7,11 @@ import { ProjectConfiguration } from "../models/index.js";
  * This service provides access to the database object as well as connection to the database server.
  */
 export declare class DatabaseConfigurationService extends ConfigurationClass {
-    private appConfigs;
+    private projectConfig;
     private logger;
     private _client;
     private _db;
-    constructor(appConfigs: ProjectConfiguration, logger: pino.Logger);
+    constructor(projectConfig: ProjectConfiguration, logger: pino.Logger);
     /**
      * Parses a given database configuration object into a valid url to be used.
      * @param dbConfig

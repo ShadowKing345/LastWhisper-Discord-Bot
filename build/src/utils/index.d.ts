@@ -8,9 +8,7 @@ export declare function fetchMessages(client: Client, channelId: Snowflake, mess
  * @param str Json string.
  * @return Newly created object.
  */
-export declare function toJson<T>(t: {
-    new (): T;
-}, str: string): T;
+export declare function toJson<T>(t: T, str: string): T;
 /**
  * Performs a deep merge on an object.
  * If the object extends SanitizeObjectBase then the sanitize function will be called.

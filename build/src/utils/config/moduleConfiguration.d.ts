@@ -1,13 +1,13 @@
-import { BuffManagerModule } from "../../buff_manager/index.js";
-import { EventManagerModule } from "../../event_manager/index.js";
-import { GardeningManagerModule } from "../../gardening_manager/index.js";
-import { ManagerUtilsModule } from "../../manager_utils/index.js";
 import { PermissionManagerModule } from "../../permission_manager/index.js";
-import { RoleManagerModule } from "../../role_manager/index.js";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerFactory } from "../logger/logger.js";
 import { Client } from "../models/client.js";
 import { ModuleBase } from "../models/index.js";
+import { BuffManagerModule } from "../../modules/buffManager.module.js";
+import { EventManagerModule } from "../../modules/eventManager.module.js";
+import { GardeningManagerModule } from "../../modules/gardeningManager.module.js";
+import { ManagerUtilsModule } from "../../modules/managerUtils.module.js";
+import { RoleManagerModule } from "../../modules/roleManager.module.js";
 export declare class ModuleConfiguration extends ConfigurationClass {
     private readonly intervalIds;
     private readonly _modules;

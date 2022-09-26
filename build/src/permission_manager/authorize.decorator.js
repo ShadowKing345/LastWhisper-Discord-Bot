@@ -1,5 +1,5 @@
 import { container } from "tsyringe";
-import { PermissionManagerService } from "./permissionManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 export function authorize(...key) {
     return function (target, propertyKey, descriptor) {
         const permissionManager = target.permissionManager ?? container.resolve(PermissionManagerService);

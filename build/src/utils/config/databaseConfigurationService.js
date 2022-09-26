@@ -22,14 +22,15 @@ import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js"
  * This service provides access to the database object as well as connection to the database server.
  */
 let DatabaseConfigurationService = DatabaseConfigurationService_1 = class DatabaseConfigurationService extends ConfigurationClass {
-    appConfigs;
+    projectConfig;
     logger;
     _client;
     _db;
-    constructor(appConfigs, logger) {
+    constructor(projectConfig, logger) {
         super();
-        this.appConfigs = appConfigs;
+        this.projectConfig = projectConfig;
         this.logger = logger;
+        console.log(projectConfig);
     }
     /**
      * Parses a given database configuration object into a valid url to be used.
@@ -67,13 +68,14 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
                 this.logger.error("Connection already active. Please disconnect first before attempting to connect.");
                 return;
             }
-            const url = DatabaseConfigurationService_1.parseUrl(this.appConfigs.database ?? new DatabaseConfiguration());
+            const url = DatabaseConfigurationService_1.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
+            console.log(url);
             this._client = await MongoClient.connect(url);
             this._client.on("error", async (error) => {
                 this.logger.error(error + error.stack);
                 await this._client?.close();
             });
-            this._db = this._client.db(this.appConfigs.database?.database);
+            this._db = this._client.db(this.projectConfig.database?.database);
         }
         catch (error) {
             this.logger.error(error instanceof Error ? error + error.stack : error);
@@ -102,7 +104,7 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
         if (!this._client) {
             return null;
         }
-        this._db = this._client.db(this.appConfigs.database?.database);
+        this._db = this._client.db(this.projectConfig.database?.database);
         return this._db;
     }
     /**
