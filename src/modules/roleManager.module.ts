@@ -3,7 +3,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "../services/roleManager.service.js";

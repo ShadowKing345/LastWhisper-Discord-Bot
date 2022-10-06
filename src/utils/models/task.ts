@@ -1,7 +1,7 @@
 import { Client as DiscordClient } from "discord.js";
 import { container } from "tsyringe";
 
-import { LoggerFactory } from "../logger/logger.js";
+import { LoggerService } from "../loggerService.js";
 import { Client } from "./client.js";
 
 export class Task {

@@ -3,8 +3,8 @@ import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
-import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
-import { createLogger } from "./utils/logger/logger.decorator.js";
+import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
+import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
@@ -21,7 +21,7 @@ export class App {
     constructor(
         private appConfig: ProjectConfiguration,
         private databaseService: DatabaseConfigurationService,
-        private moduleConfiguration: ModuleConfiguration,
+        private moduleConfiguration: ModuleConfigurationService,
         @createLogger(App.name) private logger: pino.Logger,
     ) {
         this.client = new Client();

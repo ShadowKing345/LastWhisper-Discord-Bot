@@ -2,7 +2,7 @@ import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, React
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { Task } from "../utils/models/task.js";
 import { fetchMessages } from "../utils/index.js";

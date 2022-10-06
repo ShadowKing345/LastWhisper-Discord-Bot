@@ -7,7 +7,7 @@ import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../../src/utils/config/databaseConfigurationService.js";
-import { createLogger } from "../../src/utils/logger/logger.decorator.js";
+import { createLogger } from "../../src/utils/loggerService.js";
 import { Client } from "../../src/utils/models/client.js";
 import { InvalidArgumentError } from "../../src/utils/models/errors.js";
 import { MockDatabase } from "../utils/mockDatabase.js";
