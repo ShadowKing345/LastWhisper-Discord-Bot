@@ -15,7 +15,7 @@ import { MongoClient } from "mongodb";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { ConfigurationClass } from "../configuration.class.js";
-import { createLogger } from "../logger/logger.decorator.js";
+import { createLogger } from "../loggerService.js";
 import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js";
 /**
  * Database Configuration Service file.
@@ -30,7 +30,6 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
         super();
         this.projectConfig = projectConfig;
         this.logger = logger;
-        console.log(projectConfig);
     }
     /**
      * Parses a given database configuration object into a valid url to be used.

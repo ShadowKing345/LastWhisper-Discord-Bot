@@ -8,9 +8,16 @@ export class Week extends MergeableObjectBase {
     isEnabled;
     title;
     days = new Days();
-    merge(newObj) {
-        super.merge(newObj);
-        this.days = deepMerge(new Days, this.days);
+    merge(obj) {
+        if (obj.isEnabled) {
+            this.isEnabled = obj.isEnabled;
+        }
+        if (obj.title) {
+            this.title = obj.title;
+        }
+        if (obj.days) {
+            this.days = deepMerge(this.days ?? new Days, this.days);
+        }
         return this;
     }
 }

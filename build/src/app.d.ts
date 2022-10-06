@@ -1,6 +1,6 @@
 import { pino } from "pino";
 import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
-import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
+import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
 import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
 /**
  * Application class.
@@ -12,7 +12,7 @@ export declare class App {
     private moduleConfiguration;
     private logger;
     private readonly client;
-    constructor(appConfig: ProjectConfiguration, databaseService: DatabaseConfigurationService, moduleConfiguration: ModuleConfiguration, logger: pino.Logger);
+    constructor(appConfig: ProjectConfiguration, databaseService: DatabaseConfigurationService, moduleConfiguration: ModuleConfigurationService, logger: pino.Logger);
     /**
      * Main function to initialize application.
      */

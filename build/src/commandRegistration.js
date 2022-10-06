@@ -2,7 +2,7 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 import { App } from "./app.js";
-import { LoggerFactory } from "./utils/logger/logger.js";
+import { LoggerService } from "./utils/loggerService.js";
 import { BuildCommand } from "./utils/models/command.js";
 import { ProjectConfiguration } from "./utils/models/index.js";
 const loggerMeta = { context: "CommandRegistration" };
@@ -12,7 +12,7 @@ const loggerMeta = { context: "CommandRegistration" };
  */
 export async function commandRegistration(args) {
     const app = container.resolve(App);
-    const logger = container.resolve(LoggerFactory).buildLogger("CommandRegistration");
+    const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
     const appConfigs = container.resolve(ProjectConfiguration);
     const commandConfigs = appConfigs.commandRegistration;

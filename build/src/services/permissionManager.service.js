@@ -14,9 +14,9 @@ var PermissionManagerService_1;
 import { MessageEmbed } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { deepMerge } from "../utils/index.js";
-import { PermissionKeys } from "../permission_manager/addCommandKeys.decorator.js";
+import { PermissionKeys } from "../permission_manager/index.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService {

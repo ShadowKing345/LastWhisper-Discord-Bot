@@ -15,7 +15,7 @@ import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { Task } from "../utils/models/task.js";
 import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
 import { BuffManagerConfig } from "../models/buff_manager/index.js";

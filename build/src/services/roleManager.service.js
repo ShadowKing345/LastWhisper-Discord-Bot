@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var RoleManagerService_1;
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { Task } from "../utils/models/task.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";

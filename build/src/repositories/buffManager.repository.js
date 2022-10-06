@@ -12,15 +12,12 @@ import { DatabaseConfigurationService } from "../utils/config/databaseConfigurat
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { BuffManagerConfig } from "../models/buff_manager/index.js";
 let BuffManagerRepository = class BuffManagerRepository extends RepositoryBase {
-    db;
     collectionName = "buff_manager";
     sanitizedObject = BuffManagerConfig;
-    get collection() {
-        return this.db.db?.collection(this.collectionName);
-    }
+    collection;
     constructor(db) {
         super();
-        this.db = db;
+        this.collection = db.db?.collection(this.collectionName);
     }
 };
 BuffManagerRepository = __decorate([

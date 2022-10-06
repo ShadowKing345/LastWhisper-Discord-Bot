@@ -15,7 +15,7 @@ import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { InvalidArgumentError } from "../utils/models/errors.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
 import { GardeningModuleConfig, Reservation, Slot } from "../models/gardening_manager/index.js";

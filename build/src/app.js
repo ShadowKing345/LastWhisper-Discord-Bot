@@ -15,8 +15,8 @@ import chalk from "chalk";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
-import { ModuleConfiguration } from "./utils/config/moduleConfiguration.js";
-import { createLogger } from "./utils/logger/logger.decorator.js";
+import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
+import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ProjectConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
@@ -82,7 +82,7 @@ App = App_1 = __decorate([
     __param(3, createLogger(App_1.name)),
     __metadata("design:paramtypes", [ProjectConfiguration,
         DatabaseConfigurationService,
-        ModuleConfiguration, Object])
+        ModuleConfigurationService, Object])
 ], App);
 export { App };
 /**
@@ -96,8 +96,6 @@ export async function main() {
         generateConfigObject();
         const app = container.resolve(App);
         const db = container.resolve(BuffManagerRepository);
-        console.log(container.resolve(ProjectConfiguration));
-        console.log(await db.getAll());
         // await app.init();
         process.on("SIGTERM", () => app.stop())
             .on("SIGINT", () => app.stop())
