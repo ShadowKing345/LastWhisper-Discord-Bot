@@ -154,8 +154,8 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     client.moduleListeners.set(listener.event, listeners);
                 });
 
-                // this.loggers.module.debug(`Setting Up tasks...`);
-                // module.tasks.forEach(task => this.runTask(task, client));
+                this.loggers.module.debug(`Setting Up tasks...`);
+                module.tasks.forEach(task => this.runTask(task, client));
             } catch (error: Error | unknown) {
                 this.loggers.module.error(error instanceof Error ? error + error.stack : error);
             }
