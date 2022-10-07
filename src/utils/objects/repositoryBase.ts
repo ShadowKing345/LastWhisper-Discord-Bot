@@ -2,6 +2,7 @@ import { Collection, Filter } from "mongodb";
 
 import { MergeableObjectBase } from "./mergeableObjectBase.js";
 import { deepMerge } from "../index.js";
+import { DatabaseError } from "../errors/DatabaseError.js";
 
 /**
  * Entity interface to help with repository processing.
@@ -27,6 +28,7 @@ export abstract class RepositoryBase<T extends IEntity> {
      * @return The newly created object.
      */
     public async save(obj: T): Promise<T> {
+        this.validateCollection();
         const result = await this.collection.findOneAndReplace({ _id: obj._id }, obj, { upsert: true });
         return result.ok ? this.map(result.value) : null;
     }
@@ -37,6 +39,7 @@ export abstract class RepositoryBase<T extends IEntity> {
      * @return The object or null if none was found.
      */
     public async findOne(filter: Filter<T>): Promise<T> {
+        this.validateCollection();
         // For some reason due to the void call Webstorm is having issues seeing this method call.
         // noinspection JSVoidFunctionReturnValueUsed
         const result = await this.collection.findOne(filter);
@@ -54,6 +57,7 @@ export abstract class RepositoryBase<T extends IEntity> {
      * @return A collection of all the found objects if any.
      */
     public async findAll(filter: Filter<T>): Promise<T[]> {
+        this.validateCollection();
         return (await this.collection.find(filter).toArray()).map(obj => this.map(obj));
     }
 
@@ -70,6 +74,7 @@ export abstract class RepositoryBase<T extends IEntity> {
      * @param objs Collection of all the objects to save.
      */
     public async bulkSave(objs: T[]): Promise<void> {
+        this.validateCollection();
         if (objs.length <= 0) return;
 
         const bulk = this.collection.initializeOrderedBulkOp();
@@ -92,5 +97,16 @@ export abstract class RepositoryBase<T extends IEntity> {
         }
 
         return deepMerge(result, source);
+    }
+
+    /**
+     * Function that validates if a collection is present. Will throw an error if it does not exist.
+     * @private
+     * @throws DatabaseError
+     */
+    private validateCollection() {
+        if (!this.collection) {
+            throw new DatabaseError("Could not find a collection. Please ensure one is assigned to the class.");
+        }
     }
 }
