@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
-import { PermissionManagerConfig } from "../permission_manager/index.js";
+import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 let PermissionManagerRepository = class PermissionManagerRepository extends RepositoryBase {
     collectionName = "permission_manager";
     sanitizedObject = PermissionManagerConfig;

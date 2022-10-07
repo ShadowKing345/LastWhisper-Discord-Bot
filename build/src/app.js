@@ -20,7 +20,6 @@ import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ProjectConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
-import { BuffManagerRepository } from "./repositories/buffManager.repository.js";
 /**
  * Application class.
  * To simplify dependency injection this class is used and can be easily resolved.
@@ -95,7 +94,7 @@ export async function main() {
     try {
         generateConfigObject();
         const app = container.resolve(App);
-        const db = container.resolve(BuffManagerRepository);
+        // const db = container.resolve<BuffManagerRepository>(BuffManagerRepository);
         // await app.init();
         process.on("SIGTERM", () => app.stop())
             .on("SIGINT", () => app.stop())

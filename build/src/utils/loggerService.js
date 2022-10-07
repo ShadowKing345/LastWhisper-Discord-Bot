@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { pino } from "pino";
 import { singleton, injectWithTransform } from "tsyringe";
 import { ProjectConfiguration } from "./models/index.js";
-import { LOGGING_LEVELS } from "./models/loggingConfigs.js";
+import { LOGGING_LEVELS } from "./models/loggerConfigs.js";
 /**
  * Service used to handle logging calls.
  */
@@ -18,20 +18,18 @@ let LoggerService = class LoggerService {
     configs;
     pino;
     constructor(appConfigs) {
-        this.configs = appConfigs.logging;
+        this.configs = appConfigs.logger;
         this.pino = pino({
             level: this.configs.level ?? LOGGING_LEVELS.info,
-            transport: this.configs.transports ?? null
+            transport: this.configs.transports,
         });
     }
     /**
-     * Todo: Attempt to make this a single instance.
-     * Creates an instance of a logger for the requesting class.
+     * Creates a child instance of a logger for the requesting class.
      * @param context The context name.
      * @return pino logger object.
      */
     buildLogger(context) {
-        this.pino.info("Testing");
         return this.pino.child({ context });
     }
 };
@@ -51,7 +49,7 @@ class LoggerFactoryTransformer {
     }
 }
 /**
- * Decorator function used to inject an instance of the logger function rather then the logger service.
+ * Decorator function used to inject an instance of the logger function rather than the logger service.
  * @param context Name to be used as context.
  * @return Instance of logger function
  * @see LoggerService.buildLogger

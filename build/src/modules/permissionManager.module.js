@@ -9,14 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var PermissionManagerModule_1;
 import { CommandInteraction, Role } from "discord.js";
-import { singleton } from "tsyringe";
 import { ModuleBase } from "../utils/models/index.js";
-import { addCommandKeys } from "../permission_manager/addCommandKeys.decorator.js";
-import { authorize } from "../permission_manager/authorize.decorator.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
-    permissionManager;
     static commands = {
         $index: "permission",
         List: "list_permissions",
@@ -25,9 +24,8 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         Config: "set_config",
         Reset: "reset_permission",
     };
-    constructor(permissionManager) {
-        super();
-        this.permissionManager = permissionManager;
+    constructor(permissionManagerService) {
+        super(permissionManagerService);
         this.moduleName = "PermissionManager";
         this.commands = [{
                 command: builder => builder
@@ -101,19 +99,19 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         }
     }
     listPermissions(interaction, key) {
-        return this.permissionManager.listPermissions(interaction, key);
+        return this.permissionManagerService.listPermissions(interaction, key);
     }
     addRoles(interaction, key, role) {
-        return this.permissionManager.addRole(interaction, key, role);
+        return this.permissionManagerService.addRole(interaction, key, role);
     }
     removeRoles(interaction, key, role) {
-        return this.permissionManager.removeRole(interaction, key, role);
+        return this.permissionManagerService.removeRole(interaction, key, role);
     }
     config(interaction, key) {
-        return this.permissionManager.config(interaction, key);
+        return this.permissionManagerService.config(interaction, key);
     }
     reset(interaction, key) {
-        return this.permissionManager.reset(interaction, key);
+        return this.permissionManagerService.reset(interaction, key);
     }
     static commandKeyHelperBuilder(input, boolOverride = true) {
         return input.setName("key").setDescription("Command permission Key.").setRequired(boolOverride);
@@ -154,7 +152,7 @@ __decorate([
     __metadata("design:type", Object)
 ], PermissionManagerModule, "commands", void 0);
 PermissionManagerModule = PermissionManagerModule_1 = __decorate([
-    singleton(),
+    registerModule(),
     __metadata("design:paramtypes", [PermissionManagerService])
 ], PermissionManagerModule);
 export { PermissionManagerModule };

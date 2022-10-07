@@ -13,11 +13,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var BuffManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { createLogger } from "../utils/loggerService.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
     logger;
@@ -26,8 +28,8 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
         Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
     };
-    constructor(buffManagerService, logger) {
-        super();
+    constructor(buffManagerService, logger, permissionManagerService) {
+        super(permissionManagerService);
         this.buffManagerService = buffManagerService;
         this.logger = logger;
         this.moduleName = "BuffManager";
@@ -152,9 +154,9 @@ __decorate([
     __metadata("design:type", Object)
 ], BuffManagerModule, "commands", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
-    singleton(),
+    registerModule(),
     __param(1, createLogger(BuffManagerModule_1.name)),
-    __metadata("design:paramtypes", [BuffManagerService, Object])
+    __metadata("design:paramtypes", [BuffManagerService, Object, PermissionManagerService])
 ], BuffManagerModule);
 export { BuffManagerModule };
 //# sourceMappingURL=buffManager.module.js.map

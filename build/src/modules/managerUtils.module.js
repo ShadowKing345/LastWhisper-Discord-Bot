@@ -9,18 +9,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var ManagerUtilsModule_1;
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends ModuleBase {
     managerUtilsService;
     static commands = {
         $index: "manager_utils",
         Clear: "clear",
     };
-    constructor(managerUtilsService) {
-        super();
+    constructor(managerUtilsService, permissionManagerService) {
+        super(permissionManagerService);
         this.managerUtilsService = managerUtilsService;
         this.moduleName = "ManagerUtils";
         this.commands = [{
@@ -78,8 +80,9 @@ __decorate([
     __metadata("design:type", Object)
 ], ManagerUtilsModule, "commands", void 0);
 ManagerUtilsModule = ManagerUtilsModule_1 = __decorate([
-    singleton(),
-    __metadata("design:paramtypes", [ManagerUtilsService])
+    registerModule(),
+    __metadata("design:paramtypes", [ManagerUtilsService,
+        PermissionManagerService])
 ], ManagerUtilsModule);
 export { ManagerUtilsModule };
 //# sourceMappingURL=managerUtils.module.js.map

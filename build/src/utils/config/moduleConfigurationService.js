@@ -7,43 +7,34 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 import chalk from "chalk";
 import { ButtonInteraction, CommandInteraction } from "discord.js";
 import { clearInterval } from "timers";
-import { singleton } from "tsyringe";
-import { PermissionManagerModule } from "../../permission_manager/index.js";
+import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
 import { BuildCommand } from "../models/command.js";
-import { BuffManagerModule } from "../../modules/buffManager.module.js";
-import { EventManagerModule } from "../../modules/eventManager.module.js";
-import { GardeningManagerModule } from "../../modules/gardeningManager.module.js";
-import { ManagerUtilsModule } from "../../modules/managerUtils.module.js";
-import { RoleManagerModule } from "../../modules/roleManager.module.js";
+import { ModuleBase } from "../models/index.js";
 /**
- * Todo: Cleanup.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 let ModuleConfigurationService = class ModuleConfigurationService extends ConfigurationClass {
     intervalIds = [];
     _modules;
     loggers;
-    constructor(buffManagerModule, eventManagerModule, gardeningManagerModule, managerUtilsModule, roleManagerModule, permissionManagerModule, loggerFactory) {
+    constructor(modules, loggerFactory) {
         super();
+        console.log(modules);
         this.loggers = {
             module: loggerFactory.buildLogger("ModuleConfiguration"),
             interaction: loggerFactory.buildLogger("InteractionExecution"),
             event: loggerFactory.buildLogger("EventExecution"),
             task: loggerFactory.buildLogger("TimerExecution"),
         };
-        this._modules = [
-            buffManagerModule,
-            eventManagerModule,
-            gardeningManagerModule,
-            managerUtilsModule,
-            roleManagerModule,
-            permissionManagerModule,
-        ];
+        this._modules = modules;
     }
     /**
      * Todo: Cleanup.
@@ -187,13 +178,8 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
 };
 ModuleConfigurationService = __decorate([
     singleton(),
-    __metadata("design:paramtypes", [BuffManagerModule,
-        EventManagerModule,
-        GardeningManagerModule,
-        ManagerUtilsModule,
-        RoleManagerModule,
-        PermissionManagerModule,
-        LoggerService])
+    __param(0, injectAll(ModuleBase.name)),
+    __metadata("design:paramtypes", [Array, LoggerService])
 ], ModuleConfigurationService);
 export { ModuleConfigurationService };
 //# sourceMappingURL=moduleConfigurationService.js.map

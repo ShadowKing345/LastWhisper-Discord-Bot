@@ -1,22 +1,15 @@
-import { PermissionManagerModule } from "../../permission_manager/index.js";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
 import { ModuleBase } from "../models/index.js";
-import { BuffManagerModule } from "../../modules/buffManager.module.js";
-import { EventManagerModule } from "../../modules/eventManager.module.js";
-import { GardeningManagerModule } from "../../modules/gardeningManager.module.js";
-import { ManagerUtilsModule } from "../../modules/managerUtils.module.js";
-import { RoleManagerModule } from "../../modules/roleManager.module.js";
 /**
- * Todo: Cleanup.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export declare class ModuleConfigurationService extends ConfigurationClass {
     private readonly intervalIds;
     private readonly _modules;
     private readonly loggers;
-    constructor(buffManagerModule: BuffManagerModule, eventManagerModule: EventManagerModule, gardeningManagerModule: GardeningManagerModule, managerUtilsModule: ManagerUtilsModule, roleManagerModule: RoleManagerModule, permissionManagerModule: PermissionManagerModule, loggerFactory: LoggerService);
+    constructor(modules: ModuleBase[], loggerFactory: LoggerService);
     /**
      * Todo: Cleanup.
      * The main interaction event callback function that is called when a Discord interaction event is called.

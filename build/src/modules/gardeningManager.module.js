@@ -9,11 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var GardeningManagerModule_1;
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.service.js";
 import { Reason } from "../models/gardening_manager/index.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends ModuleBase {
     gardeningManagerService;
     static command = {
@@ -22,8 +24,8 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
         Cancel: "cancel",
         List: "list",
     };
-    constructor(gardeningManagerService) {
-        super();
+    constructor(gardeningManagerService, permissionManagerService) {
+        super(permissionManagerService);
         this.gardeningManagerService = gardeningManagerService;
         this.moduleName = "GardeningModule";
         this.commands = [{
@@ -148,8 +150,9 @@ __decorate([
     __metadata("design:type", Object)
 ], GardeningManagerModule, "command", void 0);
 GardeningManagerModule = GardeningManagerModule_1 = __decorate([
-    singleton(),
-    __metadata("design:paramtypes", [GardeningManagerService])
+    registerModule(),
+    __metadata("design:paramtypes", [GardeningManagerService,
+        PermissionManagerService])
 ], GardeningManagerModule);
 export { GardeningManagerModule };
 //# sourceMappingURL=gardeningManager.module.js.map

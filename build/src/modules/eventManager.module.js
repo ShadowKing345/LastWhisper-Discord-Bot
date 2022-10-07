@@ -9,15 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var EventManagerModule_1;
 import { CommandInteraction } from "discord.js";
-import { singleton } from "tsyringe";
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;
     static commands = "event";
-    constructor(eventManagerService) {
-        super();
+    constructor(eventManagerService, permissionManagerService) {
+        super(permissionManagerService);
         this.eventManagerService = eventManagerService;
         this.moduleName = "EventManager";
         this.commands = [
@@ -73,8 +75,9 @@ __decorate([
     __metadata("design:type", String)
 ], EventManagerModule, "commands", void 0);
 EventManagerModule = EventManagerModule_1 = __decorate([
-    singleton(),
-    __metadata("design:paramtypes", [EventManagerService])
+    registerModule(),
+    __metadata("design:paramtypes", [EventManagerService,
+        PermissionManagerService])
 ], EventManagerModule);
 export { EventManagerModule };
 //# sourceMappingURL=eventManager.module.js.map

@@ -16,9 +16,9 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { deepMerge } from "../utils/index.js";
-import { PermissionKeys } from "../permission_manager/index.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
+export const PermissionKeys = [];
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService {
     permissionManagerRepository;
     logger;

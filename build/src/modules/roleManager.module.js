@@ -13,11 +13,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var RoleManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { createLogger } from "../utils/loggerService.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
     logger;
@@ -27,8 +29,8 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
         RegisterMessage: "register_message",
         UnregisterMessage: "unregister_message",
     };
-    constructor(roleManagerService, logger) {
-        super();
+    constructor(roleManagerService, logger, permissionManagerService) {
+        super(permissionManagerService);
         this.roleManagerService = roleManagerService;
         this.logger = logger;
         this.moduleName = "RoleManager";
@@ -123,9 +125,9 @@ __decorate([
     __metadata("design:type", Object)
 ], RoleManagerModule, "commands", void 0);
 RoleManagerModule = RoleManagerModule_1 = __decorate([
-    singleton(),
+    registerModule(),
     __param(1, createLogger(RoleManagerModule_1.name)),
-    __metadata("design:paramtypes", [RoleManagerService, Object])
+    __metadata("design:paramtypes", [RoleManagerService, Object, PermissionManagerService])
 ], RoleManagerModule);
 export { RoleManagerModule };
 //# sourceMappingURL=roleManager.module.js.map

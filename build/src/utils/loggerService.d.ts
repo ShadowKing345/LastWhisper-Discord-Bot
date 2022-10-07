@@ -8,15 +8,14 @@ export declare class LoggerService {
     private readonly pino;
     constructor(appConfigs: ProjectConfiguration);
     /**
-     * Todo: Attempt to make this a single instance.
-     * Creates an instance of a logger for the requesting class.
+     * Creates a child instance of a logger for the requesting class.
      * @param context The context name.
      * @return pino logger object.
      */
     buildLogger(context: string): pino.Logger;
 }
 /**
- * Decorator function used to inject an instance of the logger function rather then the logger service.
+ * Decorator function used to inject an instance of the logger function rather than the logger service.
  * @param context Name to be used as context.
  * @return Instance of logger function
  * @see LoggerService.buildLogger
