@@ -14,10 +14,8 @@ import { EventManagerConfig } from "../models/event_manager/index.js";
 let EventManagerRepository = class EventManagerRepository extends RepositoryBase {
     collectionName = "event_manager";
     sanitizedObject = EventManagerConfig;
-    collection;
     constructor(db) {
-        super();
-        this.collection = db.db?.collection(this.collectionName);
+        super(db);
     }
 };
 EventManagerRepository = __decorate([

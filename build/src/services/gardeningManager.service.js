@@ -16,9 +16,9 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
-import { InvalidArgumentError } from "../utils/models/errors.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
 import { GardeningModuleConfig, Reservation, Slot } from "../models/gardening_manager/index.js";
+import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService {
     gardeningConfigRepository;
     logger;

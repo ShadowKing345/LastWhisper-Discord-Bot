@@ -68,7 +68,6 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
                 return;
             }
             const url = DatabaseConfigurationService_1.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
-            console.log(url);
             this._client = await MongoClient.connect(url);
             this._client.on("error", async (error) => {
                 this.logger.error(error + error.stack);

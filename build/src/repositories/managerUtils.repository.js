@@ -14,10 +14,8 @@ import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.j
 let ManagerUtilsRepository = class ManagerUtilsRepository extends RepositoryBase {
     collectionName = "manager_utils";
     sanitizedObject = ManagerUtilsConfig;
-    collection;
     constructor(db) {
-        super();
-        this.collection = db.db?.collection(this.collectionName);
+        super(db);
     }
 };
 ManagerUtilsRepository = __decorate([

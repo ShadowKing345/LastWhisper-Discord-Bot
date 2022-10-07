@@ -20,6 +20,7 @@ import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ProjectConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
+import { BuffManagerRepository } from "./repositories/buffManager.repository.js";
 /**
  * Application class.
  * To simplify dependency injection this class is used and can be easily resolved.
@@ -91,11 +92,13 @@ export { App };
 export async function main() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
+    let app;
     try {
         generateConfigObject();
-        const app = container.resolve(App);
-        // const db = container.resolve<BuffManagerRepository>(BuffManagerRepository);
-        // await app.init();
+        app = container.resolve(App);
+        const db = container.resolve(BuffManagerRepository);
+        await app.init();
+        console.log(await db.getAll());
         process.on("SIGTERM", () => app.stop())
             .on("SIGINT", () => app.stop())
             .on("uncaughtException", () => app.stop());
@@ -103,6 +106,10 @@ export async function main() {
     }
     catch (error) {
         console.error(error instanceof Error ? error + error.stack : error);
+    }
+    finally {
+        await app.stop();
+        process.exit(0);
     }
 }
 //# sourceMappingURL=app.js.map

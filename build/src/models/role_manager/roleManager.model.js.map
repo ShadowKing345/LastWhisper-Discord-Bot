@@ -1,1 +1,1 @@
-{"version":3,"file":"roleManager.model.js","sourceRoot":"","sources":["../../../../src/models/role_manager/roleManager.model.ts"],"names":[],"mappings":"AAEA,MAAM,OAAO,iBAAiB;IACnB,GAAG,CAAC;IACJ,OAAO,CAAS;IAChB,cAAc,CAAS;IACvB,kBAAkB,CAAW;IAC7B,wBAAwB,CAAS;CAC3C"}
+{"version":3,"file":"roleManager.model.js","sourceRoot":"","sources":["../../../../src/models/role_manager/roleManager.model.ts"],"names":[],"mappings":"AAEA;;GAEG;AACH,MAAM,OAAO,iBAAiB;IACnB,GAAG,CAAC;IACJ,OAAO,CAAS;IAChB,cAAc,CAAS;IACvB,kBAAkB,CAAW;IAC7B,wBAAwB,CAAS;CAC3C"}

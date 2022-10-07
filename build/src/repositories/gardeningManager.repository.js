@@ -14,10 +14,8 @@ import { GardeningModuleConfig } from "../models/gardening_manager/index.js";
 let GardeningManagerRepository = class GardeningManagerRepository extends RepositoryBase {
     collectionName = "gardening_manager";
     sanitizedObject = GardeningModuleConfig;
-    collection;
     constructor(db) {
-        super();
-        this.collection = db.db?.collection(this.collectionName);
+        super(db);
     }
 };
 GardeningManagerRepository = __decorate([

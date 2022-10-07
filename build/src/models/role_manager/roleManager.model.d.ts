@@ -1,4 +1,7 @@
 import { IEntity } from "../../utils/objects/repositoryBase.js";
+/**
+ * Role manager configuration object.
+ */
 export declare class RoleManagerConfig implements IEntity {
     _id: any;
     guildId: string;

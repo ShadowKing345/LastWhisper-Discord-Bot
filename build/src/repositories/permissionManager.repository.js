@@ -14,10 +14,8 @@ import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 let PermissionManagerRepository = class PermissionManagerRepository extends RepositoryBase {
     collectionName = "permission_manager";
     sanitizedObject = PermissionManagerConfig;
-    collection;
     constructor(db) {
-        super();
-        this.collection = db.db?.collection(this.collectionName);
+        super(db);
     }
 };
 PermissionManagerRepository = __decorate([

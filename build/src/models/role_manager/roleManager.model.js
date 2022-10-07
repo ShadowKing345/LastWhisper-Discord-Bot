@@ -1,3 +1,6 @@
+/**
+ * Role manager configuration object.
+ */
 export class RoleManagerConfig {
     _id;
     guildId;

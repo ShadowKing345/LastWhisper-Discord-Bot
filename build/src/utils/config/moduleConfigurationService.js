@@ -27,7 +27,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
     loggers;
     constructor(modules, loggerFactory) {
         super();
-        console.log(modules);
         this.loggers = {
             module: loggerFactory.buildLogger("ModuleConfiguration"),
             interaction: loggerFactory.buildLogger("InteractionExecution"),

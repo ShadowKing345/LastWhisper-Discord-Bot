@@ -3,6 +3,7 @@ import { Collection, Filter } from "mongodb";
 import { MergeableObjectBase } from "./mergeableObjectBase.js";
 import { deepMerge } from "../index.js";
 import { DatabaseError } from "../errors/DatabaseError.js";
+import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
 
 /**
  * Entity interface to help with repository processing.
@@ -16,10 +17,16 @@ export interface IEntity {
  * Manages the majority of basic CRUD repository actions.
  */
 export abstract class RepositoryBase<T extends IEntity> {
-    // The actual collection to use.
-    protected abstract readonly collection: Collection<T>;
+    // Name of the collection.
+    protected abstract readonly collectionName: string;
+    // A private internal collection object.
+    private _collection: Collection<T>;
     // A class to create a new object.
     protected abstract readonly sanitizedObject: { new(): T };
+
+    protected constructor(
+        protected db: DatabaseConfigurationService,
+    ) {}
 
     /**
      * Saves a new database record.
@@ -108,5 +115,18 @@ export abstract class RepositoryBase<T extends IEntity> {
         if (!this.collection) {
             throw new DatabaseError("Could not find a collection. Please ensure one is assigned to the class.");
         }
+    }
+
+    /**
+     * Gets the collection object for the class. Can be overwritten.
+     * @protected
+     * @throws DatabaseError
+     */
+    protected get collection(): Collection<T> {
+        if (!this.db.isConnected) {
+            throw new DatabaseError("Unable to get collection. Are you sure the database is connected?");
+        }
+
+        return this._collection ??= this.db.db.collection<T>(this.collectionName);
     }
 }

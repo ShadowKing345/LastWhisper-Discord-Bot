@@ -14,10 +14,8 @@ import { BuffManagerConfig } from "../models/buff_manager/index.js";
 let BuffManagerRepository = class BuffManagerRepository extends RepositoryBase {
     collectionName = "buff_manager";
     sanitizedObject = BuffManagerConfig;
-    collection;
     constructor(db) {
-        super();
-        this.collection = db.db?.collection(this.collectionName);
+        super(db);
     }
 };
 BuffManagerRepository = __decorate([

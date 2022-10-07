@@ -1,4 +1,5 @@
 import { Collection, Filter } from "mongodb";
+import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
 /**
  * Entity interface to help with repository processing.
  */
@@ -10,10 +11,13 @@ export interface IEntity {
  * Manages the majority of basic CRUD repository actions.
  */
 export declare abstract class RepositoryBase<T extends IEntity> {
-    protected abstract readonly collection: Collection<T>;
+    protected db: DatabaseConfigurationService;
+    protected abstract readonly collectionName: string;
+    private _collection;
     protected abstract readonly sanitizedObject: {
         new (): T;
     };
+    protected constructor(db: DatabaseConfigurationService);
     /**
      * Saves a new database record.
      * Returns the newly corrected record.
@@ -50,5 +54,17 @@ export declare abstract class RepositoryBase<T extends IEntity> {
      * @protected
      */
     protected map(source: object): T;
+    /**
+     * Function that validates if a collection is present. Will throw an error if it does not exist.
+     * @private
+     * @throws DatabaseError
+     */
+    private validateCollection;
+    /**
+     * Gets the collection object for the class. Can be overwritten.
+     * @protected
+     * @throws DatabaseError
+     */
+    protected get collection(): Collection<T>;
 }
 //# sourceMappingURL=repositoryBase.d.ts.map

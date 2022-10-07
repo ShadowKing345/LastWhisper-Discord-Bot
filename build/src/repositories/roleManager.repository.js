@@ -14,10 +14,8 @@ import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
 let RoleManagerRepository = class RoleManagerRepository extends RepositoryBase {
     collectionName = "role_manager";
     sanitizedObject = RoleManagerConfig;
-    collection;
     constructor(db) {
-        super();
-        this.collection = db.db?.collection(this.collectionName);
+        super(db);
     }
 };
 RoleManagerRepository = __decorate([
