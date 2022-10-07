@@ -3,18 +3,18 @@ import { singleton, injectWithTransform } from "tsyringe";
 
 import { ProjectConfiguration } from "./models/index.js";
 import { Transform } from "tsyringe/dist/typings/types/index.js";
-import { LOGGING_LEVELS, LoggingConfigs } from "./models/loggingConfigs.js";
+import { LOGGING_LEVELS, LoggerConfigs } from "./models/loggerConfigs.js";
 
 /**
  * Service used to handle logging calls.
  */
 @singleton()
 export class LoggerService {
-    private readonly configs: LoggingConfigs;
+    private readonly configs: LoggerConfigs;
     private readonly pino: pino.Logger;
 
     constructor(appConfigs: ProjectConfiguration) {
-        this.configs = appConfigs.logging;
+        this.configs = appConfigs.logger;
 
         this.pino = pino({
             level: this.configs.level ?? LOGGING_LEVELS.info,
@@ -28,7 +28,6 @@ export class LoggerService {
      * @return pino logger object.
      */
     buildLogger(context: string): pino.Logger {
-        this.pino.info("Testing");
         return this.pino.child({ context });
     }
 }
@@ -45,7 +44,7 @@ class LoggerFactoryTransformer implements Transform<LoggerService, pino.Logger> 
 }
 
 /**
- * Decorator function used to inject an instance of the logger function rather then the logger service.
+ * Decorator function used to inject an instance of the logger function rather than the logger service.
  * @param context Name to be used as context.
  * @return Instance of logger function
  * @see LoggerService.buildLogger
