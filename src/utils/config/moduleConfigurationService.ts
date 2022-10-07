@@ -86,7 +86,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
     }
 
     /**
-     * Todo: Cleanup.
      * Callback function when a general event other than the interaction event is called.
      * @param listeners A collection of all the listeners to this event.
      * @param client The main application client. Not to be confused with Discord.Js Client.
@@ -94,19 +93,26 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @private
      */
     private async runEvent(listeners: Listener[], client: Client, ...args: any[]): Promise<void> {
-        for (let i = 0; i < listeners.length; i++) {
-            try {
-                await listeners[i].run(client, ...args);
-            } catch (error: Error | unknown) {
-                this.loggers.event.error(error instanceof Error ? error + error.stack : error);
-            }
+        const results = await Promise.allSettled(listeners.map(l => {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    await l.run(client, args);
+                    resolve(null);
+                } catch (error: Error | unknown) {
+                    reject(error);
+                }
+            });
+        }));
+
+        for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
+            this.loggers.event.error(result.reason instanceof Error ? result.reason + result.reason.stack : result.reason);
         }
     }
 
     /**
      * Todo: Rename to timer.
      * Todo: Cleanup.
-     * Function to setup a Javascript timer to go off.
+     * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
      * @param task The timer object data used to create a timer.
      * @param client The main app client. Not to be confused with Discord.Js Client object.
@@ -151,15 +157,17 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     client.moduleListeners.set(listener.event, listeners);
                 });
 
-                this.loggers.module.debug(`Setting Up tasks...`);
-                module.tasks.forEach(task => this.runTask(task, client));
+                // this.loggers.module.debug(`Setting Up tasks...`);
+                // module.tasks.forEach(task => this.runTask(task, client));
             } catch (error: Error | unknown) {
                 this.loggers.module.error(error instanceof Error ? error + error.stack : error);
             }
         }
 
         this.loggers.module.debug(`Setting Up events...`);
-        client.moduleListeners.forEach((listener, event) => client.on(event, async (...args) => this.runEvent(listener, client, ...args)));
+        for (const [ event, listeners ] of client.moduleListeners) {
+            client.on(event, (...args) => this.runEvent(listeners, client, args));
+        }
 
         this.loggers.module.debug(`Setting Up interaction event...`);
         client.on("interactionCreate", interaction => this.interactionEvent(interaction));
