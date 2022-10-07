@@ -215,7 +215,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         if (keys.length <= 1) {
             return Object.values(item).length !== 1;
         }
-        const sub = Object.values(item).find(value => (value instanceof Object ? value.$index : value) === keys[1]);
+        const sub = Object.values(item).find(value => (value.$index ?? value) === keys[1]);
         if (keys.length === 2) {
             return sub instanceof Object ? Object.values(sub).length !== 1 : true;
         }

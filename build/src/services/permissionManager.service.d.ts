@@ -2,7 +2,7 @@ import { CommandInteraction, Interaction, Role } from "discord.js";
 import { pino } from "pino";
 import { PermissionKeysType } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
-export declare const PermissionKeys: PermissionKeysType[];
+export declare const PermissionKeys: any;
 export declare class PermissionManagerService {
     private permissionManagerRepository;
     private logger;

@@ -13,21 +13,50 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var BuffManagerModule_1;
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { createLogger } from "../utils/loggerService.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
+import { PermissionKeysType } from "../models/permission_manager/index.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
     logger;
-    static commands = {
-        $index: "buff_manager",
-        Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
-        Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
-    };
+    static commands = new PermissionKeysType({
+        name: "buff_manager",
+        description: "Manages all things related to buffs",
+        subcommands: {
+            Buffs: {
+                name: "buffs",
+                description: "Shows you what buffs are set.",
+                subcommands: {
+                    Today: {
+                        name: "today",
+                        description: "Gets today's buff.",
+                    },
+                    Tomorrow: {
+                        name: "tomorrow",
+                        description: "Gets tomorrow's buff.",
+                    },
+                },
+            },
+            Weeks: {
+                name: "weeks",
+                description: "Shows you what buffs for the week, are set to.",
+                subcommands: {
+                    ThisWeek: {
+                        name: "this_week",
+                        description: "Gets this week's buffs.",
+                    },
+                    NextWeek: {
+                        name: "next_week",
+                        description: "Gets next week's buffs",
+                    },
+                },
+            },
+        },
+    });
     constructor(buffManagerService, logger, permissionManagerService) {
         super(permissionManagerService);
         this.buffManagerService = buffManagerService;
@@ -35,19 +64,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         this.moduleName = "BuffManager";
         this.commands = [
             {
-                command: builder => builder
-                    .setName(BuffManagerModule_1.commands.$index)
-                    .setDescription("Manages all things related to buffs")
-                    .addSubcommandGroup(subGroup => subGroup
-                    .setName(BuffManagerModule_1.commands.Buffs.$index)
-                    .setDescription("Shows you what buffs are set.")
-                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Buffs.Today).setDescription("Gets today's buff."))
-                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Buffs.Tomorrow).setDescription("Gets tomorrow's buff.")))
-                    .addSubcommandGroup(subGroup => subGroup
-                    .setName(BuffManagerModule_1.commands.Weeks.$index)
-                    .setDescription("Shows you what buffs for the week, are set to.")
-                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Weeks.ThisWeek).setDescription("Gets this week's buffs."))
-                    .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule_1.commands.Weeks.NextWeek).setDescription("Gets next week's buffs"))),
+                command: () => BuffManagerModule_1.commands.build(),
                 run: async (interaction) => this.subcommandResolver(interaction),
             },
         ];
@@ -56,6 +73,12 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                 name: `${this.moduleName}#dailyMessageTask`,
                 timeout: 60000,
                 run: async (client) => this.postDailyMessage(client),
+            },
+        ];
+        this.listeners = [
+            {
+                event: "ready",
+                run: () => { throw new Error("Testing"); },
             },
         ];
     }
@@ -75,11 +98,11 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
             return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
         }
         switch (group) {
-            case BuffManagerModule_1.commands.Buffs.$index:
+            case BuffManagerModule_1.commands.subcommands.Buffs?.name:
                 switch (subCommand) {
-                    case BuffManagerModule_1.commands.Buffs.Today:
+                    case BuffManagerModule_1.commands.subcommands.Buffs?.subcommands.Today:
                         return this.postTodayBuff(interaction);
-                    case BuffManagerModule_1.commands.Buffs.Tomorrow:
+                    case BuffManagerModule_1.commands.subcommands.Buffs?.subcommands.Tomorrow:
                         return this.postTomorrowsBuff(interaction);
                     default:
                         this.logger.debug(`Expected Failure: Cannot find subcommand.`);
@@ -88,11 +111,11 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                             ephemeral: true,
                         });
                 }
-            case BuffManagerModule_1.commands.Weeks.$index:
+            case BuffManagerModule_1.commands.subcommands.Weeks?.name:
                 switch (subCommand) {
-                    case BuffManagerModule_1.commands.Weeks.ThisWeek:
+                    case BuffManagerModule_1.commands.subcommands.Weeks?.subcommands.ThisWeek:
                         return this.postThisWeeksBuffs(interaction);
-                    case BuffManagerModule_1.commands.Weeks.NextWeek:
+                    case BuffManagerModule_1.commands.subcommands.Weeks?.subcommands.NextWeek:
                         return this.postNextWeeksBuffs(interaction);
                     default:
                         this.logger.debug(`Expected Failure: Cannot find subcommand.`);
@@ -126,33 +149,29 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
     }
 };
 __decorate([
-    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Buffs.$index, BuffManagerModule_1.commands.Buffs.Today),
+    authorize(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postTodayBuff", null);
 __decorate([
-    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Buffs.$index, BuffManagerModule_1.commands.Buffs.Tomorrow),
+    authorize(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postTomorrowsBuff", null);
 __decorate([
-    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Weeks.$index, BuffManagerModule_1.commands.Weeks.ThisWeek),
+    authorize(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postThisWeeksBuffs", null);
 __decorate([
-    authorize(BuffManagerModule_1.commands.$index, BuffManagerModule_1.commands.Weeks.$index, BuffManagerModule_1.commands.Weeks.NextWeek),
+    authorize(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [CommandInteraction]),
     __metadata("design:returntype", Promise)
 ], BuffManagerModule.prototype, "postNextWeeksBuffs", null);
-__decorate([
-    addCommandKeys(),
-    __metadata("design:type", Object)
-], BuffManagerModule, "commands", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
     registerModule(),
     __param(1, createLogger(BuffManagerModule_1.name)),

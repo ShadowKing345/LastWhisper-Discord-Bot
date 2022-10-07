@@ -90,19 +90,16 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @private
      */
     async runEvent(listeners, client, ...args) {
-        for (let i = 0; i < listeners.length; i++) {
-            try {
-                await listeners[i].run(client, ...args);
-            }
-            catch (error) {
-                this.loggers.event.error(error instanceof Error ? error + error.stack : error);
-            }
+        const results = await Promise.allSettled(listeners.map(l => l.run(client)));
+        for (const result of results.filter(result => result instanceof PromiseRejectionEvent)) {
+            console.log(result);
+            // this.loggers.event.error(error instanceof Error ? error + error.stack : error);
         }
     }
     /**
      * Todo: Rename to timer.
      * Todo: Cleanup.
-     * Function to setup a Javascript timer to go off.
+     * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
      * @param task The timer object data used to create a timer.
      * @param client The main app client. Not to be confused with Discord.Js Client object.
@@ -145,8 +142,8 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     listeners.push(listener);
                     client.moduleListeners.set(listener.event, listeners);
                 });
-                this.loggers.module.debug(`Setting Up tasks...`);
-                module.tasks.forEach(task => this.runTask(task, client));
+                // this.loggers.module.debug(`Setting Up tasks...`);
+                // module.tasks.forEach(task => this.runTask(task, client));
             }
             catch (error) {
                 this.loggers.module.error(error instanceof Error ? error + error.stack : error);

@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
 import { pino } from "pino";
 import { clearInterval } from "timers";
@@ -13,6 +12,7 @@ import { ModuleBase } from "../models/index.js";
 import { Task } from "../models/task.js";
 
 /**
+ * Todo: Allow for the user to disable the individual components.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 @singleton()
@@ -43,7 +43,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @private
      */
     private async interactionEvent(interaction: Interaction): Promise<void> {
-        this.loggers.module.debug(chalk.magentaBright("Interaction Innovated"));
+        this.loggers.module.debug("Interaction Innovated");
 
         try {
             if (interaction.isMessageComponent()) {
@@ -60,17 +60,17 @@ export class ModuleConfigurationService extends ConfigurationClass {
             }
 
             if (interaction.isCommand()) {
-                this.loggers.module.debug(chalk.magentaBright("Confirmed Command Interaction."));
+                this.loggers.module.debug("Confirmed Command Interaction.");
                 const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
                 if (!command) {
-                    this.loggers.module.debug(`No command found with name: ${chalk.yellow(interaction.commandName)}.`);
+                    this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
                     return;
                 }
 
                 await command.run(interaction);
             }
         } catch (error: Error | unknown) {
-            this.loggers.interaction.error(error instanceof Error ? error + error.stack : error);
+            this.loggers.interaction.error(error instanceof Error ? error.stack : error);
 
             if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
                 if (interaction.deferred) {
@@ -102,12 +102,11 @@ export class ModuleConfigurationService extends ConfigurationClass {
         })));
 
         for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
-            this.loggers.event.error(result.reason instanceof Error ? result.reason + result.reason.stack : result.reason);
+            this.loggers.event.error(result.reason instanceof Error ? result.reason.stack : result.reason);
         }
     }
 
     /**
-     * Todo: Rename to timer.
      * Todo: Cleanup.
      * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
@@ -115,19 +114,19 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      * @private
      */
-    private async runTask(task: Task, client: Client): Promise<void> {
+    private async runTimer(task: Task, client: Client): Promise<void> {
         try {
             client.tasks.set(task.name, task);
             this.intervalIds.push(setInterval(async () => {
                 try {
                     await task.run(client);
                 } catch (error: Error | unknown) {
-                    this.loggers.task.error(error instanceof Error ? error + error.stack : error);
+                    this.loggers.task.error(error instanceof Error ? error.stack : error);
                 }
             }, task.timeout, client));
             await task.run(client);
         } catch (error: Error | unknown) {
-            this.loggers.task.error(error instanceof Error ? error + error.stack : error);
+            this.loggers.task.error(error instanceof Error ? error.stack : error);
         }
     }
 
@@ -155,9 +154,9 @@ export class ModuleConfigurationService extends ConfigurationClass {
                 });
 
                 this.loggers.module.debug(`Setting Up tasks...`);
-                module.tasks.forEach(task => this.runTask(task, client));
+                module.tasks.forEach(task => this.runTimer(task, client));
             } catch (error: Error | unknown) {
-                this.loggers.module.error(error instanceof Error ? error + error.stack : error);
+                this.loggers.module.error(error instanceof Error ? error.stack : error);
             }
         }
 

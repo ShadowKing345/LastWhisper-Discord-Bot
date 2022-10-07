@@ -1,11 +1,15 @@
 /**
- * Type definition for a permission type.
+ * Class representation of a collection of permission keys.
  */
-export declare type PermissionKeysType = {
-    $index: string;
-    [key: string]: string | {
-        $index: string;
-        [key: string]: string;
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+export declare class PermissionKeysType extends ToJsonBase<PermissionKeysType> {
+    name: string;
+    description: string;
+    subcommands?: {
+        [key: string]: Partial<PermissionKeysType>;
     };
-} | string;
+    constructor(data: Partial<PermissionKeysType>);
+    build(): SlashCommandBuilder;
+}
 //# sourceMappingURL=permissionKeysType.model.d.ts.map

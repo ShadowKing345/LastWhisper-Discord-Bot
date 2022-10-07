@@ -78,19 +78,19 @@ export async function main() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
+    let app: App;
+
     try {
         generateConfigObject();
+        app = container.resolve(App);
 
-        const app: App = container.resolve(App);
-        // const db = container.resolve<BuffManagerRepository>(BuffManagerRepository);
+        await app.init();
 
-        // await app.init();
+        // process.on("SIGTERM", () => app.stop())
+        //     .on("SIGINT", () => app.stop())
+        //     .on("uncaughtException", () => app.stop());
 
-        process.on("SIGTERM", () => app.stop())
-            .on("SIGINT", () => app.stop())
-            .on("uncaughtException", () => app.stop());
-
-        // await app.run();
+        await app.run();
     } catch (error: Error | unknown) {
         console.error(error instanceof Error ? error + error.stack : error);
     }
