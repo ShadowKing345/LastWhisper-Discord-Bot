@@ -93,16 +93,13 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @private
      */
     private async runEvent(listeners: Listener[], client: Client, ...args: any[]): Promise<void> {
-        const results = await Promise.allSettled(listeners.map(l => {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    await l.run(client, args);
-                    resolve(null);
-                } catch (error: Error | unknown) {
-                    reject(error);
-                }
-            });
-        }));
+        const results = await Promise.allSettled(listeners.map(l => new Promise(async (resolve, reject) => {
+            try {
+                resolve(l.run(client, args));
+            } catch (error: Error | unknown) {
+                reject(error);
+            }
+        })));
 
         for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
             this.loggers.event.error(result.reason instanceof Error ? result.reason + result.reason.stack : result.reason);
