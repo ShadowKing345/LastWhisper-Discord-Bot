@@ -1,13 +1,13 @@
 import { Client, CommandInteraction, Message } from "discord.js";
-import { singleton } from "tsyringe";
 
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 
-@singleton()
+@registerModule()
 export class EventManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly commands: string = "event";

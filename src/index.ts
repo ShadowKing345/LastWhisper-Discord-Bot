@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import "reflect-metadata";
+import "./modules/index.js";
 
 import { program } from "commander";
-import * as os from "os";
+import { userInfo } from "os";
 
 import { main } from "./app.js";
 import { commandRegistration } from "./commandRegistration.js";
 
-console.log(`Welcome ${os.userInfo().username}.`);
+console.log(`Welcome ${userInfo().username}.`);
 
 // const configCheck = () => !existsSync(configPath) ? inquirer.prompt<{ result: boolean }>({
 //     name: "result",

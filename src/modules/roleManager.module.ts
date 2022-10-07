@@ -1,6 +1,5 @@
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
@@ -9,8 +8,9 @@ import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 
-@singleton()
+@registerModule()
 export class RoleManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly commands = {

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
 import { pino } from "pino";
 import { clearInterval } from "timers";
-import { singleton } from "tsyringe";
+import { singleton, injectAll } from "tsyringe";
 
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
@@ -11,15 +11,8 @@ import { BuildCommand, Command } from "../models/command.js";
 import { Listener } from "../models/listener.js";
 import { ModuleBase } from "../models/index.js";
 import { Task } from "../models/task.js";
-import { BuffManagerModule } from "../../modules/buffManager.module.js";
-import { EventManagerModule } from "../../modules/eventManager.module.js";
-import { GardeningManagerModule } from "../../modules/gardeningManager.module.js";
-import { ManagerUtilsModule } from "../../modules/managerUtils.module.js";
-import { RoleManagerModule } from "../../modules/roleManager.module.js";
-import { PermissionManagerModule } from "../../modules/permissionManager.module.js";
 
 /**
- * Todo: Cleanup.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 @singleton()
@@ -29,29 +22,18 @@ export class ModuleConfigurationService extends ConfigurationClass {
     private readonly loggers: { module: pino.Logger, interaction: pino.Logger, event: pino.Logger, task: pino.Logger };
 
     constructor(
-        buffManagerModule: BuffManagerModule,
-        eventManagerModule: EventManagerModule,
-        gardeningManagerModule: GardeningManagerModule,
-        managerUtilsModule: ManagerUtilsModule,
-        roleManagerModule: RoleManagerModule,
-        permissionManagerModule: PermissionManagerModule,
+        @injectAll(ModuleBase.name) modules: ModuleBase[],
         loggerFactory: LoggerService,
     ) {
         super();
+
         this.loggers = {
             module: loggerFactory.buildLogger("ModuleConfiguration"),
             interaction: loggerFactory.buildLogger("InteractionExecution"),
             event: loggerFactory.buildLogger("EventExecution"),
             task: loggerFactory.buildLogger("TimerExecution"),
         };
-        this._modules = [
-            buffManagerModule,
-            eventManagerModule,
-            gardeningManagerModule,
-            managerUtilsModule,
-            roleManagerModule,
-            permissionManagerModule,
-        ];
+        this._modules = modules;
     }
 
     /**

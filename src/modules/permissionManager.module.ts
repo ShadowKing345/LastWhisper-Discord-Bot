@@ -1,14 +1,14 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
 import { CommandInteraction, Role } from "discord.js";
-import { singleton } from "tsyringe";
 
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
 
-@singleton()
+@registerModule()
 export class PermissionManagerModule extends ModuleBase {
     @addCommandKeys()
     private static readonly commands = {

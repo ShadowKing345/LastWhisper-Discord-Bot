@@ -8,7 +8,6 @@ import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
-import { BuffManagerRepository } from "./repositories/buffManager.repository.js";
 
 /**
  * Application class.
@@ -83,7 +82,7 @@ export async function main() {
         generateConfigObject();
 
         const app: App = container.resolve(App);
-        const db = container.resolve<BuffManagerRepository>(BuffManagerRepository);
+        // const db = container.resolve<BuffManagerRepository>(BuffManagerRepository);
 
         // await app.init();
 
