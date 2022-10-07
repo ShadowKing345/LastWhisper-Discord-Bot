@@ -62,7 +62,6 @@ export class DatabaseConfigurationService extends ConfigurationClass {
             }
 
             const url = DatabaseConfigurationService.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
-            console.log(url);
 
             this._client = await MongoClient.connect(url);
             this._client.on("error", async error => {
