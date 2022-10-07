@@ -5,9 +5,9 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { InvalidArgumentError } from "../utils/models/errors.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../models/gardening_manager/index.js";
+import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 
 @singleton()
 export class GardeningManagerService {

@@ -9,15 +9,3 @@ export class InvalidArgumentError extends Error {
         Object.setPrototypeOf(this, InvalidArgumentError.prototype);
     }
 }
-
-/**
- * Error thrown by a decorator.
- */
-export class DecoratorError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = "DecoratorError";
-
-        Object.setPrototypeOf(this, DecoratorError.prototype);
-    }
-}
