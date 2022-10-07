@@ -6,7 +6,8 @@ import { createLogger } from "../utils/loggerService.js";
 import { deepMerge } from "../utils/index.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
-import { PermissionKeys } from "../utils/decorators/addCommandKeys.js";
+
+export const PermissionKeys: PermissionKeysType[] = [];
 
 @singleton()
 export class PermissionManagerService {
