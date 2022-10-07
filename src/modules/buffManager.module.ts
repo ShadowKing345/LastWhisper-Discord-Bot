@@ -1,7 +1,6 @@
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
@@ -9,15 +8,44 @@ import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
+import { PermissionKeysType } from "../models/permission_manager/index.js";
 
 @registerModule()
 export class BuffManagerModule extends ModuleBase {
-    @addCommandKeys()
-    private static readonly commands = {
-        $index: "buff_manager",
-        Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
-        Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
-    };
+    private static readonly commands: PermissionKeysType = new PermissionKeysType({
+        name: "buff_manager",
+        description: "Manages all things related to buffs",
+        subcommands: {
+            Buffs: {
+                name: "buffs",
+                description: "Shows you what buffs are set.",
+                subcommands: {
+                    Today: {
+                        name: "today",
+                        description: "Gets today's buff.",
+                    },
+                    Tomorrow: {
+                        name: "tomorrow",
+                        description: "Gets tomorrow's buff.",
+                    },
+                },
+            },
+            Weeks: {
+                name: "weeks",
+                description: "Shows you what buffs for the week, are set to.",
+                subcommands: {
+                    ThisWeek: {
+                        name: "this_week",
+                        description: "Gets this week's buffs.",
+                    },
+                    NextWeek: {
+                        name: "next_week",
+                        description: "Gets next week's buffs",
+                    },
+                },
+            },
+        },
+    });
 
     constructor(
         private buffManagerService: BuffManagerService,
@@ -29,24 +57,7 @@ export class BuffManagerModule extends ModuleBase {
         this.moduleName = "BuffManager";
         this.commands = [
             {
-                command: builder =>
-                    builder
-                        .setName(BuffManagerModule.commands.$index)
-                        .setDescription("Manages all things related to buffs")
-                        .addSubcommandGroup(subGroup =>
-                            subGroup
-                                .setName(BuffManagerModule.commands.Buffs.$index)
-                                .setDescription("Shows you what buffs are set.")
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Buffs.Today).setDescription("Gets today's buff."))
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Buffs.Tomorrow).setDescription("Gets tomorrow's buff.")),
-                        )
-                        .addSubcommandGroup(subGroup =>
-                            subGroup
-                                .setName(BuffManagerModule.commands.Weeks.$index)
-                                .setDescription("Shows you what buffs for the week, are set to.")
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Weeks.ThisWeek).setDescription("Gets this week's buffs."))
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Weeks.NextWeek).setDescription("Gets next week's buffs")),
-                        ),
+                command: () => BuffManagerModule.commands.build(),
                 run: async interaction => this.subcommandResolver(interaction),
             },
         ];
@@ -78,11 +89,11 @@ export class BuffManagerModule extends ModuleBase {
         }
 
         switch (group) {
-            case BuffManagerModule.commands.Buffs.$index:
+            case (BuffManagerModule.commands.subcommands.Buffs as PermissionKeysType)?.name:
                 switch (subCommand) {
-                    case BuffManagerModule.commands.Buffs.Today:
+                    case (BuffManagerModule.commands.subcommands.Buffs as PermissionKeysType)?.subcommands.Today:
                         return this.postTodayBuff(interaction);
-                    case BuffManagerModule.commands.Buffs.Tomorrow:
+                    case (BuffManagerModule.commands.subcommands.Buffs as PermissionKeysType)?.subcommands.Tomorrow:
                         return this.postTomorrowsBuff(interaction);
                     default:
                         this.logger.debug(`Expected Failure: Cannot find subcommand.`);
@@ -91,11 +102,11 @@ export class BuffManagerModule extends ModuleBase {
                             ephemeral: true,
                         });
                 }
-            case BuffManagerModule.commands.Weeks.$index:
+            case (BuffManagerModule.commands.subcommands.Weeks as PermissionKeysType)?.name:
                 switch (subCommand) {
-                    case BuffManagerModule.commands.Weeks.ThisWeek:
+                    case (BuffManagerModule.commands.subcommands.Weeks as PermissionKeysType)?.subcommands.ThisWeek:
                         return this.postThisWeeksBuffs(interaction);
-                    case BuffManagerModule.commands.Weeks.NextWeek:
+                    case (BuffManagerModule.commands.subcommands.Weeks as PermissionKeysType)?.subcommands.NextWeek:
                         return this.postNextWeeksBuffs(interaction);
                     default:
                         this.logger.debug(`Expected Failure: Cannot find subcommand.`);
@@ -113,22 +124,22 @@ export class BuffManagerModule extends ModuleBase {
         }
     }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Buffs.$index, BuffManagerModule.commands.Buffs.Today)
+    @authorize()
     private postTodayBuff(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postBuff(interaction);
     }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Buffs.$index, BuffManagerModule.commands.Buffs.Tomorrow)
+    @authorize()
     private postTomorrowsBuff(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postBuff(interaction, false);
     }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Weeks.$index, BuffManagerModule.commands.Weeks.ThisWeek)
+    @authorize()
     private postThisWeeksBuffs(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postWeeksBuffs(interaction);
     }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Weeks.$index, BuffManagerModule.commands.Weeks.NextWeek)
+    @authorize()
     private postNextWeeksBuffs(interaction: CommandInteraction): Promise<void> {
         return this.buffManagerService.postWeeksBuffs(interaction, false);
     }

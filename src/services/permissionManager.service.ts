@@ -7,7 +7,7 @@ import { deepMerge } from "../utils/index.js";
 import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 
-export const PermissionKeys: PermissionKeysType[] = [];
+export const PermissionKeys: any = [];
 
 @singleton()
 export class PermissionManagerService {
@@ -142,7 +142,7 @@ export class PermissionManagerService {
         return interaction.reply({
             content: "Config set.",
             ephemeral: true,
-        })
+        });
     }
 
     public async reset(interaction: CommandInteraction, key: string): Promise<void> {
@@ -196,7 +196,7 @@ export class PermissionManagerService {
                         Object.entries(key)
                             .filter(([ k ]) => k !== "$index")
                             .map(([ , v ]) => v instanceof Object ?
-                                `${v.$index} {\n\t\t${
+                                `${(v as any).$index} {\n\t\t${
                                     Object.entries(v)
                                         .filter(([ k ]) => k !== "$index")
                                         .map(([ , v ]) => v)
@@ -244,7 +244,7 @@ export class PermissionManagerService {
             return Object.values(item).length !== 1;
         }
 
-        const sub = Object.values(item).find(value => (value instanceof Object ? value.$index : value) === keys[1]);
+        const sub = Object.values(item).find(value => ((value as any).$index ?? value) === keys[1]);
         if (keys.length === 2) {
             return sub instanceof Object ? Object.values(sub).length !== 1 : true;
         }
