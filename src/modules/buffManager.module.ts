@@ -1,12 +1,14 @@
 import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton, registry } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 
 @singleton()
 export class BuffManagerModule extends ModuleBase {
@@ -20,8 +22,9 @@ export class BuffManagerModule extends ModuleBase {
     constructor(
         private buffManagerService: BuffManagerService,
         @createLogger(BuffManagerModule.name) private logger: pino.Logger,
+        permissionManagerService: PermissionManagerService,
     ) {
-        super();
+        super(permissionManagerService);
 
         this.moduleName = "BuffManager";
         this.commands = [

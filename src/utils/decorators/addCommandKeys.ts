@@ -1,7 +1,10 @@
-import { PermissionKeysType } from "../models/permission_manager/index.js";
+import { PermissionKeysType } from "../../models/permission_manager/index.js";
 
 export const PermissionKeys: PermissionKeysType[] = [];
 
+/**
+ * Decorator that adds a list of keys to a permission keys list.
+ */
 export function addCommandKeys() {
     return function (target: any, key: string | symbol) {
         const value = target[key];

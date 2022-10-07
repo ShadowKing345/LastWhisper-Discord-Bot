@@ -3,10 +3,10 @@ import { CommandInteraction, Role } from "discord.js";
 import { singleton } from "tsyringe";
 
 import { ModuleBase } from "../utils/models/index.js";
-import { addCommandKeys } from "../permission_manager/addCommandKeys.decorator.js";
-import { authorize } from "../permission_manager/authorize.decorator.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 
 @singleton()
 export class PermissionManagerModule extends ModuleBase {
@@ -20,8 +20,10 @@ export class PermissionManagerModule extends ModuleBase {
         Reset: "reset_permission",
     };
 
-    constructor(private permissionManager: PermissionManagerService) {
-        super();
+    constructor(
+        permissionManagerService: PermissionManagerService,
+    ) {
+        super(permissionManagerService);
 
         this.moduleName = "PermissionManager";
         this.commands = [ {
@@ -110,27 +112,27 @@ export class PermissionManagerModule extends ModuleBase {
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.List)
     private listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
-        return this.permissionManager.listPermissions(interaction, key);
+        return this.permissionManagerService.listPermissions(interaction, key);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.AddRole)
     private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        return this.permissionManager.addRole(interaction, key, role);
+        return this.permissionManagerService.addRole(interaction, key, role);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.RemoveRole)
     private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        return this.permissionManager.removeRole(interaction, key, role);
+        return this.permissionManagerService.removeRole(interaction, key, role);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Config)
     private config(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManager.config(interaction, key);
+        return this.permissionManagerService.config(interaction, key);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Reset)
     private reset(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManager.reset(interaction, key);
+        return this.permissionManagerService.reset(interaction, key);
     }
 
     private static commandKeyHelperBuilder(input: SlashCommandStringOption, boolOverride = true): SlashCommandStringOption {

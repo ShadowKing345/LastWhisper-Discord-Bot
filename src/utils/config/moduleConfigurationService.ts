@@ -4,7 +4,6 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton } from "tsyringe";
 
-import { PermissionManagerModule } from "../../permission_manager/index.js";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
@@ -17,6 +16,7 @@ import { EventManagerModule } from "../../modules/eventManager.module.js";
 import { GardeningManagerModule } from "../../modules/gardeningManager.module.js";
 import { ManagerUtilsModule } from "../../modules/managerUtils.module.js";
 import { RoleManagerModule } from "../../modules/roleManager.module.js";
+import { PermissionManagerModule } from "../../modules/permissionManager.module.js";
 
 /**
  * Todo: Cleanup.

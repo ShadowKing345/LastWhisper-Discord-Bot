@@ -3,7 +3,7 @@ import { singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
-import { PermissionManagerConfig } from "../permission_manager/index.js";
+import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 
 @singleton()
 export class PermissionManagerRepository extends RepositoryBase<PermissionManagerConfig> {

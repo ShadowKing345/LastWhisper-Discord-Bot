@@ -2,11 +2,13 @@ import { CommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 
 @singleton()
 export class RoleManagerModule extends ModuleBase {
@@ -21,8 +23,9 @@ export class RoleManagerModule extends ModuleBase {
     constructor(
         private roleManagerService: RoleManagerService,
         @createLogger(RoleManagerModule.name) private logger: pino.Logger,
+        permissionManagerService: PermissionManagerService,
     ) {
-        super();
+        super(permissionManagerService);
 
         this.moduleName = "RoleManager";
         this.listeners = [

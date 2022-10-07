@@ -1,9 +1,11 @@
 import { CommandInteraction, GuildBan, GuildMember } from "discord.js";
 import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 
 @singleton()
 export class ManagerUtilsModule extends ModuleBase {
@@ -14,8 +16,11 @@ export class ManagerUtilsModule extends ModuleBase {
         Clear: "clear",
     };
 
-    constructor(private managerUtilsService: ManagerUtilsService) {
-        super();
+    constructor(
+        private managerUtilsService: ManagerUtilsService,
+        permissionManagerService: PermissionManagerService,
+    ) {
+        super(permissionManagerService);
 
         this.moduleName = "ManagerUtils";
         this.commands = [ {

@@ -1,11 +1,13 @@
 import { CommandInteraction } from "discord.js";
 import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
+import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.service.js";
 import { Reason } from "../models/gardening_manager/index.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
 
 @singleton()
 export class GardeningManagerModule extends ModuleBase {
@@ -17,8 +19,11 @@ export class GardeningManagerModule extends ModuleBase {
         List: "list",
     };
 
-    constructor(private gardeningManagerService: GardeningManagerService) {
-        super();
+    constructor(
+        private gardeningManagerService: GardeningManagerService,
+        permissionManagerService: PermissionManagerService,
+    ) {
+        super(permissionManagerService);
 
         this.moduleName = "GardeningModule";
         this.commands = [ {
