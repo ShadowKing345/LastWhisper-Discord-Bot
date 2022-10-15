@@ -3,6 +3,7 @@ import { DatabaseConfiguration } from "./databaseConfiguration.js";
 import { ToJsonBase } from "../objects/toJsonBase.js";
 import { deepMerge } from "../index.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
+import { ModuleConfiguration } from "./moduleConfiguration.js";
 
 /**
  * Default configuration object for the application.
@@ -16,6 +17,8 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
     // Configuration for logger.
     public logger?: LoggerConfigs = new LoggerConfigs();
+    // Configuration for module service.
+    public moduleConfiguration: ModuleConfiguration = new ModuleConfiguration();
 
     public merge(obj: ProjectConfiguration): ProjectConfiguration {
         if (obj.token) {
@@ -32,6 +35,10 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
 
         if (obj.logger) {
             this.logger = deepMerge(this.logger ?? new LoggerConfigs(), obj.logger);
+        }
+
+        if (obj.moduleConfiguration) {
+            this.moduleConfiguration = deepMerge(this.moduleConfiguration ?? new ModuleConfiguration(), obj.moduleConfiguration);
         }
 
         return this;

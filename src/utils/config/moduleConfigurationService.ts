@@ -8,8 +8,9 @@ import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
 import { BuildCommand, Command } from "../models/command.js";
 import { Listener } from "../models/listener.js";
-import { ModuleBase } from "../models/index.js";
+import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 import { Task } from "../models/task.js";
+import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 
 /**
  * Todo: Allow for the user to disable the individual components.
@@ -17,15 +18,19 @@ import { Task } from "../models/task.js";
  */
 @singleton()
 export class ModuleConfigurationService extends ConfigurationClass {
+    private readonly moduleConfiguration: ModuleConfiguration;
     private readonly intervalIds: number[] = [];
     private readonly _modules: ModuleBase[];
     private readonly loggers: { module: pino.Logger, interaction: pino.Logger, event: pino.Logger, task: pino.Logger };
 
     constructor(
+        config: ProjectConfiguration,
         @injectAll(ModuleBase.name) modules: ModuleBase[],
         loggerFactory: LoggerService,
     ) {
         super();
+
+        this.moduleConfiguration = config.moduleConfiguration;
 
         this.loggers = {
             module: loggerFactory.buildLogger("ModuleConfiguration"),
@@ -33,7 +38,14 @@ export class ModuleConfigurationService extends ConfigurationClass {
             event: loggerFactory.buildLogger("EventExecution"),
             task: loggerFactory.buildLogger("TimerExecution"),
         };
-        this._modules = modules;
+        this._modules = this.moduleConfiguration.modules?.length !== 0 ?
+            modules.filter(module => {
+                const inList = this.moduleConfiguration.modules.includes(module.moduleName);
+                const blacklist = this.moduleConfiguration.blacklist;
+                return (!blacklist && inList) || (blacklist && !inList);
+            }) : modules;
+
+        console.log(this._modules);
     }
 
     /**
@@ -143,30 +155,40 @@ export class ModuleConfigurationService extends ConfigurationClass {
                 this.loggers.module.info(`Setting Up module ${module.moduleName}`);
                 client.modules.set(module.moduleName, module);
 
-                this.loggers.module.debug(`Setting Up commands...`);
-                module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
+                if (!this.moduleConfiguration.disableCommands) {
+                    this.loggers.module.debug(`Setting Up commands...`);
+                    module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
+                }
 
-                this.loggers.module.debug(`Setting Up listeners...`);
-                module.listeners.forEach(listener => {
-                    const listeners = client.moduleListeners.get(listener.event) ?? [];
-                    listeners.push(listener);
-                    client.moduleListeners.set(listener.event, listeners);
-                });
+                if (!this.moduleConfiguration.disableEventListeners) {
+                    this.loggers.module.debug(`Setting Up listeners...`);
+                    module.listeners.forEach(listener => {
+                        const listeners = client.moduleListeners.get(listener.event) ?? [];
+                        listeners.push(listener);
+                        client.moduleListeners.set(listener.event, listeners);
+                    });
+                }
 
-                this.loggers.module.debug(`Setting Up tasks...`);
-                module.tasks.forEach(task => this.runTimer(task, client));
+                if (!this.moduleConfiguration.disableTimers) {
+                    this.loggers.module.debug(`Setting Up tasks...`);
+                    module.tasks.forEach(task => this.runTimer(task, client));
+                }
             } catch (error: Error | unknown) {
                 this.loggers.module.error(error instanceof Error ? error.stack : error);
             }
         }
 
-        this.loggers.module.debug(`Setting Up events...`);
-        for (const [ event, listeners ] of client.moduleListeners) {
-            client.on(event, (...args) => this.runEvent(listeners, client, args));
+        if (!this.moduleConfiguration.disableEventListeners) {
+            this.loggers.module.debug(`Setting Up events...`);
+            for (const [ event, listeners ] of client.moduleListeners) {
+                client.on(event, (...args) => this.runEvent(listeners, client, args));
+            }
         }
 
-        this.loggers.module.debug(`Setting Up interaction event...`);
-        client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+        if (!this.moduleConfiguration.disableInteractions) {
+            this.loggers.module.debug(`Setting Up interaction event...`);
+            client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+        }
     }
 
     /**
