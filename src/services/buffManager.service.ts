@@ -1,4 +1,4 @@
-import { CommandInteraction, MessageEmbed, TextChannel } from "discord.js";
+import { CommandInteraction, TextChannel, InteractionResponse, EmbedBuilder, ColorResolvable } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -29,10 +29,10 @@ export class BuffManagerService {
         return [ days.monday, days.tuesday, days.wednesday, days.thursday, days.friday, days.saturday, days.sunday ];
     }
 
-    public createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed {
+    public createBuffEmbed(title: string, day: Buff, date: DateTime): EmbedBuilder {
         this.logger.debug(`Creating Buff Embed.`);
-        return new MessageEmbed({
-            color: "RANDOM",
+        return new EmbedBuilder({
+            color: "Random",
             title: title,
             description: day.text,
             thumbnail: { url: day.imageUrl },
@@ -77,7 +77,7 @@ export class BuffManagerService {
         return [ config, true ];
     }
 
-    public async postBuff(interaction: CommandInteraction, today = true): Promise<void> {
+    public async postBuff(interaction: CommandInteraction, today = true): Promise<InteractionResponse<boolean>> {
         const [ config, flag ] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
@@ -105,7 +105,7 @@ export class BuffManagerService {
         await interaction.reply({ embeds: [ this.createBuffEmbed(title, buff, date) ] });
     }
 
-    public async postWeeksBuffs(interaction: CommandInteraction, thisWeek = true): Promise<void> {
+    public async postWeeksBuffs(interaction: CommandInteraction, thisWeek = true): Promise<InteractionResponse<boolean>> {
         const [ config, flag ] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
@@ -139,7 +139,7 @@ export class BuffManagerService {
                 if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) continue;
 
                 const channel: TextChannel | null = await client.channels.fetch(messageSettings.channelId) as TextChannel | null;
-                if (!(channel?.isText && channel.guildId === config.guildId)) {
+                if (!(channel?.isTextBased && channel.guildId === config.guildId)) {
                     this.logger.warn(`Invalid channel messageSettings.channelId  ID for guild config.guildId. ${skipping}...`);
                     continue;
                 }

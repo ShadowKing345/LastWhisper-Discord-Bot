@@ -3,7 +3,7 @@ import { CommandInteraction } from "discord.js";
 
 export class Command {
     public command: ((builder: SlashCommandBuilder) => any);
-    public run: (interaction: CommandInteraction) => Promise<void>;
+    public run: (interaction: CommandInteraction) => Promise<any>;
 }
 
 export function BuildCommand(command: Command): SlashCommandBuilder {
