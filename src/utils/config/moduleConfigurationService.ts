@@ -49,6 +49,9 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
     /**
      * Todo: Cleanup.
+     * Todo: Setup modal responding.
+     * Todo: Setup buttons/select menu
+     * Todo: Context Menu.
      * The main interaction event callback function that is called when a Discord interaction event is called.
      * @param interaction The interaction data object.
      * @private
@@ -57,6 +60,18 @@ export class ModuleConfigurationService extends ConfigurationClass {
         this.loggers.module.debug("Interaction Innovated");
 
         try {
+            if (interaction.isContextMenuCommand()) {
+                if (interaction.isUserContextMenuCommand()) {
+                    await interaction.reply({ content: "Responded with a user", ephemeral: true });
+                } else {
+                    await interaction.reply({ content: "Responded with a message", ephemeral: true });
+                }
+            }
+
+            if (interaction.isModalSubmit()) {
+                await interaction.reply({ content: "Responded", ephemeral: true });
+            }
+
             if (interaction.isMessageComponent()) {
 
                 console.log(interaction.componentType);
@@ -189,7 +204,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
     }
 
     /**
-     * Todo: Cleanup.
      * Cleanup function.
      */
     public cleanup() {
@@ -200,7 +214,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
     }
 
     /**
-     * Todo: Cleanup.
      * List of all modules registered.
      */
     public get modules(): ModuleBase[] {
