@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
+import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, AuditLogEvent, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -27,11 +27,11 @@ export class ManagerUtilsService {
 
         const kickedData = (await member.guild.fetchAuditLogs({
             limit: 1,
-            type: "MEMBER_KICK",
+            type: AuditLogEvent.MemberKick,
         })).entries.first();
 
-        const embed = new MessageEmbed()
-            .setColor("RANDOM")
+        const embed = new EmbedBuilder()
+            .setColor("Random")
             .addFields(
                 { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY") },
                 { name: "Nickname was:", value: member.nickname ?? "None" },
@@ -53,15 +53,15 @@ export class ManagerUtilsService {
         const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel) return;
 
-        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
+        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: AuditLogEvent.MemberBanAdd })).entries.first();
 
         if (banLogs) {
             const executor: User | null = banLogs.executor;
             const target: User | null = banLogs.target as User;
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle("Member Banned!")
-                .setColor("RANDOM");
+                .setColor("Random");
 
             if (target) {
                 embed
@@ -87,7 +87,7 @@ export class ManagerUtilsService {
         return await this.managerUtilsConfigRepository.save(result);
     }
 
-    public async clearChannelMessages(interaction: CommandInteraction): Promise<void> {
+    public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         const config = await this.findOneOrCreate(interaction.guildId);
 
         if (config.clearChannelBlacklist.includes(interaction.channelId)) {

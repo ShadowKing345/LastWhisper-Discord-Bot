@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction, MessageEmbed, Role } from "discord.js";
+import { CommandInteraction, Interaction, EmbedBuilder, Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
@@ -59,7 +59,7 @@ export class PermissionManagerService {
         return permission.blackList ? !result : result;
     }
 
-    public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+    public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -86,7 +86,7 @@ export class PermissionManagerService {
         });
     }
 
-    public async removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+    public async removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -117,7 +117,7 @@ export class PermissionManagerService {
         });
     }
 
-    public async config(interaction: CommandInteraction, key: string): Promise<void> {
+    public async config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -145,7 +145,7 @@ export class PermissionManagerService {
         });
     }
 
-    public async reset(interaction: CommandInteraction, key: string): Promise<void> {
+    public async reset(interaction: CommandInteraction, key: string): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -169,7 +169,7 @@ export class PermissionManagerService {
         });
     }
 
-    public async listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
+    public async listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse> {
         if (key) {
             if (!PermissionManagerService.keyExists(key)) {
                 return interaction.reply({
@@ -182,11 +182,10 @@ export class PermissionManagerService {
             const permission = config.permissions[key] ?? new Permission();
 
             return interaction.reply({
-                embeds: [ new MessageEmbed({
+                embeds: [ new EmbedBuilder({
                     title: `Settings for Permission ${key}`,
                     description: `\`\`\`\nMode:\t\t${PermissionMode[permission.mode]},\nBlacklist:   ${permission.blackList},\nRoles:\t   [ ${permission.roles.join(", ")} ]\n\`\`\``,
-                    color: "RANDOM",
-                }) ],
+                }).setColor("Random") ],
                 ephemeral: true,
             });
         } else {
@@ -208,11 +207,10 @@ export class PermissionManagerService {
                     .join(",\n")
             }\n\`\`\``;
             return interaction.reply({
-                embeds: [ new MessageEmbed({
+                embeds: [ new EmbedBuilder({
                     title: "List of PermissionKeys",
                     description: result,
-                    color: "RANDOM",
-                }) ],
+                }).setColor("Random") ],
                 ephemeral: true,
             });
         }

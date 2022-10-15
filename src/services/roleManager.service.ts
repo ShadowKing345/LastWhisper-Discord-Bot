@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User } from "discord.js";
+import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
@@ -124,7 +124,7 @@ export class RoleManagerService {
         return interaction.reply({ content: "Done", ephemeral: true });
     }
 
-    public async registerMessage(interaction: CommandInteraction): Promise<void> {
+    public async registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         const config = await this.findOneOrCreate(interaction.guildId);
         const message_id = interaction.options.getString("message_id");
 
@@ -157,7 +157,7 @@ export class RoleManagerService {
         return interaction.reply({ content: "Successfully registered.", ephemeral: true });
     }
 
-    public async unregisterMessage(interaction: CommandInteraction): Promise<void> {
+    public async unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         const config = await this.findOneOrCreate(interaction.guildId);
         const message_id = interaction.options.getString("message_id");
 

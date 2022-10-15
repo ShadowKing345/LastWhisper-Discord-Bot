@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { ModuleBase } from "../objects/moduleBase.js";
 
 /**
@@ -10,7 +10,7 @@ export function authorize<T extends ModuleBase>(...key: string[]): (target: T, p
         const permissionManagerService = target.permissionManagerService;
         const originalValue = descriptor.value;
 
-        descriptor.value = async function (interaction: CommandInteraction, ...args: any[]) {
+        descriptor.value = async function (interaction: ChatInputCommandInteraction, ...args: any[]) {
             if (!await permissionManagerService.isAuthorized(interaction, key.join("."))) {
                 return interaction.reply({
                     content: "Sorry you do not have the permissions to use this command.",

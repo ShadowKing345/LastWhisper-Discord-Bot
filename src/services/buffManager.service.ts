@@ -1,4 +1,4 @@
-import { CommandInteraction, TextChannel, InteractionResponse, EmbedBuilder, ColorResolvable } from "discord.js";
+import { CommandInteraction, TextChannel, InteractionResponse, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -32,18 +32,16 @@ export class BuffManagerService {
     public createBuffEmbed(title: string, day: Buff, date: DateTime): EmbedBuilder {
         this.logger.debug(`Creating Buff Embed.`);
         return new EmbedBuilder({
-            color: "Random",
             title: title,
             description: day.text,
             thumbnail: { url: day.imageUrl },
             footer: { text: date.toFormat("DDDD") },
-        });
+        }).setColor("Random");
     }
 
-    public createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed {
+    public createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): EmbedBuilder {
         this.logger.debug(`Creating Week Embed.`);
-        return new MessageEmbed({
-            color: "RANDOM",
+        return new EmbedBuilder({
             title: title,
             description: week.title,
             fields: BuffManagerService.daysToArray(week.days).map((dayId, index) => {
@@ -53,7 +51,7 @@ export class BuffManagerService {
                 return { name: dow, value: day.text, inline: true };
             }),
             footer: { text: `Week ${date.get("weekNumber")}.` },
-        });
+        }).setColor("Random");
     }
 
     public async tryGetConfig(interaction: CommandInteraction): Promise<[ BuffManagerConfig, boolean ]> {

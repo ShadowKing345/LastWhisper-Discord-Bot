@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Message } from "discord.js";
+import { Client, Message, ChatInputCommandInteraction } from "discord.js";
 
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
@@ -60,7 +60,7 @@ export class EventManagerModule extends ModuleBase {
     }
 
     @authorize(EventManagerModule.commands)
-    private listEvents(interaction: CommandInteraction): Promise<void> {
+    private listEvents(interaction: ChatInputCommandInteraction): Promise<void> {
         return this.eventManagerService.listEvents(interaction);
     }
 

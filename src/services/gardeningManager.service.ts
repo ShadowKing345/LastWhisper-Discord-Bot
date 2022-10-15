@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedFieldData, GuildMember, MessageEmbed, TextChannel } from "discord.js";
+import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -133,7 +133,7 @@ export class GardeningManagerService {
         });
     }
 
-    public async cancel(interaction: CommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
+    public async cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse> {
         const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
 
         if (!(player && plant && plotNum != null && slotNum != null)) {
@@ -169,7 +169,7 @@ export class GardeningManagerService {
         return interaction.reply("Reservation has been canceled.");
     }
 
-    public async list(interaction: CommandInteraction, plotNum: number, slotNum: number) {
+    public async list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number) {
         const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
         const showDetailed: boolean = interaction.options.getBoolean("detailed") ?? false;
 
@@ -260,7 +260,7 @@ export class GardeningManagerService {
         if (config.messagePostingChannelId && !guild.channels.cache.has(config.messagePostingChannelId)) return;
         const channel = await guild.channels.fetch(config.messagePostingChannelId) as TextChannel;
 
-        const embed: MessageEmbed = new MessageEmbed({
+        const embed: EmbedBuilder = new EmbedBuilder({
             title: messageArgs.title,
             description: messageArgs.description,
             thumbnail: {
@@ -291,5 +291,5 @@ export class MessagePostArgs {
     public description: string;
     public memberUrl: string;
     public slot?: Slot;
-    public fields: EmbedFieldData[];
+    public fields: APIEmbedField[];
 }

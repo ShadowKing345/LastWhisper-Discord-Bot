@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
@@ -63,15 +63,14 @@ export class GardeningManagerModule extends ModuleBase {
                                 .setName("reason")
                                 .setDescription("The reason you are reserving this spot.")
                                 .setRequired(true)
-                                .addChoices(Object.keys(Reason)
-                                    .map(value =>
-                                        [
-                                            value.replace(
+                                .addChoices(...Object.keys(Reason)
+                                    .map(value => ({
+                                            name: value.replace(
                                                 /(\w)(\w*)/g,
                                                 (_, g1, g2) => g1 + g2.toLowerCase(),
                                             ),
-                                            value,
-                                        ],
+                                            value: value,
+                                        }),
                                     ),
                                 ),
                         ),
@@ -119,7 +118,7 @@ export class GardeningManagerModule extends ModuleBase {
                                 .setDescription("Should show a detailed view. Default: false"),
                         ),
                 ),
-            run: async interaction => this.subCommandResolver(interaction),
+            run: async interaction => this.subCommandResolver(interaction as ChatInputCommandInteraction),
         } ];
 
         this.tasks = [
@@ -133,12 +132,12 @@ export class GardeningManagerModule extends ModuleBase {
     }
 
     @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.Cancel)
-    private cancel(interaction: CommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<void> {
+    private cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse> {
         return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
     }
 
     @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.List)
-    private list(interaction: CommandInteraction, plotNum: number, slotNum: number) {
+    private list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number) {
         return this.gardeningManagerService.list(interaction, plotNum, slotNum);
     }
 
@@ -146,7 +145,7 @@ export class GardeningManagerModule extends ModuleBase {
         return this.gardeningManagerService.tick(client);
     }
 
-    private subCommandResolver(interaction: CommandInteraction) {
+    private subCommandResolver(interaction: ChatInputCommandInteraction) {
         const subCommand: string = interaction.options.getSubcommand();
         if (!subCommand) throw new Error();
 

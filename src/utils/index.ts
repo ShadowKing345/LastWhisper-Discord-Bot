@@ -7,7 +7,7 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
 
     if (!client.channels.cache.has(channelId)) return result;
     const channel: TextChannel | null = await client.channels.fetch(channelId) as TextChannel;
-    if (!channel || !channel.isText) return result;
+    if (!channel || !channel.isTextBased) return result;
 
     for (const id of messageIds) {
         const message: Message | null = await channel.messages.fetch(id);

@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildBan, GuildMember } from "discord.js";
+import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
@@ -36,7 +36,7 @@ export class ManagerUtilsModule extends ModuleBase {
                         .setRequired(false),
                     ),
                 ),
-            run: interaction => this.subcommandResolver(interaction),
+            run: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
         } ];
         this.listeners = [
             { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
@@ -52,7 +52,7 @@ export class ManagerUtilsModule extends ModuleBase {
         return this.managerUtilsService.onMemberBanned(ban);
     }
 
-    private subcommandResolver(interaction: CommandInteraction): Promise<void> {
+    private subcommandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         if (!interaction.guildId) {
             return interaction.reply({
                 content: "Sorry you cannot use this command outside of a server.",
@@ -72,7 +72,7 @@ export class ManagerUtilsModule extends ModuleBase {
     }
 
     @authorize(ManagerUtilsModule.commands.$index, ManagerUtilsModule.commands.Clear)
-    private clearChannelMessages(interaction: CommandInteraction): Promise<void> {
+    private clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.managerUtilsService.clearChannelMessages(interaction);
     }
 }

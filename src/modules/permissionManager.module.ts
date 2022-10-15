@@ -1,5 +1,5 @@
 import { SlashCommandStringOption } from "@discordjs/builders";
-import { CommandInteraction, Role } from "discord.js";
+import { CommandInteraction, Role, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
@@ -62,10 +62,10 @@ export class PermissionManagerModule extends ModuleBase {
                     .addIntegerOption(input => input
                         .setName("mode")
                         .setDescription("Sets the search mode for the command. Any: has any. Strict: has all.")
-                        .addChoices([
-                            [ "any", PermissionMode.ANY ],
-                            [ "strict", PermissionMode.STRICT ],
-                        ]),
+                        .addChoices(
+                            { name: "any", value: PermissionMode.ANY },
+                            { name: "strict", value: PermissionMode.STRICT },
+                        ),
                     )
                     .addBooleanOption(input => input
                         .setName("black_list")
@@ -78,11 +78,11 @@ export class PermissionManagerModule extends ModuleBase {
                     .setDescription("Resets a permission to the default parameters.")
                     .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input)),
                 ),
-            run: interaction => this.subcommandResolver(interaction),
+            run: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
         } ];
     }
 
-    private async subcommandResolver(interaction: CommandInteraction): Promise<void> {
+    private async subcommandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         if (!interaction.guildId) {
             return interaction.reply({
                 content: "This command can only be used inside a server.",
@@ -111,27 +111,27 @@ export class PermissionManagerModule extends ModuleBase {
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.List)
-    private listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
+    private listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse> {
         return this.permissionManagerService.listPermissions(interaction, key);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.AddRole)
-    private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+    private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         return this.permissionManagerService.addRole(interaction, key, role);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.RemoveRole)
-    private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
+    private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         return this.permissionManagerService.removeRole(interaction, key, role);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Config)
-    private config(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManagerService.config(interaction, key);
+    private config(interaction: CommandInteraction, key: string): Promise<InteractionResponse> {
+        return this.permissionManagerService.config(interaction as ChatInputCommandInteraction, key);
     }
 
     @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Reset)
-    private reset(interaction: CommandInteraction, key: string): Promise<void> {
+    private reset(interaction: CommandInteraction, key: string): Promise<InteractionResponse> {
         return this.permissionManagerService.reset(interaction, key);
     }
 

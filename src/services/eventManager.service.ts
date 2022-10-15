@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Message, MessageEmbed, TextChannel } from "discord.js";
+import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -212,13 +212,13 @@ export class EventManagerService {
         }
     }
 
-    public async listEvents(interaction: CommandInteraction) {
+    public async listEvents(interaction: ChatInputCommandInteraction) {
         const config = await this.getConfig(interaction.guildId);
 
-        const embed: MessageEmbed = new MessageEmbed().setColor("RANDOM");
+        const embed: EmbedBuilder = new EmbedBuilder().setColor("Random");
 
         if (config.events.length <= 0) {
-            embed.addField("Notice", "There are no upcoming events!");
+            embed.addFields({ name: "Notice", value: "There are no upcoming events!" });
             await interaction.reply({ embeds: [ embed ] });
             return;
         }
@@ -230,16 +230,26 @@ export class EventManagerService {
             embed.setDescription(event.description);
 
             for (const [ key, value ] of event.additional) {
-                embed.addField(key, value, false);
+                embed.addFields({ name: key, value, inline: false });
             }
 
-            embed.addField("Time Remaining:", `<t:${event.dateTime}:R>`, false);
-            embed.addField("Set For:", `<t:${event.dateTime}:f>`, false);
+            embed.addFields(
+                {
+                    name: "Time Remaining:",
+                    value: `<t:${event.dateTime}:R>`,
+                    inline: false,
+                },
+                { name: "Set For:", value: `<t:${event.dateTime}:f>`, inline: false },
+            );
         } else {
             embed.setTitle("Upcoming Events");
 
             for (const [ index, event ] of config.events.entries()) {
-                embed.addField(`Index ${index}:`, `${event.name}\n**Begins: <t:${event.dateTime}:R>**`, false);
+                embed.addFields({
+                    name: `Index ${index}:`,
+                    value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
+                    inline: false,
+                });
             }
         }
         await interaction.reply({ embeds: [ embed ] });

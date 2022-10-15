@@ -4,8 +4,8 @@ import { container } from "tsyringe";
 
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
-import { BuildCommand } from "./utils/models/command.js";
-import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
+import { BuildCommand, ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
+import { generateConfigObject } from "./utils/config/appConfigs.js";
 
 const loggerMeta = { context: "CommandRegistration" };
 
@@ -33,6 +33,8 @@ type CommandRegistrationArgs = {
  * @param args Arguments for command registration.
  */
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
+    generateConfigObject();
+
     const app = container.resolve(App);
     const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
     console.log("Welcome again to command registration or un-registration.");
@@ -48,7 +50,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
     }
     if (args.unregister) commandConfigs.unregister = true;
 
-    const rest = new REST({ version: "9" }).setToken(appConfigs.token);
+    const rest = new REST({ version: "10" }).setToken(appConfigs.token);
 
     const isForRegistering = (done = false) => commandConfigs.unregister ? done ? "removed" : "removal" : done ? "registered" : "registration";
     const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${commandConfigs.guildId}` : "global commands";
@@ -72,6 +74,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
             const commands: toJsonResult[] = [];
             app.modules.forEach(module => {
                 for (const command of module.commands) {
+                    console.log(BuildCommand(command).toJSON());
                     commands.push(BuildCommand(command).toJSON() as unknown as toJsonResult);
                 }
             });
@@ -82,7 +85,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
         logger.info(`Successfully ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
     } catch (error) {
-        logger.error(error.stack, loggerMeta);
+        logger.error(error);
     } finally {
         process.exit(0);
     }

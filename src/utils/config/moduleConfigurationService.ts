@@ -6,9 +6,8 @@ import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { BuildCommand, Command } from "../models/command.js";
+import { BuildCommand, ChatCommand, ModuleBase, ProjectConfiguration } from "../models/index.js";
 import { Listener } from "../models/listener.js";
-import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 
@@ -59,21 +58,19 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
         try {
             if (interaction.isMessageComponent()) {
+
+                console.log(interaction.componentType);
+
                 switch (interaction.componentType) {
-                    case "BUTTON":
-                        break;
-                    case "SELECT_MENU":
-                        break;
-                    case "TEXT_INPUT":
-                        break;
                     default:
                         break;
                 }
+                await interaction.reply({ content: "Responded", ephemeral: true });
             }
 
-            if (interaction.isCommand()) {
+            if (interaction.isChatInputCommand()) {
                 this.loggers.module.debug("Confirmed Command Interaction.");
-                const command: Command = (interaction.client as Client).commands.get(interaction.commandName);
+                const command: ChatCommand = (interaction.client as Client).commands.get(interaction.commandName);
                 if (!command) {
                     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
                     return;
@@ -157,7 +154,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
-                    module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as Command));
+                    module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as ChatCommand));
                 }
 
                 if (!this.moduleConfiguration.disableEventListeners) {

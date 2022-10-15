@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
@@ -58,7 +58,7 @@ export class RoleManagerModule extends ModuleBase {
                             .setRequired(true),
                         ),
                     ),
-                run: interaction => this.subcommandResolver(interaction),
+                run: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
             },
         ];
     }
@@ -67,7 +67,7 @@ export class RoleManagerModule extends ModuleBase {
         return this.roleManagerService.onReady(client);
     }
 
-    private subcommandResolver(interaction: CommandInteraction): Promise<void> {
+    private subcommandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         this.logger.debug(`Command invoked, dealing with subcommand options.`);
 
         const subCommand = interaction.options.getSubcommand();
@@ -98,17 +98,17 @@ export class RoleManagerModule extends ModuleBase {
     }
 
     @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RevokeRole)
-    private revokeRole(interaction: CommandInteraction): Promise<void> {
+    private revokeRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.roleManagerService.revokeRole(interaction);
     }
 
     @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RegisterMessage)
-    private registerMessage(interaction: CommandInteraction): Promise<void> {
+    private registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.roleManagerService.registerMessage(interaction);
     }
 
     @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.UnregisterMessage)
-    private unregisterMessage(interaction: CommandInteraction): Promise<void> {
+    private unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.roleManagerService.unregisterMessage(interaction);
     }
 }

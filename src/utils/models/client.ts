@@ -1,28 +1,28 @@
-import { Client as DiscordClient, ClientEvents, Collection, Intents } from "discord.js";
+import { Client as DiscordClient, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
 
-import { Command } from "./command.js";
+import { ChatCommand } from "./chatCommand.js";
 import { Listener } from "./listener.js";
 import { ModuleBase } from "../objects/moduleBase.js";
 import { Task } from "./task.js";
 
 export class Client extends DiscordClient {
     private readonly _modules: Collection<string, ModuleBase>;
-    private readonly _commands: Collection<string, Command>;
+    private readonly _commands: Collection<string, ChatCommand>;
     private readonly _moduleListeners: Collection<keyof ClientEvents, Listener[]>;
     private readonly _tasks: Collection<string, Task>;
 
     constructor() {
         super({
             intents: [
-                Intents.FLAGS.GUILDS,
-                Intents.FLAGS.GUILD_BANS,
-                Intents.FLAGS.GUILD_MEMBERS,
-                Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
             ],
         });
 
-        this._commands = new Collection<string, Command>();
+        this._commands = new Collection<string, ChatCommand>();
         this._tasks = new Collection<string, Task>();
         this._modules = new Collection<string, ModuleBase>();
         this._moduleListeners = new Collection<keyof ClientEvents, Listener[]>();
@@ -32,7 +32,7 @@ export class Client extends DiscordClient {
         return this._modules;
     }
 
-    get commands(): Collection<string, Command> {
+    get commands(): Collection<string, ChatCommand> {
         return this._commands;
     }
 
