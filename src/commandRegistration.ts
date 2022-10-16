@@ -66,9 +66,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
             const commands = await rest.get(route) as { id: string }[];
 
             logger.info(`Removing ${isForGlobal()}`, loggerMeta);
-            for (const command of commands) {
-                await rest.delete(`${route}/${command.id}`);
-            }
+            await Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
         } else {
             logger.info(`Generating ${isForGlobal()}`, loggerMeta);
             const commands: toJsonResult[] = [];
