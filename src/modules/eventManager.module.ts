@@ -25,7 +25,7 @@ export class EventManagerModule extends ModuleBase {
                     .setName(EventManagerModule.commands)
                     .setDescription("Displays events.")
                     .addIntegerOption(option => option.setName("index").setDescription("The index for the event, starting at 0")),
-                run: async interaction => this.listEvents(interaction),
+                execute: async interaction => this.listEvents(interaction),
             },
         ];
         this.listeners = [

@@ -58,7 +58,7 @@ export class RoleManagerModule extends ModuleBase {
                             .setRequired(true),
                         ),
                     ),
-                run: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
+                execute: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
             },
         ];
     }

@@ -12,11 +12,11 @@ export class DevModule extends ModuleBase {
         this.commands = [
             {
                 command: (builder) => builder.setName("test_inputs").setDescription("Testing command."),
-                run: async (interaction) => this.testInteractionTypes(interaction),
+                execute: async (interaction) => this.testInteractionTypes(interaction),
             },
             {
                 command: (builder) => builder.setName("test_modal").setDescription("Testing command."),
-                run: async (interaction) => this.testModal(interaction as ChatInputCommandInteraction),
+                execute: async (interaction) => this.testModal(interaction as ChatInputCommandInteraction),
             },
         ];
     }

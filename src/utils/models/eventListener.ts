@@ -5,7 +5,7 @@ import { Client } from "./client.js";
 /**
  * A representation of an event listener for a module.
  */
-export class Listener {
+export class EventListener {
     // The name of the event to listen to.
     public event: keyof ClientEvents;
     // Function to be called when the event is executed.

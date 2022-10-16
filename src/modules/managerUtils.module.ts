@@ -36,7 +36,7 @@ export class ManagerUtilsModule extends ModuleBase {
                         .setRequired(false),
                     ),
                 ),
-            run: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
+            execute: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
         } ];
         this.listeners = [
             { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },

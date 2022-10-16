@@ -78,7 +78,7 @@ export class PermissionManagerModule extends ModuleBase {
                     .setDescription("Resets a permission to the default parameters.")
                     .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input)),
                 ),
-            run: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
+            execute: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
         } ];
     }
 

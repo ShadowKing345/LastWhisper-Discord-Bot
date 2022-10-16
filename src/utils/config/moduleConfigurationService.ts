@@ -6,8 +6,7 @@ import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { BuildCommand, ChatCommand, ModuleBase, ProjectConfiguration } from "../models/index.js";
-import { Listener } from "../models/listener.js";
+import { ChatInputCommand, ModuleBase, ProjectConfiguration, EventListener } from "../models/index.js";
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 
@@ -85,13 +84,13 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
             if (interaction.isChatInputCommand()) {
                 this.loggers.module.debug("Confirmed Command Interaction.");
-                const command: ChatCommand = (interaction.client as Client).commands.get(interaction.commandName);
+                const command: ChatInputCommand = (interaction.client as Client).commands.get(interaction.commandName);
                 if (!command) {
                     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
                     return;
                 }
 
-                await command.run(interaction);
+                await command.execute(interaction);
             }
         } catch (error: Error | unknown) {
             this.loggers.interaction.error(error instanceof Error ? error.stack : error);
@@ -116,7 +115,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @param args Any additional arguments provided to the event.
      * @private
      */
-    private async runEvent(listeners: Listener[], client: Client, ...args: any[]): Promise<void> {
+    private async runEvent(listeners: EventListener[], client: Client, ...args: any[]): Promise<void> {
         const results = await Promise.allSettled(listeners.map(l => new Promise(async (resolve, reject) => {
             try {
                 resolve(l.run(client, args));
@@ -169,7 +168,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
-                    module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as ChatCommand));
+                    // module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as ChatInputCommand));
                 }
 
                 if (!this.moduleConfiguration.disableEventListeners) {

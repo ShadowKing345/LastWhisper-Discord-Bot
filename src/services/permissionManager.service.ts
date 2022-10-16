@@ -4,7 +4,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { deepMerge } from "../utils/index.js";
-import { Permission, PermissionKeysType, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
+import { Permission, CommandBuilder, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 
 export const PermissionKeys: any = [];
@@ -226,7 +226,7 @@ export class PermissionManagerService {
         return await this.permissionManagerRepository.save(result);
     }
 
-    public static addPermissionKeys(keys: PermissionKeysType): void {
+    public static addPermissionKeys(keys: CommandBuilder): void {
         PermissionKeys.push(keys);
     }
 

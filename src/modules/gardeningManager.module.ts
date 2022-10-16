@@ -118,7 +118,7 @@ export class GardeningManagerModule extends ModuleBase {
                                 .setDescription("Should show a detailed view. Default: false"),
                         ),
                 ),
-            run: async interaction => this.subCommandResolver(interaction as ChatInputCommandInteraction),
+            execute: async interaction => this.subCommandResolver(interaction as ChatInputCommandInteraction),
         } ];
 
         this.tasks = [
