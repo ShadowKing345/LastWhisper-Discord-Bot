@@ -92,6 +92,6 @@ export async function main() {
 
         await app.run();
     } catch (error: Error | unknown) {
-        console.error(error instanceof Error ? error + error.stack : error);
+        console.error(error instanceof Error ? error.stack : error);
     }
 }
