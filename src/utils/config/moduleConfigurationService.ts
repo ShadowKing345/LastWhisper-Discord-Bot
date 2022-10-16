@@ -10,9 +10,9 @@ import { ModuleBase, ProjectConfiguration, EventListener } from "../models/index
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 import { CommandBuilder } from "../objects/commandBuilder.js";
+import { CommandResolverError } from "../errors/commandResolverError.js";
 
 /**
- * Todo: Allow for the user to disable the individual components.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 @singleton()
@@ -43,8 +43,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
                 const blacklist = this.moduleConfiguration.blacklist;
                 return (!blacklist && inList) || (blacklist && !inList);
             }) : modules;
-
-        console.log(this._modules);
     }
 
     /**
@@ -85,6 +83,13 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
             if (interaction.isChatInputCommand()) {
                 this.loggers.module.debug("Confirmed Command Interaction.");
+
+                if (!interaction.inGuild()) {
+                    this.loggers.module.debug("Warning! Command invoked outside of a guild.");
+                    await (interaction as CommandInteraction).user.send("Sorry you cannot use this command outside of a server.");
+                    return;
+                }
+
                 const command: CommandBuilder = (interaction.client as Client).commands.get(interaction.commandName);
                 if (!command) {
                     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
@@ -97,6 +102,14 @@ export class ModuleConfigurationService extends ConfigurationClass {
             this.loggers.interaction.error(error instanceof Error ? error.stack : error);
 
             if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
+                if (error instanceof CommandResolverError) {
+                    await interaction.reply({
+                        content: "Sorry there was an issue resolving the command name.",
+                        ephemeral: true,
+                    });
+                    return;
+                }
+
                 if (interaction.deferred) {
                     await interaction.editReply({ content: "There was an internal error that occurred when using this interaction." });
                 } else {
@@ -169,7 +182,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
-                    // module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as ChatInputCommand));
+                    module.commands.forEach(command => client.commands.set(command.name, command));
                 }
 
                 if (!this.moduleConfiguration.disableEventListeners) {

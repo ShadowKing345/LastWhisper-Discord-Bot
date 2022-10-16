@@ -4,6 +4,8 @@ import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 
 @registerModule()
 export class EventManagerModule extends ModuleBase {
@@ -39,8 +41,9 @@ export class EventManagerModule extends ModuleBase {
     constructor(
         private eventManagerService: EventManagerService,
         permissionManagerService: PermissionManagerService,
+        @createLogger(EventManagerModule.name) logger: pino.Logger,
     ) {
-        super(permissionManagerService);
+        super(permissionManagerService, logger);
 
         console.log(this.commands[0].build().toJSON());
     }

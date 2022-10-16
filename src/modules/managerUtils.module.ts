@@ -4,6 +4,8 @@ import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder, CommandBuilderOption, CommandBuilders } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 
 @registerModule()
 export class ManagerUtilsModule extends ModuleBase {
@@ -24,18 +26,23 @@ export class ManagerUtilsModule extends ModuleBase {
                 ],
             },
         },
-        execute: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
+        execute: interaction => this.commandResolver(interaction),
     }) ];
     public listeners: EventListener[] = [
         { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
         { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
     ];
 
+    protected commandResolverKeys: { [key: string]: Function } = {
+        "manager_utils.clear": this.clear,
+    };
+
     constructor(
         private managerUtilsService: ManagerUtilsService,
         permissionManagerService: PermissionManagerService,
+        @createLogger(ManagerUtilsModule.name) logger: pino.Logger,
     ) {
-        super(permissionManagerService);
+        super(permissionManagerService, logger);
     }
 
     private onMemberRemoved(member: GuildMember): Promise<void> {
@@ -46,26 +53,7 @@ export class ManagerUtilsModule extends ModuleBase {
         return this.managerUtilsService.onMemberBanned(ban);
     }
 
-    private async subcommandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-        // if (!interaction.guildId) {
-        //     return interaction.reply({
-        //         content: "Sorry you cannot use this command outside of a server.",
-        //         ephemeral: true,
-        //     });
-        // }
-        //
-        // const subcommand = interaction.options.getSubcommand();
-        // if (!subcommand || subcommand !== ManagerUtilsModule.commands.Clear) {
-        //     return interaction.reply({
-        //         content: "Cannot find subcommand.",
-        //         ephemeral: true,
-        //     });
-        // }
-        //
-        // return this.clearChannelMessages(interaction);
-    }
-
-    private clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    private clear(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.managerUtilsService.clearChannelMessages(interaction);
     }
 }

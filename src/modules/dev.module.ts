@@ -3,6 +3,8 @@ import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder } from "discord.js";
 import { CommandBuilders, CommandBuilder } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 
 @registerModule()
 export class DevModule extends ModuleBase {
@@ -20,8 +22,11 @@ export class DevModule extends ModuleBase {
         }),
     ];
 
-    public constructor(permissionManagerService: PermissionManagerService) {
-        super(permissionManagerService);
+    public constructor(
+        permissionManagerService: PermissionManagerService,
+        @createLogger(DevModule.name) logger: pino.Logger,
+    ) {
+        super(permissionManagerService, logger);
     }
 
     private async testInteractionTypes(interaction: CommandInteraction): Promise<void> {

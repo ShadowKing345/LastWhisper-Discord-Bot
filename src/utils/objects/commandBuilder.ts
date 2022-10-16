@@ -3,7 +3,7 @@
  */
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice } from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice } from "discord.js";
 import { deepMerge } from "../index.js";
 
 type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
@@ -12,7 +12,7 @@ export class CommandBuilder extends ToJsonBase<CommandBuilder> {
     public name: string;
     public description: string;
 
-    public execute?: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+    public execute?: (interaction: ChatInputCommandInteraction) => Promise<any>;
     public subcommands?: { [key: string]: Partial<CommandBuilder> };
 
     public options: CommandBuilderOptions = [];
@@ -98,12 +98,12 @@ export class CommandBuilderOption extends ToJsonBase<CommandBuilderOption> {
         const cb = (optionBuilder) => {
             optionBuilder.setName(this.name).setDescription(this.description).setRequired(this.required);
 
-            if (this.choices) {
+            if (this.choices && "addChoices" in optionBuilder) {
                 optionBuilder.addChoices(...this.choices);
             }
 
             return optionBuilder;
-        }
+        };
 
         switch (this.type) {
             case OptionType.String:

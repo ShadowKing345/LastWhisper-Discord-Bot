@@ -5,6 +5,8 @@ import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 
 @registerModule()
 export class PermissionManagerModule extends ModuleBase {
@@ -25,7 +27,7 @@ export class PermissionManagerModule extends ModuleBase {
                     name: "add_role",
                     description: "Adds a role to a permission setting.",
                     options: [
-                        PermissionManagerModule.commandKeyHelperBuilder(false),
+                        PermissionManagerModule.commandKeyHelperBuilder(true),
                         new CommandBuilderOption({
                             name: "role",
                             description: "Role to be added.",
@@ -38,7 +40,7 @@ export class PermissionManagerModule extends ModuleBase {
                     name: "remove_role",
                     description: "Removes a role to a permission setting.",
                     options: [
-                        PermissionManagerModule.commandKeyHelperBuilder(false),
+                        PermissionManagerModule.commandKeyHelperBuilder(true),
                         new CommandBuilderOption({
                             name: "role",
                             description: "Role to be added.",
@@ -51,7 +53,7 @@ export class PermissionManagerModule extends ModuleBase {
                     name: "set_config",
                     description: "Configures a permission.",
                     options: [
-                        PermissionManagerModule.commandKeyHelperBuilder(false),
+                        PermissionManagerModule.commandKeyHelperBuilder(true),
                         new CommandBuilderOption({
                             name: "mode",
                             description: "Sets the search mode for the command. Any: has any. Strict: has all.",
@@ -73,46 +75,36 @@ export class PermissionManagerModule extends ModuleBase {
                     name: "reset",
                     description: "Resets a permission to the default parameters.",
                     options: [
-                        PermissionManagerModule.commandKeyHelperBuilder(false),
+                        PermissionManagerModule.commandKeyHelperBuilder(true),
                     ],
                 },
             },
-            execute: interaction => this.subcommandResolver(interaction as ChatInputCommandInteraction),
-        })
+            execute: interaction => this.commandResolver(interaction),
+        }),
     ];
+
+    protected commandResolverKeys: { [key: string]: Function } = {
+        "permission.list": this.listPermissions,
+        "permission.add_role": this.addRoles,
+        "permission.remove_role": this.removeRoles,
+        "permission.set_config": this.config,
+        "permission.reset": this.reset,
+    };
 
     constructor(
         permissionManagerService: PermissionManagerService,
+        @createLogger(PermissionManagerModule.name) logger: pino.Logger,
     ) {
-        super(permissionManagerService);
+        super(permissionManagerService, logger);
     }
 
-    private async subcommandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-        // if (!interaction.guildId) {
-        //     return interaction.reply({
-        //         content: "This command can only be used inside a server.",
-        //         ephemeral: true,
-        //     });
-        // }
-        //
-        // const subcommand = interaction.options.getSubcommand();
-        // const key: string = interaction.options.getString("key");
-        // const role: Role = interaction.options.getRole("role") as Role;
-        //
-        // switch (subcommand) {
-        //     case PermissionManagerModule.commands.List:
-        //         return this.listPermissions(interaction, key);
-        //     case PermissionManagerModule.commands.AddRole:
-        //         return this.addRoles(interaction, key, role);
-        //     case PermissionManagerModule.commands.RemoveRole:
-        //         return this.removeRoles(interaction, key, role);
-        //     case PermissionManagerModule.commands.Config:
-        //         return this.config(interaction, key);
-        //     case PermissionManagerModule.commands.Reset:
-        //         return this.reset(interaction, key);
-        //     default:
-        //         return interaction.reply({ content: "Cannot find command.", ephemeral: true });
-        // }
+    protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+        const f: Function = await super.commandResolver(interaction, false) as Function;
+
+        const key = interaction.options.getString("key");
+        const role = interaction.options.getRole("role");
+
+        return f(interaction, key, role);
     }
 
     private listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse> {
@@ -140,7 +132,7 @@ export class PermissionManagerModule extends ModuleBase {
             name: "key",
             description: "Command permission Key.",
             required: boolOverride,
-            type: ApplicationCommandOptionType.Boolean
+            type: ApplicationCommandOptionType.Boolean,
         });
     }
 }

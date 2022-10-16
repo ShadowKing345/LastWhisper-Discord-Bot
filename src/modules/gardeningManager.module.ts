@@ -1,7 +1,4 @@
 import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
-
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase, Task } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.service.js";
@@ -9,17 +6,11 @@ import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 
 @registerModule()
 export class GardeningManagerModule extends ModuleBase {
-    @addCommandKeys()
-    private static readonly command = {
-        $index: "gardening",
-        Reserve: "reserve",
-        Cancel: "cancel",
-        List: "list",
-    };
-
     public moduleName: string = "GardeningModule";
     public commands: CommandBuilders = [
         new CommandBuilder({
@@ -67,7 +58,7 @@ export class GardeningManagerModule extends ModuleBase {
                                 value: value,
                             })),
                         }),
-                    ]
+                    ],
                 },
                 Cancel: {
                     name: "cancel",
@@ -90,7 +81,7 @@ export class GardeningManagerModule extends ModuleBase {
                             description: "The name of the plant you wish to cancel for.",
                             type: ApplicationCommandOptionType.String,
                             required: true,
-                        })
+                        }),
                     ],
                 },
                 List: {
@@ -112,34 +103,39 @@ export class GardeningManagerModule extends ModuleBase {
                             description: "Should show a detailed view. Default: false",
                             type: ApplicationCommandOptionType.Boolean,
                         }),
-                    ]
+                    ],
                 },
             },
-            execute: async interaction => this.subCommandResolver(interaction as ChatInputCommandInteraction),
-        }) ];
+            execute: async interaction => this.commandResolver(interaction),
+        }),
+    ];
 
     public tasks: Task[] = [
         { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) },
     ];
 
+    protected commandResolverKeys: { [key: string]: Function } = {
+        "gardening_module.reserve": this.reserve,
+        "gardening_module.list": this.list,
+        "gardening_module.cancel": this.cancel,
+    };
+
     constructor(
         private gardeningManagerService: GardeningManagerService,
         permissionManagerService: PermissionManagerService,
+        @createLogger(GardeningManagerModule.name) logger: pino.Logger,
     ) {
-        super(permissionManagerService);
+        super(permissionManagerService, logger);
     }
 
-    @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.Reserve)
-    private register(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
+    private reserve(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void> {
         return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
     }
 
-    @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.Cancel)
     private cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse> {
         return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
     }
 
-    @authorize(GardeningManagerModule.command.$index, GardeningManagerModule.command.List)
     private list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number) {
         return this.gardeningManagerService.list(interaction, plotNum, slotNum);
     }
@@ -148,26 +144,16 @@ export class GardeningManagerModule extends ModuleBase {
         return this.gardeningManagerService.tick(client);
     }
 
-    private subCommandResolver(interaction: ChatInputCommandInteraction) {
-        const subCommand: string = interaction.options.getSubcommand();
-        if (!subCommand) throw new Error();
+    protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+        const f: Function = await super.commandResolver(interaction, false) as Function;
 
-        const plotNum = interaction.options.getInteger("plot");
-        const slotNum = interaction.options.getInteger("slot");
-        const player = `${interaction.user.username}#${interaction.user.discriminator}`;
+        const plotNum: number = interaction.options.getInteger("plot");
+        const slotNum: number = interaction.options.getInteger("slot");
+        const player: string = `${interaction.user.username}#${interaction.user.discriminator}`;
         const plant: string = interaction.options.getString("plant");
         const duration: number = (interaction.options.getInteger("duration") ?? 0) * 360;
         const reason: Reason = (interaction.options.getInteger("reason") ?? Reason.NONE) as Reason;
 
-        switch (subCommand) {
-            case "reserve":
-                return this.register(interaction, player, plant, duration, reason, plotNum, slotNum);
-            case "cancel":
-                return this.cancel(interaction, player, plant, plotNum, slotNum);
-            case "list":
-                return this.list(interaction, plotNum, slotNum);
-            default:
-                return interaction.reply({ content: "Not a valid subcommand", ephemeral: true });
-        }
+        return f(interaction, plotNum, slotNum, player, plant, duration, reason);
     }
 }
