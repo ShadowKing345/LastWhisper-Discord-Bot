@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Message } from "discord.js";
+import { Client, Message, ChatInputCommandInteraction } from "discord.js";
 import { Duration } from "luxon";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 export declare class EventManagerService {
@@ -11,7 +11,7 @@ export declare class EventManagerService {
     updateEvent(oldMessage: Message, newMessage: Message): Promise<void>;
     deleteEvent(message: Message): Promise<void>;
     reminderLoop(client: Client): Promise<void>;
-    listEvents(interaction: CommandInteraction): Promise<void>;
+    listEvents(interaction: ChatInputCommandInteraction): Promise<void>;
     onReady(client: Client): Promise<void>;
     private findOneOrCreate;
 }

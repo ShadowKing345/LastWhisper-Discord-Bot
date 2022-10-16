@@ -5,7 +5,6 @@ import { PermissionManagerService } from "../services/permissionManager.service.
 export declare class BuffManagerModule extends ModuleBase {
     private buffManagerService;
     private logger;
-    private static readonly commands;
     constructor(buffManagerService: BuffManagerService, logger: pino.Logger, permissionManagerService: PermissionManagerService);
     private subcommandResolver;
     private postTodayBuff;

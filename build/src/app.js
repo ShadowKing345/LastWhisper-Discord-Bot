@@ -102,7 +102,7 @@ export async function main() {
         await app.run();
     }
     catch (error) {
-        console.error(error instanceof Error ? error + error.stack : error);
+        console.error(error instanceof Error ? error.stack : error);
     }
 }
 //# sourceMappingURL=app.js.map

@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var GardeningManagerService_1;
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -242,7 +242,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         if (config.messagePostingChannelId && !guild.channels.cache.has(config.messagePostingChannelId))
             return;
         const channel = await guild.channels.fetch(config.messagePostingChannelId);
-        const embed = new MessageEmbed({
+        const embed = new EmbedBuilder({
             title: messageArgs.title,
             description: messageArgs.description,
             thumbnail: {

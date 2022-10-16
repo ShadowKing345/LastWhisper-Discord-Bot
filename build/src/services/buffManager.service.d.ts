@@ -1,4 +1,4 @@
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandInteraction, InteractionResponse, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { Client } from "../utils/models/client.js";
@@ -11,11 +11,11 @@ export declare class BuffManagerService {
     constructor(buffManagerConfigRepository: BuffManagerRepository, logger: pino.Logger);
     private static getBuffId;
     private static daysToArray;
-    createBuffEmbed(title: string, day: Buff, date: DateTime): MessageEmbed;
-    createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): MessageEmbed;
+    createBuffEmbed(title: string, day: Buff, date: DateTime): EmbedBuilder;
+    createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): EmbedBuilder;
     tryGetConfig(interaction: CommandInteraction): Promise<[BuffManagerConfig, boolean]>;
-    postBuff(interaction: CommandInteraction, today?: boolean): Promise<void>;
-    postWeeksBuffs(interaction: CommandInteraction, thisWeek?: boolean): Promise<void>;
+    postBuff(interaction: CommandInteraction, today?: boolean): Promise<InteractionResponse<boolean>>;
+    postWeeksBuffs(interaction: CommandInteraction, thisWeek?: boolean): Promise<InteractionResponse<boolean>>;
     postDailyMessage(client: Client): Promise<void>;
     private findOneOrCreate;
 }

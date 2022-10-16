@@ -1,24 +1,28 @@
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { ModuleBase } from "../models/index.js";
+import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 /**
+ * Todo: Allow for the user to disable the individual components.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export declare class ModuleConfigurationService extends ConfigurationClass {
+    private readonly moduleConfiguration;
     private readonly intervalIds;
     private readonly _modules;
     private readonly loggers;
-    constructor(modules: ModuleBase[], loggerFactory: LoggerService);
+    constructor(config: ProjectConfiguration, modules: ModuleBase[], loggerFactory: LoggerService);
     /**
      * Todo: Cleanup.
+     * Todo: Setup modal responding.
+     * Todo: Setup buttons/select menu
+     * Todo: Context Menu.
      * The main interaction event callback function that is called when a Discord interaction event is called.
      * @param interaction The interaction data object.
      * @private
      */
     private interactionEvent;
     /**
-     * Todo: Cleanup.
      * Callback function when a general event other than the interaction event is called.
      * @param listeners A collection of all the listeners to this event.
      * @param client The main application client. Not to be confused with Discord.Js Client.
@@ -27,7 +31,6 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
      */
     private runEvent;
     /**
-     * Todo: Rename to timer.
      * Todo: Cleanup.
      * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
@@ -35,7 +38,7 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      * @private
      */
-    private runTask;
+    private runTimer;
     /**
      * Todo: Cleanup.
      * Configures a client with all the necessary module and callback information.
@@ -44,12 +47,10 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
      */
     configureModules(client: Client): void;
     /**
-     * Todo: Cleanup.
      * Cleanup function.
      */
     cleanup(): void;
     /**
-     * Todo: Cleanup.
      * List of all modules registered.
      */
     get modules(): ModuleBase[];

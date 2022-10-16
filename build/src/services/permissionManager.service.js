@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var PermissionManagerService_1;
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
@@ -165,11 +165,10 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             const config = await this.findOneOrCreate(interaction.guildId);
             const permission = config.permissions[key] ?? new Permission();
             return interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                         title: `Settings for Permission ${key}`,
                         description: `\`\`\`\nMode:\t\t${PermissionMode[permission.mode]},\nBlacklist:   ${permission.blackList},\nRoles:\t   [ ${permission.roles.join(", ")} ]\n\`\`\``,
-                        color: "RANDOM",
-                    })],
+                    }).setColor("Random")],
                 ephemeral: true,
             });
         }
@@ -186,11 +185,10 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                 .join(",\n\t")}\n}` : key)
                 .join(",\n")}\n\`\`\``;
             return interaction.reply({
-                embeds: [new MessageEmbed({
+                embeds: [new EmbedBuilder({
                         title: "List of PermissionKeys",
                         description: result,
-                        color: "RANDOM",
-                    })],
+                    }).setColor("Random")],
                 ephemeral: true,
             });
         }

@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction, Role } from "discord.js";
+import { CommandInteraction, Interaction, Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { PermissionKeysType } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
@@ -8,11 +8,11 @@ export declare class PermissionManagerService {
     private logger;
     constructor(permissionManagerRepository: PermissionManagerRepository, logger: pino.Logger);
     isAuthorized(interaction: Interaction, key: string): Promise<boolean>;
-    addRole(interaction: CommandInteraction, key: string, role: Role): Promise<void>;
-    removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<void>;
-    config(interaction: CommandInteraction, key: string): Promise<void>;
-    reset(interaction: CommandInteraction, key: string): Promise<void>;
-    listPermissions(interaction: CommandInteraction, key?: string): Promise<void>;
+    addRole(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse>;
+    removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse>;
+    config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse>;
+    reset(interaction: CommandInteraction, key: string): Promise<InteractionResponse>;
+    listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse>;
     private findOneOrCreate;
     static addPermissionKeys(keys: PermissionKeysType): void;
     static removePermissionKey(prefix: string): void;

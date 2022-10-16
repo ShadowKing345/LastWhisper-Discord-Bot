@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var RoleManagerModule_1;
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
@@ -59,7 +59,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                     .setName("message_id")
                     .setDescription("The ID for the message.")
                     .setRequired(true))),
-                run: interaction => this.subcommandResolver(interaction),
+                execute: interaction => this.subcommandResolver(interaction),
             },
         ];
     }
@@ -105,19 +105,19 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
 __decorate([
     authorize(RoleManagerModule_1.commands.$index, RoleManagerModule_1.commands.RevokeRole),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], RoleManagerModule.prototype, "revokeRole", null);
 __decorate([
     authorize(RoleManagerModule_1.commands.$index, RoleManagerModule_1.commands.RegisterMessage),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], RoleManagerModule.prototype, "registerMessage", null);
 __decorate([
     authorize(RoleManagerModule_1.commands.$index, RoleManagerModule_1.commands.UnregisterMessage),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], RoleManagerModule.prototype, "unregisterMessage", null);
 __decorate([

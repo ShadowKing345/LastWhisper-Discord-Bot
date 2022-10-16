@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var GardeningManagerModule_1;
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, ChatInputCommandInteraction } from "discord.js";
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
@@ -55,11 +55,11 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                     .setName("reason")
                     .setDescription("The reason you are reserving this spot.")
                     .setRequired(true)
-                    .addChoices(Object.keys(Reason)
-                    .map(value => [
-                    value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1 + g2.toLowerCase()),
-                    value,
-                ]))))
+                    .addChoices(...Object.keys(Reason)
+                    .map(value => ({
+                    name: value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1 + g2.toLowerCase()),
+                    value: value,
+                })))))
                     .addSubcommand(subComBuilder => subComBuilder
                     .setName(GardeningManagerModule_1.command.Cancel)
                     .setDescription("Cancel any reservations you have made to a slot in a plot.")
@@ -87,7 +87,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                     .addBooleanOption(optionBuilder => optionBuilder
                     .setName("detailed")
                     .setDescription("Should show a detailed view. Default: false"))),
-                run: async (interaction) => this.subCommandResolver(interaction),
+                execute: async (interaction) => this.subCommandResolver(interaction),
             }];
         this.tasks = [
             { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) },
@@ -136,13 +136,13 @@ __decorate([
 __decorate([
     authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.Cancel),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String, String, Number, Number]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, String, String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], GardeningManagerModule.prototype, "cancel", null);
 __decorate([
     authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.List),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, Number, Number]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, Number, Number]),
     __metadata("design:returntype", void 0)
 ], GardeningManagerModule.prototype, "list", null);
 __decorate([

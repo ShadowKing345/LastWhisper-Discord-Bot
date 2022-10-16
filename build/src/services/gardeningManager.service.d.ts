@@ -1,4 +1,4 @@
-import { CommandInteraction, EmbedFieldData } from "discord.js";
+import { CommandInteraction, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { pino } from "pino";
 import { Client } from "../utils/models/client.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
@@ -11,8 +11,8 @@ export declare class GardeningManagerService {
     protected static printPlotInfo(plot: Plot, plotNum: number, detailed?: boolean, indent?: number): string;
     protected static printSlotInfo(slot: Slot, slotNum: number, indent?: number): string;
     register(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void>;
-    cancel(interaction: CommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<void>;
-    list(interaction: CommandInteraction, plotNum: number, slotNum: number): Promise<void>;
+    cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse>;
+    list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number): Promise<InteractionResponse<boolean>>;
     tick(client: Client): Promise<void>;
     postChannelMessage(client: Client, config: GardeningModuleConfig, messageArgs: MessagePostArgs): Promise<void>;
     private findOneOrCreate;
@@ -22,6 +22,6 @@ export declare class MessagePostArgs {
     description: string;
     memberUrl: string;
     slot?: Slot;
-    fields: EmbedFieldData[];
+    fields: APIEmbedField[];
 }
 //# sourceMappingURL=gardeningManager.service.d.ts.map

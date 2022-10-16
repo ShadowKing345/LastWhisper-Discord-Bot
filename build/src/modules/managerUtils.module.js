@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var ManagerUtilsModule_1;
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
@@ -36,7 +36,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
                     .setName("amount")
                     .setDescription("The amount of messages to clear. Default 10.")
                     .setRequired(false))),
-                run: interaction => this.subcommandResolver(interaction),
+                execute: interaction => this.subcommandResolver(interaction),
             }];
         this.listeners = [
             { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
@@ -72,7 +72,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
 __decorate([
     authorize(ManagerUtilsModule_1.commands.$index, ManagerUtilsModule_1.commands.Clear),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], ManagerUtilsModule.prototype, "clearChannelMessages", null);
 __decorate([

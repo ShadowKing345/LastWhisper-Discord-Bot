@@ -10,64 +10,81 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import chalk from "chalk";
 import { ButtonInteraction, CommandInteraction } from "discord.js";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configuration.class.js";
 import { LoggerService } from "../loggerService.js";
-import { BuildCommand } from "../models/command.js";
-import { ModuleBase } from "../models/index.js";
+import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 /**
+ * Todo: Allow for the user to disable the individual components.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 let ModuleConfigurationService = class ModuleConfigurationService extends ConfigurationClass {
+    moduleConfiguration;
     intervalIds = [];
     _modules;
     loggers;
-    constructor(modules, loggerFactory) {
+    constructor(config, modules, loggerFactory) {
         super();
+        this.moduleConfiguration = config.moduleConfiguration;
         this.loggers = {
             module: loggerFactory.buildLogger("ModuleConfiguration"),
             interaction: loggerFactory.buildLogger("InteractionExecution"),
             event: loggerFactory.buildLogger("EventExecution"),
             task: loggerFactory.buildLogger("TimerExecution"),
         };
-        this._modules = modules;
+        this._modules = this.moduleConfiguration.modules?.length !== 0 ?
+            modules.filter(module => {
+                const inList = this.moduleConfiguration.modules.includes(module.moduleName);
+                const blacklist = this.moduleConfiguration.blacklist;
+                return (!blacklist && inList) || (blacklist && !inList);
+            }) : modules;
+        console.log(this._modules);
     }
     /**
      * Todo: Cleanup.
+     * Todo: Setup modal responding.
+     * Todo: Setup buttons/select menu
+     * Todo: Context Menu.
      * The main interaction event callback function that is called when a Discord interaction event is called.
      * @param interaction The interaction data object.
      * @private
      */
     async interactionEvent(interaction) {
-        this.loggers.module.debug(chalk.magentaBright("Interaction Innovated"));
+        this.loggers.module.debug("Interaction Innovated");
         try {
+            if (interaction.isContextMenuCommand()) {
+                if (interaction.isUserContextMenuCommand()) {
+                    await interaction.reply({ content: "Responded with a user", ephemeral: true });
+                }
+                else {
+                    await interaction.reply({ content: "Responded with a message", ephemeral: true });
+                }
+            }
+            if (interaction.isModalSubmit()) {
+                await interaction.reply({ content: "Responded", ephemeral: true });
+            }
             if (interaction.isMessageComponent()) {
+                console.log(interaction.componentType);
                 switch (interaction.componentType) {
-                    case "BUTTON":
-                        break;
-                    case "SELECT_MENU":
-                        break;
-                    case "TEXT_INPUT":
-                        break;
                     default:
                         break;
                 }
+                await interaction.reply({ content: "Responded", ephemeral: true });
             }
-            if (interaction.isCommand()) {
-                this.loggers.module.debug(chalk.magentaBright("Confirmed Command Interaction."));
+            if (interaction.isChatInputCommand()) {
+                this.loggers.module.debug("Confirmed Command Interaction.");
                 const command = interaction.client.commands.get(interaction.commandName);
                 if (!command) {
-                    this.loggers.module.debug(`No command found with name: ${chalk.yellow(interaction.commandName)}.`);
+                    this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
                     return;
                 }
-                await command.run(interaction);
+                await command.execute(interaction);
             }
         }
         catch (error) {
-            this.loggers.interaction.error(error instanceof Error ? error + error.stack : error);
+            this.loggers.interaction.error(error instanceof Error ? error.stack : error);
             if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
                 if (interaction.deferred) {
                     await interaction.editReply({ content: "There was an internal error that occurred when using this interaction." });
@@ -82,7 +99,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         }
     }
     /**
-     * Todo: Cleanup.
      * Callback function when a general event other than the interaction event is called.
      * @param listeners A collection of all the listeners to this event.
      * @param client The main application client. Not to be confused with Discord.Js Client.
@@ -90,14 +106,19 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @private
      */
     async runEvent(listeners, client, ...args) {
-        const results = await Promise.allSettled(listeners.map(l => l.run(client)));
-        for (const result of results.filter(result => result instanceof PromiseRejectionEvent)) {
-            console.log(result);
-            // this.loggers.event.error(error instanceof Error ? error + error.stack : error);
+        const results = await Promise.allSettled(listeners.map(l => new Promise(async (resolve, reject) => {
+            try {
+                resolve(l.run(client, args));
+            }
+            catch (error) {
+                reject(error);
+            }
+        })));
+        for (const result of results.filter(result => result.status === "rejected")) {
+            this.loggers.event.error(result.reason instanceof Error ? result.reason.stack : result.reason);
         }
     }
     /**
-     * Todo: Rename to timer.
      * Todo: Cleanup.
      * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
@@ -105,7 +126,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      * @private
      */
-    async runTask(task, client) {
+    async runTimer(task, client) {
         try {
             client.tasks.set(task.name, task);
             this.intervalIds.push(setInterval(async () => {
@@ -113,13 +134,13 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     await task.run(client);
                 }
                 catch (error) {
-                    this.loggers.task.error(error instanceof Error ? error + error.stack : error);
+                    this.loggers.task.error(error instanceof Error ? error.stack : error);
                 }
             }, task.timeout, client));
             await task.run(client);
         }
         catch (error) {
-            this.loggers.task.error(error instanceof Error ? error + error.stack : error);
+            this.loggers.task.error(error instanceof Error ? error.stack : error);
         }
     }
     /**
@@ -134,28 +155,39 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
             try {
                 this.loggers.module.info(`Setting Up module ${module.moduleName}`);
                 client.modules.set(module.moduleName, module);
-                this.loggers.module.debug(`Setting Up commands...`);
-                module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command));
-                this.loggers.module.debug(`Setting Up listeners...`);
-                module.listeners.forEach(listener => {
-                    const listeners = client.moduleListeners.get(listener.event) ?? [];
-                    listeners.push(listener);
-                    client.moduleListeners.set(listener.event, listeners);
-                });
-                // this.loggers.module.debug(`Setting Up tasks...`);
-                // module.tasks.forEach(task => this.runTask(task, client));
+                if (!this.moduleConfiguration.disableCommands) {
+                    this.loggers.module.debug(`Setting Up commands...`);
+                    // module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as ChatInputCommand));
+                }
+                if (!this.moduleConfiguration.disableEventListeners) {
+                    this.loggers.module.debug(`Setting Up listeners...`);
+                    module.listeners.forEach(listener => {
+                        const listeners = client.moduleListeners.get(listener.event) ?? [];
+                        listeners.push(listener);
+                        client.moduleListeners.set(listener.event, listeners);
+                    });
+                }
+                if (!this.moduleConfiguration.disableTimers) {
+                    this.loggers.module.debug(`Setting Up tasks...`);
+                    module.tasks.forEach(task => this.runTimer(task, client));
+                }
             }
             catch (error) {
-                this.loggers.module.error(error instanceof Error ? error + error.stack : error);
+                this.loggers.module.error(error instanceof Error ? error.stack : error);
             }
         }
-        this.loggers.module.debug(`Setting Up events...`);
-        client.moduleListeners.forEach((listener, event) => client.on(event, async (...args) => this.runEvent(listener, client, ...args)));
-        this.loggers.module.debug(`Setting Up interaction event...`);
-        client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+        if (!this.moduleConfiguration.disableEventListeners) {
+            this.loggers.module.debug(`Setting Up events...`);
+            for (const [event, listeners] of client.moduleListeners) {
+                client.on(event, (...args) => this.runEvent(listeners, client, args));
+            }
+        }
+        if (!this.moduleConfiguration.disableInteractions) {
+            this.loggers.module.debug(`Setting Up interaction event...`);
+            client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+        }
     }
     /**
-     * Todo: Cleanup.
      * Cleanup function.
      */
     cleanup() {
@@ -165,7 +197,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         }
     }
     /**
-     * Todo: Cleanup.
      * List of all modules registered.
      */
     get modules() {
@@ -174,8 +205,8 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
 };
 ModuleConfigurationService = __decorate([
     singleton(),
-    __param(0, injectAll(ModuleBase.name)),
-    __metadata("design:paramtypes", [Array, LoggerService])
+    __param(1, injectAll(ModuleBase.name)),
+    __metadata("design:paramtypes", [ProjectConfiguration, Array, LoggerService])
 ], ModuleConfigurationService);
 export { ModuleConfigurationService };
 //# sourceMappingURL=moduleConfigurationService.js.map

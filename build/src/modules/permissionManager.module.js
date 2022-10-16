@@ -58,10 +58,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     .addIntegerOption(input => input
                     .setName("mode")
                     .setDescription("Sets the search mode for the command. Any: has any. Strict: has all.")
-                    .addChoices([
-                    ["any", PermissionMode.ANY],
-                    ["strict", PermissionMode.STRICT],
-                ]))
+                    .addChoices({ name: "any", value: PermissionMode.ANY }, { name: "strict", value: PermissionMode.STRICT }))
                     .addBooleanOption(input => input
                     .setName("black_list")
                     .setDescription("Reverses the final result. I.e. If list is empty, no one can use the command.")
@@ -70,7 +67,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     .setName(PermissionManagerModule_1.commands.Reset)
                     .setDescription("Resets a permission to the default parameters.")
                     .addStringOption(input => PermissionManagerModule_1.commandKeyHelperBuilder(input))),
-                run: interaction => this.subcommandResolver(interaction),
+                execute: interaction => this.subcommandResolver(interaction),
             }];
     }
     async subcommandResolver(interaction) {

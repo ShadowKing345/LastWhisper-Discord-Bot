@@ -1,4 +1,4 @@
-import { Client as DiscordClient, Collection, Intents } from "discord.js";
+import { Client as DiscordClient, Collection, GatewayIntentBits } from "discord.js";
 export class Client extends DiscordClient {
     _modules;
     _commands;
@@ -7,11 +7,11 @@ export class Client extends DiscordClient {
     constructor() {
         super({
             intents: [
-                Intents.FLAGS.GUILDS,
-                Intents.FLAGS.GUILD_BANS,
-                Intents.FLAGS.GUILD_MEMBERS,
-                Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+                GatewayIntentBits.Guilds,
+                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildMembers,
+                GatewayIntentBits.GuildMessages,
+                GatewayIntentBits.GuildMessageReactions,
             ],
         });
         this._commands = new Collection();

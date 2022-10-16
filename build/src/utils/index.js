@@ -5,7 +5,7 @@ export async function fetchMessages(client, channelId, messageIds) {
     if (!client.channels.cache.has(channelId))
         return result;
     const channel = await client.channels.fetch(channelId);
-    if (!channel || !channel.isText)
+    if (!channel || !channel.isTextBased)
         return result;
     for (const id of messageIds) {
         const message = await channel.messages.fetch(id);

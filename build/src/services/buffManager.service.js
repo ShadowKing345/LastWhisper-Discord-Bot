@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var BuffManagerService_1;
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -36,18 +36,16 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
     }
     createBuffEmbed(title, day, date) {
         this.logger.debug(`Creating Buff Embed.`);
-        return new MessageEmbed({
-            color: "RANDOM",
+        return new EmbedBuilder({
             title: title,
             description: day.text,
             thumbnail: { url: day.imageUrl },
             footer: { text: date.toFormat("DDDD") },
-        });
+        }).setColor("Random");
     }
     createWeekEmbed(title, week, days, date) {
         this.logger.debug(`Creating Week Embed.`);
-        return new MessageEmbed({
-            color: "RANDOM",
+        return new EmbedBuilder({
             title: title,
             description: week.title,
             fields: BuffManagerService_1.daysToArray(week.days).map((dayId, index) => {
@@ -56,7 +54,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 return { name: dow, value: day.text, inline: true };
             }),
             footer: { text: `Week ${date.get("weekNumber")}.` },
-        });
+        }).setColor("Random");
     }
     async tryGetConfig(interaction) {
         const guildId = interaction.guildId;
@@ -126,7 +124,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute"))
                     continue;
                 const channel = await client.channels.fetch(messageSettings.channelId);
-                if (!(channel?.isText && channel.guildId === config.guildId)) {
+                if (!(channel?.isTextBased && channel.guildId === config.guildId)) {
                     this.logger.warn(`Invalid channel messageSettings.channelId  ID for guild config.guildId. ${skipping}...`);
                     continue;
                 }

@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var EventManagerModule_1;
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { ModuleBase } from "../utils/models/index.js";
@@ -28,7 +28,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                     .setName(EventManagerModule_1.commands)
                     .setDescription("Displays events.")
                     .addIntegerOption(option => option.setName("index").setDescription("The index for the event, starting at 0")),
-                run: async (interaction) => this.listEvents(interaction),
+                execute: async (interaction) => this.listEvents(interaction),
             },
         ];
         this.listeners = [
@@ -67,7 +67,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
 __decorate([
     authorize(EventManagerModule_1.commands),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], EventManagerModule.prototype, "listEvents", null);
 __decorate([

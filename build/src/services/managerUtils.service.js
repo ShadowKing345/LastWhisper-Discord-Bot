@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { MessageEmbed } from "discord.js";
+import { AuditLogEvent, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.js";
@@ -30,10 +30,10 @@ let ManagerUtilsService = class ManagerUtilsService {
             return;
         const kickedData = (await member.guild.fetchAuditLogs({
             limit: 1,
-            type: "MEMBER_KICK",
+            type: AuditLogEvent.MemberKick,
         })).entries.first();
-        const embed = new MessageEmbed()
-            .setColor("RANDOM")
+        const embed = new EmbedBuilder()
+            .setColor("Random")
             .addFields({ name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY") }, { name: "Nickname was:", value: member.nickname ?? "None" }, { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
             .setThumbnail(member.user.displayAvatarURL());
         if (kickedData && kickedData.target.id === member.id) {
@@ -50,13 +50,13 @@ let ManagerUtilsService = class ManagerUtilsService {
         const loggingChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel)
             return;
-        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
+        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: AuditLogEvent.MemberBanAdd })).entries.first();
         if (banLogs) {
             const executor = banLogs.executor;
             const target = banLogs.target;
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle("Member Banned!")
-                .setColor("RANDOM");
+                .setColor("Random");
             if (target) {
                 embed
                     .setDescription(`User **${target.tag}** was banned by ${executor ? (await ban.guild.members.fetch(executor.id)).displayName : "Someone who was not part of the server somehow... what how?? "}!`)
