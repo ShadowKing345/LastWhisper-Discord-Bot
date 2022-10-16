@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import { jest } from "@jest/globals";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, ChatInputCommandInteraction } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
@@ -67,7 +67,7 @@ describe("The garden service's", () => {
         client: {},
         member: { displayName: "", displayAvatarURL: () => "" },
         options: { getBoolean: (key: string) => { return options[key] ?? null; } },
-    } as unknown as CommandInteraction;
+    } as unknown as ChatInputCommandInteraction;
 
     beforeAll(() => jest.useFakeTimers());
     afterAll(() => jest.useRealTimers());
