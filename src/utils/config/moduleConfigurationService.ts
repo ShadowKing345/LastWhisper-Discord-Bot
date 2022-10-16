@@ -3,12 +3,13 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 
-import { ConfigurationClass } from "../configuration.class.js";
+import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { ChatInputCommand, ModuleBase, ProjectConfiguration, EventListener } from "../models/index.js";
+import { ModuleBase, ProjectConfiguration, EventListener } from "../models/index.js";
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
+import { CommandBuilder } from "../objects/commandBuilder.js";
 
 /**
  * Todo: Allow for the user to disable the individual components.
@@ -84,7 +85,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
             if (interaction.isChatInputCommand()) {
                 this.loggers.module.debug("Confirmed Command Interaction.");
-                const command: ChatInputCommand = (interaction.client as Client).commands.get(interaction.commandName);
+                const command: CommandBuilder = (interaction.client as Client).commands.get(interaction.commandName);
                 if (!command) {
                     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
                     return;

@@ -2,32 +2,25 @@ import { CommandInteraction, InteractionResponse, ChatInputCommandInteraction } 
 import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { ModuleBase, Task } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder } from "../models/permission_manager/index.js";
+import { CommandBuilders, CommandBuilder } from "../utils/objects/commandBuilder.js";
 
 @registerModule()
 export class BuffManagerModule extends ModuleBase {
-    constructor(
-        private buffManagerService: BuffManagerService,
-        @createLogger(BuffManagerModule.name) private logger: pino.Logger,
-        permissionManagerService: PermissionManagerService,
-    ) {
-        super(permissionManagerService);
+    public moduleName: string = "BuffManager";
+    public tasks: Task[] = [
+        {
+            name: `${this.moduleName}#dailyMessageTask`,
+            timeout: 60000,
+            run: async client => this.postDailyMessage(client),
+        },
+    ];
 
-        this.commands = [];
-        this.moduleName = "BuffManager";
-        this.tasks = [
-            {
-                name: `${this.moduleName}#dailyMessageTask`,
-                timeout: 60000,
-                run: async client => this.postDailyMessage(client),
-            },
-        ];
-
-        const test = new CommandBuilder({
+    public commands: CommandBuilders = [
+        new CommandBuilder({
             name: "buff_manager",
             description: "Manages all things related to buffs",
             subcommands: {
@@ -60,8 +53,16 @@ export class BuffManagerModule extends ModuleBase {
                     },
                 },
             },
-        });
-        console.log(test.build().toJSON());
+            execute: interaction => this.subcommandResolver(interaction)
+        })
+    ];
+
+    constructor(
+        private buffManagerService: BuffManagerService,
+        @createLogger(BuffManagerModule.name) private logger: pino.Logger,
+        permissionManagerService: PermissionManagerService,
+    ) {
+        super(permissionManagerService);
     }
 
     private subcommandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {

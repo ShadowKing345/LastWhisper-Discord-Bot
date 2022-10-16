@@ -8,7 +8,7 @@ export abstract class MergeableObjectBase<T> {
      * @param obj New object to assign values from.
      * @return Object with the assigned values.
      */
-    public merge(obj: T): T {
-        return Object.assign(this, obj);
+    public merge(obj: Partial<T>): T {
+        return Object.assign(this, obj as T);
     }
 }

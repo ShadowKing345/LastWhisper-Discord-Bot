@@ -4,22 +4,12 @@ import { container } from "tsyringe";
 
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
-import { ProjectConfiguration, CommandRegistrationConfiguration, ChatInputCommand } from "./utils/models/index.js";
+import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
-import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
 
 const loggerMeta = { context: "CommandRegistration" };
 
 type toJsonResult = { name: string, description: string, options: APIApplicationCommandOption[], default_permission: boolean };
-
-/**
- * Creates resolves the command object.
- * @param command
- * @constructor
- */
-function BuildCommand(command: ChatInputCommand): SlashCommandSubcommandsOnlyBuilder {
-    return command.command(new SlashCommandBuilder()) as SlashCommandBuilder;
-}
 
 /**
  * Command registration argument used when registering commands.
@@ -84,8 +74,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
             const commands: toJsonResult[] = [];
             app.modules.forEach(module => {
                 for (const command of module.commands) {
-                    console.log(BuildCommand(command).toJSON());
-                    commands.push(BuildCommand(command).toJSON() as unknown as toJsonResult);
+                    commands.push(command.build().toJSON() as unknown as toJsonResult);
                 }
             });
 

@@ -29,10 +29,12 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
         }
 
         if (obj.buffs) {
+            this.buffs = obj.buffs;
             this.buffs = (this.buffs ?? []).map(buff => deepMerge(new Buff, buff));
         }
 
         if (obj.weeks) {
+            this.weeks = obj.weeks;
             this.weeks = (this.weeks ?? []).map(week => deepMerge(new Week, week));
         }
 

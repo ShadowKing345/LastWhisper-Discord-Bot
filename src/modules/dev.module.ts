@@ -2,23 +2,26 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder } from "discord.js";
+import { CommandBuilders, CommandBuilder } from "../utils/objects/commandBuilder.js";
 
 @registerModule()
 export class DevModule extends ModuleBase {
+    public moduleName: string = "DevModule";
+    public commands: CommandBuilders = [
+        new CommandBuilder({
+            name: "test_inputs",
+            description: "Testing command.",
+            execute: interaction => this.testInteractionTypes(interaction),
+        }),
+        new CommandBuilder({
+            name: "test_modal",
+            description: "Testing command.",
+            execute: interaction => this.testModal(interaction),
+        }),
+    ];
+
     public constructor(permissionManagerService: PermissionManagerService) {
         super(permissionManagerService);
-
-        this.moduleName = "Dev";
-        this.commands = [
-            {
-                command: (builder) => builder.setName("test_inputs").setDescription("Testing command."),
-                execute: async (interaction) => this.testInteractionTypes(interaction),
-            },
-            {
-                command: (builder) => builder.setName("test_modal").setDescription("Testing command."),
-                execute: async (interaction) => this.testModal(interaction as ChatInputCommandInteraction),
-            },
-        ];
     }
 
     private async testInteractionTypes(interaction: CommandInteraction): Promise<void> {
