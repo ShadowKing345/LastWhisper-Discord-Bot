@@ -14,9 +14,9 @@ var DatabaseConfigurationService_1;
 import { MongoClient } from "mongodb";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
-import { ConfigurationClass } from "../configuration.class.js";
 import { createLogger } from "../loggerService.js";
 import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js";
+import { ConfigurationClass } from "../configurationClass.js";
 /**
  * Database Configuration Service file.
  * This service provides access to the database object as well as connection to the database server.

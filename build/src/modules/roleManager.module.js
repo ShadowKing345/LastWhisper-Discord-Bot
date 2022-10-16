@@ -11,57 +11,59 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var RoleManagerModule_1;
-import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
-import { createLogger } from "../utils/loggerService.js";
 import { ModuleBase } from "../utils/models/index.js";
+import { createLogger } from "../utils/loggerService.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
+import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
     logger;
-    static commands = {
-        $index: "role_manager",
-        RevokeRole: "revoke_role",
-        RegisterMessage: "register_message",
-        UnregisterMessage: "unregister_message",
-    };
+    moduleName = "RoleManager";
+    listeners = [
+        { event: "ready", run: async (client) => this.onReady(client) },
+    ];
+    commands = [
+        new CommandBuilder({
+            name: "role_manager",
+            description: "Manages roles within a guild.",
+            subcommands: {
+                RevokeRole: {
+                    name: "revoke_role",
+                    description: "Revokes the role for all uses.",
+                },
+                RegisterMessage: {
+                    name: "register_message",
+                    description: "Registers a message to be reacted to.",
+                    options: [
+                        new CommandBuilderOption({
+                            name: "message_id",
+                            description: "The ID for the message.",
+                            required: true,
+                        }),
+                    ]
+                },
+                UnregisterMessage: {
+                    name: "unregister_message",
+                    description: "Unregisters a message to be reacted to.",
+                    options: [
+                        new CommandBuilderOption({
+                            name: "message_id",
+                            description: "The ID for the message.",
+                            required: true,
+                        }),
+                    ]
+                },
+            },
+            execute: interaction => this.subcommandResolver(interaction),
+        }),
+    ];
     constructor(roleManagerService, logger, permissionManagerService) {
         super(permissionManagerService);
         this.roleManagerService = roleManagerService;
         this.logger = logger;
-        this.moduleName = "RoleManager";
-        this.listeners = [
-            { event: "ready", run: async (client) => this.onReady(client) },
-        ];
-        this.commands = [
-            {
-                command: builder => builder
-                    .setName(RoleManagerModule_1.commands.$index)
-                    .setDescription("Manages roles within a guild.")
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(RoleManagerModule_1.commands.RevokeRole)
-                    .setDescription("Revokes the role for all uses."))
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(RoleManagerModule_1.commands.RegisterMessage)
-                    .setDescription("Registers a message to be reacted to.")
-                    .addStringOption(iBuilder => iBuilder
-                    .setName("message_id")
-                    .setDescription("The ID for the message.")
-                    .setRequired(true)))
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(RoleManagerModule_1.commands.UnregisterMessage)
-                    .setDescription("Unregisters a message to be reacted to.")
-                    .addStringOption(iBuilder => iBuilder
-                    .setName("message_id")
-                    .setDescription("The ID for the message.")
-                    .setRequired(true))),
-                execute: interaction => this.subcommandResolver(interaction),
-            },
-        ];
     }
     onReady(client) {
         return this.roleManagerService.onReady(client);
@@ -102,28 +104,6 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
         return this.roleManagerService.unregisterMessage(interaction);
     }
 };
-__decorate([
-    authorize(RoleManagerModule_1.commands.$index, RoleManagerModule_1.commands.RevokeRole),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
-    __metadata("design:returntype", Promise)
-], RoleManagerModule.prototype, "revokeRole", null);
-__decorate([
-    authorize(RoleManagerModule_1.commands.$index, RoleManagerModule_1.commands.RegisterMessage),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
-    __metadata("design:returntype", Promise)
-], RoleManagerModule.prototype, "registerMessage", null);
-__decorate([
-    authorize(RoleManagerModule_1.commands.$index, RoleManagerModule_1.commands.UnregisterMessage),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
-    __metadata("design:returntype", Promise)
-], RoleManagerModule.prototype, "unregisterMessage", null);
-__decorate([
-    addCommandKeys(),
-    __metadata("design:type", Object)
-], RoleManagerModule, "commands", void 0);
 RoleManagerModule = RoleManagerModule_1 = __decorate([
     registerModule(),
     __param(1, createLogger(RoleManagerModule_1.name)),

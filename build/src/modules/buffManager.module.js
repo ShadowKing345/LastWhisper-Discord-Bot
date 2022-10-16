@@ -17,24 +17,20 @@ import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { PermissionKeysType } from "../models/permission_manager/index.js";
+import { CommandBuilder } from "../utils/objects/commandBuilder.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
     logger;
-    constructor(buffManagerService, logger, permissionManagerService) {
-        super(permissionManagerService);
-        this.buffManagerService = buffManagerService;
-        this.logger = logger;
-        this.commands = [];
-        this.moduleName = "BuffManager";
-        this.tasks = [
-            {
-                name: `${this.moduleName}#dailyMessageTask`,
-                timeout: 60000,
-                run: async (client) => this.postDailyMessage(client),
-            },
-        ];
-        const test = new PermissionKeysType({
+    moduleName = "BuffManager";
+    tasks = [
+        {
+            name: `${this.moduleName}#dailyMessageTask`,
+            timeout: 60000,
+            run: async (client) => this.postDailyMessage(client),
+        },
+    ];
+    commands = [
+        new CommandBuilder({
             name: "buff_manager",
             description: "Manages all things related to buffs",
             subcommands: {
@@ -67,8 +63,13 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                     },
                 },
             },
-        });
-        console.log(test.build().toJSON());
+            execute: interaction => this.subcommandResolver(interaction)
+        })
+    ];
+    constructor(buffManagerService, logger, permissionManagerService) {
+        super(permissionManagerService);
+        this.buffManagerService = buffManagerService;
+        this.logger = logger;
     }
     subcommandResolver(interaction) {
         this.logger.debug(`Command invoked, dealing with subcommand options.`);

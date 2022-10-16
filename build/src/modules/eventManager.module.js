@@ -7,43 +7,46 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var EventManagerModule_1;
-import { ChatInputCommandInteraction } from "discord.js";
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
+import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+let EventManagerModule = class EventManagerModule extends ModuleBase {
     eventManagerService;
-    static commands = "event";
+    moduleName = "EventManager";
+    commands = [
+        new CommandBuilder({
+            name: "event",
+            description: "Displays events.",
+            options: [
+                new CommandBuilderOption({
+                    name: "index",
+                    description: "The index for the event, starting at 0.",
+                    type: ApplicationCommandOptionType.Integer,
+                }),
+            ],
+            execute: interaction => this.listEvents(interaction),
+        }),
+    ];
+    listeners = [
+        { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
+        { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
+        { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
+        { event: "ready", run: async (client) => this.onReady(client) },
+    ];
+    tasks = [
+        {
+            name: `${this.moduleName}#postMessageTask`,
+            timeout: 60000,
+            run: client => this.reminderLoop(client),
+        },
+    ];
     constructor(eventManagerService, permissionManagerService) {
         super(permissionManagerService);
         this.eventManagerService = eventManagerService;
-        this.moduleName = "EventManager";
-        this.commands = [
-            {
-                command: builder => builder
-                    .setName(EventManagerModule_1.commands)
-                    .setDescription("Displays events.")
-                    .addIntegerOption(option => option.setName("index").setDescription("The index for the event, starting at 0")),
-                execute: async (interaction) => this.listEvents(interaction),
-            },
-        ];
-        this.listeners = [
-            { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
-            { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
-            { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
-            { event: "ready", run: async (client) => this.onReady(client) },
-        ];
-        this.tasks = [
-            {
-                name: `${this.moduleName}#postMessageTask`,
-                timeout: 60000,
-                run: client => this.reminderLoop(client),
-            },
-        ];
+        console.log(this.commands[0].build().toJSON());
     }
     createEvent(message) {
         return this.eventManagerService.createEvent(message);
@@ -64,17 +67,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         return this.eventManagerService.onReady(client);
     }
 };
-__decorate([
-    authorize(EventManagerModule_1.commands),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
-    __metadata("design:returntype", Promise)
-], EventManagerModule.prototype, "listEvents", null);
-__decorate([
-    addCommandKeys(),
-    __metadata("design:type", String)
-], EventManagerModule, "commands", void 0);
-EventManagerModule = EventManagerModule_1 = __decorate([
+EventManagerModule = __decorate([
     registerModule(),
     __metadata("design:paramtypes", [EventManagerService,
         PermissionManagerService])

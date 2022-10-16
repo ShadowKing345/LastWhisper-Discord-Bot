@@ -1,7 +1,7 @@
 import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
-import { ConfigurationClass } from "../configuration.class.js";
 import { ProjectConfiguration } from "../models/index.js";
+import { ConfigurationClass } from "../configurationClass.js";
 /**
  * Database Configuration Service file.
  * This service provides access to the database object as well as connection to the database server.

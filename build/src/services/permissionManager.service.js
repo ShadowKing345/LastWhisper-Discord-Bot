@@ -201,9 +201,6 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         result.guildId = id;
         return await this.permissionManagerRepository.save(result);
     }
-    static addPermissionKeys(keys) {
-        PermissionKeys.push(keys);
-    }
     static removePermissionKey(prefix) {
         PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === prefix), 1);
     }

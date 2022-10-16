@@ -1,6 +1,5 @@
 import { CommandInteraction, Interaction, Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { PermissionKeysType } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 export declare const PermissionKeys: any;
 export declare class PermissionManagerService {
@@ -14,7 +13,6 @@ export declare class PermissionManagerService {
     reset(interaction: CommandInteraction, key: string): Promise<InteractionResponse>;
     listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse>;
     private findOneOrCreate;
-    static addPermissionKeys(keys: PermissionKeysType): void;
     static removePermissionKey(prefix: string): void;
     private static keyExists;
 }

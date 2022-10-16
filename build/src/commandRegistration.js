@@ -5,16 +5,7 @@ import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
 import { ProjectConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
 const loggerMeta = { context: "CommandRegistration" };
-/**
- * Creates resolves the command object.
- * @param command
- * @constructor
- */
-function BuildCommand(command) {
-    return command.command(new SlashCommandBuilder());
-}
 /**
  * Command that attempted to register the slash command to the bot.
  * @param args Arguments for command registration.
@@ -57,8 +48,7 @@ export async function commandRegistration(args) {
             const commands = [];
             app.modules.forEach(module => {
                 for (const command of module.commands) {
-                    console.log(BuildCommand(command).toJSON());
-                    commands.push(BuildCommand(command).toJSON());
+                    commands.push(command.build().toJSON());
                 }
             });
             logger.info(`Registering ${isForGlobal()}`, loggerMeta);

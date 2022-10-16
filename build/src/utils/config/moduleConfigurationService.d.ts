@@ -1,4 +1,4 @@
-import { ConfigurationClass } from "../configuration.class.js";
+import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
 import { ModuleBase, ProjectConfiguration } from "../models/index.js";

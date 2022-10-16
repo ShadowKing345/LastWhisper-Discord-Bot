@@ -1,9 +1,13 @@
-import { ModuleBase } from "../utils/models/index.js";
+import { ModuleBase, EventListener, Task } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { CommandBuilders } from "../utils/objects/commandBuilder.js";
 export declare class EventManagerModule extends ModuleBase {
     private eventManagerService;
-    private static readonly commands;
+    moduleName: string;
+    commands: CommandBuilders;
+    listeners: EventListener[];
+    tasks: Task[];
     constructor(eventManagerService: EventManagerService, permissionManagerService: PermissionManagerService);
     private createEvent;
     private updateEvent;

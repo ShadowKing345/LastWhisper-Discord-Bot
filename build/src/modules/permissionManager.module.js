@@ -8,13 +8,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var PermissionManagerModule_1;
-import { CommandInteraction, Role } from "discord.js";
+import { CommandInteraction, Role, ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
+import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
     static commands = {
         $index: "permission",
@@ -24,51 +25,80 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         Config: "set_config",
         Reset: "reset_permission",
     };
+    moduleName = "PermissionManager";
+    commands = [
+        new CommandBuilder({
+            name: "permission",
+            description: "Controls the permission for each command.",
+            subcommands: {
+                List: {
+                    name: "list",
+                    description: "Lists out all permissions.",
+                    options: [
+                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                    ],
+                },
+                AddRole: {
+                    name: "add_role",
+                    description: "Adds a role to a permission setting.",
+                    options: [
+                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        new CommandBuilderOption({
+                            name: "role",
+                            description: "Role to be added.",
+                            required: true,
+                            type: ApplicationCommandOptionType.Role,
+                        }),
+                    ],
+                },
+                RemoveRole: {
+                    name: "remove_role",
+                    description: "Removes a role to a permission setting.",
+                    options: [
+                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        new CommandBuilderOption({
+                            name: "role",
+                            description: "Role to be added.",
+                            required: true,
+                            type: ApplicationCommandOptionType.Role,
+                        }),
+                    ],
+                },
+                Config: {
+                    name: "set_config",
+                    description: "Configures a permission.",
+                    options: [
+                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        new CommandBuilderOption({
+                            name: "mode",
+                            description: "Sets the search mode for the command. Any: has any. Strict: has all.",
+                            required: true,
+                            choices: [
+                                { name: "any", value: PermissionMode.ANY },
+                                { name: "strict", value: PermissionMode.STRICT },
+                            ],
+                            type: ApplicationCommandOptionType.Integer,
+                        }),
+                        new CommandBuilderOption({
+                            name: "black_list",
+                            description: "Reverses the final result. I.e. If list is empty, no one can use the command.",
+                            type: ApplicationCommandOptionType.String,
+                        }),
+                    ],
+                },
+                Reset: {
+                    name: "reset",
+                    description: "Resets a permission to the default parameters.",
+                    options: [
+                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                    ],
+                },
+            },
+            execute: interaction => this.subcommandResolver(interaction),
+        })
+    ];
     constructor(permissionManagerService) {
         super(permissionManagerService);
-        this.moduleName = "PermissionManager";
-        this.commands = [{
-                command: builder => builder
-                    .setName(PermissionManagerModule_1.commands.$index)
-                    .setDescription("Controls the permission for each command.")
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule_1.commands.List)
-                    .setDescription("Lists out all permissions.")
-                    .addStringOption(input => PermissionManagerModule_1.commandKeyHelperBuilder(input, false)))
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule_1.commands.AddRole)
-                    .setDescription("Adds a role to a permission setting.")
-                    .addStringOption(input => PermissionManagerModule_1.commandKeyHelperBuilder(input))
-                    .addRoleOption(input => input
-                    .setName("role")
-                    .setDescription("Role to be added.")
-                    .setRequired(true)))
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule_1.commands.RemoveRole)
-                    .setDescription("Removes a role to a permission setting.")
-                    .addStringOption(input => PermissionManagerModule_1.commandKeyHelperBuilder(input))
-                    .addRoleOption(input => input
-                    .setName("role")
-                    .setDescription("Role to be removed.")
-                    .setRequired(true)))
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule_1.commands.Config)
-                    .setDescription("Configures a permission.")
-                    .addStringOption(input => PermissionManagerModule_1.commandKeyHelperBuilder(input))
-                    .addIntegerOption(input => input
-                    .setName("mode")
-                    .setDescription("Sets the search mode for the command. Any: has any. Strict: has all.")
-                    .addChoices({ name: "any", value: PermissionMode.ANY }, { name: "strict", value: PermissionMode.STRICT }))
-                    .addBooleanOption(input => input
-                    .setName("black_list")
-                    .setDescription("Reverses the final result. I.e. If list is empty, no one can use the command.")
-                    .setRequired(false)))
-                    .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule_1.commands.Reset)
-                    .setDescription("Resets a permission to the default parameters.")
-                    .addStringOption(input => PermissionManagerModule_1.commandKeyHelperBuilder(input))),
-                execute: interaction => this.subcommandResolver(interaction),
-            }];
     }
     async subcommandResolver(interaction) {
         if (!interaction.guildId) {
@@ -110,8 +140,13 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
     reset(interaction, key) {
         return this.permissionManagerService.reset(interaction, key);
     }
-    static commandKeyHelperBuilder(input, boolOverride = true) {
-        return input.setName("key").setDescription("Command permission Key.").setRequired(boolOverride);
+    static commandKeyHelperBuilder(boolOverride = true) {
+        return new CommandBuilderOption({
+            name: "key",
+            description: "Command permission Key.",
+            required: boolOverride,
+            type: ApplicationCommandOptionType.Boolean
+        });
     }
 };
 __decorate([

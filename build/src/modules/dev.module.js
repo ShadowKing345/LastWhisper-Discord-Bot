@@ -11,20 +11,23 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
+import { CommandBuilder } from "../utils/objects/commandBuilder.js";
 let DevModule = class DevModule extends ModuleBase {
+    moduleName = "DevModule";
+    commands = [
+        new CommandBuilder({
+            name: "test_inputs",
+            description: "Testing command.",
+            execute: interaction => this.testInteractionTypes(interaction),
+        }),
+        new CommandBuilder({
+            name: "test_modal",
+            description: "Testing command.",
+            execute: interaction => this.testModal(interaction),
+        }),
+    ];
     constructor(permissionManagerService) {
         super(permissionManagerService);
-        this.moduleName = "Dev";
-        this.commands = [
-            {
-                command: (builder) => builder.setName("test_inputs").setDescription("Testing command."),
-                execute: async (interaction) => this.testInteractionTypes(interaction),
-            },
-            {
-                command: (builder) => builder.setName("test_modal").setDescription("Testing command."),
-                execute: async (interaction) => this.testModal(interaction),
-            },
-        ];
     }
     async testInteractionTypes(interaction) {
         const button = new ButtonBuilder()

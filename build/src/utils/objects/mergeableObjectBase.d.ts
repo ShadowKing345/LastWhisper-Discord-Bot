@@ -8,6 +8,6 @@ export declare abstract class MergeableObjectBase<T> {
      * @param obj New object to assign values from.
      * @return Object with the assigned values.
      */
-    merge(obj: T): T;
+    merge(obj: Partial<T>): T;
 }
 //# sourceMappingURL=mergeableObjectBase.d.ts.map

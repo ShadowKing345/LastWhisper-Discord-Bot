@@ -1,5 +1,4 @@
 export * from "./client.js";
-export * from "./chatInputCommand.js";
 export * from "./commandRegistrationConfiguration.js";
 export * from "./databaseConfiguration.js";
 export * from "./eventListener.js";

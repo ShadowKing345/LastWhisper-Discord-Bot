@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { ButtonInteraction, CommandInteraction } from "discord.js";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
-import { ConfigurationClass } from "../configuration.class.js";
+import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 /**
