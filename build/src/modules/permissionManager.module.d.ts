@@ -1,12 +1,16 @@
+import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { CommandBuilders } from "../utils/objects/commandBuilder.js";
+import { pino } from "pino";
 export declare class PermissionManagerModule extends ModuleBase {
-    private static readonly commands;
     moduleName: string;
     commands: CommandBuilders;
-    constructor(permissionManagerService: PermissionManagerService);
-    private subcommandResolver;
+    protected commandResolverKeys: {
+        [key: string]: Function;
+    };
+    constructor(permissionManagerService: PermissionManagerService, logger: pino.Logger);
+    protected commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;
     private listPermissions;
     private addRoles;
     private removeRoles;

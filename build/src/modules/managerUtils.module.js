@@ -7,12 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var ManagerUtilsModule_1;
 import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
-let ManagerUtilsModule = class ManagerUtilsModule extends ModuleBase {
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
+let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends ModuleBase {
     managerUtilsService;
     moduleName = "ManagerUtils";
     commands = [new CommandBuilder({
@@ -30,14 +36,17 @@ let ManagerUtilsModule = class ManagerUtilsModule extends ModuleBase {
                     ],
                 },
             },
-            execute: interaction => this.subcommandResolver(interaction),
+            execute: interaction => this.commandResolver(interaction),
         })];
     listeners = [
         { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
         { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
     ];
-    constructor(managerUtilsService, permissionManagerService) {
-        super(permissionManagerService);
+    commandResolverKeys = {
+        "manager_utils.clear": this.clear,
+    };
+    constructor(managerUtilsService, permissionManagerService, logger) {
+        super(permissionManagerService, logger);
         this.managerUtilsService = managerUtilsService;
     }
     onMemberRemoved(member) {
@@ -46,32 +55,15 @@ let ManagerUtilsModule = class ManagerUtilsModule extends ModuleBase {
     onMemberBanned(ban) {
         return this.managerUtilsService.onMemberBanned(ban);
     }
-    async subcommandResolver(interaction) {
-        // if (!interaction.guildId) {
-        //     return interaction.reply({
-        //         content: "Sorry you cannot use this command outside of a server.",
-        //         ephemeral: true,
-        //     });
-        // }
-        //
-        // const subcommand = interaction.options.getSubcommand();
-        // if (!subcommand || subcommand !== ManagerUtilsModule.commands.Clear) {
-        //     return interaction.reply({
-        //         content: "Cannot find subcommand.",
-        //         ephemeral: true,
-        //     });
-        // }
-        //
-        // return this.clearChannelMessages(interaction);
-    }
-    clearChannelMessages(interaction) {
+    clear(interaction) {
         return this.managerUtilsService.clearChannelMessages(interaction);
     }
 };
-ManagerUtilsModule = __decorate([
+ManagerUtilsModule = ManagerUtilsModule_1 = __decorate([
     registerModule(),
+    __param(2, createLogger(ManagerUtilsModule_1.name)),
     __metadata("design:paramtypes", [ManagerUtilsService,
-        PermissionManagerService])
+        PermissionManagerService, Object])
 ], ManagerUtilsModule);
 export { ManagerUtilsModule };
 //# sourceMappingURL=managerUtils.module.js.map

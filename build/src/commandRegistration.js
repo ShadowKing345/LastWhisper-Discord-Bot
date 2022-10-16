@@ -39,9 +39,7 @@ export async function commandRegistration(args) {
             logger.info(`Acquiring ${isForGlobal()} for deletion.`, loggerMeta);
             const commands = await rest.get(route);
             logger.info(`Removing ${isForGlobal()}`, loggerMeta);
-            for (const command of commands) {
-                await rest.delete(`${route}/${command.id}`);
-            }
+            await Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
         }
         else {
             logger.info(`Generating ${isForGlobal()}`, loggerMeta);

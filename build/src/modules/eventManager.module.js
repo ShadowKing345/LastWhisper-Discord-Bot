@@ -7,13 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var EventManagerModule_1;
 import { ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
-let EventManagerModule = class EventManagerModule extends ModuleBase {
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
+let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;
     moduleName = "EventManager";
     commands = [
@@ -43,8 +49,8 @@ let EventManagerModule = class EventManagerModule extends ModuleBase {
             run: client => this.reminderLoop(client),
         },
     ];
-    constructor(eventManagerService, permissionManagerService) {
-        super(permissionManagerService);
+    constructor(eventManagerService, permissionManagerService, logger) {
+        super(permissionManagerService, logger);
         this.eventManagerService = eventManagerService;
         console.log(this.commands[0].build().toJSON());
     }
@@ -67,10 +73,11 @@ let EventManagerModule = class EventManagerModule extends ModuleBase {
         return this.eventManagerService.onReady(client);
     }
 };
-EventManagerModule = __decorate([
+EventManagerModule = EventManagerModule_1 = __decorate([
     registerModule(),
+    __param(2, createLogger(EventManagerModule_1.name)),
     __metadata("design:paramtypes", [EventManagerService,
-        PermissionManagerService])
+        PermissionManagerService, Object])
 ], EventManagerModule);
 export { EventManagerModule };
 //# sourceMappingURL=eventManager.module.js.map

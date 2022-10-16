@@ -7,24 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var PermissionManagerModule_1;
-import { CommandInteraction, Role, ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
-    static commands = {
-        $index: "permission",
-        List: "list_permissions",
-        AddRole: "add_role",
-        RemoveRole: "remove_role",
-        Config: "set_config",
-        Reset: "reset_permission",
-    };
     moduleName = "PermissionManager";
     commands = [
         new CommandBuilder({
@@ -42,7 +37,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     name: "add_role",
                     description: "Adds a role to a permission setting.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
                         new CommandBuilderOption({
                             name: "role",
                             description: "Role to be added.",
@@ -55,7 +50,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     name: "remove_role",
                     description: "Removes a role to a permission setting.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
                         new CommandBuilderOption({
                             name: "role",
                             description: "Role to be added.",
@@ -68,7 +63,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     name: "set_config",
                     description: "Configures a permission.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
                         new CommandBuilderOption({
                             name: "mode",
                             description: "Sets the search mode for the command. Any: has any. Strict: has all.",
@@ -90,40 +85,28 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     name: "reset",
                     description: "Resets a permission to the default parameters.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(false),
+                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
                     ],
                 },
             },
-            execute: interaction => this.subcommandResolver(interaction),
-        })
+            execute: interaction => this.commandResolver(interaction),
+        }),
     ];
-    constructor(permissionManagerService) {
-        super(permissionManagerService);
+    commandResolverKeys = {
+        "permission.list": this.listPermissions,
+        "permission.add_role": this.addRoles,
+        "permission.remove_role": this.removeRoles,
+        "permission.set_config": this.config,
+        "permission.reset": this.reset,
+    };
+    constructor(permissionManagerService, logger) {
+        super(permissionManagerService, logger);
     }
-    async subcommandResolver(interaction) {
-        if (!interaction.guildId) {
-            return interaction.reply({
-                content: "This command can only be used inside a server.",
-                ephemeral: true,
-            });
-        }
-        const subcommand = interaction.options.getSubcommand();
+    async commandResolver(interaction) {
+        const f = await super.commandResolver(interaction, false);
         const key = interaction.options.getString("key");
         const role = interaction.options.getRole("role");
-        switch (subcommand) {
-            case PermissionManagerModule_1.commands.List:
-                return this.listPermissions(interaction, key);
-            case PermissionManagerModule_1.commands.AddRole:
-                return this.addRoles(interaction, key, role);
-            case PermissionManagerModule_1.commands.RemoveRole:
-                return this.removeRoles(interaction, key, role);
-            case PermissionManagerModule_1.commands.Config:
-                return this.config(interaction, key);
-            case PermissionManagerModule_1.commands.Reset:
-                return this.reset(interaction, key);
-            default:
-                return interaction.reply({ content: "Cannot find command.", ephemeral: true });
-        }
+        return f(interaction, key, role);
     }
     listPermissions(interaction, key) {
         return this.permissionManagerService.listPermissions(interaction, key);
@@ -145,47 +128,14 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
             name: "key",
             description: "Command permission Key.",
             required: boolOverride,
-            type: ApplicationCommandOptionType.Boolean
+            type: ApplicationCommandOptionType.Boolean,
         });
     }
 };
-__decorate([
-    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.List),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String]),
-    __metadata("design:returntype", Promise)
-], PermissionManagerModule.prototype, "listPermissions", null);
-__decorate([
-    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.AddRole),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String, Role]),
-    __metadata("design:returntype", Promise)
-], PermissionManagerModule.prototype, "addRoles", null);
-__decorate([
-    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.RemoveRole),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String, Role]),
-    __metadata("design:returntype", Promise)
-], PermissionManagerModule.prototype, "removeRoles", null);
-__decorate([
-    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.Config),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String]),
-    __metadata("design:returntype", Promise)
-], PermissionManagerModule.prototype, "config", null);
-__decorate([
-    authorize(PermissionManagerModule_1.commands.$index, PermissionManagerModule_1.commands.Reset),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String]),
-    __metadata("design:returntype", Promise)
-], PermissionManagerModule.prototype, "reset", null);
-__decorate([
-    addCommandKeys(),
-    __metadata("design:type", Object)
-], PermissionManagerModule, "commands", void 0);
 PermissionManagerModule = PermissionManagerModule_1 = __decorate([
     registerModule(),
-    __metadata("design:paramtypes", [PermissionManagerService])
+    __param(1, createLogger(PermissionManagerModule_1.name)),
+    __metadata("design:paramtypes", [PermissionManagerService, Object])
 ], PermissionManagerModule);
 export { PermissionManagerModule };
 //# sourceMappingURL=permissionManager.module.js.map

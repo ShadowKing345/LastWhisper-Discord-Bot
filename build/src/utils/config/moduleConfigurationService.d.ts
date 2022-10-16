@@ -3,7 +3,6 @@ import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
 import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 /**
- * Todo: Allow for the user to disable the individual components.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export declare class ModuleConfigurationService extends ConfigurationClass {

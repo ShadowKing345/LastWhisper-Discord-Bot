@@ -20,7 +20,6 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder } from "../utils/objects/commandBuilder.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
-    logger;
     moduleName = "BuffManager";
     tasks = [
         {
@@ -63,63 +62,18 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                     },
                 },
             },
-            execute: interaction => this.subcommandResolver(interaction)
-        })
+            execute: interaction => this.commandResolver(interaction),
+        }),
     ];
+    commandResolverKeys = {
+        "buff_manager.buffs.today": this.postTodayBuff,
+        "buff_manager.buffs.tomorrow": this.postTomorrowsBuff,
+        "buff_manager.weeks.this_week": this.postThisWeeksBuffs,
+        "buff_manager.weeks.next_week": this.postNextWeeksBuffs,
+    };
     constructor(buffManagerService, logger, permissionManagerService) {
-        super(permissionManagerService);
+        super(permissionManagerService, logger);
         this.buffManagerService = buffManagerService;
-        this.logger = logger;
-    }
-    subcommandResolver(interaction) {
-        this.logger.debug(`Command invoked, dealing with subcommand options.`);
-        const group = interaction.options;
-        const subCommand = interaction.options.getSubcommand();
-        if (!(subCommand && group)) {
-            this.logger.debug(`Expected Failure:")} no "subcommand" or group was used.`);
-            return interaction.reply({
-                content: "Sorry you can only use the group or subcommands not the src command.",
-                ephemeral: true,
-            });
-        }
-        if (!interaction.guildId) {
-            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
-            return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-        }
-        // switch (group) {
-        //     case (BuffManagerModule.commands.subcommands.Buffs as PermissionKeysType)?.name:
-        //         switch (subCommand) {
-        //             // case (BuffManagerModule.commands.subcommands.Buffs as PermissionKeysType)?.subcommands.Today:
-        //             //     return this.postTodayBuff(interaction);
-        //             // case (BuffManagerModule.commands.subcommands.Buffs as PermissionKeysType)?.subcommands.Tomorrow:
-        //             //     return this.postTomorrowsBuff(interaction);
-        //             default:
-        //                 this.logger.debug(`Expected Failure: Cannot find subcommand.`);
-        //                 return interaction.reply({
-        //                     content: "Cannot find subcommand.",
-        //                     ephemeral: true,
-        //                 });
-        //         }
-        //     case (BuffManagerModule.commands.subcommands.Weeks as PermissionKeysType)?.name:
-        //         switch (subCommand) {
-        //             // case (BuffManagerModule.commands.subcommands.Weeks as PermissionKeysType)?.subcommands.ThisWeek:
-        //             //     return this.postThisWeeksBuffs(interaction);
-        //             // case (BuffManagerModule.commands.subcommands.Weeks as PermissionKeysType)?.subcommands.NextWeek:
-        //             //     return this.postNextWeeksBuffs(interaction);
-        //             default:
-        //                 this.logger.debug(`Expected Failure: Cannot find subcommand.`);
-        //                 return interaction.reply({
-        //                     content: "Cannot find subcommand.",
-        //                     ephemeral: true,
-        //                 });
-        //         }
-        //     default:
-        //         this.logger.debug(`Expected Failure: Cannot find subcommand group.`);
-        //         return interaction.reply({
-        //             content: "Cannot find group.",
-        //             ephemeral: true,
-        //         });
-        // }
     }
     postTodayBuff(interaction) {
         return this.buffManagerService.postBuff(interaction);

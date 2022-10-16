@@ -7,12 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var DevModule_1;
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
 import { CommandBuilder } from "../utils/objects/commandBuilder.js";
-let DevModule = class DevModule extends ModuleBase {
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
+let DevModule = DevModule_1 = class DevModule extends ModuleBase {
     moduleName = "DevModule";
     commands = [
         new CommandBuilder({
@@ -26,8 +32,8 @@ let DevModule = class DevModule extends ModuleBase {
             execute: interaction => this.testModal(interaction),
         }),
     ];
-    constructor(permissionManagerService) {
-        super(permissionManagerService);
+    constructor(permissionManagerService, logger) {
+        super(permissionManagerService, logger);
     }
     async testInteractionTypes(interaction) {
         const button = new ButtonBuilder()
@@ -73,9 +79,10 @@ let DevModule = class DevModule extends ModuleBase {
         await interaction.showModal(modal);
     }
 };
-DevModule = __decorate([
+DevModule = DevModule_1 = __decorate([
     registerModule(),
-    __metadata("design:paramtypes", [PermissionManagerService])
+    __param(1, createLogger(DevModule_1.name)),
+    __metadata("design:paramtypes", [PermissionManagerService, Object])
 ], DevModule);
 export { DevModule };
 //# sourceMappingURL=dev.module.js.map

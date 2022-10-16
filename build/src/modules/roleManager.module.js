@@ -20,7 +20,6 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
-    logger;
     moduleName = "RoleManager";
     listeners = [
         { event: "ready", run: async (client) => this.onReady(client) },
@@ -43,7 +42,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                             description: "The ID for the message.",
                             required: true,
                         }),
-                    ]
+                    ],
                 },
                 UnregisterMessage: {
                     name: "unregister_message",
@@ -54,45 +53,23 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                             description: "The ID for the message.",
                             required: true,
                         }),
-                    ]
+                    ],
                 },
             },
-            execute: interaction => this.subcommandResolver(interaction),
+            execute: interaction => this.commandResolver(interaction),
         }),
     ];
+    commandResolverKeys = {
+        "role_manager.revoke_role": this.revokeRole,
+        "role_manager.register_message": this.registerMessage,
+        "role_manager.unregister_message": this.unregisterMessage,
+    };
     constructor(roleManagerService, logger, permissionManagerService) {
-        super(permissionManagerService);
+        super(permissionManagerService, logger);
         this.roleManagerService = roleManagerService;
-        this.logger = logger;
     }
     onReady(client) {
         return this.roleManagerService.onReady(client);
-    }
-    subcommandResolver(interaction) {
-        this.logger.debug(`Command invoked, dealing with subcommand options.`);
-        const subCommand = interaction.options.getSubcommand();
-        if (!subCommand) {
-            this.logger.debug(`Expected Failure:")} no subcommand was used.`);
-            return interaction.reply({
-                content: "Sorry you have to use a subcommand.",
-                ephemeral: true,
-            });
-        }
-        if (!interaction.guildId) {
-            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
-            return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-        }
-        switch (subCommand) {
-            case "revoke_role":
-                return this.revokeRole(interaction);
-            case "register_message":
-                return this.registerMessage(interaction);
-            case "unregister_message":
-                return this.unregisterMessage(interaction);
-            default:
-                this.logger.debug(`Expected Failure: subcommand not found.`);
-                return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-        }
     }
     revokeRole(interaction) {
         return this.roleManagerService.revokeRole(interaction);

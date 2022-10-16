@@ -5,12 +5,13 @@ import { PermissionManagerService } from "../services/permissionManager.service.
 import { CommandBuilders } from "../utils/objects/commandBuilder.js";
 export declare class BuffManagerModule extends ModuleBase {
     private buffManagerService;
-    private logger;
     moduleName: string;
     tasks: Task[];
     commands: CommandBuilders;
+    protected commandResolverKeys: {
+        [key: string]: Function;
+    };
     constructor(buffManagerService: BuffManagerService, logger: pino.Logger, permissionManagerService: PermissionManagerService);
-    private subcommandResolver;
     private postTodayBuff;
     private postTomorrowsBuff;
     private postThisWeeksBuffs;

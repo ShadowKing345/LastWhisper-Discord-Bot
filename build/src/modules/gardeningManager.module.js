@@ -7,24 +7,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var GardeningManagerModule_1;
-import { CommandInteraction, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
-import { addCommandKeys } from "../utils/decorators/addCommandKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.service.js";
 import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends ModuleBase {
     gardeningManagerService;
-    static command = {
-        $index: "gardening",
-        Reserve: "reserve",
-        Cancel: "cancel",
-        List: "list",
-    };
     moduleName = "GardeningModule";
     commands = [
         new CommandBuilder({
@@ -69,7 +66,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                                 value: value,
                             })),
                         }),
-                    ]
+                    ],
                 },
                 Cancel: {
                     name: "cancel",
@@ -92,7 +89,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                             description: "The name of the plant you wish to cancel for.",
                             type: ApplicationCommandOptionType.String,
                             required: true,
-                        })
+                        }),
                     ],
                 },
                 List: {
@@ -114,20 +111,25 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                             description: "Should show a detailed view. Default: false",
                             type: ApplicationCommandOptionType.Boolean,
                         }),
-                    ]
+                    ],
                 },
             },
-            execute: async (interaction) => this.subCommandResolver(interaction),
-        })
+            execute: async (interaction) => this.commandResolver(interaction),
+        }),
     ];
     tasks = [
         { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) },
     ];
-    constructor(gardeningManagerService, permissionManagerService) {
-        super(permissionManagerService);
+    commandResolverKeys = {
+        "gardening_module.reserve": this.reserve,
+        "gardening_module.list": this.list,
+        "gardening_module.cancel": this.cancel,
+    };
+    constructor(gardeningManagerService, permissionManagerService, logger) {
+        super(permissionManagerService, logger);
         this.gardeningManagerService = gardeningManagerService;
     }
-    register(interaction, player, plant, duration, reason, plotNum, slotNum) {
+    reserve(interaction, player, plant, duration, reason, plotNum, slotNum) {
         return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
     }
     cancel(interaction, player, plant, plotNum, slotNum) {
@@ -139,54 +141,22 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
     tick(client) {
         return this.gardeningManagerService.tick(client);
     }
-    subCommandResolver(interaction) {
-        const subCommand = interaction.options.getSubcommand();
-        if (!subCommand)
-            throw new Error();
+    async commandResolver(interaction) {
+        const f = await super.commandResolver(interaction, false);
         const plotNum = interaction.options.getInteger("plot");
         const slotNum = interaction.options.getInteger("slot");
         const player = `${interaction.user.username}#${interaction.user.discriminator}`;
         const plant = interaction.options.getString("plant");
         const duration = (interaction.options.getInteger("duration") ?? 0) * 360;
         const reason = (interaction.options.getInteger("reason") ?? Reason.NONE);
-        switch (subCommand) {
-            case "reserve":
-                return this.register(interaction, player, plant, duration, reason, plotNum, slotNum);
-            case "cancel":
-                return this.cancel(interaction, player, plant, plotNum, slotNum);
-            case "list":
-                return this.list(interaction, plotNum, slotNum);
-            default:
-                return interaction.reply({ content: "Not a valid subcommand", ephemeral: true });
-        }
+        return f(interaction, plotNum, slotNum, player, plant, duration, reason);
     }
 };
-__decorate([
-    authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.Reserve),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CommandInteraction, String, String, Number, String, Number, Number]),
-    __metadata("design:returntype", Promise)
-], GardeningManagerModule.prototype, "register", null);
-__decorate([
-    authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.Cancel),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ChatInputCommandInteraction, String, String, Number, Number]),
-    __metadata("design:returntype", Promise)
-], GardeningManagerModule.prototype, "cancel", null);
-__decorate([
-    authorize(GardeningManagerModule_1.command.$index, GardeningManagerModule_1.command.List),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [ChatInputCommandInteraction, Number, Number]),
-    __metadata("design:returntype", void 0)
-], GardeningManagerModule.prototype, "list", null);
-__decorate([
-    addCommandKeys(),
-    __metadata("design:type", Object)
-], GardeningManagerModule, "command", void 0);
 GardeningManagerModule = GardeningManagerModule_1 = __decorate([
     registerModule(),
+    __param(2, createLogger(GardeningManagerModule_1.name)),
     __metadata("design:paramtypes", [GardeningManagerService,
-        PermissionManagerService])
+        PermissionManagerService, Object])
 ], GardeningManagerModule);
 export { GardeningManagerModule };
 //# sourceMappingURL=gardeningManager.module.js.map

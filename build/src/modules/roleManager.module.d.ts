@@ -5,13 +5,14 @@ import { PermissionManagerService } from "../services/permissionManager.service.
 import { CommandBuilders } from "../utils/objects/commandBuilder.js";
 export declare class RoleManagerModule extends ModuleBase {
     private roleManagerService;
-    private logger;
     moduleName: string;
     listeners: EventListener[];
     commands: CommandBuilders;
+    protected commandResolverKeys: {
+        [key: string]: Function;
+    };
     constructor(roleManagerService: RoleManagerService, logger: pino.Logger, permissionManagerService: PermissionManagerService);
     private onReady;
-    private subcommandResolver;
     private revokeRole;
     private registerMessage;
     private unregisterMessage;

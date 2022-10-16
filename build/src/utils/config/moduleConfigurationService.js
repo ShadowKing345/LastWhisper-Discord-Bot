@@ -16,8 +16,8 @@ import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { ModuleBase, ProjectConfiguration } from "../models/index.js";
+import { CommandResolverError } from "../errors/commandResolverError.js";
 /**
- * Todo: Allow for the user to disable the individual components.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 let ModuleConfigurationService = class ModuleConfigurationService extends ConfigurationClass {
@@ -40,7 +40,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                 const blacklist = this.moduleConfiguration.blacklist;
                 return (!blacklist && inList) || (blacklist && !inList);
             }) : modules;
-        console.log(this._modules);
     }
     /**
      * Todo: Cleanup.
@@ -75,6 +74,11 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
             }
             if (interaction.isChatInputCommand()) {
                 this.loggers.module.debug("Confirmed Command Interaction.");
+                if (!interaction.inGuild()) {
+                    this.loggers.module.debug("Warning! Command invoked outside of a guild.");
+                    await interaction.user.send("Sorry you cannot use this command outside of a server.");
+                    return;
+                }
                 const command = interaction.client.commands.get(interaction.commandName);
                 if (!command) {
                     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
@@ -86,6 +90,13 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         catch (error) {
             this.loggers.interaction.error(error instanceof Error ? error.stack : error);
             if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
+                if (error instanceof CommandResolverError) {
+                    await interaction.reply({
+                        content: "Sorry there was an issue resolving the command name.",
+                        ephemeral: true,
+                    });
+                    return;
+                }
                 if (interaction.deferred) {
                     await interaction.editReply({ content: "There was an internal error that occurred when using this interaction." });
                 }
@@ -157,7 +168,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                 client.modules.set(module.moduleName, module);
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
-                    // module.commands.forEach(command => client.commands.set(BuildCommand(command).name, command as ChatInputCommand));
+                    module.commands.forEach(command => client.commands.set(command.name, command));
                 }
                 if (!this.moduleConfiguration.disableEventListeners) {
                     this.loggers.module.debug(`Setting Up listeners...`);
