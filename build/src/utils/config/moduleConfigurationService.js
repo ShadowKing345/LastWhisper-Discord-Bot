@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { ButtonInteraction, CommandInteraction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configurationClass.js";
@@ -53,6 +53,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
     async interactionEvent(interaction) {
         this.loggers.module.debug("Interaction Innovated");
         try {
+            const client = interaction.client;
             if (interaction.isContextMenuCommand()) {
                 if (interaction.isUserContextMenuCommand()) {
                     await interaction.reply({ content: "Responded with a user", ephemeral: true });
@@ -65,8 +66,20 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                 await interaction.reply({ content: "Responded", ephemeral: true });
             }
             if (interaction.isMessageComponent()) {
-                console.log(interaction.componentType);
                 switch (interaction.componentType) {
+                    case ComponentType.Button:
+                        const f = client.buttons.get(interaction.customId);
+                        if (!f) {
+                            await interaction.reply({
+                                content: "Cannot find action for this button.",
+                                ephemeral: true,
+                            });
+                            return;
+                        }
+                        await f(interaction);
+                        break;
+                    case ComponentType.SelectMenu:
+                        break;
                     default:
                         break;
                 }
@@ -169,6 +182,9 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
                     module.commands.forEach(command => client.commands.set(command.name, command));
+                }
+                for (let buttonsKey in module.buttons) {
+                    client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
                 }
                 if (!this.moduleConfiguration.disableEventListeners) {
                     this.loggers.module.debug(`Setting Up listeners...`);

@@ -9,6 +9,9 @@ export class ModuleBase {
     commands = [];
     listeners = [];
     tasks = [];
+    buttons;
+    selectMenus;
+    modalSubmits;
     commandResolverKeys = {};
     constructor(permissionManagerService, logger) {
         this.permissionManagerService = permissionManagerService;

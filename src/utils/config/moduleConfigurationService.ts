@@ -1,4 +1,4 @@
-import { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Interaction, ComponentType, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
@@ -58,6 +58,8 @@ export class ModuleConfigurationService extends ConfigurationClass {
         this.loggers.module.debug("Interaction Innovated");
 
         try {
+            const client = interaction.client as Client;
+
             if (interaction.isContextMenuCommand()) {
                 if (interaction.isUserContextMenuCommand()) {
                     await interaction.reply({ content: "Responded with a user", ephemeral: true });
@@ -71,14 +73,23 @@ export class ModuleConfigurationService extends ConfigurationClass {
             }
 
             if (interaction.isMessageComponent()) {
-
-                console.log(interaction.componentType);
-
                 switch (interaction.componentType) {
+                    case ComponentType.Button:
+                        const f = client.buttons.get((interaction as ButtonInteraction).customId);
+                        if (!f) {
+                            await interaction.reply({
+                                content: "Cannot find action for this button.",
+                                ephemeral: true,
+                            });
+                            return;
+                        }
+                        await f(interaction as unknown as ChatInputCommandInteraction);
+                        break;
+                    case ComponentType.SelectMenu:
+                        break;
                     default:
                         break;
                 }
-                await interaction.reply({ content: "Responded", ephemeral: true });
             }
 
             if (interaction.isChatInputCommand()) {
@@ -183,6 +194,10 @@ export class ModuleConfigurationService extends ConfigurationClass {
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
                     module.commands.forEach(command => client.commands.set(command.name, command));
+                }
+
+                for (let buttonsKey in module.buttons) {
+                    client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
                 }
 
                 if (!this.moduleConfiguration.disableEventListeners) {

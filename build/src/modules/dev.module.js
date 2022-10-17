@@ -32,6 +32,9 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
             execute: interaction => this.testModal(interaction),
         }),
     ];
+    buttons = {
+        buttonTest1: (interaction) => this.buttonTest(interaction),
+    };
     constructor(permissionManagerService, logger) {
         super(permissionManagerService, logger);
     }
@@ -77,6 +80,12 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
         const secondActionRow = new ActionRowBuilder().addComponents(hobbiesInput);
         modal.addComponents(firstActionRow, secondActionRow);
         await interaction.showModal(modal);
+    }
+    async buttonTest(interaction) {
+        await interaction.reply({
+            content: `${interaction.member.avatar} has clicked button ${interaction.commandName} ${interaction.customId}.`,
+            ephemeral: true,
+        });
     }
 };
 DevModule = DevModule_1 = __decorate([

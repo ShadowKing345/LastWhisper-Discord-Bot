@@ -1,7 +1,7 @@
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder } from "discord.js";
+import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder, InteractionResponse, ButtonInteraction } from "discord.js";
 import { CommandBuilders, CommandBuilder } from "../utils/objects/commandBuilder.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
@@ -21,6 +21,10 @@ export class DevModule extends ModuleBase {
             execute: interaction => this.testModal(interaction),
         }),
     ];
+
+    public buttons = {
+        buttonTest1: (interaction) => this.buttonTest(interaction),
+    };
 
     public constructor(
         permissionManagerService: PermissionManagerService,
@@ -81,5 +85,12 @@ export class DevModule extends ModuleBase {
 
         modal.addComponents(firstActionRow, secondActionRow);
         await interaction.showModal(modal);
+    }
+
+    private async buttonTest(interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse> {
+        await interaction.reply({
+            content: `${interaction.member.avatar} has clicked button ${interaction.commandName} ${(interaction as unknown as ButtonInteraction).customId}.`,
+            ephemeral: true,
+        });
     }
 }

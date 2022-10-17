@@ -14,6 +14,15 @@ export declare abstract class ModuleBase {
     commands: CommandBuilders;
     listeners: EventListener[];
     tasks: Task[];
+    buttons: {
+        [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+    };
+    selectMenus: {
+        [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+    };
+    modalSubmits: {
+        [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+    };
     protected commandResolverKeys: {
         [key: string]: Function;
     };

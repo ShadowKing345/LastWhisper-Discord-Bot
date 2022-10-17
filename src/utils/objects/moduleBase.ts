@@ -15,6 +15,10 @@ export abstract class ModuleBase {
     public listeners: EventListener[] = [];
     public tasks: Task[] = [];
 
+    public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
+    public selectMenus: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
+    public modalSubmits: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
+
     protected commandResolverKeys: { [key: string]: Function } = {};
 
     protected constructor(
