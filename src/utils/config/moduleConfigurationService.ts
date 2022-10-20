@@ -1,4 +1,4 @@
-import { ButtonInteraction, CommandInteraction, Interaction, ComponentType, ChatInputCommandInteraction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Interaction, ComponentType } from "discord.js";
 import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
@@ -9,7 +9,6 @@ import { Client } from "../models/client.js";
 import { ModuleBase, ProjectConfiguration, EventListener } from "../models/index.js";
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
-import { CommandBuilder } from "../objects/commandBuilder.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
 
 /**
@@ -55,7 +54,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @private
      */
     private async interactionEvent(interaction: Interaction): Promise<void> {
-        this.loggers.module.debug("Interaction Innovated");
+        this.loggers.module.debug(this.modules);
 
         try {
             const client = interaction.client as Client;
@@ -75,15 +74,15 @@ export class ModuleConfigurationService extends ConfigurationClass {
             if (interaction.isMessageComponent()) {
                 switch (interaction.componentType) {
                     case ComponentType.Button:
-                        const f = client.buttons.get((interaction as ButtonInteraction).customId);
-                        if (!f) {
-                            await interaction.reply({
-                                content: "Cannot find action for this button.",
-                                ephemeral: true,
-                            });
-                            return;
-                        }
-                        await f(interaction as unknown as ChatInputCommandInteraction);
+                        // const f = client.buttons.get((interaction as ButtonInteraction).customId);
+                        // if (!f) {
+                        //     await interaction.reply({
+                        //         content: "Cannot find action for this button.",
+                        //         ephemeral: true,
+                        //     });
+                        //     return;
+                        // }
+                        // await f(interaction as unknown as ChatInputCommandInteraction);
                         break;
                     case ComponentType.SelectMenu:
                         break;
@@ -101,13 +100,13 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     return;
                 }
 
-                const command: CommandBuilder = (interaction.client as Client).commands.get(interaction.commandName);
-                if (!command) {
-                    this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
-                    return;
-                }
+                // const command: CommandBuilder = (interaction.client as Client).commands.get(interaction.commandName);
+                // if (!command) {
+                //     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
+                //     return;
+                // }
 
-                await command.execute(interaction);
+                // await command.execute(interaction);
             }
         } catch (error: Error | unknown) {
             this.loggers.interaction.error(error instanceof Error ? error.stack : error);
@@ -164,7 +163,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
      */
     private async runTimer(task: Task, client: Client): Promise<void> {
         try {
-            client.tasks.set(task.name, task);
+            // client.tasks.set(task.name, task);
             this.intervalIds.push(setInterval(async () => {
                 try {
                     await task.run(client);
@@ -189,23 +188,23 @@ export class ModuleConfigurationService extends ConfigurationClass {
         for (const module of this.modules) {
             try {
                 this.loggers.module.info(`Setting Up module ${module.moduleName}`);
-                client.modules.set(module.moduleName, module);
+                // client.modules.set(module.moduleName, module);
 
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
-                    module.commands.forEach(command => client.commands.set(command.name, command));
+                    // module.commands.forEach(command => client.commands.set(command.name, command));
                 }
 
                 for (let buttonsKey in module.buttons) {
-                    client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
+                    // client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
                 }
 
                 if (!this.moduleConfiguration.disableEventListeners) {
                     this.loggers.module.debug(`Setting Up listeners...`);
                     module.listeners.forEach(listener => {
-                        const listeners = client.moduleListeners.get(listener.event) ?? [];
-                        listeners.push(listener);
-                        client.moduleListeners.set(listener.event, listeners);
+                        // const listeners = client.moduleListeners.get(listener.event) ?? [];
+                        // listeners.push(listener);
+                        // client.moduleListeners.set(listener.event, listeners);
                     });
                 }
 
@@ -220,9 +219,9 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
         if (!this.moduleConfiguration.disableEventListeners) {
             this.loggers.module.debug(`Setting Up events...`);
-            for (const [ event, listeners ] of client.moduleListeners) {
-                client.on(event, (...args) => this.runEvent(listeners, client, args));
-            }
+            // for (const [ event, listeners ] of client.moduleListeners) {
+            //     client.on(event, (...args) => this.runEvent(listeners, client, args));
+            // }
         }
 
         if (!this.moduleConfiguration.disableInteractions) {

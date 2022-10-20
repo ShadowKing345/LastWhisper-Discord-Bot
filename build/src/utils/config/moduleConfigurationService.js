@@ -51,7 +51,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @private
      */
     async interactionEvent(interaction) {
-        this.loggers.module.debug("Interaction Innovated");
+        this.loggers.module.debug(this.modules);
         try {
             const client = interaction.client;
             if (interaction.isContextMenuCommand()) {
@@ -68,22 +68,21 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
             if (interaction.isMessageComponent()) {
                 switch (interaction.componentType) {
                     case ComponentType.Button:
-                        const f = client.buttons.get(interaction.customId);
-                        if (!f) {
-                            await interaction.reply({
-                                content: "Cannot find action for this button.",
-                                ephemeral: true,
-                            });
-                            return;
-                        }
-                        await f(interaction);
+                        // const f = client.buttons.get((interaction as ButtonInteraction).customId);
+                        // if (!f) {
+                        //     await interaction.reply({
+                        //         content: "Cannot find action for this button.",
+                        //         ephemeral: true,
+                        //     });
+                        //     return;
+                        // }
+                        // await f(interaction as unknown as ChatInputCommandInteraction);
                         break;
                     case ComponentType.SelectMenu:
                         break;
                     default:
                         break;
                 }
-                await interaction.reply({ content: "Responded", ephemeral: true });
             }
             if (interaction.isChatInputCommand()) {
                 this.loggers.module.debug("Confirmed Command Interaction.");
@@ -92,12 +91,12 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     await interaction.user.send("Sorry you cannot use this command outside of a server.");
                     return;
                 }
-                const command = interaction.client.commands.get(interaction.commandName);
-                if (!command) {
-                    this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
-                    return;
-                }
-                await command.execute(interaction);
+                // const command: CommandBuilder = (interaction.client as Client).commands.get(interaction.commandName);
+                // if (!command) {
+                //     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
+                //     return;
+                // }
+                // await command.execute(interaction);
             }
         }
         catch (error) {
@@ -152,7 +151,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      */
     async runTimer(task, client) {
         try {
-            client.tasks.set(task.name, task);
+            // client.tasks.set(task.name, task);
             this.intervalIds.push(setInterval(async () => {
                 try {
                     await task.run(client);
@@ -178,20 +177,20 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         for (const module of this.modules) {
             try {
                 this.loggers.module.info(`Setting Up module ${module.moduleName}`);
-                client.modules.set(module.moduleName, module);
+                // client.modules.set(module.moduleName, module);
                 if (!this.moduleConfiguration.disableCommands) {
                     this.loggers.module.debug(`Setting Up commands...`);
-                    module.commands.forEach(command => client.commands.set(command.name, command));
+                    // module.commands.forEach(command => client.commands.set(command.name, command));
                 }
                 for (let buttonsKey in module.buttons) {
-                    client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
+                    // client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
                 }
                 if (!this.moduleConfiguration.disableEventListeners) {
                     this.loggers.module.debug(`Setting Up listeners...`);
                     module.listeners.forEach(listener => {
-                        const listeners = client.moduleListeners.get(listener.event) ?? [];
-                        listeners.push(listener);
-                        client.moduleListeners.set(listener.event, listeners);
+                        // const listeners = client.moduleListeners.get(listener.event) ?? [];
+                        // listeners.push(listener);
+                        // client.moduleListeners.set(listener.event, listeners);
                     });
                 }
                 if (!this.moduleConfiguration.disableTimers) {
@@ -205,9 +204,9 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         }
         if (!this.moduleConfiguration.disableEventListeners) {
             this.loggers.module.debug(`Setting Up events...`);
-            for (const [event, listeners] of client.moduleListeners) {
-                client.on(event, (...args) => this.runEvent(listeners, client, args));
-            }
+            // for (const [ event, listeners ] of client.moduleListeners) {
+            //     client.on(event, (...args) => this.runEvent(listeners, client, args));
+            // }
         }
         if (!this.moduleConfiguration.disableInteractions) {
             this.loggers.module.debug(`Setting Up interaction event...`);
