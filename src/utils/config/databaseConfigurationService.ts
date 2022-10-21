@@ -65,13 +65,13 @@ export class DatabaseConfigurationService extends ConfigurationClass {
 
             this._client = await MongoClient.connect(url);
             this._client.on("error", async error => {
-                this.logger.error(error + error.stack);
+                this.logger.error(error instanceof Error ? error.stack : error);
                 await this._client?.close();
             });
 
             this._db = this._client.db(this.projectConfig.database?.database);
         } catch (error: Error | unknown) {
-            this.logger.error(error instanceof Error ? error + error.stack : error);
+            this.logger.error(error instanceof Error ? error.stack : error);
             this._client = null;
             this._db = null;
         }
