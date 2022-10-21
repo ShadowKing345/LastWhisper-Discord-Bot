@@ -48,6 +48,12 @@ export class ModuleConfigurationService extends ConfigurationClass {
                 const blacklist = this.moduleConfiguration.blacklist;
                 return (!blacklist && inList) || (blacklist && !inList);
             }) : modules;
+
+        this.moduleLogger.debug(`Modules list. [${this._modules.map(module => module.moduleName)}]`);
+
+        if (this.moduleConfiguration.enableCommands) {
+            this.moduleLogger.debug("Commands enabled.");
+        }
     }
 
     /**
@@ -75,7 +81,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     }
                 }
 
-                if (interaction.isChatInputCommand()) {
+                if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
                     this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
 
                     // Edge case if somehow a command can be invoked inside a DM.
@@ -188,7 +194,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
     }
 
     /**
-     * Todo: Cleanup.
      * Configures a client with all the necessary module and callback information.
      * Registers events, timers, commands, etc...
      * @param client The main app client. Not to be confused with Discord.Js Client object.
