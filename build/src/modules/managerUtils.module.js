@@ -38,7 +38,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
             },
             execute: interaction => this.commandResolver(interaction),
         })];
-    listeners = [
+    eventListeners = [
         { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
         { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
     ];

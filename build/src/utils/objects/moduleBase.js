@@ -7,7 +7,7 @@ export class ModuleBase {
     logger;
     moduleName = "";
     commands = [];
-    listeners = [];
+    eventListeners = [];
     tasks = [];
     buttons;
     selectMenus;
@@ -36,6 +36,35 @@ export class ModuleBase {
         }
         f = f.bind(this);
         return call ? f(interaction) : f;
+    }
+    /**
+     * Checks if the command with a given name is contained inside this object.
+     * @param command The name of the command.
+     */
+    hasCommand(command) {
+        if (!this.handlesCommands) {
+            return false;
+        }
+        return this.commands.find(c => c.name === command) != null;
+    }
+    /**
+     * Returns the first instance of a command with the given name.
+     * @param command The name of the command.
+     */
+    getCommand(command) {
+        if (!this.handlesCommands) {
+            return undefined;
+        }
+        return this.commands.find(c => c.name === command);
+    }
+    get handlesCommands() {
+        return this.commands?.length > 0;
+    }
+    get handlesButtons() {
+        return Object.values(this.buttons).length > 0;
+    }
+    get handlesSelectMenu() {
+        return Object.values(this.selectMenus).length > 0;
     }
 }
 //# sourceMappingURL=moduleBase.js.map

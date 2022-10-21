@@ -4,13 +4,13 @@ import { ToJsonBase } from "../objects/toJsonBase.js";
  */
 export class ModuleConfiguration extends ToJsonBase {
     // Disables all commands.
-    disableCommands = false;
+    enableCommands = true;
     // Disables all event listeners.
-    disableEventListeners = false;
+    enableEventListeners = true;
     // Disables all timers.
-    disableTimers = false;
+    enableTimers = true;
     // Disables all interactions with the application. Will also disable commands as a result.
-    disableInteractions = false;
+    enableInteractions = true;
     // A collection of module names to be filtered.
     modules = [];
     // Should the list be treated as a blacklist.

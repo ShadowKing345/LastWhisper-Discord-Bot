@@ -7,7 +7,7 @@ export declare class EventManagerModule extends ModuleBase {
     private eventManagerService;
     moduleName: string;
     commands: CommandBuilders;
-    listeners: EventListener[];
+    eventListeners: EventListener[];
     tasks: Task[];
     constructor(eventManagerService: EventManagerService, permissionManagerService: PermissionManagerService, logger: pino.Logger);
     private createEvent;

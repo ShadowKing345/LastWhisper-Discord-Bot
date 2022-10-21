@@ -21,7 +21,7 @@ import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBu
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
     moduleName = "RoleManager";
-    listeners = [
+    eventListeners = [
         { event: "ready", run: async (client) => this.onReady(client) },
     ];
     commands = [

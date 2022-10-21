@@ -8,4 +8,5 @@ export declare class EventListener {
     run: (client: Client, ...args: any[]) => Promise<void>;
     constructor(event?: keyof ClientEvents, run?: (client: Client, ...args: any[]) => Promise<void>);
 }
+export declare type EventListeners = EventListener[];
 //# sourceMappingURL=eventListener.d.ts.map

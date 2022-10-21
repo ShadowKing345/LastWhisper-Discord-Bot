@@ -7,7 +7,7 @@ export declare class ManagerUtilsModule extends ModuleBase {
     private managerUtilsService;
     moduleName: string;
     commands: CommandBuilders;
-    listeners: EventListener[];
+    eventListeners: EventListener[];
     protected commandResolverKeys: {
         [key: string]: Function;
     };

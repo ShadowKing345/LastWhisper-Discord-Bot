@@ -1,7 +1,7 @@
 import { Task } from "../models/task.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
-import { EventListener } from "../models/index.js";
-import { CommandBuilders } from "./commandBuilder.js";
+import { EventListeners } from "../models/index.js";
+import { CommandBuilders, CommandBuilder } from "./commandBuilder.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { pino } from "pino";
 /**
@@ -12,7 +12,7 @@ export declare abstract class ModuleBase {
     protected logger: pino.Logger;
     moduleName: string;
     commands: CommandBuilders;
-    listeners: EventListener[];
+    eventListeners: EventListeners;
     tasks: Task[];
     buttons: {
         [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
@@ -36,5 +36,18 @@ export declare abstract class ModuleBase {
      * @protected
      */
     protected commandResolver(interaction: ChatInputCommandInteraction, call?: boolean): Promise<InteractionResponse | void | Function>;
+    /**
+     * Checks if the command with a given name is contained inside this object.
+     * @param command The name of the command.
+     */
+    hasCommand(command: string): boolean;
+    /**
+     * Returns the first instance of a command with the given name.
+     * @param command The name of the command.
+     */
+    getCommand(command: string): CommandBuilder | undefined;
+    get handlesCommands(): boolean;
+    get handlesButtons(): boolean;
+    get handlesSelectMenu(): boolean;
 }
 //# sourceMappingURL=moduleBase.d.ts.map

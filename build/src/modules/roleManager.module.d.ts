@@ -6,7 +6,7 @@ import { CommandBuilders } from "../utils/objects/commandBuilder.js";
 export declare class RoleManagerModule extends ModuleBase {
     private roleManagerService;
     moduleName: string;
-    listeners: EventListener[];
+    eventListeners: EventListener[];
     commands: CommandBuilders;
     protected commandResolverKeys: {
         [key: string]: Function;

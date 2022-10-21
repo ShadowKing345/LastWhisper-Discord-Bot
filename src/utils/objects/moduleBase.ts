@@ -1,7 +1,7 @@
 import { Task } from "../models/task.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
-import { EventListener } from "../models/index.js";
-import { CommandBuilders } from "./commandBuilder.js";
+import { EventListeners } from "../models/index.js";
+import { CommandBuilders, CommandBuilder } from "./commandBuilder.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
 import { pino } from "pino";
@@ -12,7 +12,7 @@ import { pino } from "pino";
 export abstract class ModuleBase {
     public moduleName: string = "";
     public commands: CommandBuilders = [];
-    public listeners: EventListener[] = [];
+    public eventListeners: EventListeners = [];
     public tasks: Task[] = [];
 
     public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
@@ -49,5 +49,41 @@ export abstract class ModuleBase {
         f = f.bind(this);
 
         return call ? f(interaction) : f;
+    }
+
+    /**
+     * Checks if the command with a given name is contained inside this object.
+     * @param command The name of the command.
+     */
+    public hasCommand(command: string): boolean {
+        if (!this.handlesCommands) {
+            return false;
+        }
+
+        return this.commands.find(c => c.name === command) != null;
+    }
+
+    /**
+     * Returns the first instance of a command with the given name.
+     * @param command The name of the command.
+     */
+    public getCommand(command: string): CommandBuilder | undefined {
+        if (!this.handlesCommands) {
+            return undefined;
+        }
+
+        return this.commands.find(c => c.name === command);
+    }
+
+    public get handlesCommands(): boolean {
+        return this.commands?.length > 0;
+    }
+
+    public get handlesButtons(): boolean {
+        return Object.values(this.buttons).length > 0;
+    }
+
+    public get handlesSelectMenu(): boolean {
+        return Object.values(this.selectMenus).length > 0;
     }
 }

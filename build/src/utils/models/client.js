@@ -1,9 +1,9 @@
-import { Client as DiscordClient, GatewayIntentBits } from "discord.js";
+import { Client as DiscordClient, GatewayIntentBits, Collection } from "discord.js";
 /**
- * Custom client class to hold the additional information about a discord client.
+ * Custom client class to hold the additional information about a discord client and the set-up flags.
  */
 export class Client extends DiscordClient {
-    // private readonly _modules: Collection<string, ModuleBase> = new Collection<string, ModuleBase>();
+    events = new Collection();
     constructor() {
         super({
             intents: [

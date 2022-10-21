@@ -9,7 +9,10 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
     private readonly moduleConfiguration;
     private readonly intervalIds;
     private readonly _modules;
-    private readonly loggers;
+    private readonly moduleLogger;
+    private readonly interactionLogger;
+    private readonly eventLogger;
+    private readonly taskLogger;
     constructor(config: ProjectConfiguration, modules: ModuleBase[], loggerFactory: LoggerService);
     /**
      * Todo: Cleanup.

@@ -18,6 +18,7 @@ import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputB
 import { CommandBuilder } from "../utils/objects/commandBuilder.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { EventListener } from "../utils/models/index.js";
 let DevModule = DevModule_1 = class DevModule extends ModuleBase {
     moduleName = "DevModule";
     commands = [
@@ -35,6 +36,9 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
     buttons = {
         buttonTest1: (interaction) => this.buttonTest(interaction),
     };
+    eventListeners = [
+        new EventListener("messageCreate", async () => console.log("Message created")),
+    ];
     constructor(permissionManagerService, logger) {
         super(permissionManagerService, logger);
     }

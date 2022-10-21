@@ -24,16 +24,17 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
     moduleConfiguration;
     intervalIds = [];
     _modules;
-    loggers;
+    moduleLogger;
+    interactionLogger;
+    eventLogger;
+    taskLogger;
     constructor(config, modules, loggerFactory) {
         super();
         this.moduleConfiguration = config.moduleConfiguration;
-        this.loggers = {
-            module: loggerFactory.buildLogger("ModuleConfiguration"),
-            interaction: loggerFactory.buildLogger("InteractionExecution"),
-            event: loggerFactory.buildLogger("EventExecution"),
-            task: loggerFactory.buildLogger("TimerExecution"),
-        };
+        this.moduleLogger = loggerFactory.buildLogger("ModuleConfiguration");
+        this.interactionLogger = loggerFactory.buildLogger("InteractionExecution");
+        this.eventLogger = loggerFactory.buildLogger("EventExecution");
+        this.taskLogger = loggerFactory.buildLogger("TimerExecution");
         this._modules = this.moduleConfiguration.modules?.length !== 0 ?
             modules.filter(module => {
                 const inList = this.moduleConfiguration.modules.includes(module.moduleName);
@@ -51,56 +52,63 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @private
      */
     async interactionEvent(interaction) {
-        this.loggers.module.debug(this.modules);
+        this.interactionLogger.debug("Interaction event invoked.");
         try {
-            const client = interaction.client;
-            if (interaction.isContextMenuCommand()) {
-                if (interaction.isUserContextMenuCommand()) {
-                    await interaction.reply({ content: "Responded with a user", ephemeral: true });
+            if (interaction.isCommand()) {
+                this.interactionLogger.debug("Interaction is a command.");
+                if (interaction.isContextMenuCommand()) {
+                    this.interactionLogger.debug(`Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`);
+                    if (interaction.isUserContextMenuCommand()) {
+                        await interaction.reply({ content: "Responded with a user", ephemeral: true });
+                    }
+                    else {
+                        await interaction.reply({ content: "Responded with a message", ephemeral: true });
+                    }
                 }
-                else {
-                    await interaction.reply({ content: "Responded with a message", ephemeral: true });
-                }
-            }
-            if (interaction.isModalSubmit()) {
-                await interaction.reply({ content: "Responded", ephemeral: true });
-            }
-            if (interaction.isMessageComponent()) {
-                switch (interaction.componentType) {
-                    case ComponentType.Button:
-                        // const f = client.buttons.get((interaction as ButtonInteraction).customId);
-                        // if (!f) {
-                        //     await interaction.reply({
-                        //         content: "Cannot find action for this button.",
-                        //         ephemeral: true,
-                        //     });
-                        //     return;
-                        // }
-                        // await f(interaction as unknown as ChatInputCommandInteraction);
-                        break;
-                    case ComponentType.SelectMenu:
-                        break;
-                    default:
-                        break;
+                if (interaction.isChatInputCommand()) {
+                    this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
+                    // Edge case if somehow a command can be invoked inside a DM.
+                    if (!interaction.guildId) {
+                        this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
+                        await interaction.user.send("Sorry you cannot use this command outside of a server.");
+                        return;
+                    }
+                    const command = this.modules.find(module => module.hasCommand(interaction.commandName))?.getCommand(interaction.commandName);
+                    if (!command) {
+                        this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
+                        return;
+                    }
+                    await command.execute(interaction);
                 }
             }
-            if (interaction.isChatInputCommand()) {
-                this.loggers.module.debug("Confirmed Command Interaction.");
-                if (!interaction.inGuild()) {
-                    this.loggers.module.debug("Warning! Command invoked outside of a guild.");
-                    await interaction.user.send("Sorry you cannot use this command outside of a server.");
-                    return;
+            else {
+                this.interactionLogger.debug("Interaction is not a command.");
+                if (interaction.isModalSubmit()) {
+                    await interaction.reply({ content: "Responded", ephemeral: true });
                 }
-                // const command: CommandBuilder = (interaction.client as Client).commands.get(interaction.commandName);
-                // if (!command) {
-                //     this.loggers.module.debug(`No command found with name: ${interaction.commandName}.`);
-                //     return;
-                // }
-                // await command.execute(interaction);
+                if (interaction.isMessageComponent()) {
+                    switch (interaction.componentType) {
+                        case ComponentType.Button:
+                            // const f = client.buttons.get((interaction as ButtonInteraction).customId);
+                            // if (!f) {
+                            //     await interaction.reply({
+                            //         content: "Cannot find action for this button.",
+                            //         ephemeral: true,
+                            //     });
+                            //     return;
+                            // }
+                            // await f(interaction as unknown as ChatInputCommandInteraction);
+                            break;
+                        case ComponentType.SelectMenu:
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
         catch (error) {
-            this.loggers.interaction.error(error instanceof Error ? error.stack : error);
+            this.interactionLogger.error(error instanceof Error ? error.stack : error);
             if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
                 if (error instanceof CommandResolverError) {
                     await interaction.reply({
@@ -138,7 +146,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
             }
         })));
         for (const result of results.filter(result => result.status === "rejected")) {
-            this.loggers.event.error(result.reason instanceof Error ? result.reason.stack : result.reason);
+            this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
         }
     }
     /**
@@ -157,13 +165,13 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     await task.run(client);
                 }
                 catch (error) {
-                    this.loggers.task.error(error instanceof Error ? error.stack : error);
+                    this.taskLogger.error(error instanceof Error ? error.stack : error);
                 }
             }, task.timeout, client));
             await task.run(client);
         }
         catch (error) {
-            this.loggers.task.error(error instanceof Error ? error.stack : error);
+            this.taskLogger.error(error instanceof Error ? error.stack : error);
         }
     }
     /**
@@ -173,51 +181,40 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      */
     configureModules(client) {
-        this.loggers.module.info("Loading modules.");
+        this.moduleLogger.info("Loading modules.");
         for (const module of this.modules) {
+            this.moduleLogger.info(module.moduleName);
             try {
-                this.loggers.module.info(`Setting Up module ${module.moduleName}`);
-                // client.modules.set(module.moduleName, module);
-                if (!this.moduleConfiguration.disableCommands) {
-                    this.loggers.module.debug(`Setting Up commands...`);
-                    // module.commands.forEach(command => client.commands.set(command.name, command));
-                }
-                for (let buttonsKey in module.buttons) {
-                    // client.buttons.set(buttonsKey, module.buttons[buttonsKey]);
-                }
-                if (!this.moduleConfiguration.disableEventListeners) {
-                    this.loggers.module.debug(`Setting Up listeners...`);
-                    module.listeners.forEach(listener => {
-                        // const listeners = client.moduleListeners.get(listener.event) ?? [];
-                        // listeners.push(listener);
-                        // client.moduleListeners.set(listener.event, listeners);
-                    });
-                }
-                if (!this.moduleConfiguration.disableTimers) {
-                    this.loggers.module.debug(`Setting Up tasks...`);
-                    module.tasks.forEach(task => this.runTimer(task, client));
+                if (this.moduleConfiguration.enableEventListeners) {
+                    this.moduleLogger.debug("Setting up event module events.");
+                    for (const listener of module.eventListeners) {
+                        const collection = client.events.get(listener.event) ?? [];
+                        collection.push(listener);
+                        client.events.set(listener.event, collection);
+                    }
                 }
             }
             catch (error) {
-                this.loggers.module.error(error instanceof Error ? error.stack : error);
+                this.moduleLogger.error(error instanceof Error ? error.stack : error);
             }
         }
-        if (!this.moduleConfiguration.disableEventListeners) {
-            this.loggers.module.debug(`Setting Up events...`);
-            // for (const [ event, listeners ] of client.moduleListeners) {
-            //     client.on(event, (...args) => this.runEvent(listeners, client, args));
-            // }
+        if (this.moduleConfiguration.enableEventListeners) {
+            this.moduleLogger.debug("Registering event.");
+            for (const [event, listeners] of client.events) {
+                client.on(event, (...args) => this.runEvent(listeners, client, args));
+            }
         }
-        if (!this.moduleConfiguration.disableInteractions) {
-            this.loggers.module.debug(`Setting Up interaction event...`);
-            client.on("interactionCreate", interaction => this.interactionEvent(interaction));
+        if (this.moduleConfiguration.enableInteractions) {
+            this.moduleLogger.debug("Interactions were enabled.");
+            client.on("interactionCreate", this.interactionEvent.bind(this));
         }
+        this.moduleLogger.info("Done.");
     }
     /**
      * Cleanup function.
      */
     cleanup() {
-        this.loggers.module.info(`Cleaning up module configurations.`);
+        this.moduleLogger.info(`Cleaning up module configurations.`);
         for (const id of this.intervalIds) {
             clearInterval(id);
         }

@@ -36,7 +36,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             execute: interaction => this.listEvents(interaction),
         }),
     ];
-    listeners = [
+    eventListeners = [
         { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
         { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
         { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
