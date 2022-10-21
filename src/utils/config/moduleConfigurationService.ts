@@ -6,7 +6,7 @@ import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { ModuleBase, ProjectConfiguration, EventListener, EventListeners } from "../models/index.js";
+import { ModuleBase, ProjectConfiguration, EventListeners } from "../models/index.js";
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
@@ -48,7 +48,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
     }
 
     /**
-     * Todo: Cleanup.
      * Todo: Setup modal responding.
      * Todo: Setup buttons/select menu
      * Todo: Context Menu.
@@ -149,10 +148,10 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @param args Any additional arguments provided to the event.
      * @private
      */
-    private async runEvent(listeners: EventListener[], client: Client, ...args: any[]): Promise<void> {
-        const results = await Promise.allSettled(listeners.map(l => new Promise(async (resolve, reject) => {
+    private async runEvent(listeners: EventListeners, client: Client, ...args: any[]): Promise<void> {
+        const results = await Promise.allSettled(listeners.map(listener => new Promise(async (resolve, reject) => {
             try {
-                resolve(l.run(client, args));
+                resolve(listener.execute(client, args));
             } catch (error: Error | unknown) {
                 reject(error);
             }

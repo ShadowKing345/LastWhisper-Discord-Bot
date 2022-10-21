@@ -1,5 +1,5 @@
-import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { ModuleBase, EventListener } from "../utils/models/index.js";
+import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
+import { ModuleBase, EventListeners, EventListener } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
@@ -28,9 +28,9 @@ export class ManagerUtilsModule extends ModuleBase {
         },
         execute: interaction => this.commandResolver(interaction),
     }) ];
-    public eventListeners: EventListener[] = [
-        { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
-        { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
+    public eventListeners: EventListeners = [
+        new EventListener("guildBanAdd", (_, member) => this.onMemberBanned(member)),
+        new EventListener("guildMemberRemove", async (client, member) => await this.onMemberRemoved(member)),
     ];
 
     protected commandResolverKeys: { [key: string]: Function } = {
@@ -45,7 +45,7 @@ export class ManagerUtilsModule extends ModuleBase {
         super(permissionManagerService, logger);
     }
 
-    private onMemberRemoved(member: GuildMember): Promise<void> {
+    private onMemberRemoved(member: GuildMember | PartialGuildMember ): Promise<void> {
         return this.managerUtilsService.onMemberRemoved(member);
     }
 

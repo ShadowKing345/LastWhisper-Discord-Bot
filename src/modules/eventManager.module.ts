@@ -1,5 +1,5 @@
-import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
-import { ModuleBase, Task, EventListeners } from "../utils/models/index.js";
+import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage } from "discord.js";
+import { ModuleBase, Task, EventListeners, EventListener } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
@@ -25,10 +25,10 @@ export class EventManagerModule extends ModuleBase {
         }),
     ];
     public eventListeners: EventListeners = [
-        { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
-        { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
-        { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
-        { event: "ready", run: async client => this.onReady(client) },
+        new EventListener("messageCreate", (_, message) => this.createEvent(message)),
+        new EventListener("messageUpdate", (_, old, message) => this.updateEvent(old, message)),
+        new EventListener("messageDelete", (_, message) => this.deleteEvent(message)),
+        new EventListener("ready", client => this.onReady(client)),
     ];
     public tasks: Task[] = [
         {
@@ -52,11 +52,11 @@ export class EventManagerModule extends ModuleBase {
         return this.eventManagerService.createEvent(message);
     }
 
-    private updateEvent(oldMessage: Message, newMessage: Message): Promise<void> {
+    private updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
         return this.eventManagerService.updateEvent(oldMessage, newMessage);
     }
 
-    private deleteEvent(message: Message): Promise<void> {
+    private deleteEvent(message: Message | PartialMessage): Promise<void> {
         return this.eventManagerService.deleteEvent(message);
     }
 

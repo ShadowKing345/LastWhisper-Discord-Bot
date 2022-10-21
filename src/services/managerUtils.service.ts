@@ -1,4 +1,4 @@
-import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, AuditLogEvent, EmbedBuilder } from "discord.js";
+import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, AuditLogEvent, EmbedBuilder, PartialGuildMember } from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -21,7 +21,11 @@ export class ManagerUtilsService {
         return null;
     }
 
-    public async onMemberRemoved(member: GuildMember) {
+    public async onMemberRemoved(member: GuildMember | PartialGuildMember) {
+        if (member.partial) {
+            await member.fetch();
+        }
+
         const loggingChannel: TextChannel | null = await this.getLoggingChannel(member.guild);
         if (!loggingChannel) return;
 
@@ -53,7 +57,10 @@ export class ManagerUtilsService {
         const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel) return;
 
-        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: AuditLogEvent.MemberBanAdd })).entries.first();
+        const banLogs = (await ban.guild.fetchAuditLogs({
+            limit: 1,
+            type: AuditLogEvent.MemberBanAdd,
+        })).entries.first();
 
         if (banLogs) {
             const executor: User | null = banLogs.executor;

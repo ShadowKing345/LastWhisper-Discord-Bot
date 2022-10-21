@@ -1,7 +1,7 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
-import { EventListener, ModuleBase } from "../utils/models/index.js";
+import { ModuleBase, EventListeners, EventListener } from "../utils/models/index.js";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
@@ -12,8 +12,8 @@ import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/
 @registerModule()
 export class RoleManagerModule extends ModuleBase {
     public moduleName: string = "RoleManager";
-    public eventListeners: EventListener[] = [
-        { event: "ready", run: async (client) => this.onReady(client) },
+    public eventListeners: EventListeners = [
+        new EventListener("ready", async (client) => this.onReady(client)),
     ];
     public commands: CommandBuilders = [
         new CommandBuilder({

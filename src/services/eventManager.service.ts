@@ -1,4 +1,4 @@
-import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder, PartialMessage } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -118,7 +118,7 @@ export class EventManagerService {
         }
     }
 
-    public async updateEvent(oldMessage: Message, newMessage: Message) {
+    public async updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) {
         if (oldMessage.partial) await oldMessage.fetch();
         if (newMessage.partial) await newMessage.fetch();
 
@@ -147,7 +147,7 @@ export class EventManagerService {
         }
     }
 
-    public async deleteEvent(message: Message) {
+    public async deleteEvent(message: Message | PartialMessage) {
         if (message.partial) await message.fetch();
         const config = await this.getConfig(message.guildId);
 
