@@ -1,13 +1,14 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
-import { ModuleBase, EventListeners, EventListener } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
+import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
 @registerModule()
 export class RoleManagerModule extends ModuleBase {

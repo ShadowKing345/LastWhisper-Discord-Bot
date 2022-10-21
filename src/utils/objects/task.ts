@@ -1,8 +1,5 @@
 import { Client as DiscordClient } from "discord.js";
-import { container } from "tsyringe";
-
-import { LoggerService } from "../loggerService.js";
-import { Client } from "./client.js";
+import { Client } from "../models/client.js";
 
 export class Task {
     // private static readonly logger = container.resolve(LoggerFactory).buildLogger(Task.name);

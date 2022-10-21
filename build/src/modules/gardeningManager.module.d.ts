@@ -1,13 +1,14 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { ModuleBase, Task } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { CommandBuilders } from "../utils/objects/commandBuilder.js";
+import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
+import { Task } from "../utils/objects/task.js";
 export declare class GardeningManagerModule extends ModuleBase {
     private gardeningManagerService;
     moduleName: string;
-    commands: CommandBuilders;
+    commands: Commands;
     tasks: Task[];
     protected commandResolverKeys: {
         [key: string]: Function;

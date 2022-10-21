@@ -16,7 +16,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
-import { Task } from "../utils/models/task.js";
+import { Task } from "../utils/objects/task.js";
 import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
 import { BuffManagerConfig } from "../models/buff_manager/index.js";
 const skipping = "Skipping";

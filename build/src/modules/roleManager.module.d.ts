@@ -1,13 +1,14 @@
 import { pino } from "pino";
-import { EventListener, ModuleBase } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { CommandBuilders } from "../utils/objects/commandBuilder.js";
+import { Commands } from "../utils/objects/command.js";
+import { EventListeners } from "../utils/objects/eventListener.js";
 export declare class RoleManagerModule extends ModuleBase {
     private roleManagerService;
     moduleName: string;
-    eventListeners: EventListener[];
-    commands: CommandBuilders;
+    eventListeners: EventListeners;
+    commands: Commands;
     protected commandResolverKeys: {
         [key: string]: Function;
     };

@@ -2,7 +2,7 @@ import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
-import { Task } from "../utils/models/task.js";
+import { Task } from "../utils/objects/task.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 import { EventManagerConfig, EventObj } from "../models/event_manager/index.js";

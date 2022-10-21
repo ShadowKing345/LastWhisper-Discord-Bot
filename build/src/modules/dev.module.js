@@ -15,19 +15,18 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
-import { CommandBuilder } from "../utils/objects/commandBuilder.js";
+import { Command } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { EventListener } from "../utils/models/index.js";
 let DevModule = DevModule_1 = class DevModule extends ModuleBase {
     moduleName = "DevModule";
     commands = [
-        new CommandBuilder({
+        new Command({
             name: "test_inputs",
             description: "Testing command.",
             execute: interaction => this.testInteractionTypes(interaction),
         }),
-        new CommandBuilder({
+        new Command({
             name: "test_modal",
             description: "Testing command.",
             execute: interaction => this.testModal(interaction),
@@ -36,9 +35,6 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
     buttons = {
         buttonTest1: (interaction) => this.buttonTest(interaction),
     };
-    eventListeners = [
-        new EventListener("messageCreate", async () => console.log("Message created")),
-    ];
     constructor(permissionManagerService, logger) {
         super(permissionManagerService, logger);
     }

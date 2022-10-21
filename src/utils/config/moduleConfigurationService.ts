@@ -6,11 +6,12 @@ import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { ModuleBase, ProjectConfiguration, EventListeners } from "../models/index.js";
-import { Task } from "../models/task.js";
+import { ModuleBase, ProjectConfiguration } from "../models/index.js";
+import { Task } from "../objects/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
 import { Command } from "../objects/command.js";
+import { EventListeners } from "../objects/eventListener.js";
 
 /**
  * Configuration service that manages the creation and registration of the different modules in the application.
@@ -149,7 +150,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @private
      */
     private async runEvent(listeners: EventListeners, client: Client, ...args: any[]): Promise<void> {
-        const results = await Promise.allSettled(listeners.map(listener => new Promise(async (resolve, reject) => {
+        const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
             try {
                 resolve(listener.execute(client, args));
             } catch (error: Error | unknown) {

@@ -1,13 +1,14 @@
-import { ModuleBase, EventListener } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { CommandBuilders } from "../utils/objects/commandBuilder.js";
+import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
+import { EventListeners } from "../utils/objects/eventListener.js";
 export declare class ManagerUtilsModule extends ModuleBase {
     private managerUtilsService;
     moduleName: string;
-    commands: CommandBuilders;
-    eventListeners: EventListener[];
+    commands: Commands;
+    eventListeners: EventListeners;
     protected commandResolverKeys: {
         [key: string]: Function;
     };

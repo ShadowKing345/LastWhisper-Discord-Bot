@@ -15,7 +15,6 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
     private readonly taskLogger;
     constructor(config: ProjectConfiguration, modules: ModuleBase[], loggerFactory: LoggerService);
     /**
-     * Todo: Cleanup.
      * Todo: Setup modal responding.
      * Todo: Setup buttons/select menu
      * Todo: Context Menu.

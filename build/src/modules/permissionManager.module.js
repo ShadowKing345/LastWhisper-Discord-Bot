@@ -16,13 +16,13 @@ import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
     moduleName = "PermissionManager";
     commands = [
-        new CommandBuilder({
+        new Command({
             name: "permission",
             description: "Controls the permission for each command.",
             subcommands: {
@@ -38,7 +38,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     description: "Adds a role to a permission setting.",
                     options: [
                         PermissionManagerModule_1.commandKeyHelperBuilder(true),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "role",
                             description: "Role to be added.",
                             required: true,
@@ -51,7 +51,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     description: "Removes a role to a permission setting.",
                     options: [
                         PermissionManagerModule_1.commandKeyHelperBuilder(true),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "role",
                             description: "Role to be added.",
                             required: true,
@@ -64,7 +64,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     description: "Configures a permission.",
                     options: [
                         PermissionManagerModule_1.commandKeyHelperBuilder(true),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "mode",
                             description: "Sets the search mode for the command. Any: has any. Strict: has all.",
                             required: true,
@@ -74,7 +74,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                             ],
                             type: ApplicationCommandOptionType.Integer,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "black_list",
                             description: "Reverses the final result. I.e. If list is empty, no one can use the command.",
                             type: ApplicationCommandOptionType.String,
@@ -124,7 +124,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         return this.permissionManagerService.reset(interaction, key);
     }
     static commandKeyHelperBuilder(boolOverride = true) {
-        return new CommandBuilderOption({
+        return new CommandOption({
             name: "key",
             description: "Command permission Key.",
             required: boolOverride,

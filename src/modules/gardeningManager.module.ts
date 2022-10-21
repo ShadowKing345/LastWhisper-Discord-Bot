@@ -1,6 +1,6 @@
 import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
 import { Client } from "../utils/models/client.js";
-import { ModuleBase, Task } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.service.js";
 import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -8,6 +8,7 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { Task } from "../utils/objects/task.js";
 
 @registerModule()
 export class GardeningManagerModule extends ModuleBase {

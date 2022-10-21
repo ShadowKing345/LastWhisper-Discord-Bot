@@ -5,7 +5,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { Task } from "../utils/models/task.js";
+import { Task } from "../utils/objects/task.js";
 import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
 import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "../models/buff_manager/index.js";
 

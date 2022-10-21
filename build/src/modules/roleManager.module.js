@@ -17,15 +17,16 @@ import { createLogger } from "../utils/loggerService.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Command, CommandOption } from "../utils/objects/command.js";
+import { EventListener } from "../utils/objects/eventListener.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
     moduleName = "RoleManager";
     eventListeners = [
-        { event: "ready", run: async (client) => this.onReady(client) },
+        new EventListener("ready", async (client) => this.onReady(client)),
     ];
     commands = [
-        new CommandBuilder({
+        new Command({
             name: "role_manager",
             description: "Manages roles within a guild.",
             subcommands: {
@@ -37,7 +38,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                     name: "register_message",
                     description: "Registers a message to be reacted to.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "message_id",
                             description: "The ID for the message.",
                             required: true,
@@ -48,7 +49,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                     name: "unregister_message",
                     description: "Unregisters a message to be reacted to.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "message_id",
                             description: "The ID for the message.",
                             required: true,

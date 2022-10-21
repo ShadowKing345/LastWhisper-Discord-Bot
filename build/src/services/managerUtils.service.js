@@ -25,6 +25,9 @@ let ManagerUtilsService = class ManagerUtilsService {
         return null;
     }
     async onMemberRemoved(member) {
+        if (member.partial) {
+            await member.fetch();
+        }
         const loggingChannel = await this.getLoggingChannel(member.guild);
         if (!loggingChannel)
             return;
@@ -50,7 +53,10 @@ let ManagerUtilsService = class ManagerUtilsService {
         const loggingChannel = await this.getLoggingChannel(ban.guild);
         if (!loggingChannel)
             return;
-        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: AuditLogEvent.MemberBanAdd })).entries.first();
+        const banLogs = (await ban.guild.fetchAuditLogs({
+            limit: 1,
+            type: AuditLogEvent.MemberBanAdd,
+        })).entries.first();
         if (banLogs) {
             const executor = banLogs.executor;
             const target = banLogs.target;

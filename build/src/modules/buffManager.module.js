@@ -17,7 +17,7 @@ import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder } from "../utils/objects/commandBuilder.js";
+import { Command } from "../utils/objects/command.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
     moduleName = "BuffManager";
@@ -29,7 +29,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         },
     ];
     commands = [
-        new CommandBuilder({
+        new Command({
             name: "buff_manager",
             description: "Manages all things related to buffs",
             subcommands: {

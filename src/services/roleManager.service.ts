@@ -4,7 +4,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { Task } from "../utils/models/task.js";
+import { Task } from "../utils/objects/task.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
 import { RoleManagerRepository } from "../repositories/roleManager.repository.js";

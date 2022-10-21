@@ -1,6 +1,6 @@
-import { Task } from "../models/task.js";
+import { Task } from "./task.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
-import { EventListeners } from "../models/index.js";
+import { EventListeners } from "./eventListener.js";
 import { Commands, Command } from "./command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";

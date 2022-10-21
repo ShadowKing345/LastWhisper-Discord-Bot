@@ -43,7 +43,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
             }) : modules;
     }
     /**
-     * Todo: Cleanup.
      * Todo: Setup modal responding.
      * Todo: Setup buttons/select menu
      * Todo: Context Menu.
@@ -137,9 +136,9 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
      * @private
      */
     async runEvent(listeners, client, ...args) {
-        const results = await Promise.allSettled(listeners.map(l => new Promise(async (resolve, reject) => {
+        const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
             try {
-                resolve(l.run(client, args));
+                resolve(listener.execute(client, args));
             }
             catch (error) {
                 reject(error);

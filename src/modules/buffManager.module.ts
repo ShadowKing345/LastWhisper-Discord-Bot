@@ -2,11 +2,12 @@ import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { ModuleBase, Task } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command } from "../utils/objects/command.js";
+import { Task } from "../utils/objects/task.js";
 
 @registerModule()
 export class BuffManagerModule extends ModuleBase {

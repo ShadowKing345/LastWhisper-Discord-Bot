@@ -1,11 +1,12 @@
 import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
-import { ModuleBase, EventListeners, EventListener } from "../utils/models/index.js";
+import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command, CommandOption, Commands } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
 @registerModule()
 export class ManagerUtilsModule extends ModuleBase {

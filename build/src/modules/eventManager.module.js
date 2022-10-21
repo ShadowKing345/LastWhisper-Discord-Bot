@@ -16,18 +16,19 @@ import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { EventListener } from "../utils/objects/eventListener.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;
     moduleName = "EventManager";
     commands = [
-        new CommandBuilder({
+        new Command({
             name: "event",
             description: "Displays events.",
             options: [
-                new CommandBuilderOption({
+                new CommandOption({
                     name: "index",
                     description: "The index for the event, starting at 0.",
                     type: ApplicationCommandOptionType.Integer,
@@ -37,10 +38,10 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         }),
     ];
     eventListeners = [
-        { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
-        { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
-        { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
-        { event: "ready", run: async (client) => this.onReady(client) },
+        new EventListener("messageCreate", (_, message) => this.createEvent(message)),
+        new EventListener("messageUpdate", (_, old, message) => this.updateEvent(old, message)),
+        new EventListener("messageDelete", (_, message) => this.deleteEvent(message)),
+        new EventListener("ready", client => this.onReady(client)),
     ];
     tasks = [
         {

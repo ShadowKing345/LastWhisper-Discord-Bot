@@ -15,13 +15,14 @@ import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { EventListener } from "../utils/objects/eventListener.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends ModuleBase {
     managerUtilsService;
     moduleName = "ManagerUtils";
-    commands = [new CommandBuilder({
+    commands = [new Command({
             name: "manager_utils",
             description: "Utility functions for managers.",
             subcommands: {
@@ -29,7 +30,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
                     name: "clear",
                     description: "Clears a channel of its messages.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "amount",
                             description: "The amount of messages to clear. Default 10.",
                         }),
@@ -39,8 +40,8 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
             execute: interaction => this.commandResolver(interaction),
         })];
     eventListeners = [
-        { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
-        { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
+        new EventListener("guildBanAdd", (_, member) => this.onMemberBanned(member)),
+        new EventListener("guildMemberRemove", async (client, member) => await this.onMemberRemoved(member)),
     ];
     commandResolverKeys = {
         "manager_utils.clear": this.clear,

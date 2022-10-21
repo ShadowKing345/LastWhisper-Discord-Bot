@@ -1,7 +1,7 @@
-import { Task } from "../models/task.js";
+import { Task } from "./task.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
-import { EventListeners } from "../models/index.js";
-import { CommandBuilders, CommandBuilder } from "./commandBuilder.js";
+import { EventListeners } from "./eventListener.js";
+import { Commands, Command } from "./command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { pino } from "pino";
 /**
@@ -11,7 +11,7 @@ export declare abstract class ModuleBase {
     permissionManagerService: PermissionManagerService;
     protected logger: pino.Logger;
     moduleName: string;
-    commands: CommandBuilders;
+    commands: Commands;
     eventListeners: EventListeners;
     tasks: Task[];
     buttons: {
@@ -45,7 +45,7 @@ export declare abstract class ModuleBase {
      * Returns the first instance of a command with the given name.
      * @param command The name of the command.
      */
-    getCommand(command: string): CommandBuilder | undefined;
+    getCommand(command: string): Command | undefined;
     get handlesCommands(): boolean;
     get handlesButtons(): boolean;
     get handlesSelectMenu(): boolean;
