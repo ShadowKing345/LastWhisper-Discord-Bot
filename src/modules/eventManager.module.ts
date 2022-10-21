@@ -46,8 +46,6 @@ export class EventManagerModule extends ModuleBase {
         @createLogger(EventManagerModule.name) logger: pino.Logger,
     ) {
         super(permissionManagerService, logger);
-
-        console.log(this.commands[0].build().toJSON());
     }
 
     private createEvent(message: Message): Promise<void> {
