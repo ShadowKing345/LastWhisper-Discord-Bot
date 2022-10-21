@@ -149,25 +149,23 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         }
     }
     /**
-     * Todo: Cleanup.
      * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
-     * @param task The timer object data used to create a timer.
+     * @param timer The timer object data used to create a timer.
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      * @private
      */
-    async runTimer(task, client) {
+    runTimer(timer, client) {
         try {
-            // client.tasks.set(task.name, task);
             this.intervalIds.push(setInterval(async () => {
                 try {
-                    await task.run(client);
+                    await timer.execute(client);
                 }
                 catch (error) {
                     this.taskLogger.error(error instanceof Error ? error.stack : error);
                 }
-            }, task.timeout, client));
-            await task.run(client);
+            }, timer.timeout, client));
+            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
         }
         catch (error) {
             this.taskLogger.error(error instanceof Error ? error.stack : error);
@@ -201,6 +199,12 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
             this.moduleLogger.debug("Registering event.");
             for (const [event, listeners] of client.events) {
                 client.on(event, (...args) => this.runEvent(listeners, client, args));
+            }
+        }
+        if (this.moduleConfiguration.enableTimers) {
+            this.moduleLogger.debug("Timers were enabled.");
+            for (const timer of this.modules.map(module => module.timers).flat()) {
+                this.runTimer(timer, client);
             }
         }
         if (this.moduleConfiguration.enableInteractions) {

@@ -7,16 +7,16 @@ import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command } from "../utils/objects/command.js";
-import { Task } from "../utils/objects/task.js";
+import { Timers } from "../utils/objects/timer.js";
 
 @registerModule()
 export class BuffManagerModule extends ModuleBase {
     public moduleName: string = "BuffManager";
-    public tasks: Task[] = [
+    public timers: Timers = [
         {
             name: `${this.moduleName}#dailyMessageTask`,
             timeout: 60000,
-            run: async client => this.postDailyMessage(client),
+            execute: async client => this.postDailyMessage(client),
         },
     ];
 

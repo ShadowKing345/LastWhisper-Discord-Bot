@@ -4,13 +4,13 @@ import { PermissionManagerService } from "../services/permissionManager.service.
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
 import { EventListeners } from "../utils/objects/eventListener.js";
-import { Task } from "../utils/objects/task.js";
+import { Timers } from "../utils/objects/timer.js";
 export declare class EventManagerModule extends ModuleBase {
     private eventManagerService;
     moduleName: string;
     commands: Commands;
     eventListeners: EventListeners;
-    tasks: Task[];
+    timers: Timers;
     constructor(eventManagerService: EventManagerService, permissionManagerService: PermissionManagerService, logger: pino.Logger);
     private createEvent;
     private updateEvent;

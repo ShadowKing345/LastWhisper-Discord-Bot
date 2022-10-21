@@ -32,10 +32,9 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
      */
     private runEvent;
     /**
-     * Todo: Cleanup.
      * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
-     * @param task The timer object data used to create a timer.
+     * @param timer The timer object data used to create a timer.
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      * @private
      */

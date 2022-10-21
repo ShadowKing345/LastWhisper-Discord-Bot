@@ -11,7 +11,7 @@ var EventManagerService_1;
 import { EmbedBuilder } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
-import { Task } from "../utils/objects/task.js";
+import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 import { EventManagerConfig, EventObj } from "../models/event_manager/index.js";
@@ -155,7 +155,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         await this.eventManagerRepository.save(config);
     }
     async reminderLoop(client) {
-        await Task.waitTillReady(client);
+        await Timer.waitTillReady(client);
         const now = DateTime.now();
         const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId));
         const alteredConfigs = [];

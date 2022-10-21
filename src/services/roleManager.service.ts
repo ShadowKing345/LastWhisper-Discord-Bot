@@ -4,7 +4,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { Task } from "../utils/objects/task.js";
+import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
 import { RoleManagerRepository } from "../repositories/roleManager.repository.js";
@@ -59,7 +59,7 @@ export class RoleManagerService {
     }
 
     public async onReady(client: Client) {
-        await Task.waitTillReady(client);
+        await Timer.waitTillReady(client);
         const configs: RoleManagerConfig[] = (await this.roleManagerConfigRepository.getAll())
             .filter(config => client.guilds.cache.has(config.guildId)
                 && config.reactionListeningChannel

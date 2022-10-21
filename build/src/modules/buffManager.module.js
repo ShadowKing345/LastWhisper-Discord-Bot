@@ -21,11 +21,11 @@ import { Command } from "../utils/objects/command.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
     moduleName = "BuffManager";
-    tasks = [
+    timers = [
         {
             name: `${this.moduleName}#dailyMessageTask`,
             timeout: 60000,
-            run: async (client) => this.postDailyMessage(client),
+            execute: async (client) => this.postDailyMessage(client),
         },
     ];
     commands = [

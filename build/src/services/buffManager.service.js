@@ -16,7 +16,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
-import { Task } from "../utils/objects/task.js";
+import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
 import { BuffManagerConfig } from "../models/buff_manager/index.js";
 const skipping = "Skipping";
@@ -109,9 +109,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         await interaction.reply({ embeds: [this.createWeekEmbed(title, week, config.buffs, date)] });
     }
     async postDailyMessage(client) {
-        if (!client.isReady()) {
-            await Task.waitTillReady(client);
-        }
+        await Timer.waitTillReady(client);
         this.logger.debug("Posting daily buff message.");
         const configs = (await this.buffManagerConfigRepository.getAll())
             .filter(config => client.guilds.cache.has(config.guildId) && config.buffs.length > 0);

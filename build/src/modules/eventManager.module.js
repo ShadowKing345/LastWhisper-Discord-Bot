@@ -43,11 +43,11 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         new EventListener("messageDelete", (_, message) => this.deleteEvent(message)),
         new EventListener("ready", client => this.onReady(client)),
     ];
-    tasks = [
+    timers = [
         {
             name: `${this.moduleName}#postMessageTask`,
             timeout: 60000,
-            run: client => this.reminderLoop(client),
+            execute: client => this.reminderLoop(client),
         },
     ];
     constructor(eventManagerService, permissionManagerService, logger) {

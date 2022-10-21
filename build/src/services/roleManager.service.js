@@ -14,7 +14,7 @@ var RoleManagerService_1;
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
-import { Task } from "../utils/objects/task.js";
+import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
 import { RoleManagerRepository } from "../repositories/roleManager.repository.js";
@@ -61,7 +61,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
             .on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
     }
     async onReady(client) {
-        await Task.waitTillReady(client);
+        await Timer.waitTillReady(client);
         const configs = (await this.roleManagerConfigRepository.getAll())
             .filter(config => client.guilds.cache.has(config.guildId)
             && config.reactionListeningChannel

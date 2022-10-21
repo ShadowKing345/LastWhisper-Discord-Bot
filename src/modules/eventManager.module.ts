@@ -7,7 +7,7 @@ import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
-import { Task } from "../utils/objects/task.js";
+import { Timers } from "../utils/objects/timer.js";
 
 @registerModule()
 export class EventManagerModule extends ModuleBase {
@@ -32,11 +32,11 @@ export class EventManagerModule extends ModuleBase {
         new EventListener("messageDelete", (_, message) => this.deleteEvent(message)),
         new EventListener("ready", client => this.onReady(client)),
     ];
-    public tasks: Task[] = [
+    public timers: Timers = [
         {
             name: `${this.moduleName}#postMessageTask`,
             timeout: 60000,
-            run: client => this.reminderLoop(client),
+            execute: client => this.reminderLoop(client),
         },
     ];
 

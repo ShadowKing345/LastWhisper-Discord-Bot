@@ -8,7 +8,7 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { Task } from "../utils/objects/task.js";
+import { Timers } from "../utils/objects/timer.js";
 
 @registerModule()
 export class GardeningManagerModule extends ModuleBase {
@@ -111,8 +111,8 @@ export class GardeningManagerModule extends ModuleBase {
         }),
     ];
 
-    public tasks: Task[] = [
-        { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) },
+    public timers: Timers = [
+        { name: `${this.moduleName}#TickTask`, timeout: 60000, execute: client => this.tick(client) },
     ];
 
     protected commandResolverKeys: { [key: string]: Function } = {

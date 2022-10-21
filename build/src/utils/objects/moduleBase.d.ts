@@ -1,4 +1,4 @@
-import { Task } from "./task.js";
+import { Timers } from "./timer.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
 import { EventListeners } from "./eventListener.js";
 import { Commands, Command } from "./command.js";
@@ -13,7 +13,7 @@ export declare abstract class ModuleBase {
     moduleName: string;
     commands: Commands;
     eventListeners: EventListeners;
-    tasks: Task[];
+    timers: Timers;
     buttons: {
         [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
     };

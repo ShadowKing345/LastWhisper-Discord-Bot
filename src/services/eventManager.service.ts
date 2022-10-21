@@ -2,7 +2,7 @@ import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
-import { Task } from "../utils/objects/task.js";
+import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 import { EventManagerConfig, EventObj } from "../models/event_manager/index.js";
@@ -158,7 +158,7 @@ export class EventManagerService {
     }
 
     public async reminderLoop(client: Client) {
-        await Task.waitTillReady(client);
+        await Timer.waitTillReady(client);
 
         const now: DateTime = DateTime.now();
         const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId));

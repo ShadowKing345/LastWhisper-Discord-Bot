@@ -7,7 +7,7 @@ import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
 import { ModuleBase, ProjectConfiguration } from "../models/index.js";
-import { Task } from "../objects/task.js";
+import { Timer } from "../objects/timer.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
 import { Command } from "../objects/command.js";
@@ -20,7 +20,9 @@ import { EventListeners } from "../objects/eventListener.js";
 export class ModuleConfigurationService extends ConfigurationClass {
     private readonly moduleConfiguration: ModuleConfiguration;
     private readonly intervalIds: number[] = [];
+
     private readonly _modules: ModuleBase[];
+
     private readonly moduleLogger: pino.Logger;
     private readonly interactionLogger: pino.Logger;
     private readonly eventLogger: pino.Logger;
@@ -164,24 +166,22 @@ export class ModuleConfigurationService extends ConfigurationClass {
     }
 
     /**
-     * Todo: Cleanup.
      * Function that sets up a Javascript timer to go off.
      * Also fires the timer as well.
-     * @param task The timer object data used to create a timer.
+     * @param timer The timer object data used to create a timer.
      * @param client The main app client. Not to be confused with Discord.Js Client object.
      * @private
      */
-    private async runTimer(task: Task, client: Client): Promise<void> {
+    private runTimer(timer: Timer, client: Client): void {
         try {
-            // client.tasks.set(task.name, task);
             this.intervalIds.push(setInterval(async () => {
                 try {
-                    await task.run(client);
+                    await timer.execute(client);
                 } catch (error: Error | unknown) {
                     this.taskLogger.error(error instanceof Error ? error.stack : error);
                 }
-            }, task.timeout, client));
-            await task.run(client);
+            }, timer.timeout, client));
+            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
         } catch (error: Error | unknown) {
             this.taskLogger.error(error instanceof Error ? error.stack : error);
         }
@@ -219,6 +219,13 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
             for (const [ event, listeners ] of client.events) {
                 client.on(event, (...args) => this.runEvent(listeners, client, args));
+            }
+        }
+
+        if (this.moduleConfiguration.enableTimers) {
+            this.moduleLogger.debug("Timers were enabled.");
+            for (const timer of this.modules.map(module => module.timers).flat()) {
+                this.runTimer(timer, client);
             }
         }
 

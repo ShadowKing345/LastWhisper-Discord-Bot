@@ -1,4 +1,4 @@
-import { Task } from "./task.js";
+import { Timers } from "./timer.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
 import { EventListeners } from "./eventListener.js";
 import { Commands, Command } from "./command.js";
@@ -13,7 +13,7 @@ export abstract class ModuleBase {
     public moduleName: string = "";
     public commands: Commands = [];
     public eventListeners: EventListeners = [];
-    public tasks: Task[] = [];
+    public timers: Timers = [];
 
     public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
     public selectMenus: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };

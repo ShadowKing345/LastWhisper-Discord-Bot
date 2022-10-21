@@ -117,8 +117,8 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
             execute: async (interaction) => this.commandResolver(interaction),
         }),
     ];
-    tasks = [
-        { name: `${this.moduleName}#TickTask`, timeout: 60000, run: client => this.tick(client) },
+    timers = [
+        { name: `${this.moduleName}#TickTask`, timeout: 60000, execute: client => this.tick(client) },
     ];
     commandResolverKeys = {
         "gardening_module.reserve": this.reserve,

@@ -1,13 +1,9 @@
-import { Client as DiscordClient } from "discord.js";
-import { Client } from "../models/client.js";
-
 export class Task {
     // private static readonly logger = container.resolve(LoggerFactory).buildLogger(Task.name);
-    public name: string;
-    public timeout: number;
-    public run: (client: Client) => Promise<void>;
-
-    public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
+    name;
+    timeout;
+    run;
+    static async waitTillReady(client, checkAgainTime = 500) {
         // Task.logger.debug(`Waiting for client to be ready.`);
         while (!client.isReady()) {
             await new Promise(resolve => setTimeout(resolve, checkAgainTime));
@@ -15,3 +11,4 @@ export class Task {
         // Task.logger.debug(`Client is ready.`);
     }
 }
+//# sourceMappingURL=task.js.map

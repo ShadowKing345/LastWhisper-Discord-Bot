@@ -4,12 +4,12 @@ import { GardeningManagerService } from "../services/gardeningManager.service.js
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
-import { Task } from "../utils/objects/task.js";
+import { Timers } from "../utils/objects/timer.js";
 export declare class GardeningManagerModule extends ModuleBase {
     private gardeningManagerService;
     moduleName: string;
     commands: Commands;
-    tasks: Task[];
+    timers: Timers;
     protected commandResolverKeys: {
         [key: string]: Function;
     };

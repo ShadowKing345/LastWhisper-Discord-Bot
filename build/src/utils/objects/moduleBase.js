@@ -8,7 +8,7 @@ export class ModuleBase {
     moduleName = "";
     commands = [];
     eventListeners = [];
-    tasks = [];
+    timers = [];
     buttons;
     selectMenus;
     modalSubmits;

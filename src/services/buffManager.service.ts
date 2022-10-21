@@ -5,7 +5,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { Task } from "../utils/objects/task.js";
+import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
 import { Buff, BuffManagerConfig, Days, MessageSettings, Week } from "../models/buff_manager/index.js";
 
@@ -121,9 +121,7 @@ export class BuffManagerService {
     }
 
     public async postDailyMessage(client: Client): Promise<void> {
-        if (!client.isReady()) {
-            await Task.waitTillReady(client);
-        }
+        await Timer.waitTillReady(client);
         this.logger.debug("Posting daily buff message.");
 
         const configs: BuffManagerConfig[] = (await this.buffManagerConfigRepository.getAll())
