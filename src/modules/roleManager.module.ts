@@ -12,7 +12,7 @@ import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/
 @registerModule()
 export class RoleManagerModule extends ModuleBase {
     public moduleName: string = "RoleManager";
-    public listeners: EventListener[] = [
+    public eventListeners: EventListener[] = [
         { event: "ready", run: async (client) => this.onReady(client) },
     ];
     public commands: CommandBuilders = [

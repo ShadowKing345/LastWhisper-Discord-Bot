@@ -28,7 +28,7 @@ export class ManagerUtilsModule extends ModuleBase {
         },
         execute: interaction => this.commandResolver(interaction),
     }) ];
-    public listeners: EventListener[] = [
+    public eventListeners: EventListener[] = [
         { event: "guildBanAdd", run: async (_, member) => await this.onMemberBanned(member) },
         { event: "guildMemberRemove", run: async (client, member) => await this.onMemberRemoved(member) },
     ];

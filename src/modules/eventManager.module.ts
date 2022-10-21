@@ -1,5 +1,5 @@
 import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
-import { ModuleBase, EventListener, Task } from "../utils/models/index.js";
+import { ModuleBase, Task, EventListeners } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
@@ -24,7 +24,7 @@ export class EventManagerModule extends ModuleBase {
             execute: interaction => this.listEvents(interaction),
         }),
     ];
-    public listeners: EventListener[] = [
+    public eventListeners: EventListeners = [
         { event: "messageCreate", run: async (_, message) => this.createEvent(message) },
         { event: "messageUpdate", run: async (_, old, message) => this.updateEvent(old, message) },
         { event: "messageDelete", run: async (_, message) => await this.deleteEvent(message) },
