@@ -20,8 +20,12 @@ import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;
+    static permissionKeys = {
+        Event: "EventManager.event",
+    };
     moduleName = "EventManager";
     commands = [
         new Command({
@@ -53,7 +57,6 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
     constructor(eventManagerService, permissionManagerService, logger) {
         super(permissionManagerService, logger);
         this.eventManagerService = eventManagerService;
-        console.log(this.commands[0].build().toJSON());
     }
     createEvent(message) {
         return this.eventManagerService.createEvent(message);
@@ -74,6 +77,10 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         return this.eventManagerService.onReady(client);
     }
 };
+__decorate([
+    addPermissionKeys(),
+    __metadata("design:type", Object)
+], EventManagerModule, "permissionKeys", void 0);
 EventManagerModule = EventManagerModule_1 = __decorate([
     registerModule(),
     __param(2, createLogger(EventManagerModule_1.name)),

@@ -15,17 +15,27 @@ import { EmbedBuilder } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
-import { deepMerge } from "../utils/index.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
-export const PermissionKeys = [];
+import { unflattenObject } from "../utils/index.js";
+/**
+ * Service that manages the permissions of commands throughout the project.
+ * The reason for this service is that while you are able to change certain permissions for regular slash commands, subcommands cannot have their permissions changed in the same way.
+ */
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService {
     permissionManagerRepository;
     logger;
+    static keys = [];
+    static _keysFormatted = null;
     constructor(permissionManagerRepository, logger) {
         this.permissionManagerRepository = permissionManagerRepository;
         this.logger = logger;
     }
+    /**
+     * Checks if a member is authorized to use the given key of a command.
+     * @param interaction The interaction used to determine the rights.
+     * @param key The name of the key to check against.
+     */
     async isAuthorized(interaction, key) {
         this.logger.debug(`Attempting to authorize for key ${key}`);
         if (!PermissionManagerService_1.keyExists(key)) {
@@ -36,12 +46,14 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             this.logger.debug(`Expected Failure: Interaction is null.`);
             return false;
         }
+        // The guild owner should always be allowed to use commands to prevent a lockout scenario.
         if (interaction.guild.ownerId === interaction.user.id) {
             this.logger.debug(`User is owner. Returning true.`);
             return true;
         }
         const config = await this.findOneOrCreate(interaction.guildId);
-        const permission = deepMerge(new Permission(), config.permissions[key] ?? new Permission());
+        // Todo: fix missing permissions.
+        const permission = config.permissions[key] ?? new Permission();
         let result;
         if (permission.roles.length === 0) {
             this.logger.debug(`Length is 0. Flag set to true.`);
@@ -59,9 +71,16 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                     break;
             }
         }
-        this.logger.debug(`User is ${result && !permission.blackList ? "Authenticated" : "Unauthenticated"}.`);
-        return permission.blackList ? !result : result;
+        const authorized = (!permission.blackList && result) || (permission.blackList && !result);
+        this.logger.debug(`User is ${authorized ? "Authenticated" : "Unauthenticated"}.`);
+        return authorized;
     }
+    /**
+     * Adds a role to a permission.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     * @param role The role.
+     */
     async addRole(interaction, key, role) {
         if (!PermissionManagerService_1.keyExists(key)) {
             return interaction.reply({
@@ -84,6 +103,12 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             ephemeral: true,
         });
     }
+    /**
+     * Removes a role from a permission.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     * @param role The role.
+     */
     async removeRole(interaction, key, role) {
         if (!PermissionManagerService_1.keyExists(key)) {
             return interaction.reply({
@@ -110,6 +135,11 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             ephemeral: true,
         });
     }
+    /**
+     * Configures a permission.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     */
     async config(interaction, key) {
         if (!PermissionManagerService_1.keyExists(key)) {
             return interaction.reply({
@@ -133,6 +163,11 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             ephemeral: true,
         });
     }
+    /**
+     * Resets all permission options and roles set.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     */
     async reset(interaction, key) {
         if (!PermissionManagerService_1.keyExists(key)) {
             return interaction.reply({
@@ -154,6 +189,12 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             ephemeral: true,
         });
     }
+    /**
+     * List all permissions keys.
+     * If key is set then it gives a detailed view of that permission settings.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission (optional)
+     */
     async listPermissions(interaction, key) {
         if (key) {
             if (!PermissionManagerService_1.keyExists(key)) {
@@ -173,26 +214,20 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             });
         }
         else {
-            const result = `\`\`\`\n${PermissionKeys
-                .map((key) => key instanceof Object ? `${key.$index} {\n\t${Object.entries(key)
-                .filter(([k]) => k !== "$index")
-                .map(([, v]) => v instanceof Object ?
-                `${v.$index} {\n\t\t${Object.entries(v)
-                    .filter(([k]) => k !== "$index")
-                    .map(([, v]) => v)
-                    .join(",\n\t\t")}\n\t}`
-                : v)
-                .join(",\n\t")}\n}` : key)
-                .join(",\n")}\n\`\`\``;
             return interaction.reply({
                 embeds: [new EmbedBuilder({
                         title: "List of PermissionKeys",
-                        description: result,
+                        description: `\`\`\`\n${PermissionManagerService_1.keysFormatted}\n\`\`\``,
                     }).setColor("Random")],
                 ephemeral: true,
             });
         }
     }
+    /**
+     * Finds a config file or creates one.
+     * @param id Id for the guild.
+     * @private
+     */
     async findOneOrCreate(id) {
         let result = await this.permissionManagerRepository.findOne({ guildId: id });
         if (result)
@@ -201,22 +236,53 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         result.guildId = id;
         return await this.permissionManagerRepository.save(result);
     }
-    static removePermissionKey(prefix) {
-        PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === prefix), 1);
+    /**
+     * Adds a permission key to the list of keys.
+     * @param key The key to be added.
+     */
+    static addPermissionKey(key) {
+        if (!PermissionManagerService_1.keyExists(key)) {
+            PermissionManagerService_1.keys.push(key);
+        }
     }
+    /**
+     * Removes a permission from the list of keys.
+     * @param key The key to be removed.
+     */
+    static removePermissionKey(key) {
+        if (PermissionManagerService_1.keyExists(key)) {
+            PermissionManagerService_1.keys.splice(PermissionManagerService_1.keys.indexOf(key), 1);
+        }
+    }
+    /**
+     * Checks to see if a key already exists.
+     * @param key The key to check.
+     * @private
+     */
     static keyExists(key) {
-        const keys = key.split(".");
-        const item = PermissionKeys.find(item => (item instanceof Object ? item.$index : item) === keys[0]);
-        if (keys.length <= 1) {
-            return Object.values(item).length !== 1;
+        return PermissionManagerService_1.keys.includes(key);
+    }
+    /**
+     * Creates or returns a formatted text of the keys.
+     * Normalizes to be more readable.
+     */
+    static get keysFormatted() {
+        if (PermissionManagerService_1._keysFormatted) {
+            return PermissionManagerService_1._keysFormatted;
         }
-        const sub = Object.values(item).find(value => (value.$index ?? value) === keys[1]);
-        if (keys.length === 2) {
-            return sub instanceof Object ? Object.values(sub).length !== 1 : true;
+        const obj = unflattenObject(PermissionManagerService_1.keys.reduce((previousValue, currentValue) => {
+            previousValue[currentValue] = currentValue;
+            return previousValue;
+        }, {}));
+        function format(obj, index = 0) {
+            const spaces = "\t".repeat(index);
+            let result = "";
+            for (const [key, value] of Object.entries(obj)) {
+                result += typeof value === "object" ? `${spaces}${key}:\n${format(value, index + 1)}` : `${spaces}${key};\n`;
+            }
+            return result;
         }
-        if (keys.length === 3 && sub instanceof Object) {
-            return Object.values(sub).includes(keys[2]);
-        }
+        return PermissionManagerService_1._keysFormatted = format(obj);
     }
 };
 PermissionManagerService = PermissionManagerService_1 = __decorate([

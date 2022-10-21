@@ -7,6 +7,9 @@ import { EventListeners } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
 export declare class EventManagerModule extends ModuleBase {
     private eventManagerService;
+    static permissionKeys: {
+        Event: string;
+    };
     moduleName: string;
     commands: Commands;
     eventListeners: EventListeners;

@@ -8,9 +8,15 @@ import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 
 @registerModule()
 export class EventManagerModule extends ModuleBase {
+    @addPermissionKeys()
+    public static permissionKeys = {
+        Event: "EventManager.event",
+    }
+
     public moduleName: string = "EventManager";
     public commands: Commands = [
         new Command({

@@ -5,8 +5,7 @@ import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
-
-export const PermissionKeys: any = [];
+import { unflattenObject } from "../utils/index.js";
 
 /**
  * Service that manages the permissions of commands throughout the project.
@@ -14,6 +13,9 @@ export const PermissionKeys: any = [];
  */
 @singleton()
 export class PermissionManagerService {
+    private static readonly keys: string[] = [];
+    private static _keysFormatted: string = null;
+
     constructor(
         private permissionManagerRepository: PermissionManagerRepository,
         @createLogger(PermissionManagerService.name) private logger: pino.Logger,
@@ -229,27 +231,10 @@ export class PermissionManagerService {
                 ephemeral: true,
             });
         } else {
-            const result = `\`\`\`\n${
-                PermissionKeys
-                    .map((key) => key instanceof Object ? `${key.$index} {\n\t${
-                        Object.entries(key)
-                            .filter(([ k ]) => k !== "$index")
-                            .map(([ , v ]) => v instanceof Object ?
-                                `${(v as any).$index} {\n\t\t${
-                                    Object.entries(v)
-                                        .filter(([ k ]) => k !== "$index")
-                                        .map(([ , v ]) => v)
-                                        .join(",\n\t\t")
-                                }\n\t}`
-                                : v)
-                            .join(",\n\t")
-                    }\n}` : key)
-                    .join(",\n")
-            }\n\`\`\``;
             return interaction.reply({
                 embeds: [ new EmbedBuilder({
                     title: "List of PermissionKeys",
-                    description: result,
+                    description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
                 }).setColor("Random") ],
                 ephemeral: true,
             });
@@ -272,11 +257,23 @@ export class PermissionManagerService {
     }
 
     /**
+     * Adds a permission key to the list of keys.
+     * @param key The key to be added.
+     */
+    public static addPermissionKey(key: string) {
+        if (!PermissionManagerService.keyExists(key)) {
+            PermissionManagerService.keys.push(key);
+        }
+    }
+
+    /**
      * Removes a permission from the list of keys.
      * @param key The key to be removed.
      */
     public static removePermissionKey(key: string): void {
-        PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === key), 1);
+        if (PermissionManagerService.keyExists(key)) {
+            PermissionManagerService.keys.splice(PermissionManagerService.keys.indexOf(key), 1);
+        }
     }
 
     /**
@@ -284,21 +281,35 @@ export class PermissionManagerService {
      * @param key The key to check.
      * @private
      */
-    private static keyExists(key: string): boolean {
-        const keys: string[] = key.split(".");
+    public static keyExists(key: string): boolean {
+        return PermissionManagerService.keys.includes(key);
+    }
 
-        const item = PermissionKeys.find(item => (item instanceof Object ? item.$index : item) === keys[0]);
-        if (keys.length <= 1) {
-            return Object.values(item).length !== 1;
+    /**
+     * Creates or returns a formatted text of the keys.
+     * Normalizes to be more readable.
+     */
+    public static get keysFormatted(): string {
+        if (PermissionManagerService._keysFormatted) {
+            return PermissionManagerService._keysFormatted;
         }
 
-        const sub = Object.values(item).find(value => ((value as any).$index ?? value) === keys[1]);
-        if (keys.length === 2) {
-            return sub instanceof Object ? Object.values(sub).length !== 1 : true;
+        const obj: Object = unflattenObject(PermissionManagerService.keys.reduce((previousValue, currentValue) => {
+            previousValue[currentValue] = currentValue;
+            return previousValue;
+        }, {}));
+
+        function format(obj, index = 0) {
+            const spaces = "\t".repeat(index);
+            let result = "";
+
+            for (const [ key, value ] of Object.entries(obj)) {
+                result += typeof value === "object" ? `${spaces}${key}:\n${format(value, index + 1)}` : `${spaces}${key};\n`;
+            }
+
+            return result;
         }
 
-        if (keys.length === 3 && sub instanceof Object) {
-            return Object.values(sub).includes(keys[2]);
-        }
+        return PermissionManagerService._keysFormatted = format(obj);
     }
 }

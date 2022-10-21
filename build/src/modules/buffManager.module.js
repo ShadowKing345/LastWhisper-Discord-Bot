@@ -11,6 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var BuffManagerModule_1;
+import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { ModuleBase } from "../utils/models/index.js";
@@ -18,8 +19,20 @@ import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command } from "../utils/objects/command.js";
+import { authorize } from "../utils/decorators/authorize.js";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends ModuleBase {
     buffManagerService;
+    static permissionKeys = {
+        buffs: {
+            today: "BuffManager.buffs.today",
+            tomorrow: "BuffManager.buffs.tomorrow",
+        },
+        weeks: {
+            thisWeek: "BuffManager.weeks.thisWeek",
+            nextWeek: "BuffManager.weeks.nextWeek",
+        }
+    };
     moduleName = "BuffManager";
     timers = [
         {
@@ -91,6 +104,34 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         return this.buffManagerService.postDailyMessage(client);
     }
 };
+__decorate([
+    authorize(BuffManagerModule_1.permissionKeys.buffs.today),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], BuffManagerModule.prototype, "postTodayBuff", null);
+__decorate([
+    authorize(BuffManagerModule_1.permissionKeys.buffs.tomorrow),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], BuffManagerModule.prototype, "postTomorrowsBuff", null);
+__decorate([
+    authorize(BuffManagerModule_1.permissionKeys.weeks.thisWeek),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], BuffManagerModule.prototype, "postThisWeeksBuffs", null);
+__decorate([
+    authorize(BuffManagerModule_1.permissionKeys.weeks.nextWeek),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], BuffManagerModule.prototype, "postNextWeeksBuffs", null);
+__decorate([
+    addPermissionKeys(),
+    __metadata("design:type", Object)
+], BuffManagerModule, "permissionKeys", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
     registerModule(),
     __param(1, createLogger(BuffManagerModule_1.name)),

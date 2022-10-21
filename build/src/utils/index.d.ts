@@ -17,4 +17,15 @@ export declare function toJson<T>(t: T, str: string): T;
  * @return The newly created object.
  */
 export declare function deepMerge<T, O>(target: T, ...sources: O[]): T;
+/**
+ * Flattens an object down to a depth of 1.
+ * @param obj Object to be flattened
+ */
+export declare function flattenObject(obj: Object): Object;
+/**
+ * Does the opposite of flattenObject
+ *
+ * @see flattenObject
+ */
+export declare function unflattenObject(obj: Object): object;
 //# sourceMappingURL=index.d.ts.map

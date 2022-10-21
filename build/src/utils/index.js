@@ -64,4 +64,33 @@ export function deepMerge(target, ...sources) {
     }
     return target;
 }
+/**
+ * Flattens an object down to a depth of 1.
+ * @param obj Object to be flattened
+ */
+export function flattenObject(obj) {
+    let result = {};
+    for (const [k, v] of Object.entries(obj)) {
+        if (typeof v === "object" && !Array.isArray(v)) {
+            for (const [k1, v1] of Object.entries(flattenObject(v))) {
+                result[`${k}.${k1}`] = v1;
+            }
+            continue;
+        }
+        result[k] = v;
+    }
+    return result;
+}
+/**
+ * Does the opposite of flattenObject
+ *
+ * @see flattenObject
+ */
+export function unflattenObject(obj) {
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+        key.split(".").reduce((prev, current, index, { length }) => prev[current] || (prev[current] = length - 1 === index ? value : {}), result);
+    }
+    return result;
+}
 //# sourceMappingURL=index.js.map

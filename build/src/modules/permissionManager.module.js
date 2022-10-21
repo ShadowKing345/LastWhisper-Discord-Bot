@@ -89,7 +89,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     ],
                 },
             },
-            execute: interaction => this.commandResolver(interaction),
+            execute: this.commandResolver.bind(this),
         }),
     ];
     commandResolverKeys = {

@@ -9,9 +9,11 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { authorize } from "../utils/decorators/authorize.js";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 
 @registerModule()
 export class BuffManagerModule extends ModuleBase {
+    @addPermissionKeys()
     public static permissionKeys = {
         buffs: {
             today: "BuffManager.buffs.today",

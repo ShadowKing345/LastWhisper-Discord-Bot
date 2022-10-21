@@ -1,4 +1,4 @@
-import { CommandInteraction, Role, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
+import { Role, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
 
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
@@ -79,7 +79,7 @@ export class PermissionManagerModule extends ModuleBase {
                     ],
                 },
             },
-            execute: interaction => this.commandResolver(interaction),
+            execute: this.commandResolver.bind(this),
         }),
     ];
 
@@ -107,23 +107,23 @@ export class PermissionManagerModule extends ModuleBase {
         return f(interaction, key, role);
     }
 
-    private listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse> {
+    private listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
         return this.permissionManagerService.listPermissions(interaction, key);
     }
 
-    private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
+    private addRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         return this.permissionManagerService.addRole(interaction, key, role);
     }
 
-    private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
+    private removeRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         return this.permissionManagerService.removeRole(interaction, key, role);
     }
 
-    private config(interaction: CommandInteraction, key: string): Promise<InteractionResponse> {
+    private config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
         return this.permissionManagerService.config(interaction as ChatInputCommandInteraction, key);
     }
 
-    private reset(interaction: CommandInteraction, key: string): Promise<InteractionResponse> {
+    private reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
         return this.permissionManagerService.reset(interaction, key);
     }
 
