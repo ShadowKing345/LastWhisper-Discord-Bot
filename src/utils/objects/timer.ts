@@ -9,6 +9,12 @@ export class Timer {
     public timeout: number;
     public execute: (client: Client) => Promise<void>;
 
+    /**
+     * Function that waits till the client is ready then simply exits.
+     * This is meant to be a more standard way to do this wait for syntax.
+     * @param client The client application.
+     * @param checkAgainTime How long to wait before checking again. (Default 500ms).
+     */
     public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
         while (!client.isReady()) {
             await new Promise(resolve => setTimeout(resolve, checkAgainTime));
