@@ -41,6 +41,10 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                 const blacklist = this.moduleConfiguration.blacklist;
                 return (!blacklist && inList) || (blacklist && !inList);
             }) : modules;
+        this.moduleLogger.debug(`Modules list. [${this._modules.map(module => module.moduleName)}]`);
+        if (this.moduleConfiguration.enableCommands) {
+            this.moduleLogger.debug("Commands enabled.");
+        }
     }
     /**
      * Todo: Setup modal responding.
@@ -64,7 +68,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                         await interaction.reply({ content: "Responded with a message", ephemeral: true });
                     }
                 }
-                if (interaction.isChatInputCommand()) {
+                if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
                     this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
                     // Edge case if somehow a command can be invoked inside a DM.
                     if (!interaction.guildId) {
@@ -172,7 +176,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         }
     }
     /**
-     * Todo: Cleanup.
      * Configures a client with all the necessary module and callback information.
      * Registers events, timers, commands, etc...
      * @param client The main app client. Not to be confused with Discord.Js Client object.

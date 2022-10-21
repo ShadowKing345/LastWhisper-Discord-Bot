@@ -40,7 +40,6 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
      */
     private runTimer;
     /**
-     * Todo: Cleanup.
      * Configures a client with all the necessary module and callback information.
      * Registers events, timers, commands, etc...
      * @param client The main app client. Not to be confused with Discord.Js Client object.
