@@ -10,7 +10,7 @@ export function authorize<T extends ModuleBase>(key: string): (target: T, proper
     return function (target: T, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         const originalValue = descriptor.value;
 
-        descriptor.value = async function (interaction: ChatInputCommandInteraction, ...args: any[]) {
+        descriptor.value = async (interaction: ChatInputCommandInteraction, ...args: any[]) => {
             if (!this.permissionManagerService) {
                 return originalValue.apply(this, args);
             }
