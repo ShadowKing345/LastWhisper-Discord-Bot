@@ -8,9 +8,21 @@ import { PermissionManagerService } from "../services/permissionManager.service.
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
+import { authorize } from "../utils/decorators/authorize.js";
 
 @registerModule()
 export class BuffManagerModule extends ModuleBase {
+    public static permissionKeys = {
+        buffs: {
+            today: "BuffManager.buffs.today",
+            tomorrow: "BuffManager.buffs.tomorrow",
+        },
+        weeks: {
+            thisWeek: "BuffManager.weeks.thisWeek",
+            nextWeek: "BuffManager.weeks.nextWeek",
+        }
+    }
+
     public moduleName: string = "BuffManager";
     public timers: Timers = [
         {
@@ -73,18 +85,22 @@ export class BuffManagerModule extends ModuleBase {
         super(permissionManagerService, logger);
     }
 
+    @authorize(BuffManagerModule.permissionKeys.buffs.today)
     private postTodayBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.buffManagerService.postBuff(interaction);
     }
 
+    @authorize(BuffManagerModule.permissionKeys.buffs.tomorrow)
     private postTomorrowsBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.buffManagerService.postBuff(interaction, false);
     }
 
+    @authorize(BuffManagerModule.permissionKeys.weeks.thisWeek)
     private postThisWeeksBuffs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.buffManagerService.postWeeksBuffs(interaction);
     }
 
+    @authorize(BuffManagerModule.permissionKeys.weeks.nextWeek)
     private postNextWeeksBuffs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         return this.buffManagerService.postWeeksBuffs(interaction, false);
     }

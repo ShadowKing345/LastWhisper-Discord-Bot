@@ -1,14 +1,17 @@
-import { CommandInteraction, Interaction, EmbedBuilder, Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { EmbedBuilder, Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
-import { deepMerge } from "../utils/index.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 
 export const PermissionKeys: any = [];
 
+/**
+ * Service that manages the permissions of commands throughout the project.
+ * The reason for this service is that while you are able to change certain permissions for regular slash commands, subcommands cannot have their permissions changed in the same way.
+ */
 @singleton()
 export class PermissionManagerService {
     constructor(
@@ -17,7 +20,12 @@ export class PermissionManagerService {
     ) {
     }
 
-    public async isAuthorized(interaction: Interaction, key: string): Promise<boolean> {
+    /**
+     * Checks if a member is authorized to use the given key of a command.
+     * @param interaction The interaction used to determine the rights.
+     * @param key The name of the key to check against.
+     */
+    public async isAuthorized(interaction: ChatInputCommandInteraction, key: string): Promise<boolean> {
         this.logger.debug(`Attempting to authorize for key ${key}`);
         if (!PermissionManagerService.keyExists(key)) {
             this.logger.debug(`Expected Failure: Could not find key.`);
@@ -29,13 +37,15 @@ export class PermissionManagerService {
             return false;
         }
 
+        // The guild owner should always be allowed to use commands to prevent a lockout scenario.
         if (interaction.guild.ownerId === interaction.user.id) {
             this.logger.debug(`User is owner. Returning true.`);
             return true;
         }
 
         const config: PermissionManagerConfig = await this.findOneOrCreate(interaction.guildId);
-        const permission: Permission = deepMerge(new Permission(), config.permissions[key] ?? new Permission());
+        // Todo: fix missing permissions.
+        const permission: Permission = config.permissions[key] ?? new Permission();
 
         let result;
         if (permission.roles.length === 0) {
@@ -55,11 +65,19 @@ export class PermissionManagerService {
             }
         }
 
-        this.logger.debug(`User is ${result && !permission.blackList ? "Authenticated" : "Unauthenticated"}.`);
-        return permission.blackList ? !result : result;
+        const authorized: boolean = (!permission.blackList && result) || (permission.blackList && !result);
+
+        this.logger.debug(`User is ${authorized ? "Authenticated" : "Unauthenticated"}.`);
+        return authorized;
     }
 
-    public async addRole(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
+    /**
+     * Adds a role to a permission.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     * @param role The role.
+     */
+    public async addRole(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -86,7 +104,13 @@ export class PermissionManagerService {
         });
     }
 
-    public async removeRole(interaction: CommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
+    /**
+     * Removes a role from a permission.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     * @param role The role.
+     */
+    public async removeRole(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -117,6 +141,11 @@ export class PermissionManagerService {
         });
     }
 
+    /**
+     * Configures a permission.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     */
     public async config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
@@ -145,7 +174,12 @@ export class PermissionManagerService {
         });
     }
 
-    public async reset(interaction: CommandInteraction, key: string): Promise<InteractionResponse> {
+    /**
+     * Resets all permission options and roles set.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission
+     */
+    public async reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
         if (!PermissionManagerService.keyExists(key)) {
             return interaction.reply({
                 content: "Cannot find key. Please input the correct key.",
@@ -169,7 +203,13 @@ export class PermissionManagerService {
         });
     }
 
-    public async listPermissions(interaction: CommandInteraction, key?: string): Promise<InteractionResponse> {
+    /**
+     * List all permissions keys.
+     * If key is set then it gives a detailed view of that permission settings.
+     * @param interaction The interaction the command was invoked with.
+     * @param key The key of the permission (optional)
+     */
+    public async listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
         if (key) {
             if (!PermissionManagerService.keyExists(key)) {
                 return interaction.reply({
@@ -216,6 +256,11 @@ export class PermissionManagerService {
         }
     }
 
+    /**
+     * Finds a config file or creates one.
+     * @param id Id for the guild.
+     * @private
+     */
     private async findOneOrCreate(id: string): Promise<PermissionManagerConfig> {
         let result = await this.permissionManagerRepository.findOne({ guildId: id });
         if (result) return result;
@@ -226,10 +271,19 @@ export class PermissionManagerService {
         return await this.permissionManagerRepository.save(result);
     }
 
-    public static removePermissionKey(prefix: string): void {
-        PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === prefix), 1);
+    /**
+     * Removes a permission from the list of keys.
+     * @param key The key to be removed.
+     */
+    public static removePermissionKey(key: string): void {
+        PermissionKeys.splice(PermissionKeys.findIndex(key => (key instanceof Object ? key.$index : key) === key), 1);
     }
 
+    /**
+     * Checks to see if a key already exists.
+     * @param key The key to check.
+     * @private
+     */
     private static keyExists(key: string): boolean {
         const keys: string[] = key.split(".");
 
