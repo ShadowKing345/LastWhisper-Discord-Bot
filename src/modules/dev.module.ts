@@ -2,20 +2,20 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder, InteractionResponse, ButtonInteraction } from "discord.js";
-import { CommandBuilders, CommandBuilder } from "../utils/objects/commandBuilder.js";
+import { Commands, Command } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 
 @registerModule()
 export class DevModule extends ModuleBase {
     public moduleName: string = "DevModule";
-    public commands: CommandBuilders = [
-        new CommandBuilder({
+    public commands: Commands = [
+        new Command({
             name: "test_inputs",
             description: "Testing command.",
             execute: interaction => this.testInteractionTypes(interaction),
         }),
-        new CommandBuilder({
+        new Command({
             name: "test_modal",
             description: "Testing command.",
             execute: interaction => this.testModal(interaction),

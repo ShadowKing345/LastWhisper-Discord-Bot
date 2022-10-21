@@ -3,7 +3,7 @@ import { ModuleBase, EventListeners, EventListener } from "../utils/models/index
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilder, CommandBuilderOption, CommandBuilders } from "../utils/objects/commandBuilder.js";
+import { Command, CommandOption, Commands } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 
@@ -11,7 +11,7 @@ import { pino } from "pino";
 export class ManagerUtilsModule extends ModuleBase {
 
     public moduleName: string = "ManagerUtils";
-    public commands: CommandBuilders = [ new CommandBuilder({
+    public commands: Commands = [ new Command({
         name: "manager_utils",
         description: "Utility functions for managers.",
         subcommands: {
@@ -19,7 +19,7 @@ export class ManagerUtilsModule extends ModuleBase {
                 name: "clear",
                 description: "Clears a channel of its messages.",
                 options: [
-                    new CommandBuilderOption({
+                    new CommandOption({
                         name: "amount",
                         description: "The amount of messages to clear. Default 10.",
                     }),

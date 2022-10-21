@@ -3,19 +3,19 @@ import { ModuleBase, Task, EventListeners, EventListener } from "../utils/models
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 
 @registerModule()
 export class EventManagerModule extends ModuleBase {
     public moduleName: string = "EventManager";
-    public commands: CommandBuilders = [
-        new CommandBuilder({
+    public commands: Commands = [
+        new Command({
             name: "event",
             description: "Displays events.",
             options: [
-                new CommandBuilderOption({
+                new CommandOption({
                     name: "index",
                     description: "The index for the event, starting at 0.",
                     type: ApplicationCommandOptionType.Integer,

@@ -8,23 +8,23 @@ import { deepMerge } from "../index.js";
 
 type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 
-export class CommandBuilder extends ToJsonBase<CommandBuilder> {
+export class Command extends ToJsonBase<Command> {
     public name: string;
     public description: string;
 
     public execute?: (interaction: ChatInputCommandInteraction) => Promise<any>;
-    public subcommands?: { [key: string]: Partial<CommandBuilder> };
+    public subcommands?: { [key: string]: Partial<Command> };
 
-    public options: CommandBuilderOptions = [];
+    public options: CommandOptions = [];
 
-    public constructor(data: Partial<CommandBuilder> = null) {
+    public constructor(data: Partial<Command> = null) {
         super();
         if (data) {
             this.merge(data);
         }
     }
 
-    public merge(obj: Partial<CommandBuilder>): CommandBuilder {
+    public merge(obj: Partial<Command>): Command {
         if (obj.name) {
             this.name = obj.name;
         }
@@ -39,7 +39,7 @@ export class CommandBuilder extends ToJsonBase<CommandBuilder> {
             }
 
             for (const key in obj.subcommands) {
-                this.subcommands[key] = deepMerge(this.subcommands[key] ?? new CommandBuilder(), obj.subcommands[key]);
+                this.subcommands[key] = deepMerge(this.subcommands[key] ?? new Command(), obj.subcommands[key]);
             }
         }
 
@@ -49,7 +49,7 @@ export class CommandBuilder extends ToJsonBase<CommandBuilder> {
 
         if (obj.options) {
             this.options = obj.options;
-            this.options = (this.options ?? []).map(option => deepMerge(new CommandBuilderOption, option));
+            this.options = (this.options ?? []).map(option => deepMerge(new CommandOption, option));
         }
 
         return this;
@@ -78,7 +78,7 @@ export class CommandBuilder extends ToJsonBase<CommandBuilder> {
     }
 }
 
-export class CommandBuilderOption extends ToJsonBase<CommandBuilderOption> {
+export class CommandOption extends ToJsonBase<CommandOption> {
     public name: string;
     public description: string;
     public type: OptionType;
@@ -86,7 +86,7 @@ export class CommandBuilderOption extends ToJsonBase<CommandBuilderOption> {
 
     public choices: APIApplicationCommandOptionChoice<any>[] = [];
 
-    public constructor(data: Partial<CommandBuilderOption> = null) {
+    public constructor(data: Partial<CommandOption> = null) {
         super();
 
         if (data) {
@@ -143,7 +143,7 @@ export class CommandBuilderOption extends ToJsonBase<CommandBuilderOption> {
         return builder;
     }
 
-    public merge(obj: Partial<CommandBuilderOption>): CommandBuilderOption {
+    public merge(obj: Partial<CommandOption>): CommandOption {
         if (obj.name) {
             this.name = obj.name;
         }
@@ -168,5 +168,5 @@ export class CommandBuilderOption extends ToJsonBase<CommandBuilderOption> {
     }
 }
 
-export type CommandBuilders = CommandBuilder[];
-export type CommandBuilderOptions = CommandBuilderOption[];
+export type Commands = Command[];
+export type CommandOptions = CommandOption[];

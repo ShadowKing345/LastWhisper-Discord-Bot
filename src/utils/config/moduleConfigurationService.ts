@@ -10,7 +10,7 @@ import { ModuleBase, ProjectConfiguration, EventListeners } from "../models/inde
 import { Task } from "../models/task.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
-import { CommandBuilder } from "../objects/commandBuilder.js";
+import { Command } from "../objects/command.js";
 
 /**
  * Configuration service that manages the creation and registration of the different modules in the application.
@@ -82,7 +82,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
                         return;
                     }
 
-                    const command: CommandBuilder = this.modules.find(module => module.hasCommand(interaction.commandName))?.getCommand(interaction.commandName);
+                    const command: Command = this.modules.find(module => module.hasCommand(interaction.commandName))?.getCommand(interaction.commandName);
                     if (!command) {
                         this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
                         return;

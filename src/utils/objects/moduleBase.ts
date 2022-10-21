@@ -1,7 +1,7 @@
 import { Task } from "../models/task.js";
 import { PermissionManagerService } from "../../services/permissionManager.service.js";
 import { EventListeners } from "../models/index.js";
-import { CommandBuilders, CommandBuilder } from "./commandBuilder.js";
+import { Commands, Command } from "./command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../errors/commandResolverError.js";
 import { pino } from "pino";
@@ -11,7 +11,7 @@ import { pino } from "pino";
  */
 export abstract class ModuleBase {
     public moduleName: string = "";
-    public commands: CommandBuilders = [];
+    public commands: Commands = [];
     public eventListeners: EventListeners = [];
     public tasks: Task[] = [];
 
@@ -67,7 +67,7 @@ export abstract class ModuleBase {
      * Returns the first instance of a command with the given name.
      * @param command The name of the command.
      */
-    public getCommand(command: string): CommandBuilder | undefined {
+    public getCommand(command: string): Command | undefined {
         if (!this.handlesCommands) {
             return undefined;
         }

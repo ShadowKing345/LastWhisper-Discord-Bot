@@ -5,15 +5,15 @@ import { GardeningManagerService } from "../services/gardeningManager.service.js
 import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 
 @registerModule()
 export class GardeningManagerModule extends ModuleBase {
     public moduleName: string = "GardeningModule";
-    public commands: CommandBuilders = [
-        new CommandBuilder({
+    public commands: Commands = [
+        new Command({
             name: "gardening_module",
             description: "gardening module.",
             subcommands: {
@@ -21,31 +21,31 @@ export class GardeningManagerModule extends ModuleBase {
                     name: "reserve",
                     description: "Reserve a slot in a plot to be used by you.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "plot",
                             description: "The plot number.",
                             required: true,
                             type: ApplicationCommandOptionType.Integer,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "slot",
                             description: "The slot number.",
                             type: ApplicationCommandOptionType.Integer,
                             required: true,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "plant",
                             description: "The name of the plant you wish to plant.",
                             type: ApplicationCommandOptionType.String,
                             required: true,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "duration",
                             description: "For how long do you wish to reserve this spot. In hours.",
                             type: ApplicationCommandOptionType.String,
                             required: true,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "reason",
                             description: "The reason you are reserving this spot.",
                             type: ApplicationCommandOptionType.String,
@@ -64,19 +64,19 @@ export class GardeningManagerModule extends ModuleBase {
                     name: "cancel",
                     description: "Cancel any reservations you have made to a slot in a plot.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "plot",
                             description: "The plot number.",
                             type: ApplicationCommandOptionType.Integer,
                             required: true,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "slot",
                             description: "The slot number.",
                             type: ApplicationCommandOptionType.Integer,
                             required: true,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "plant",
                             description: "The name of the plant you wish to cancel for.",
                             type: ApplicationCommandOptionType.String,
@@ -88,17 +88,17 @@ export class GardeningManagerModule extends ModuleBase {
                     name: "list",
                     description: "Shows all plots and their states.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "plot",
                             description: "Index of the plot you wish to view.",
                             type: ApplicationCommandOptionType.Integer,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "slot",
                             description: "Index of the slot you wish to view.",
                             type: ApplicationCommandOptionType.Integer,
                         }),
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "detailed",
                             description: "Should show a detailed view. Default: false",
                             type: ApplicationCommandOptionType.Boolean,

@@ -7,7 +7,7 @@ import { Client } from "../utils/models/client.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
-import { CommandBuilders, CommandBuilder, CommandBuilderOption } from "../utils/objects/commandBuilder.js";
+import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 
 @registerModule()
 export class RoleManagerModule extends ModuleBase {
@@ -15,8 +15,8 @@ export class RoleManagerModule extends ModuleBase {
     public eventListeners: EventListeners = [
         new EventListener("ready", async (client) => this.onReady(client)),
     ];
-    public commands: CommandBuilders = [
-        new CommandBuilder({
+    public commands: Commands = [
+        new Command({
             name: "role_manager",
             description: "Manages roles within a guild.",
             subcommands: {
@@ -28,7 +28,7 @@ export class RoleManagerModule extends ModuleBase {
                     name: "register_message",
                     description: "Registers a message to be reacted to.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "message_id",
                             description: "The ID for the message.",
                             required: true,
@@ -39,7 +39,7 @@ export class RoleManagerModule extends ModuleBase {
                     name: "unregister_message",
                     description: "Unregisters a message to be reacted to.",
                     options: [
-                        new CommandBuilderOption({
+                        new CommandOption({
                             name: "message_id",
                             description: "The ID for the message.",
                             required: true,
