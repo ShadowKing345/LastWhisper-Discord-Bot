@@ -46,9 +46,8 @@ export abstract class ModuleBase {
             this.logger.error(error.stack);
             throw error;
         }
-        f = f.bind(this);
 
-        return call ? f(interaction) : f;
+        return call ? f.apply(this, interaction) : f.bind(this);
     }
 
     /**
