@@ -157,7 +157,7 @@ export class PermissionManagerModule extends ModuleBase {
             name: "key",
             description: "Command permission Key.",
             required: boolOverride,
-            type: ApplicationCommandOptionType.Boolean,
+            type: ApplicationCommandOptionType.String,
         });
     }
 }
