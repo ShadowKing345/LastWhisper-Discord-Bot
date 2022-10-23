@@ -328,19 +328,19 @@ export class PermissionManagerService {
      * @private
      */
     private static validateKey(): (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
-        return (target, property, descriptor) => {
-            const ogFunction = descriptor.value;
+        return function (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) {
+            const originalMethod = descriptor.value;
 
-            descriptor.value = (interaction: ChatInputCommandInteraction, key: string) => {
+            descriptor.value = function (interaction: ChatInputCommandInteraction, key: string, ...args: any[]) {
                 if (!PermissionManagerService.keyExists(key)) {
-                    target.logger.debug("Key did not exist. Exiting out.");
+                    (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
                     return interaction.reply({
                         content: "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.",
                         ephemeral: true,
                     });
                 }
 
-                return ogFunction.apply(this, interaction, key);
+                return originalMethod.apply(this, [ interaction, key, ...args ]);
             }
 
             return descriptor;
