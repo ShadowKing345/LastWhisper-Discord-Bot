@@ -8,22 +8,17 @@ import { ModuleBase } from "../objects/moduleBase.js";
  */
 export function authorize<T extends ModuleBase>(key: string): (target: T, propertyKey: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
     return function (target: T, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
-        const originalValue = descriptor.value;
+        const originalMethod = descriptor.value;
 
-        descriptor.value = async (interaction: ChatInputCommandInteraction, ...args: any[]) => {
-            if (!this.permissionManagerService) {
-                return originalValue.apply(this, args);
-            }
-
-            if (!await this.permissionManagerService.isAuthorized(interaction, key)) {
+        descriptor.value = async function (interaction: ChatInputCommandInteraction, ...args: any[]) {
+            if ((this as T).permissionManagerService && !await (this as T).permissionManagerService.isAuthorized(interaction, key)) {
                 return interaction.reply({
                     content: "Sorry you do not have the permissions to use this command.",
                     ephemeral: true,
                 });
             }
-            args.unshift(interaction);
 
-            return originalValue.apply(this, args);
+            return originalMethod.apply(this, [ interaction, ...args ]);
         };
 
         return descriptor;
