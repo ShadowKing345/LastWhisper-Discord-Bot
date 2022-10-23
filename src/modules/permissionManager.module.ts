@@ -7,13 +7,28 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 
+/**
+ * Module to manager the permissions of commands from a Discord client.
+ * @see PermissionManagerService
+ */
 @registerModule()
 export class PermissionManagerModule extends ModuleBase {
+    @addPermissionKeys()
+    public static permissionKeys = {
+        list: "PermissionManager.list",
+        addRole: "PermissionManager.addRole",
+        removeRole: "PermissionManager.removeRole",
+        config: "PermissionManager.config",
+        reset: "PermissionManager.reset",
+    };
+
     public moduleName: string = "PermissionManager";
     public commands: Commands = [
         new Command({
-            name: "permission",
+            name: "permissions",
             description: "Controls the permission for each command.",
             subcommands: {
                 List: {
@@ -84,11 +99,11 @@ export class PermissionManagerModule extends ModuleBase {
     ];
 
     protected commandResolverKeys: { [key: string]: Function } = {
-        "permission.list": this.listPermissions,
-        "permission.add_role": this.addRoles,
-        "permission.remove_role": this.removeRoles,
-        "permission.set_config": this.config,
-        "permission.reset": this.reset,
+        "permissions.list": this.listPermissions,
+        "permissions.add_role": this.addRoles,
+        "permissions.remove_role": this.removeRoles,
+        "permissions.set_config": this.config,
+        "permissions.reset": this.reset,
     };
 
     constructor(
@@ -107,23 +122,33 @@ export class PermissionManagerModule extends ModuleBase {
         return f(interaction, key, role);
     }
 
+    @authorize(PermissionManagerModule.permissionKeys.list)
     private listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
+        this.logger.debug("Requested listed permissions.");
         return this.permissionManagerService.listPermissions(interaction, key);
     }
 
+    @authorize(PermissionManagerModule.permissionKeys.addRole)
     private addRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
+        this.logger.debug("Requested add role.");
         return this.permissionManagerService.addRole(interaction, key, role);
     }
 
+    @authorize(PermissionManagerModule.permissionKeys.removeRole)
     private removeRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
+        this.logger.debug("Requested remove role.");
         return this.permissionManagerService.removeRole(interaction, key, role);
     }
 
+    @authorize(PermissionManagerModule.permissionKeys.config)
     private config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
+        this.logger.debug("Requested config.");
         return this.permissionManagerService.config(interaction as ChatInputCommandInteraction, key);
     }
 
+    @authorize(PermissionManagerModule.permissionKeys.reset)
     private reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
+        this.logger.debug("Requested reset.");
         return this.permissionManagerService.reset(interaction, key);
     }
 
