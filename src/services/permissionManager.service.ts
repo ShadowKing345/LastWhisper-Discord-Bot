@@ -225,25 +225,32 @@ export class PermissionManagerService {
             this.logger.debug("Permissions found returning parsed object.");
 
             return interaction.reply({
-                embeds: [ new EmbedBuilder({
-                    title: `Settings for Permission ${key}`,
-                    description: `\`\`\`\nMode:\t\t${PermissionMode[permission.mode]},\nBlacklist:\t\t${permission.blackList},\nRoles:\t\t[ ${permission.roles.join(", ")} ]\n\`\`\``,
-                    fields: [
-                        { name: "Mode", value: PermissionMode[permission.mode], inline: false },
-                        { name: "Is Blacklist", value: String(permission.blackList), inline: false },
-                        { name: "Roles", value: permission.roles.join("\n"), inline: false },
-                    ]
-                }).setColor("Random") ],
+                embeds: [
+                    new EmbedBuilder({
+                        title: `Settings for Permission ${key}`,
+                        fields: [
+                            { name: "Mode", value: PermissionMode[permission.mode], inline: false },
+                            { name: "Is Blacklist", value: String(permission.blackList), inline: false },
+                            {
+                                name: "Roles",
+                                value: permission.roles.length > 0 ? (await Promise.allSettled(permission.roles.map(roleId => interaction.guild.roles.fetch(roleId).then(role => role.name)))).join("\n") : "No roles were set.",
+                                inline: false
+                            },
+                        ],
+                    }).setColor("Random")
+                ],
                 ephemeral: true,
             });
         } else {
             this.logger.debug("Key not specified. Returning all available keys.");
 
             return interaction.reply({
-                embeds: [ new EmbedBuilder({
-                    title: "List of PermissionKeys",
-                    description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
-                }).setColor("Random") ],
+                embeds: [
+                    new EmbedBuilder({
+                        title: "List of PermissionKeys",
+                        description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
+                    }).setColor("Random")
+                ],
                 ephemeral: true,
             });
         }
