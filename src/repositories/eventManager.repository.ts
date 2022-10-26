@@ -8,7 +8,7 @@ import { EventManagerConfig } from "../models/event_manager/index.js";
 export class EventManagerRepository extends RepositoryBase<EventManagerConfig> {
     protected readonly collectionName: string = "event_manager";
 
-    protected readonly sanitizedObject = EventManagerConfig;
+    protected readonly mappingObject = EventManagerConfig;
 
     constructor(db: DatabaseConfigurationService) {
         super(db);

@@ -8,7 +8,7 @@ import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 export class PermissionManagerRepository extends RepositoryBase<PermissionManagerConfig> {
     protected readonly collectionName: string = "permission_manager";
 
-    protected readonly sanitizedObject = PermissionManagerConfig;
+    protected readonly mappingObject = PermissionManagerConfig;
 
     constructor(db: DatabaseConfigurationService) {
         super(db);

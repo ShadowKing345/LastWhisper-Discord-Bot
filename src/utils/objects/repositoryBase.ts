@@ -22,11 +22,12 @@ export abstract class RepositoryBase<T extends IEntity> {
     // A private internal collection object.
     private _collection: Collection<T>;
     // A class to create a new object.
-    protected abstract readonly sanitizedObject: { new(): T };
+    protected abstract readonly mappingObject: { new(): T };
 
     protected constructor(
         protected db: DatabaseConfigurationService,
-    ) {}
+    ) {
+    }
 
     /**
      * Saves a new database record.
@@ -97,7 +98,7 @@ export abstract class RepositoryBase<T extends IEntity> {
      * @protected
      */
     protected map(source: object): T {
-        const result = new this.sanitizedObject();
+        const result = new this.mappingObject();
 
         if (result instanceof MergeableObjectBase) {
             return result.merge(source);

@@ -8,7 +8,7 @@ import { GardeningModuleConfig } from "../models/gardening_manager/index.js";
 export class GardeningManagerRepository extends RepositoryBase<GardeningModuleConfig> {
     protected readonly collectionName: string = "gardening_manager";
 
-    protected readonly sanitizedObject = GardeningModuleConfig;
+    protected readonly mappingObject = GardeningModuleConfig;
 
     constructor(db: DatabaseConfigurationService) {
         super(db);

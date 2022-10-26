@@ -8,7 +8,7 @@ import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.j
 export class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {
     protected readonly collectionName: string = "manager_utils";
 
-    protected readonly sanitizedObject = ManagerUtilsConfig;
+    protected readonly mappingObject = ManagerUtilsConfig;
 
     constructor(db: DatabaseConfigurationService) {
         super(db);
