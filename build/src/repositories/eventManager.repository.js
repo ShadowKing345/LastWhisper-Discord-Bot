@@ -13,7 +13,7 @@ import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { EventManagerConfig } from "../models/event_manager/index.js";
 let EventManagerRepository = class EventManagerRepository extends RepositoryBase {
     collectionName = "event_manager";
-    sanitizedObject = EventManagerConfig;
+    mappingObject = EventManagerConfig;
     constructor(db) {
         super(db);
     }

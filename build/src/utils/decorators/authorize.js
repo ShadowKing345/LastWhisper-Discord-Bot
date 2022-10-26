@@ -5,19 +5,15 @@
  */
 export function authorize(key) {
     return function (target, propertyKey, descriptor) {
-        const originalValue = descriptor.value;
+        const originalMethod = descriptor.value;
         descriptor.value = async function (interaction, ...args) {
-            if (!this.permissionManagerService) {
-                return originalValue.apply(this, args);
-            }
-            if (!await this.permissionManagerService.isAuthorized(interaction, key)) {
+            if (this.permissionManagerService && !await this.permissionManagerService.isAuthorized(interaction, key)) {
                 return interaction.reply({
                     content: "Sorry you do not have the permissions to use this command.",
                     ephemeral: true,
                 });
             }
-            args.unshift(interaction);
-            return originalValue.apply(this, args);
+            return originalMethod.apply(this, [interaction, ...args]);
         };
         return descriptor;
     };

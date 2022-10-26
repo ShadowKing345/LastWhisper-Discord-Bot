@@ -77,5 +77,10 @@ export declare class PermissionManagerService {
      * Normalizes to be more readable.
      */
     static get keysFormatted(): string;
+    /**
+     * Internal decorator used to check if a key exists before a command is actually invoked.
+     * @private
+     */
+    private static validateKey;
 }
 //# sourceMappingURL=permissionManager.service.d.ts.map

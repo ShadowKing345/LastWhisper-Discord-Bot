@@ -13,7 +13,7 @@ import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.js";
 let ManagerUtilsRepository = class ManagerUtilsRepository extends RepositoryBase {
     collectionName = "manager_utils";
-    sanitizedObject = ManagerUtilsConfig;
+    mappingObject = ManagerUtilsConfig;
     constructor(db) {
         super(db);
     }

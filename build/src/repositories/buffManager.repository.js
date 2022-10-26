@@ -13,7 +13,7 @@ import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { BuffManagerConfig } from "../models/buff_manager/index.js";
 let BuffManagerRepository = class BuffManagerRepository extends RepositoryBase {
     collectionName = "buff_manager";
-    sanitizedObject = BuffManagerConfig;
+    mappingObject = BuffManagerConfig;
     constructor(db) {
         super(db);
     }

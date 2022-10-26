@@ -13,7 +13,7 @@ import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { GardeningModuleConfig } from "../models/gardening_manager/index.js";
 let GardeningManagerRepository = class GardeningManagerRepository extends RepositoryBase {
     collectionName = "gardening_manager";
-    sanitizedObject = GardeningModuleConfig;
+    mappingObject = GardeningModuleConfig;
     constructor(db) {
         super(db);
     }

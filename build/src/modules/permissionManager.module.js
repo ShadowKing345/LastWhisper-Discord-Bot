@@ -11,7 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var PermissionManagerModule_1;
-import { ApplicationCommandOptionType } from "discord.js";
+import { Role, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -19,11 +19,24 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
+/**
+ * Module to manager the permissions of commands from a Discord client.
+ * @see PermissionManagerService
+ */
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
+    static permissionKeys = {
+        list: "PermissionManager.list",
+        addRole: "PermissionManager.addRole",
+        removeRole: "PermissionManager.removeRole",
+        config: "PermissionManager.config",
+        reset: "PermissionManager.reset",
+    };
     moduleName = "PermissionManager";
     commands = [
         new Command({
-            name: "permission",
+            name: "permissions",
             description: "Controls the permission for each command.",
             subcommands: {
                 List: {
@@ -93,11 +106,11 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         }),
     ];
     commandResolverKeys = {
-        "permission.list": this.listPermissions,
-        "permission.add_role": this.addRoles,
-        "permission.remove_role": this.removeRoles,
-        "permission.set_config": this.config,
-        "permission.reset": this.reset,
+        "permissions.list": this.listPermissions,
+        "permissions.add_role": this.addRoles,
+        "permissions.remove_role": this.removeRoles,
+        "permissions.set_config": this.config,
+        "permissions.reset": this.reset,
     };
     constructor(permissionManagerService, logger) {
         super(permissionManagerService, logger);
@@ -109,18 +122,23 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         return f(interaction, key, role);
     }
     listPermissions(interaction, key) {
+        this.logger.debug("Requested listed permissions.");
         return this.permissionManagerService.listPermissions(interaction, key);
     }
     addRoles(interaction, key, role) {
+        this.logger.debug("Requested add role.");
         return this.permissionManagerService.addRole(interaction, key, role);
     }
     removeRoles(interaction, key, role) {
+        this.logger.debug("Requested remove role.");
         return this.permissionManagerService.removeRole(interaction, key, role);
     }
     config(interaction, key) {
+        this.logger.debug("Requested config.");
         return this.permissionManagerService.config(interaction, key);
     }
     reset(interaction, key) {
+        this.logger.debug("Requested reset.");
         return this.permissionManagerService.reset(interaction, key);
     }
     static commandKeyHelperBuilder(boolOverride = true) {
@@ -128,10 +146,44 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
             name: "key",
             description: "Command permission Key.",
             required: boolOverride,
-            type: ApplicationCommandOptionType.Boolean,
+            type: ApplicationCommandOptionType.String,
         });
     }
 };
+__decorate([
+    authorize(PermissionManagerModule_1.permissionKeys.list),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, String]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "listPermissions", null);
+__decorate([
+    authorize(PermissionManagerModule_1.permissionKeys.addRole),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, String, Role]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "addRoles", null);
+__decorate([
+    authorize(PermissionManagerModule_1.permissionKeys.removeRole),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, String, Role]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "removeRoles", null);
+__decorate([
+    authorize(PermissionManagerModule_1.permissionKeys.config),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, String]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "config", null);
+__decorate([
+    authorize(PermissionManagerModule_1.permissionKeys.reset),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction, String]),
+    __metadata("design:returntype", Promise)
+], PermissionManagerModule.prototype, "reset", null);
+__decorate([
+    addPermissionKeys(),
+    __metadata("design:type", Object)
+], PermissionManagerModule, "permissionKeys", void 0);
 PermissionManagerModule = PermissionManagerModule_1 = __decorate([
     registerModule(),
     __param(1, createLogger(PermissionManagerModule_1.name)),

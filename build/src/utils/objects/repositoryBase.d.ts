@@ -14,7 +14,7 @@ export declare abstract class RepositoryBase<T extends IEntity> {
     protected db: DatabaseConfigurationService;
     protected abstract readonly collectionName: string;
     private _collection;
-    protected abstract readonly sanitizedObject: {
+    protected abstract readonly mappingObject: {
         new (): T;
     };
     protected constructor(db: DatabaseConfigurationService);

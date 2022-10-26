@@ -13,7 +13,7 @@ import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 let PermissionManagerRepository = class PermissionManagerRepository extends RepositoryBase {
     collectionName = "permission_manager";
-    sanitizedObject = PermissionManagerConfig;
+    mappingObject = PermissionManagerConfig;
     constructor(db) {
         super(db);
     }

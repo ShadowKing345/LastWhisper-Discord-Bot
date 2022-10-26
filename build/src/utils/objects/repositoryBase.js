@@ -73,7 +73,7 @@ export class RepositoryBase {
      * @protected
      */
     map(source) {
-        const result = new this.sanitizedObject();
+        const result = new this.mappingObject();
         if (result instanceof MergeableObjectBase) {
             return result.merge(source);
         }
