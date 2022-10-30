@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Logger Service Configuration Schema",
+  "description": "Configuration for the logging service in the application.",
+  "type": "object",
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": [
+        "debug",
+        "info",
+        "warn",
+        "error"
+      ],
+      "default": "info",
+      "description": "The level the debugger will output to."
+    },
+    "transport": {
+      "type": "any",
+      "description": "Any additional transports following pino transports system."
+    }
+  },
+  "required": ["level"]
+}

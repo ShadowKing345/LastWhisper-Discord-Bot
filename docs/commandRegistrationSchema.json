@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Command Registration Configuration Schema",
+  "description": "This schema defines the configuration properties for command registration.",
+  "type": "object",
+  "properties": {
+    "clientId": {
+      "type": "string",
+      "description": "Discord client ID for the bot."
+    },
+    "guildId": {
+      "type": "string",
+      "description": "Guid ID for when you want to register commands to a single guild. Does not do anything on its own without register for guild."
+    },
+    "registerForGuild": {
+      "type": "boolean",
+      "description": "Boolean flag to set if you want to register commands for a guild instead.",
+      "default": false
+    },
+    "unregister": {
+      "type": "boolean",
+      "description": "Boolean flag to simply unregister all commands instead of register them.",
+      "const": false
+    }
+  },
+  "required": [
+    "clientId",
+    "guildId",
+    "registerForGuild",
+    "unregister"
+  ]
+}
