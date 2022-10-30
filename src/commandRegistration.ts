@@ -1,11 +1,11 @@
 import { REST } from "@discordjs/rest";
-import { APIApplicationCommandOption, Routes } from "discord-api-types/v9";
 import { container } from "tsyringe";
 
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
 import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
 import { generateConfigObject } from "./utils/config/appConfigs.js";
+import { APIApplicationCommandOption, Routes } from "discord-api-types/v10.js";
 
 const loggerMeta = { context: "CommandRegistration" };
 
@@ -40,7 +40,11 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
     console.log("Welcome again to command registration or un-registration.");
 
     const appConfigs: ProjectConfiguration = container.resolve(ProjectConfiguration);
-    const commandConfigs: CommandRegistrationConfiguration = appConfigs.commandRegistration;
+    const commandConfigs: CommandRegistrationConfiguration | undefined = appConfigs.commandRegistration;
+
+    if (!commandConfigs) {
+        throw new Error("Command configurations were not set.");
+    }
 
     if (args.token) appConfigs.token = args.token;
     if (args.client) commandConfigs.clientId = args.client;
@@ -82,7 +86,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
         logger.info(`Successfully ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
     } catch (error) {
-        logger.error(error);
+        logger.error(error instanceof Error ? error.stack : error);
     } finally {
         process.exit(0);
     }

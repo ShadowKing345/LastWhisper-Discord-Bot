@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { pino } from "pino";
 import { container, singleton } from "tsyringe";
 
@@ -34,13 +33,13 @@ export class App {
             await this.databaseService.connect();
             this.moduleConfiguration.configureModules(this.client);
 
-            this.client.once("ready", () => this.logger.info(chalk.magentaBright("Bot is up and ready to roll!")));
-            this.client.on("error", error => this.logger.error(error + error.stack));
+            this.client.once("ready", () => this.logger.info("Bot is up and ready to roll!"));
+            this.client.on("error", error => this.logger.error(error.stack));
 
-            this.logger.info(chalk.magenta("Done loading. Ready to run."));
-        } catch (error: Error | unknown) {
-            this.logger.error(chalk.red("An unexpected error has resulted in the application failing to start."));
-            this.logger.error(error instanceof Error ? error + error.stack : error);
+            this.logger.info("Done loading. Ready to run.");
+        } catch (error) {
+            this.logger.error("An unexpected error has resulted in the application failing to start.");
+            this.logger.error(error instanceof Error ? error.stack : error);
         }
     }
 
@@ -91,7 +90,7 @@ export async function main() {
         //     .on("uncaughtException", () => app.stop());
 
         await app.run();
-    } catch (error: Error | unknown) {
+    } catch (error) {
         console.error(error instanceof Error ? error.stack : error);
     }
 }
