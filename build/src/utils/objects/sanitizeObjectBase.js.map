@@ -1,1 +1,0 @@
-{"version":3,"file":"sanitizeObjectBase.js","sourceRoot":"","sources":["../../../../src/utils/objects/sanitizeObjectBase.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,MAAM,OAAgB,kBAAkB;IACpC;;;;;OAKG;IACI,KAAK,CAAC,MAAS;QAClB,OAAO,MAAM,CAAC,MAAM,CAAC,IAAI,EAAE,MAAM,CAAC,CAAC;IACvC,CAAC;CACJ"}

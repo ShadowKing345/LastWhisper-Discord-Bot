@@ -1,1 +1,0 @@
-{"version":3,"file":"mergeableObjectBase.js","sourceRoot":"","sources":["../../../../src/utils/objects/mergeableObjectBase.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,MAAM,OAAgB,mBAAmB;IACrC;;;;;OAKG;IACI,KAAK,CAAC,GAAe;QACxB,OAAO,MAAM,CAAC,MAAM,CAAC,IAAI,EAAE,GAAQ,CAAC,CAAC;IACzC,CAAC;CACJ"}

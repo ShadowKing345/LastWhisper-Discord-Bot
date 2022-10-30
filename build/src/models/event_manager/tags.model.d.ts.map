@@ -1,1 +1,0 @@
-{"version":3,"file":"tags.model.d.ts","sourceRoot":"","sources":["../../../../src/models/event_manager/tags.model.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,qBAAa,IAAI;IACN,YAAY,EAAE,MAAM,CAAQ;IAC5B,WAAW,EAAE,MAAM,CAAQ;IAC3B,QAAQ,EAAE,MAAM,CAAQ;IACxB,aAAa,EAAE,MAAM,EAAE,CAAM;gBAExB,YAAY,SAAuB,EAAE,WAAW,SAAsB,EAAE,QAAQ,SAAS,EAAE,aAAa,GAAE,MAAM,EAAO;CAMtI"}

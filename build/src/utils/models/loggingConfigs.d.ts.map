@@ -1,1 +1,0 @@
-{"version":3,"file":"loggingConfigs.d.ts","sourceRoot":"","sources":["../../../../src/utils/models/loggingConfigs.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,MAAM,CAAC;AAE5B,qBAAa,cAAc;IACvB,KAAK,EAAE,cAAc,CAAuB;IAC5C,UAAU,EAAE,IAAI,CAAC,qBAAqB,CAGpC;CACL;AAED,oBAAY,cAAc;IACtB,KAAK,UAAU;IACf,IAAI,SAAS;IACb,IAAI,SAAS;IACb,KAAK,UAAU;CAClB"}
