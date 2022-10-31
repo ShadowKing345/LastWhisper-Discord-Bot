@@ -5,7 +5,7 @@ import { TransportSingleOptions, TransportMultiOptions, TransportPipelineOptions
  */
 export class LoggerConfigs {
     level: pino.LevelWithSilent = LOGGING_LEVELS.info;
-    transports: TransportSingleOptions | TransportMultiOptions | TransportPipelineOptions = null!;
+    transports: TransportSingleOptions | TransportMultiOptions | TransportPipelineOptions = null;
 }
 
 export enum LOGGING_LEVELS {

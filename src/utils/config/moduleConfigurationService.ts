@@ -49,7 +49,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
                 return (!blacklist && inList) || (blacklist && !inList);
             }) : modules;
 
-        this.moduleLogger.debug(`Modules list. [${this._modules.map(module => module.moduleName)}]`);
+        this.moduleLogger.debug(`Modules list. [${this._modules.map(module => module.moduleName).join(",")}]`);
 
         if (this.moduleConfiguration.enableCommands) {
             this.moduleLogger.debug("Commands enabled.");
@@ -156,7 +156,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
      * @param args Any additional arguments provided to the event.
      * @private
      */
-    private async runEvent(listeners: EventListeners, client: Client, ...args: any[]): Promise<void> {
+    private async runEvent(listeners: EventListeners, client: Client, ...args): Promise<void> {
         const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
             try {
                 resolve(listener.execute(client, args));
@@ -179,12 +179,8 @@ export class ModuleConfigurationService extends ConfigurationClass {
      */
     private runTimer(timer: Timer, client: Client): void {
         try {
-            this.intervalIds.push(setInterval(async () => {
-                try {
-                    await timer.execute(client);
-                } catch (error) {
-                    this.taskLogger.error(error instanceof Error ? error.stack : error);
-                }
+            this.intervalIds.push(setInterval(() => {
+                timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
             }, timer.timeout, client));
             timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
         } catch (error) {
@@ -207,8 +203,10 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     this.moduleLogger.debug("Setting up event module events.");
 
                     for (const listener of module.eventListeners) {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         const collection: EventListeners = client.events.get(listener.event) ?? [];
                         collection.push(listener);
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         client.events.set(listener.event, collection);
                     }
                 }

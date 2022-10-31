@@ -10,16 +10,16 @@ import { pino } from "pino";
  * Base class for a module.
  */
 export abstract class ModuleBase {
-    public moduleName: string = "";
+    public moduleName = "";
     public commands: Commands = [];
     public eventListeners: EventListeners = [];
     public timers: Timers = [];
 
-    public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null!;
-    public selectMenus: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null!;
-    public modalSubmits: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null!;
+    public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null;
+    public selectMenus: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null;
+    public modalSubmits: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null;
 
-    protected commandResolverKeys: { [key: string]: Function } = {};
+    protected commandResolverKeys: { [key: string]: (...args) => Promise<InteractionResponse | void> } = {};
 
     protected constructor(
         public permissionManagerService: PermissionManagerService,
@@ -35,11 +35,11 @@ export abstract class ModuleBase {
      * @throws Error
      * @protected
      */
-    protected async commandResolver(interaction: ChatInputCommandInteraction, call: boolean = true): Promise<InteractionResponse | void | Function> {
+    protected commandResolver(interaction: ChatInputCommandInteraction, call = true) {
         this.logger.debug(`Command invoked, dealing with subcommand options.`);
 
         const command = [ interaction.commandName, interaction.options.getSubcommandGroup(), interaction.options.getSubcommand() ].filter(item => item).join(".");
-        let f = this.commandResolverKeys[command];
+        const f = this.commandResolverKeys[command];
 
         if (!f) {
             const error = new CommandResolverError("No command found with this name.");
@@ -47,7 +47,7 @@ export abstract class ModuleBase {
             throw error;
         }
 
-        return call ? f.apply(this, interaction) : f.bind(this);
+        return call ? f(interaction) : f;
     }
 
     /**

@@ -8,9 +8,9 @@ import { deepMerge } from "../../utils/index.js";
 /**
  * Buff Manager Configuration Object.
  */
-export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements IEntity {
-    public _id;
-    public guildId: string = null!;
+export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements IEntity<string> {
+    public _id: string;
+    public guildId: string = null;
     public messageSettings: MessageSettings = new MessageSettings();
     public buffs: Buff[] = [];
     public weeks: Week[] = [];

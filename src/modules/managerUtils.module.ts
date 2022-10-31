@@ -11,7 +11,7 @@ import { EventListeners, EventListener } from "../utils/objects/eventListener.js
 @registerModule()
 export class ManagerUtilsModule extends ModuleBase {
 
-    public moduleName: string = "ManagerUtils";
+    public moduleName = "ManagerUtils";
     public commands: Commands = [ new Command({
         name: "manager_utils",
         description: "Utility functions for managers.",
@@ -27,15 +27,15 @@ export class ManagerUtilsModule extends ModuleBase {
                 ],
             }),
         },
-        execute: interaction => this.commandResolver(interaction),
+        execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }) ];
     public eventListeners: EventListeners = [
         new EventListener("guildBanAdd", (_, [ member ]) => this.onMemberBanned(member)),
         new EventListener("guildMemberRemove", async (_, [ member ]) => await this.onMemberRemoved(member)),
     ];
 
-    protected commandResolverKeys: { [key: string]: Function } = {
-        "manager_utils.clear": this.clear,
+    protected commandResolverKeys = {
+        "manager_utils.clear": this.clear.bind(this),
     };
 
     constructor(

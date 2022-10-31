@@ -49,7 +49,7 @@ export class EventManagerService {
                     }
 
                     // Checks if it's hammer time.
-                    matchedResult = value?.match(hammerRegex)!;
+                    matchedResult = value?.match(hammerRegex);
 
                     if (!matchedResult) break;
                     unixTimeStr = matchedResult[1];
@@ -128,7 +128,7 @@ export class EventManagerService {
         const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
         if (!oldEvent) return;
 
-        const newEvent = this.parseMessage(oldMessage.id, newMessage.content!, config);
+        const newEvent = this.parseMessage(oldMessage.id, newMessage.content, config);
 
         try {
             const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
@@ -162,12 +162,12 @@ export class EventManagerService {
 
         const now: DateTime = DateTime.now();
         const configs = (await this.eventManagerRepository.getAll()).filter(config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId));
-        const alteredConfigs = [];
+        const alteredConfigs: EventManagerConfig[] = [];
 
         for (const config of configs) {
             try {
-                if (client.channels.cache.has(config.postingChannelId!)) {
-                    const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId!) as TextChannel | null;
+                if (client.channels.cache.has(config.postingChannelId)) {
+                    const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId) as TextChannel | null;
                     if (postingChannel && postingChannel.guildId === config.guildId) {
                         for (const trigger of config.reminders.filter(trigger => trigger.timeDelta)) {
                             const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
@@ -200,7 +200,7 @@ export class EventManagerService {
                 });
 
                 if (before !== config.events.length) {
-                    alteredConfigs.push(config as never);
+                    alteredConfigs.push(config);
                 }
             } catch (err: Error | unknown) {
                 console.error(err);

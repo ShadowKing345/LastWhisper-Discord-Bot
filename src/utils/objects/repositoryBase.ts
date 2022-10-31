@@ -8,19 +8,19 @@ import { DatabaseConfigurationService } from "../config/databaseConfigurationSer
 /**
  * Entity interface to help with repository processing.
  */
-export interface IEntity {
-    _id: any;
+export interface IEntity<T> {
+    _id: T;
 }
 
 /**
  * Base repository object.
  * Manages the majority of basic CRUD repository actions.
  */
-export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity> {
+export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<unknown>> {
     // Name of the collection.
     protected abstract readonly collectionName: string;
     // A private internal collection object.
-    private _collection: Collection<T> = null!;
+    private _collection: Collection<T> = null;
     // A class to create a new object.
     protected abstract readonly mappingObject: { new(): T };
 
@@ -38,7 +38,7 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity>
     public async save(obj: T): Promise<T> {
         this.validateCollection();
         const result = await this.collection.findOneAndReplace({ _id: obj._id }, obj, { upsert: true });
-        return result.ok ? this.map(result.value as T) : null!;
+        return result.ok ? this.map(result.value as T) : null;
     }
 
     /**
@@ -53,7 +53,7 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity>
         const result = await this.collection.findOne(filter);
 
         if (!result) {
-            return null!;
+            return null;
         }
 
         return this.map(result);
@@ -125,6 +125,6 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity>
             throw new DatabaseError("Unable to get collection. Are you sure the database is connected?");
         }
 
-        return this._collection ??= this.db.db?.collection<T>(this.collectionName)!;
+        return this._collection ??= this.db.db?.collection<T>(this.collectionName);
     }
 }

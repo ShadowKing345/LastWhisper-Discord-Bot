@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, Channel } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
@@ -35,7 +35,7 @@ export class RoleManagerService {
             await reaction.users.fetch();
             for (const user of reaction.users.cache.values()) {
                 try {
-                    const member: GuildMember = (await message.guild?.members.fetch(user.id))!;
+                    const member: GuildMember = await message.guild?.members.fetch(user.id);
                     if (member) await RoleManagerService.alterMembersRoles(member, config.acceptedRoleId);
                 } catch (error) {
                     console.error(error);
@@ -55,7 +55,9 @@ export class RoleManagerService {
 
         this.collectors[message.id] ??= message
             .createReactionCollector({ filter })
-            .on("collect", (messageReaction, user) => this.onReactionAdd(messageReaction, user));
+            .on("collect", (messageReaction, user) => {
+                void this.onReactionAdd(messageReaction, user).then();
+            });
     }
 
     public async onReady(client: Client) {
@@ -110,12 +112,12 @@ export class RoleManagerService {
             return interaction.reply({ content: "Cannot revoke roles as role was not set.", ephemeral: true });
         }
 
-        const role: Role = (await interaction.guild?.roles.fetch(config.acceptedRoleId))!;
+        const role: Role = await interaction.guild?.roles.fetch(config.acceptedRoleId);
         if (!role) {
             return interaction.reply({ content: `Cannot find role with id ${config.acceptedRoleId}.` });
         }
 
-        for (const member of await interaction.guild?.members.cache.values() ?? []) {
+        for (const member of (await interaction.guild?.members.list())?.values() ?? []) {
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role, "Permission revoked by person.");
             }
@@ -126,7 +128,7 @@ export class RoleManagerService {
 
     public async registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
-        const message_id: string = interaction.options.getString("message_id")!;
+        const message_id: string = interaction.options.getString("message_id");
 
         const channel: TextChannel = await interaction.guild?.channels.fetch(config.reactionListeningChannel) as TextChannel;
 
@@ -159,9 +161,9 @@ export class RoleManagerService {
 
     public async unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
         const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
-        const message_id: string = interaction.options.getString("message_id")!;
+        const message_id: string = interaction.options.getString("message_id");
 
-        const channel: TextChannel = await interaction.guild?.channels.fetch(config.reactionListeningChannel) as TextChannel;
+        const channel: Channel = await interaction.guild?.channels.fetch(config.reactionListeningChannel);
 
         if (!channel) {
             this.logger.debug(`Expected failure: Could not find channel.`);
@@ -169,6 +171,13 @@ export class RoleManagerService {
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true
             });
+        }
+
+        if (!(channel instanceof TextChannel)) {
+            return interaction.reply({
+                content: "Channel is not text based.",
+                ephemeral: true,
+            })
         }
 
         const message: Message = await channel.messages.fetch(message_id);

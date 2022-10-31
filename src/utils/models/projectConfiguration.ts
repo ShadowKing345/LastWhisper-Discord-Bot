@@ -10,7 +10,7 @@ import { ModuleConfiguration } from "./moduleConfiguration.js";
  */
 export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     // Discord application token.
-    public token: string = null!;
+    public token: string = null;
     // Database settings.
     public database?: DatabaseConfiguration = new DatabaseConfiguration();
     // Configuration for command registration.

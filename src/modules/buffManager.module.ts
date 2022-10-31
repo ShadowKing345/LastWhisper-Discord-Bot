@@ -25,7 +25,7 @@ export class BuffManagerModule extends ModuleBase {
         }
     }
 
-    public moduleName: string = "BuffManager";
+    public moduleName = "BuffManager";
     public timers: Timers = [
         {
             name: `${this.moduleName}#dailyMessageTask`,
@@ -68,15 +68,15 @@ export class BuffManagerModule extends ModuleBase {
                     },
                 }),
             },
-            execute: interaction => this.commandResolver(interaction),
+            execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
         }),
     ];
 
-    protected commandResolverKeys: { [key: string]: Function } = {
-        "buff_manager.buffs.today": this.postTodayBuff,
-        "buff_manager.buffs.tomorrow": this.postTomorrowsBuff,
-        "buff_manager.weeks.this_week": this.postThisWeeksBuffs,
-        "buff_manager.weeks.next_week": this.postNextWeeksBuffs,
+    protected commandResolverKeys = {
+        "buff_manager.buffs.today": this.postTodayBuff.bind(this),
+        "buff_manager.buffs.tomorrow": this.postTomorrowsBuff.bind(this),
+        "buff_manager.weeks.this_week": this.postThisWeeksBuffs.bind(this),
+        "buff_manager.weeks.next_week": this.postNextWeeksBuffs.bind(this),
     };
 
     constructor(

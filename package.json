@@ -10,10 +10,10 @@
   },
   "scripts": {
     "start": "",
-    "watch": "",
-    "build": "",
+    "watch": "nodemon ./src/index.ts",
+    "build": "rimraf dist && tsc --build",
     "test": "",
-    "lint": "",
+    "lint": "eslint --max-warnings 10 .",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
@@ -34,7 +34,7 @@
   "private": true,
   "dependencies": {
     "commander": "^9.2.0",
-    "discord-api-types": "^0.37.15",
+    "discord-api-types": "^0.37.16",
     "discord.js": "^14.6.0",
     "inquirer": "^8.2.2",
     "luxon": "^2.3.2",
@@ -47,10 +47,16 @@
   "devDependencies": {
     "@types/inquirer": "^8.2.1",
     "@types/luxon": "^2.3.1",
-    "@types/pino": "^7.0.5",
+    "@types/node": "^18.11.8",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "eslint": "^8.26.0",
     "husky": "^8.0.1",
+    "nodemon": "^2.0.20",
     "pino-pretty": "^9.1.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
     "typescript": "^4.8.4"
   }

@@ -14,7 +14,7 @@ export const devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectCon
  * @return New project configuration object.
  */
 export function parseConfigFile(path: string, devPath?: string): ProjectConfiguration {
-    if (!path || !fs.existsSync(path)) return null!;
+    if (!path || !fs.existsSync(path)) return null;
     const config = toJson(new ProjectConfiguration(), fs.readFileSync(path, "utf-8"));
 
     if (!devPath || !fs.existsSync(devPath)) return config;
@@ -27,6 +27,11 @@ export function parseConfigFile(path: string, devPath?: string): ProjectConfigur
  */
 export function generateConfigObject(container: DependencyContainer = defaultContainer): void {
     if (!container.isRegistered(ProjectConfiguration)) {
-        container.register<ProjectConfiguration>(ProjectConfiguration, { useValue: parseConfigFile(configPath, devConfigPath) });
+        const config = parseConfigFile(configPath, devConfigPath);
+        if (!config) {
+            throw new Error("Configuration file was not created.");
+        }
+
+        container.register<ProjectConfiguration>(ProjectConfiguration, { useValue: config });
     }
 }

@@ -1,23 +1,23 @@
-/**
- * Class representation of a collection of permission keys.
- */
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice } from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
 import { deepMerge } from "../index.js";
 
 type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 
+/**
+ * Class representation of a collection of permission keys.
+ */
 export class Command extends ToJsonBase<Command> {
-    public name: string = null!;
-    public description: string = null!;
+    public name: string = null;
+    public description: string = null;
 
-    public execute: (interaction: ChatInputCommandInteraction) => Promise<any> = null!;
+    public execute: (interaction: ChatInputCommandInteraction) => Promise<unknown> = null;
     public subcommands?: { [key: string]: Command };
 
     public options: CommandOptions = [];
 
-    public constructor(data: Partial<Command> = null!) {
+    public constructor(data: Partial<Command> = null) {
         super();
         if (data) {
             this.merge(data);
@@ -83,14 +83,14 @@ export class Command extends ToJsonBase<Command> {
 }
 
 export class CommandOption extends ToJsonBase<CommandOption> {
-    public name: string = null!;
-    public description: string = null!;
-    public type: OptionType = null!;
-    public required: boolean = false;
+    public name: string = null;
+    public description: string = null;
+    public type: OptionType = null;
+    public required = false;
 
-    public choices: APIApplicationCommandOptionChoice<any>[] = [];
+    public choices: APIApplicationCommandOptionChoice<unknown>[] = [];
 
-    public constructor(data: Partial<CommandOption> = null!) {
+    public constructor(data: Partial<CommandOption> = null) {
         super();
 
         if (data) {
@@ -98,44 +98,44 @@ export class CommandOption extends ToJsonBase<CommandOption> {
         }
     }
 
+    private buildOptionCallback<S extends ApplicationCommandOptionBase>(optionBuilder: S): S {
+        optionBuilder.setName(this.name).setDescription(this.description).setRequired(this.required);
+
+        if (this.choices && optionBuilder instanceof SlashCommandStringOption) {
+            optionBuilder.addChoices(...(this.choices as APIApplicationCommandOptionChoice<string>[]));
+        }
+
+        return optionBuilder;
+    }
+
     public build(builder: SlashCommandBuilder | SlashCommandSubcommandBuilder) {
-        const cb = (optionBuilder: any) => {
-            optionBuilder.setName(this.name).setDescription(this.description).setRequired(this.required);
-
-            if (this.choices && "addChoices" in optionBuilder) {
-                optionBuilder.addChoices(...this.choices);
-            }
-
-            return optionBuilder;
-        };
-
         switch (this.type) {
             case OptionType.String:
-                builder.addStringOption(cb);
+                builder.addStringOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Integer:
-                builder.addIntegerOption(cb);
+                builder.addIntegerOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Boolean:
-                builder.addBooleanOption(cb);
+                builder.addBooleanOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.User:
-                builder.addUserOption(cb);
+                builder.addUserOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Channel:
-                builder.addChannelOption(cb);
+                builder.addChannelOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Role:
-                builder.addRoleOption(cb);
+                builder.addRoleOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Mentionable:
-                builder.addMentionableOption(cb);
+                builder.addMentionableOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Number:
-                builder.addNumberOption(cb);
+                builder.addNumberOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Attachment:
-                builder.addAttachmentOption(cb);
+                builder.addAttachmentOption(this.buildOptionCallback.bind(this));
                 break;
             case OptionType.Subcommand:
             case OptionType.SubcommandGroup:

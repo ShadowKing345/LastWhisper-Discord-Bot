@@ -12,7 +12,7 @@ import { Timers } from "../utils/objects/timer.js";
 
 @registerModule()
 export class GardeningManagerModule extends ModuleBase {
-    public moduleName: string = "GardeningModule";
+    public moduleName = "GardeningModule";
     public commands: Commands = [
         new Command({
             name: "gardening_module",
@@ -54,7 +54,7 @@ export class GardeningManagerModule extends ModuleBase {
                             choices: Object.keys(Reason).map(value => ({
                                 name: value.replace(
                                     /(\w)(\w*)/g,
-                                    (_, g1, g2) => g1 + g2.toLowerCase(),
+                                    (_, g1, g2) => (g1 as string) + (g2 as string).toLowerCase(),
                                 ),
                                 value: value,
                             })),
@@ -115,10 +115,10 @@ export class GardeningManagerModule extends ModuleBase {
         { name: `${this.moduleName}#TickTask`, timeout: 60000, execute: client => this.tick(client) },
     ];
 
-    protected commandResolverKeys: { [key: string]: Function } = {
-        "gardening_module.reserve": this.reserve,
-        "gardening_module.list": this.list,
-        "gardening_module.cancel": this.cancel,
+    protected commandResolverKeys = {
+        "gardening_module.reserve": this.reserve.bind(this),
+        "gardening_module.list": this.list.bind(this),
+        "gardening_module.cancel": this.cancel.bind(this),
     };
 
     constructor(
@@ -146,15 +146,19 @@ export class GardeningManagerModule extends ModuleBase {
     }
 
     protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-        const f: Function = await super.commandResolver(interaction, false) as Function;
+        const f = await super.commandResolver(interaction, false);
 
-        const plotNum: number = interaction.options.getInteger("plot")!;
-        const slotNum: number = interaction.options.getInteger("slot")!;
-        const player: string = `${interaction.user.username}#${interaction.user.discriminator}`;
-        const plant: string = interaction.options.getString("plant")!;
+        const plotNum: number = interaction.options.getInteger("plot");
+        const slotNum: number = interaction.options.getInteger("slot");
+        const player = `${interaction.user.username}#${interaction.user.discriminator}`;
+        const plant: string = interaction.options.getString("plant");
         const duration: number = (interaction.options.getInteger("duration") ?? 0) * 360;
         const reason: Reason = (interaction.options.getInteger("reason") ?? Reason.NONE) as Reason;
 
-        return f(interaction, plotNum, slotNum, player, plant, duration, reason);
+        if (f instanceof Function) {
+            return f(interaction, plotNum, slotNum, player, plant, duration, reason);
+        } else {
+            return f;
+        }
     }
 }

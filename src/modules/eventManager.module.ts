@@ -17,7 +17,7 @@ export class EventManagerModule extends ModuleBase {
         Event: "EventManager.event",
     }
 
-    public moduleName: string = "EventManager";
+    public moduleName = "EventManager";
     public commands: Commands = [
         new Command({
             name: "event",

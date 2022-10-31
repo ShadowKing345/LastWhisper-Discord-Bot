@@ -8,7 +8,7 @@ import { pino } from "pino";
 
 @registerModule()
 export class DevModule extends ModuleBase {
-    public moduleName: string = "DevModule";
+    public moduleName = "DevModule";
     public commands: Commands = [
         new Command({
             name: "test_inputs",
@@ -23,7 +23,7 @@ export class DevModule extends ModuleBase {
     ];
 
     public buttons = {
-        buttonTest1: (interaction) => this.buttonTest(interaction),
+        buttonTest1: (interaction: ChatInputCommandInteraction) => this.buttonTest(interaction),
     };
 
     public constructor(

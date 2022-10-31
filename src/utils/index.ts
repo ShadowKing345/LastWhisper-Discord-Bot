@@ -6,12 +6,11 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
     const result: Message[] = [];
 
     if (!client.channels.cache.has(channelId)) return result;
-    const channel = (await client.channels.fetch(channelId))!;
+    const channel = await client.channels.fetch(channelId);
     if (!channel || !(channel instanceof TextChannel)) return result;
 
     for (const id of messageIds) {
-        //@ts-ignore
-        const message: Message = (await channel.messages.fetch(id))!;
+        const message: Message = await channel.messages.fetch(id);
         if (message) result.push(message);
     }
 
@@ -28,10 +27,10 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
  */
 export function toJson<T>(t: T, str: string): T {
     if (t instanceof ToJsonBase) {
-        return t.fromJson(str);
+        return (t as ToJsonBase<T>).fromJson(str);
     }
 
-    return Object.assign(t as {}, JSON.parse(str));
+    return Object.assign<T, T>(t, JSON.parse(str) as T);
 }
 
 /**
@@ -48,7 +47,7 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 
     if (target instanceof MergeableObjectBase) {
         for (const source of sources) {
-            target.merge(source as any);
+            target.merge(source);
         }
 
         return target;
@@ -78,22 +77,22 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
  * Flattens an object down to a depth of 1.
  * @param obj Object to be flattened
  */
-export function flattenObject(obj: Object): Object {
-    let result = {};
+export function flattenObject(obj: object): object {
+    const result = new Map<string, unknown>();
 
     for (const [ k, v ] of Object.entries(obj)) {
-        if (typeof v === "object" && !Array.isArray(v)) {
-            for (const [ k1, v1 ] of Object.entries(flattenObject(v))) {
-                result[`${k}.${k1}`] = v1;
+        if (v instanceof Object && !Array.isArray(v)) {
+            for (const [ k1, v1 ] of Object.entries(flattenObject(v as object))) {
+                result.set(`${k}.${k1}`, v1);
             }
 
             continue;
         }
 
-        result[k] = v;
+        result.set(k, v);
     }
 
-    return result;
+    return Object.assign({}, ...result.entries()) as object;
 }
 
 /**
@@ -101,11 +100,12 @@ export function flattenObject(obj: Object): Object {
  *
  * @see flattenObject
  */
-export function unflattenObject(obj: Object): object {
+export function unFlattenObject(obj: object): object {
     const result = {};
 
     for (const [ key, value ] of Object.entries(obj)) {
-        key.split(".").reduce((prev, current, index, { length }) => prev[current] || (prev[current] = length - 1 === index ? value : {}), result);
+        key.split(".")
+            .reduce((prev, current, index, { length }) => ((prev[current] || Object.assign(prev[current], length - 1 === index ? value : {})) as object), result);
     }
 
     return result;

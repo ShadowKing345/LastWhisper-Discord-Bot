@@ -4,9 +4,7 @@ import { container } from "tsyringe";
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
 import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
-import { APIApplicationCommandOption, Routes } from "discord-api-types/v10.js";
-
-type toJsonResult = { name: string, description: string, options: APIApplicationCommandOption[], default_permission: boolean };
+import { Routes, RESTPostAPIChatInputApplicationCommandsJSONBody, APIApplicationCommandSubcommandOption, APIApplicationCommandSubcommandGroupOption } from "discord-api-types/v10";
 
 /**
  * Command registration argument used when registering commands.
@@ -61,15 +59,15 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
         logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
 
-        let promise: Promise<any>;
+        let promise: Promise<unknown>;
         if (commandConfigs.unregister) {
             const commands = await rest.get(route) as { id: string }[];
             promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
         } else {
-            const commands: toJsonResult[] = [];
+            const commands: (RESTPostAPIChatInputApplicationCommandsJSONBody | APIApplicationCommandSubcommandGroupOption | APIApplicationCommandSubcommandOption)[] = [];
             app.modules.forEach(module => {
                 for (const command of module.commands) {
-                    commands.push(command.build().toJSON() as unknown as toJsonResult);
+                    commands.push(command.build().toJSON());
                 }
             });
 

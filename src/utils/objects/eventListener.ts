@@ -11,10 +11,11 @@ export class EventListener<T extends keyof ClientEvents> {
     // Function to be called when the event is executed.
     public execute: (client: Client, args: ClientEvents[T]) => Promise<void>;
 
-    public constructor(event: T = null!, run: (client: Client, args: ClientEvents[T]) => Promise<void> = null!) {
+    public constructor(event: T = null, run: (client: Client, args: ClientEvents[T]) => Promise<void> = null) {
         this.event = event;
         this.execute = run;
     }
 }
 
-export type EventListeners = EventListener<any>[];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type EventListeners = Array<EventListener<any>>;

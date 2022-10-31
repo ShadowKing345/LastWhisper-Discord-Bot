@@ -5,7 +5,7 @@ import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
-import { unflattenObject } from "../utils/index.js";
+import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 
 /**
@@ -15,7 +15,7 @@ import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 @singleton()
 export class PermissionManagerService {
     private static readonly keys: string[] = [];
-    private static _keysFormatted: string = null!;
+    private static _keysFormatted: string = null;
 
     constructor(
         private permissionManagerRepository: PermissionManagerRepository,
@@ -50,12 +50,12 @@ export class PermissionManagerService {
             return true;
         }
 
-        let result;
+        let result: boolean;
         if (permission.roles.length === 0) {
             this.logger.debug(`Length is 0. Flag set to true.`);
             result = true;
         } else {
-            const user = (await interaction.guild?.members.fetch(interaction.user.id))!;
+            const user = await interaction.guild?.members.fetch(interaction.user.id);
 
             if (!user) {
                 throw new Error("This user is not within the guild.");
@@ -154,12 +154,12 @@ export class PermissionManagerService {
         const config = await this.findOneOrCreate(interaction.guildId);
         const permission = config.permissions[key] ??= new Permission();
 
-        const mode: number = interaction.options.getInteger("mode", false)!;
+        const mode: number = interaction.options.getInteger("mode", false);
         if (mode != null) {
             permission.mode = mode;
         }
 
-        const black_list: boolean = interaction.options.getBoolean("black_list")!;
+        const black_list: boolean = interaction.options.getBoolean("black_list");
         if (black_list != null) {
             permission.blackList = black_list;
         }
@@ -320,17 +320,17 @@ export class PermissionManagerService {
             return PermissionManagerService._keysFormatted;
         }
 
-        const obj: Object = unflattenObject(PermissionManagerService.keys.reduce((previousValue, currentValue) => {
+        const obj: object = unFlattenObject(PermissionManagerService.keys.reduce((previousValue, currentValue) => {
             previousValue[currentValue] = currentValue;
             return previousValue;
         }, {}));
 
-        function format(obj, index = 0) {
+        function format(obj: object, index = 0) {
             const spaces = "\t".repeat(index);
             let result = "";
 
             for (const [ key, value ] of Object.entries(obj)) {
-                result += typeof value === "object" ? `${spaces}${key}:\n${format(value, index + 1)}` : `${spaces}${key};\n`;
+                result += typeof value === "object" ? `${spaces}${key}:\n${format(value as object, index + 1)}` : `${spaces}${key};\n`;
             }
 
             return result;
@@ -345,9 +345,9 @@ export class PermissionManagerService {
      */
     private static validateKey(): (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
         return function (_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
-            const originalMethod = descriptor.value;
+            const originalMethod = descriptor.value as (interaction: ChatInputCommandInteraction, key: string, ...args: unknown[]) => unknown;
 
-            descriptor.value = function (interaction: ChatInputCommandInteraction, key: string, ...args: any[]) {
+            descriptor.value = function (interaction: ChatInputCommandInteraction, key: string, ...args: unknown[]) {
                 if (!PermissionManagerService.keyExists(key)) {
                     (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
                     return interaction.reply({

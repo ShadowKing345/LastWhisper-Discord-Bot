@@ -25,7 +25,7 @@ export class PermissionManagerModule extends ModuleBase {
         reset: "PermissionManager.reset",
     };
 
-    public moduleName: string = "PermissionManager";
+    public moduleName = "PermissionManager";
     public commands: Commands = [
         new Command({
             name: "permissions",
@@ -98,12 +98,12 @@ export class PermissionManagerModule extends ModuleBase {
         }),
     ];
 
-    protected commandResolverKeys: { [key: string]: Function } = {
-        "permissions.list": this.listPermissions,
-        "permissions.add_role": this.addRoles,
-        "permissions.remove_role": this.removeRoles,
-        "permissions.set_config": this.config,
-        "permissions.reset": this.reset,
+    protected commandResolverKeys = {
+        "permissions.list": this.listPermissions.bind(this),
+        "permissions.add_role": this.addRoles.bind(this),
+        "permissions.remove_role": this.removeRoles.bind(this),
+        "permissions.set_config": this.config.bind(this),
+        "permissions.reset": this.reset.bind(this),
     };
 
     constructor(
@@ -114,12 +114,16 @@ export class PermissionManagerModule extends ModuleBase {
     }
 
     protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-        const f: Function = await super.commandResolver(interaction, false) as Function;
+        const f = await super.commandResolver(interaction, false);
 
         const key = interaction.options.getString("key");
         const role = interaction.options.getRole("role");
 
-        return f(interaction, key, role);
+        if (f instanceof Function) {
+            return f(interaction, key, role);
+        } else {
+            return f;
+        }
     }
 
     @authorize(PermissionManagerModule.permissionKeys.list)
@@ -143,7 +147,7 @@ export class PermissionManagerModule extends ModuleBase {
     @authorize(PermissionManagerModule.permissionKeys.config)
     private config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
         this.logger.debug("Requested config.");
-        return this.permissionManagerService.config(interaction as ChatInputCommandInteraction, key);
+        return this.permissionManagerService.config(interaction, key);
     }
 
     @authorize(PermissionManagerModule.permissionKeys.reset)

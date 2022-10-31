@@ -12,7 +12,7 @@ import { EventListeners, EventListener } from "../utils/objects/eventListener.js
 
 @registerModule()
 export class RoleManagerModule extends ModuleBase {
-    public moduleName: string = "RoleManager";
+    public moduleName = "RoleManager";
     public eventListeners: EventListeners = [
         new EventListener("ready", async (client) => this.onReady(client)),
     ];
@@ -48,14 +48,14 @@ export class RoleManagerModule extends ModuleBase {
                     ],
                 }),
             },
-            execute: interaction => this.commandResolver(interaction as ChatInputCommandInteraction),
+            execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
         }),
     ];
 
-    protected commandResolverKeys: { [key: string]: Function } = {
-        "role_manager.revoke_role": this.revokeRole,
-        "role_manager.register_message": this.registerMessage,
-        "role_manager.unregister_message": this.unregisterMessage,
+    protected commandResolverKeys = {
+        "role_manager.revoke_role": this.revokeRole.bind(this),
+        "role_manager.register_message": this.registerMessage.bind(this),
+        "role_manager.unregister_message": this.unregisterMessage.bind(this),
     };
 
     constructor(

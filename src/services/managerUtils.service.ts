@@ -18,7 +18,7 @@ export class ManagerUtilsService {
             return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
         }
 
-        return null!;
+        return null;
     }
 
     public async onMemberRemoved(member: GuildMember | PartialGuildMember) {
@@ -37,14 +37,14 @@ export class ManagerUtilsService {
         const embed = new EmbedBuilder()
             .setColor("Random")
             .addFields(
-                { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt!).toFormat("HH:mm:ss DD/MM/YYYY") },
+                { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY") },
                 { name: "Nickname was:", value: member.nickname ?? "None" },
                 { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
             .setThumbnail(member.user.displayAvatarURL());
 
-        if (kickedData && (kickedData.target as User).id === member.id) {
+        if (kickedData && (kickedData.target ).id === member.id) {
             embed.setTitle("User Kicked!")
-                .setDescription(`User **${member.user.username}** was kicked by **${(await member.guild.members.fetch((kickedData.executor as User).id)).displayName}** from the server.`);
+                .setDescription(`User **${member.user.username}** was kicked by **${(await member.guild.members.fetch((kickedData.executor ).id)).displayName}** from the server.`);
         } else {
             embed.setTitle("User Left!")
                 .setDescription(`User **${member.user.username}** has left this discord server`);
@@ -64,7 +64,7 @@ export class ManagerUtilsService {
 
         if (banLogs) {
             const executor: User | null = banLogs.executor;
-            const target: User | null = banLogs.target as User;
+            const target: User | null = banLogs.target ;
 
             const embed = new EmbedBuilder()
                 .setTitle("Member Banned!")

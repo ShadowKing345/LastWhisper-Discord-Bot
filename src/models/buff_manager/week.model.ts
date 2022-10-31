@@ -6,8 +6,8 @@ import { deepMerge } from "../../utils/index.js";
  * Information about a week.
  */
 export class Week extends MergeableObjectBase<Week> {
-    public isEnabled: boolean = false;
-    public title: string = null!;
+    public isEnabled = false;
+    public title: string = null;
     public days: Days = new Days();
 
     public merge(obj: Week): Week {

@@ -19,6 +19,6 @@ export abstract class ToJsonBase<T> extends MergeableObjectBase<T> {
      * @return The newly created object.
      */
     public fromJson(str: string): T {
-        return this.merge(JSON.parse(str));
+        return this.merge(JSON.parse(str) as T);
     }
 }
