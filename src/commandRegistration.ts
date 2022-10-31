@@ -1,4 +1,4 @@
-import { REST } from "@discordjs/rest";
+import { REST, RouteLike } from "@discordjs/rest";
 import { container } from "tsyringe";
 
 import { App } from "./app.js";
@@ -61,8 +61,10 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
     try {
         logger.info(`Beginning ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
-        const route = commandConfigs.registerForGuild ?
+        const route: RouteLike = commandConfigs.registerForGuild ?
+            //@ts-ignore
             Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId) :
+            //@ts-ignore
             Routes.applicationCommands(commandConfigs.clientId);
 
         if (commandConfigs.unregister) {

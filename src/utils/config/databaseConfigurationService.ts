@@ -1,3 +1,4 @@
+//@ts-ignore
 import { Db, MongoClient } from "mongodb";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -12,8 +13,8 @@ import { ConfigurationClass } from "../configurationClass.js";
  */
 @singleton()
 export class DatabaseConfigurationService extends ConfigurationClass {
-    private _client: MongoClient;
-    private _db: Db;
+    private _client: MongoClient | null = null;
+    private _db: Db | null = null;
 
     constructor(
         private projectConfig: ProjectConfiguration,
@@ -33,7 +34,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
         }
 
         let url = `mongodb${dbConfig?.useDns && "+srv"}://`;
-        url += `${encodeURIComponent(dbConfig.username)}:${encodeURIComponent(dbConfig.password)}`;
+        url += `${encodeURIComponent(dbConfig.username ?? "")}:${encodeURIComponent(dbConfig.password ?? "")}`;
         url += `@${dbConfig.host}`;
         if (dbConfig.port) {
             url += `:${dbConfig.port}`;
@@ -64,13 +65,13 @@ export class DatabaseConfigurationService extends ConfigurationClass {
             const url = DatabaseConfigurationService.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
 
             this._client = await MongoClient.connect(url);
-            this._client.on("error", async error => {
-                this.logger.error(error instanceof Error ? error.stack : error);
+            this._client.on("error", async (error: Error) => {
+                this.logger.error(error.stack);
                 await this._client?.close();
             });
 
-            this._db = this._client.db(this.projectConfig.database?.database);
-        } catch (error: Error | unknown) {
+            this._db = this._client.db(this.projectConfig.database?.database ?? "");
+        } catch (error) {
             this.logger.error(error instanceof Error ? error.stack : error);
             this._client = null;
             this._db = null;
@@ -93,7 +94,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
      * If none exists attempt to create a new one from the client.
      * Assuming that fails or there is no client will return null instead.
      */
-    public get db(): Db {
+    public get db(): Db | null {
         if (this._db) {
             return this._db;
         }
@@ -102,14 +103,14 @@ export class DatabaseConfigurationService extends ConfigurationClass {
             return null;
         }
 
-        this._db = this._client.db(this.projectConfig.database?.database);
+        this._db = this._client.db(this.projectConfig.database?.database ?? "");
         return this._db;
     }
 
     /**
      * Gets an instance of the client. Null if none were set.
      */
-    public get client(): MongoClient {
+    public get client(): MongoClient | null {
         return this._client;
     }
 

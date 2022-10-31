@@ -1,10 +1,10 @@
 export class DatabaseConfiguration {
-    public username?: string = null;
-    public password?: string = null;
-    public host?: string = null;
-    public port?: string = null;
-    public database?: string = null;
+    public username?: string | null = null;
+    public password?: string | null = null;
+    public host?: string | null = null;
+    public port?: string | null = null;
+    public database?: string | null = null;
     public query?: { [key: string]: any } = {};
-    public url?: string = null;
+    public url?: string | null = null;
     public useDns?: boolean = false;
 }

@@ -5,9 +5,9 @@ import { Client } from "../models/client.js";
  * A representation of a timer for a module.
  */
 export class Timer {
-    public name: string;
-    public timeout: number;
-    public execute: (client: Client) => Promise<void>;
+    public name: string = null!;
+    public timeout: number = null!;
+    public execute: (client: Client) => Promise<void> = null!;
 
     /**
      * Function that waits till the client is ready then simply exits.

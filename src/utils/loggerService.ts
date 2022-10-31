@@ -10,16 +10,16 @@ import { LOGGING_LEVELS, LoggerConfigs } from "./models/loggerConfigs.js";
  */
 @singleton()
 export class LoggerService {
-    private readonly configs: LoggerConfigs;
+    private readonly configs?: LoggerConfigs;
     private readonly pino: pino.Logger;
 
     constructor(appConfigs: ProjectConfiguration) {
         this.configs = appConfigs.logger;
 
         this.pino = pino({
-            level: this.configs.level ?? LOGGING_LEVELS.info,
-            transport: this.configs.transports,
-        })
+            level: this.configs?.level ?? LOGGING_LEVELS.info,
+            transport: this.configs?.transports,
+        });
     }
 
     /**

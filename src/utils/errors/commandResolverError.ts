@@ -1,5 +1,5 @@
 export class CommandResolverError extends Error {
-    constructor(message) {
+    constructor(message: string) {
         super(message);
         this.name = "CommandResolverError";
 

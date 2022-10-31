@@ -9,15 +9,15 @@ import { deepMerge } from "../index.js";
 type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 
 export class Command extends ToJsonBase<Command> {
-    public name: string;
-    public description: string;
+    public name: string = null!;
+    public description: string = null!;
 
-    public execute?: (interaction: ChatInputCommandInteraction) => Promise<any>;
-    public subcommands?: { [key: string]: Partial<Command> };
+    public execute: (interaction: ChatInputCommandInteraction) => Promise<any> = null!;
+    public subcommands?: { [key: string]: Command };
 
     public options: CommandOptions = [];
 
-    public constructor(data: Partial<Command> = null) {
+    public constructor(data: Partial<Command> = null!) {
         super();
         if (data) {
             this.merge(data);
@@ -60,6 +60,10 @@ export class Command extends ToJsonBase<Command> {
 
         if (this.subcommands) {
             for (const subcommand of Object.values(this.subcommands)) {
+                if (!subcommand) {
+                    continue;
+                }
+
                 if (Object.values(subcommand.subcommands ?? []).length > 0 && builder instanceof SlashCommandBuilder) {
                     builder.addSubcommandGroup(subcommandGroupBuilder => subcommand.build(subcommandGroupBuilder) as SlashCommandSubcommandGroupBuilder);
                 } else if (!(builder instanceof SlashCommandSubcommandBuilder)) {
@@ -79,14 +83,14 @@ export class Command extends ToJsonBase<Command> {
 }
 
 export class CommandOption extends ToJsonBase<CommandOption> {
-    public name: string;
-    public description: string;
-    public type: OptionType;
+    public name: string = null!;
+    public description: string = null!;
+    public type: OptionType = null!;
     public required: boolean = false;
 
     public choices: APIApplicationCommandOptionChoice<any>[] = [];
 
-    public constructor(data: Partial<CommandOption> = null) {
+    public constructor(data: Partial<CommandOption> = null!) {
         super();
 
         if (data) {
@@ -95,7 +99,7 @@ export class CommandOption extends ToJsonBase<CommandOption> {
     }
 
     public build(builder: SlashCommandBuilder | SlashCommandSubcommandBuilder) {
-        const cb = (optionBuilder) => {
+        const cb = (optionBuilder: any) => {
             optionBuilder.setName(this.name).setDescription(this.description).setRequired(this.required);
 
             if (this.choices && "addChoices" in optionBuilder) {

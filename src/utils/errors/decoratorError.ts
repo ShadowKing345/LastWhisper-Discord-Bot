@@ -4,7 +4,7 @@
  * Error thrown by a decorator.
  */
 export class DecoratorError extends Error {
-    constructor(message) {
+    constructor(message: string) {
         super(message);
         this.name = "DecoratorError";
 

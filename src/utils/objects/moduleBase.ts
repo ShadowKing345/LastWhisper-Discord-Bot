@@ -15,9 +15,9 @@ export abstract class ModuleBase {
     public eventListeners: EventListeners = [];
     public timers: Timers = [];
 
-    public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
-    public selectMenus: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
-    public modalSubmits: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> };
+    public buttons: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null!;
+    public selectMenus: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null!;
+    public modalSubmits: { [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void> } = null!;
 
     protected commandResolverKeys: { [key: string]: Function } = {};
 

@@ -44,7 +44,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
         this._modules = this.moduleConfiguration.modules?.length !== 0 ?
             modules.filter(module => {
-                const inList = this.moduleConfiguration.modules.includes(module.moduleName);
+                const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
                 const blacklist = this.moduleConfiguration.blacklist;
                 return (!blacklist && inList) || (blacklist && !inList);
             }) : modules;
@@ -87,11 +87,12 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     // Edge case if somehow a command can be invoked inside a DM.
                     if (!interaction.guildId) {
                         this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
+
                         await (interaction as CommandInteraction).user.send("Sorry you cannot use this command outside of a server.");
                         return;
                     }
 
-                    const command: Command = this.modules.find(module => module.hasCommand(interaction.commandName))?.getCommand(interaction.commandName);
+                    const command: Command | undefined = this.modules.find(module => module.hasCommand(interaction.commandName))?.getCommand(interaction.commandName);
                     if (!command) {
                         this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
                         return;
