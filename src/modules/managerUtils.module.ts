@@ -16,7 +16,7 @@ export class ManagerUtilsModule extends ModuleBase {
         name: "manager_utils",
         description: "Utility functions for managers.",
         subcommands: {
-            Clear: {
+            Clear: new Command({
                 name: "clear",
                 description: "Clears a channel of its messages.",
                 options: [
@@ -25,13 +25,13 @@ export class ManagerUtilsModule extends ModuleBase {
                         description: "The amount of messages to clear. Default 10.",
                     }),
                 ],
-            },
+            }),
         },
         execute: interaction => this.commandResolver(interaction),
     }) ];
     public eventListeners: EventListeners = [
-        new EventListener("guildBanAdd", (_, member) => this.onMemberBanned(member)),
-        new EventListener("guildMemberRemove", async (client, member) => await this.onMemberRemoved(member)),
+        new EventListener("guildBanAdd", (_, [ member ]) => this.onMemberBanned(member)),
+        new EventListener("guildMemberRemove", async (_, [ member ]) => await this.onMemberRemoved(member)),
     ];
 
     protected commandResolverKeys: { [key: string]: Function } = {
@@ -46,7 +46,7 @@ export class ManagerUtilsModule extends ModuleBase {
         super(permissionManagerService, logger);
     }
 
-    private onMemberRemoved(member: GuildMember | PartialGuildMember ): Promise<void> {
+    private onMemberRemoved(member: GuildMember | PartialGuildMember): Promise<void> {
         return this.managerUtilsService.onMemberRemoved(member);
     }
 
@@ -54,7 +54,7 @@ export class ManagerUtilsModule extends ModuleBase {
         return this.managerUtilsService.onMemberBanned(ban);
     }
 
-    private clear(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    private clear(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         return this.managerUtilsService.clearChannelMessages(interaction);
     }
 }

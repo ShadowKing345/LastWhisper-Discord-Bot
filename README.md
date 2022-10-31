@@ -69,8 +69,8 @@ npm run start
 
 ### Docker
 
-For a more simplified and straight forward installation a [`docker-compose.yml`](docker-compose.yml)
-and [`Dockerfile`](Dockerfile) can be found in the root
+For a more simplified and straight forward installation a [`docker-compose.yml`](.config/docker-compose.yml)
+and [`Dockerfile`](.config/Dockerfile) can be found in the root
 of the project.
 The docker configuration is a minimal setup with as few commands as possible.
 For additional features such as volumes in case of storing logs, you can
@@ -106,7 +106,7 @@ the project. Simply provide the following.
 Assuming everything is configured correctly you can simply run the bot application without any issues.
 
 *Note: It is possible that the `config` folder is not created at the root at the project. You can simply create it if
-this is the case.*
+this is the case. Please note `.config` and `config` are two different folders.*
 
 ```shell
 mkdir config

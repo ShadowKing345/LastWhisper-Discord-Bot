@@ -1,12 +1,13 @@
 import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { Plot } from "./plot.model.js";
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 
 /**
  * Gardening module configuration object.
  */
-export class GardeningModuleConfig implements IEntity {
+export class GardeningModuleConfig extends ToJsonBase<GardeningModuleConfig> implements IEntity {
     public _id;
-    public guildId: string;
+    public guildId: string = null!;
     public plots: Plot[] = [];
-    public messagePostingChannelId: string;
+    public messagePostingChannelId: string = null!;
 }

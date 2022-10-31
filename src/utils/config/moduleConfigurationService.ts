@@ -87,8 +87,6 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     // Edge case if somehow a command can be invoked inside a DM.
                     if (!interaction.guildId) {
                         this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
-
-                        await (interaction as CommandInteraction).user.send("Sorry you cannot use this command outside of a server.");
                         return;
                     }
 
@@ -127,7 +125,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     }
                 }
             }
-        } catch (error: Error | unknown) {
+        } catch (error) {
             this.interactionLogger.error(error instanceof Error ? error.stack : error);
 
             if (interaction && (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) && !interaction.replied) {
@@ -162,7 +160,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
         const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
             try {
                 resolve(listener.execute(client, args));
-            } catch (error: Error | unknown) {
+            } catch (error) {
                 reject(error);
             }
         })));
@@ -184,12 +182,12 @@ export class ModuleConfigurationService extends ConfigurationClass {
             this.intervalIds.push(setInterval(async () => {
                 try {
                     await timer.execute(client);
-                } catch (error: Error | unknown) {
+                } catch (error) {
                     this.taskLogger.error(error instanceof Error ? error.stack : error);
                 }
             }, timer.timeout, client));
             timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-        } catch (error: Error | unknown) {
+        } catch (error) {
             this.taskLogger.error(error instanceof Error ? error.stack : error);
         }
     }
@@ -215,7 +213,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
                     }
                 }
 
-            } catch (error: Error | unknown) {
+            } catch (error) {
                 this.moduleLogger.error(error instanceof Error ? error.stack : error);
             }
         }

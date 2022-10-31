@@ -2,13 +2,13 @@
  * Event object.
  */
 export class EventObj {
-    public messageId: string = null;
-    public name: string = null;
-    public description: string = null;
-    public dateTime: number = null;
+    public messageId: string = null!;
+    public name: string = null!;
+    public description: string = null!;
+    public dateTime: number = null!;
     public additional: [ string, string ][] = [];
 
-    constructor(messageId: string, name = "", description = "", dateTime: number = null, additional: [ string, string ][] = []) {
+    constructor(messageId: string, name = "", description = "", dateTime: number = null!, additional: [ string, string ][] = []) {
         this.messageId = messageId;
         this.name = name;
         this.description = description;

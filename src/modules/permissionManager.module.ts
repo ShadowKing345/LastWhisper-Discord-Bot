@@ -31,14 +31,14 @@ export class PermissionManagerModule extends ModuleBase {
             name: "permissions",
             description: "Controls the permission for each command.",
             subcommands: {
-                List: {
+                List: new Command({
                     name: "list",
                     description: "Lists out all permissions.",
                     options: [
                         PermissionManagerModule.commandKeyHelperBuilder(false),
                     ],
-                },
-                AddRole: {
+                }),
+                AddRole: new Command({
                     name: "add_role",
                     description: "Adds a role to a permission setting.",
                     options: [
@@ -50,8 +50,8 @@ export class PermissionManagerModule extends ModuleBase {
                             type: ApplicationCommandOptionType.Role,
                         }),
                     ],
-                },
-                RemoveRole: {
+                }),
+                RemoveRole: new Command({
                     name: "remove_role",
                     description: "Removes a role to a permission setting.",
                     options: [
@@ -63,8 +63,8 @@ export class PermissionManagerModule extends ModuleBase {
                             type: ApplicationCommandOptionType.Role,
                         }),
                     ],
-                },
-                Config: {
+                }),
+                Config: new Command({
                     name: "set_config",
                     description: "Configures a permission.",
                     options: [
@@ -85,14 +85,14 @@ export class PermissionManagerModule extends ModuleBase {
                             type: ApplicationCommandOptionType.String,
                         }),
                     ],
-                },
-                Reset: {
+                }),
+                Reset: new Command({
                     name: "reset",
                     description: "Resets a permission to the default parameters.",
                     options: [
                         PermissionManagerModule.commandKeyHelperBuilder(true),
                     ],
-                },
+                }),
             },
             execute: this.commandResolver.bind(this),
         }),

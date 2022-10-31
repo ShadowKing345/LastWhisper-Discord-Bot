@@ -18,7 +18,7 @@ export class GardeningManagerModule extends ModuleBase {
             name: "gardening_module",
             description: "gardening module.",
             subcommands: {
-                Reverse: {
+                Reverse: new Command({
                     name: "reserve",
                     description: "Reserve a slot in a plot to be used by you.",
                     options: [
@@ -60,8 +60,8 @@ export class GardeningManagerModule extends ModuleBase {
                             })),
                         }),
                     ],
-                },
-                Cancel: {
+                }),
+                Cancel: new Command({
                     name: "cancel",
                     description: "Cancel any reservations you have made to a slot in a plot.",
                     options: [
@@ -84,8 +84,8 @@ export class GardeningManagerModule extends ModuleBase {
                             required: true,
                         }),
                     ],
-                },
-                List: {
+                }),
+                List: new Command({
                     name: "list",
                     description: "Shows all plots and their states.",
                     options: [
@@ -105,7 +105,7 @@ export class GardeningManagerModule extends ModuleBase {
                             type: ApplicationCommandOptionType.Boolean,
                         }),
                     ],
-                },
+                }),
             },
             execute: async interaction => this.commandResolver(interaction),
         }),
@@ -133,7 +133,7 @@ export class GardeningManagerModule extends ModuleBase {
         return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
     }
 
-    private cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse> {
+    private cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse | void> {
         return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
     }
 
@@ -148,10 +148,10 @@ export class GardeningManagerModule extends ModuleBase {
     protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         const f: Function = await super.commandResolver(interaction, false) as Function;
 
-        const plotNum: number = interaction.options.getInteger("plot");
-        const slotNum: number = interaction.options.getInteger("slot");
+        const plotNum: number = interaction.options.getInteger("plot")!;
+        const slotNum: number = interaction.options.getInteger("slot")!;
         const player: string = `${interaction.user.username}#${interaction.user.discriminator}`;
-        const plant: string = interaction.options.getString("plant");
+        const plant: string = interaction.options.getString("plant")!;
         const duration: number = (interaction.options.getInteger("duration") ?? 0) * 360;
         const reason: Reason = (interaction.options.getInteger("reason") ?? Reason.NONE) as Reason;
 

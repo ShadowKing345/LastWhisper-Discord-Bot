@@ -6,7 +6,6 @@ import { ModuleConfigurationService } from "./utils/config/moduleConfigurationSe
 import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
-import { generateConfigObject } from "./utils/config/appConfigs.js";
 
 /**
  * Application class.
@@ -80,7 +79,6 @@ export async function main() {
     let app: App;
 
     try {
-        generateConfigObject();
         app = container.resolve(App);
 
         await app.init();

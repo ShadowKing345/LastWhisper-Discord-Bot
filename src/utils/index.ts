@@ -6,11 +6,12 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
     const result: Message[] = [];
 
     if (!client.channels.cache.has(channelId)) return result;
-    const channel: TextChannel | null = await client.channels.fetch(channelId) as TextChannel;
-    if (!channel || !channel.isTextBased) return result;
+    const channel = (await client.channels.fetch(channelId))!;
+    if (!channel || !(channel instanceof TextChannel)) return result;
 
     for (const id of messageIds) {
-        const message: Message | null = await channel.messages.fetch(id);
+        //@ts-ignore
+        const message: Message = (await channel.messages.fetch(id))!;
         if (message) result.push(message);
     }
 
@@ -30,7 +31,7 @@ export function toJson<T>(t: T, str: string): T {
         return t.fromJson(str);
     }
 
-    return Object.assign(t, JSON.parse(str));
+    return Object.assign(t as {}, JSON.parse(str));
 }
 
 /**
@@ -47,7 +48,7 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 
     if (target instanceof MergeableObjectBase) {
         for (const source of sources) {
-            target.merge(source);
+            target.merge(source as any);
         }
 
         return target;
@@ -55,14 +56,15 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 
     for (const source of sources) {
         for (const key in source) {
+            const kValue = key.valueOf();
             if (source[key]) {
-                if (!target[key.valueOf()]) {
-                    target[key.valueOf()] = source[key];
+                if (!target[kValue]) {
+                    target[kValue] = source[key];
                 } else {
-                    if (typeof target[key.valueOf()] === "object") {
-                        deepMerge(target[key.valueOf()], source[key]);
+                    if (target[kValue] instanceof Object) {
+                        deepMerge(target[kValue], source[key]);
                     } else {
-                        target[key.valueOf()] = source[key];
+                        target[kValue] = source[key];
                     }
                 }
             }

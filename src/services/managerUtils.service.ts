@@ -18,7 +18,7 @@ export class ManagerUtilsService {
             return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
         }
 
-        return null;
+        return null!;
     }
 
     public async onMemberRemoved(member: GuildMember | PartialGuildMember) {
@@ -37,7 +37,7 @@ export class ManagerUtilsService {
         const embed = new EmbedBuilder()
             .setColor("Random")
             .addFields(
-                { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY") },
+                { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt!).toFormat("HH:mm:ss DD/MM/YYYY") },
                 { name: "Nickname was:", value: member.nickname ?? "None" },
                 { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
             .setThumbnail(member.user.displayAvatarURL());
@@ -84,7 +84,11 @@ export class ManagerUtilsService {
         }
     }
 
-    private async findOneOrCreate(id: string): Promise<ManagerUtilsConfig> {
+    private async findOneOrCreate(id: string | null): Promise<ManagerUtilsConfig> {
+        if (!id) {
+            throw new Error("Guild ID cannot be null.");
+        }
+
         let result = await this.managerUtilsConfigRepository.findOne({ guildId: id });
         if (result) return result;
 
@@ -94,7 +98,7 @@ export class ManagerUtilsService {
         return await this.managerUtilsConfigRepository.save(result);
     }
 
-    public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         const config = await this.findOneOrCreate(interaction.guildId);
 
         if (config.clearChannelBlacklist.includes(interaction.channelId)) {

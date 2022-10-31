@@ -4,10 +4,7 @@ import { container } from "tsyringe";
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
 import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
-import { generateConfigObject } from "./utils/config/appConfigs.js";
 import { APIApplicationCommandOption, Routes } from "discord-api-types/v10.js";
-
-const loggerMeta = { context: "CommandRegistration" };
 
 type toJsonResult = { name: string, description: string, options: APIApplicationCommandOption[], default_permission: boolean };
 
@@ -33,11 +30,9 @@ type CommandRegistrationArgs = {
  * @param args Arguments for command registration.
  */
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
-    generateConfigObject();
-
     const app = container.resolve(App);
     const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
-    console.log("Welcome again to command registration or un-registration.");
+    logger.info("Welcome again to command registration or un-registration.");
 
     const appConfigs: ProjectConfiguration = container.resolve(ProjectConfiguration);
     const commandConfigs: CommandRegistrationConfiguration | undefined = appConfigs.commandRegistration;
@@ -56,25 +51,23 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
     const rest = new REST({ version: "10" }).setToken(appConfigs.token);
 
-    const isForRegistering = (done = false) => commandConfigs.unregister ? done ? "removed" : "removal" : done ? "registered" : "registration";
-    const isForGlobal = () => commandConfigs.registerForGuild ? `commands for guild ${commandConfigs.guildId}` : "global commands";
+    const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
+    const isGlobal = commandConfigs.registerForGuild ? `guild ${commandConfigs.guildId}` : "everyone";
 
     try {
-        logger.info(`Beginning ${isForRegistering()} of ${isForGlobal()}.`, loggerMeta);
         const route: RouteLike = commandConfigs.registerForGuild ?
             //@ts-ignore
             Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId) :
             //@ts-ignore
             Routes.applicationCommands(commandConfigs.clientId);
 
-        if (commandConfigs.unregister) {
-            logger.info(`Acquiring ${isForGlobal()} for deletion.`, loggerMeta);
-            const commands = await rest.get(route) as { id: string }[];
+        logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
 
-            logger.info(`Removing ${isForGlobal()}`, loggerMeta);
-            await Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
+        let promise: Promise<any>;
+        if (commandConfigs.unregister) {
+            const commands = await rest.get(route) as { id: string }[];
+            promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
         } else {
-            logger.info(`Generating ${isForGlobal()}`, loggerMeta);
             const commands: toJsonResult[] = [];
             app.modules.forEach(module => {
                 for (const command of module.commands) {
@@ -82,14 +75,12 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
                 }
             });
 
-            logger.info(`Registering ${isForGlobal()}`, loggerMeta);
-            await rest.put(route, { body: commands });
+            promise = rest.put(route, { body: commands });
         }
-
-        logger.info(`Successfully ${isForRegistering(true)} ${isForGlobal()}`, loggerMeta);
+        await promise;
+        logger.info(`Finished ${isRegistering} for ${isGlobal}.`);
+        process.exit(0);
     } catch (error) {
         logger.error(error instanceof Error ? error.stack : error);
-    } finally {
-        process.exit(0);
     }
 }

@@ -8,7 +8,7 @@ import { deepMerge } from "../../utils/index.js";
  */
 export class PermissionManagerConfig extends ToJsonBase<PermissionManagerConfig> implements IEntity {
     public _id;
-    public guildId: string;
+    public guildId: string = null!;
     public permissions: { [key: string]: Permission } = {};
 
     public merge(obj: Partial<PermissionManagerConfig>): PermissionManagerConfig {

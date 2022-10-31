@@ -15,7 +15,7 @@ import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 @singleton()
 export class PermissionManagerService {
     private static readonly keys: string[] = [];
-    private static _keysFormatted: string = null;
+    private static _keysFormatted: string = null!;
 
     constructor(
         private permissionManagerRepository: PermissionManagerRepository,
@@ -37,7 +37,7 @@ export class PermissionManagerService {
         }
 
         // The guild owner should always be allowed to use commands to prevent a lockout scenario.
-        if (interaction.guild.ownerId === interaction.user.id) {
+        if (interaction.guild?.ownerId === interaction.user.id) {
             this.logger.debug("User is owner. Returning true.");
             return true;
         }
@@ -55,7 +55,11 @@ export class PermissionManagerService {
             this.logger.debug(`Length is 0. Flag set to true.`);
             result = true;
         } else {
-            const user = await interaction.guild.members.fetch(interaction.user.id);
+            const user = (await interaction.guild?.members.fetch(interaction.user.id))!;
+
+            if (!user) {
+                throw new Error("This user is not within the guild.");
+            }
 
             switch (permission.mode) {
                 case PermissionMode.STRICT:
@@ -84,7 +88,7 @@ export class PermissionManagerService {
     public async addRole(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
         this.logger.debug(`Add role command invoked for guild ${interaction.guildId}.`);
         const config = await this.findOneOrCreate(interaction.guildId);
-        const permissions = config.permissions[key] ??= new Permission();
+        const permissions = (config.permissions[key] ??= new Permission());
 
         if (permissions.roles.includes(role.id)) {
             return interaction.reply({
@@ -150,12 +154,12 @@ export class PermissionManagerService {
         const config = await this.findOneOrCreate(interaction.guildId);
         const permission = config.permissions[key] ??= new Permission();
 
-        const mode: number = interaction.options.getInteger("mode", false);
-
+        const mode: number = interaction.options.getInteger("mode", false)!;
         if (mode != null) {
             permission.mode = mode;
         }
-        const black_list: boolean = interaction.options.getBoolean("black_list");
+
+        const black_list: boolean = interaction.options.getBoolean("black_list")!;
         if (black_list != null) {
             permission.blackList = black_list;
         }
@@ -233,7 +237,7 @@ export class PermissionManagerService {
                             { name: "Is Blacklist", value: String(permission.blackList), inline: false },
                             {
                                 name: "Roles",
-                                value: permission.roles.length > 0 ? (await Promise.allSettled(permission.roles.map(roleId => interaction.guild.roles.fetch(roleId).then(role => role.name)))).join("\n") : "No roles were set.",
+                                value: permission.roles.length > 0 ? (await Promise.allSettled(permission.roles.map(roleId => interaction.guild?.roles.fetch(roleId).then(role => role?.name)))).join("\n") : "No roles were set.",
                                 inline: false
                             },
                         ],
@@ -261,8 +265,13 @@ export class PermissionManagerService {
      * @param id Id for the guild.
      * @private
      */
-    private async findOneOrCreate(id: string): Promise<PermissionManagerConfig> {
+    private async findOneOrCreate(id: string | null): Promise<PermissionManagerConfig> {
         this.logger.debug(`Attempting to get config file for guild ${id}.`);
+
+        if (!id) {
+            throw new Error("Guild ID cannot be null.");
+        }
+
         let result = await this.permissionManagerRepository.findOne({ guildId: id });
         if (result) return result;
 
@@ -335,7 +344,7 @@ export class PermissionManagerService {
      * @private
      */
     private static validateKey(): (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
-        return function (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) {
+        return function (_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
             const originalMethod = descriptor.value;
 
             descriptor.value = function (interaction: ChatInputCommandInteraction, key: string, ...args: any[]) {

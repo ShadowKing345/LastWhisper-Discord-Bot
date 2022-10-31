@@ -39,34 +39,34 @@ export class BuffManagerModule extends ModuleBase {
             name: "buff_manager",
             description: "Manages all things related to buffs",
             subcommands: {
-                Buffs: {
+                Buffs: new Command({
                     name: "buffs",
                     description: "Shows you what buffs are set.",
                     subcommands: {
-                        Today: {
+                        Today: new Command({
                             name: "today",
                             description: "Gets today's buff.",
-                        },
-                        Tomorrow: {
+                        }),
+                        Tomorrow: new Command({
                             name: "tomorrow",
                             description: "Gets tomorrow's buff.",
-                        },
+                        }),
                     },
-                },
-                Weeks: {
+                }),
+                Weeks: new Command({
                     name: "weeks",
                     description: "Shows you what buffs for the week, are set to.",
                     subcommands: {
-                        ThisWeek: {
+                        ThisWeek: new Command({
                             name: "this_week",
                             description: "Gets this week's buffs.",
-                        },
-                        NextWeek: {
+                        }),
+                        NextWeek: new Command({
                             name: "next_week",
                             description: "Gets next week's buffs",
-                        },
+                        }),
                     },
-                },
+                }),
             },
             execute: interaction => this.commandResolver(interaction),
         }),
@@ -88,22 +88,22 @@ export class BuffManagerModule extends ModuleBase {
     }
 
     @authorize(BuffManagerModule.permissionKeys.buffs.today)
-    private postTodayBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    private postTodayBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         return this.buffManagerService.postBuff(interaction);
     }
 
     @authorize(BuffManagerModule.permissionKeys.buffs.tomorrow)
-    private postTomorrowsBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    private postTomorrowsBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         return this.buffManagerService.postBuff(interaction, false);
     }
 
     @authorize(BuffManagerModule.permissionKeys.weeks.thisWeek)
-    private postThisWeeksBuffs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    private postThisWeeksBuffs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         return this.buffManagerService.postWeeksBuffs(interaction);
     }
 
     @authorize(BuffManagerModule.permissionKeys.weeks.nextWeek)
-    private postNextWeeksBuffs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    private postNextWeeksBuffs(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
         return this.buffManagerService.postWeeksBuffs(interaction, false);
     }
 

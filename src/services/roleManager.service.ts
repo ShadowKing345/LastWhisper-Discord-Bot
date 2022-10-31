@@ -35,7 +35,7 @@ export class RoleManagerService {
             await reaction.users.fetch();
             for (const user of reaction.users.cache.values()) {
                 try {
-                    const member: GuildMember | null = await message.guild.members.fetch(user.id);
+                    const member: GuildMember = (await message.guild?.members.fetch(user.id))!;
                     if (member) await RoleManagerService.alterMembersRoles(member, config.acceptedRoleId);
                 } catch (error) {
                     console.error(error);
@@ -75,8 +75,8 @@ export class RoleManagerService {
                     await RoleManagerService.processMessageReactions(message, config);
                     this.registerReactionCollector(message, config);
                 }
-            } catch (error: Error | unknown) {
-                this.logger.error(error instanceof Error ? error + error.stack : error);
+            } catch (error) {
+                this.logger.error(error instanceof Error ? error.stack : error);
             }
         }
     }
@@ -110,12 +110,12 @@ export class RoleManagerService {
             return interaction.reply({ content: "Cannot revoke roles as role was not set.", ephemeral: true });
         }
 
-        const role: Role = await interaction.guild.roles.fetch(config.acceptedRoleId);
+        const role: Role = (await interaction.guild?.roles.fetch(config.acceptedRoleId))!;
         if (!role) {
             return interaction.reply({ content: `Cannot find role with id ${config.acceptedRoleId}.` });
         }
 
-        for (const member of await interaction.guild.members.cache.values()) {
+        for (const member of await interaction.guild?.members.cache.values() ?? []) {
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role, "Permission revoked by person.");
             }
@@ -125,10 +125,10 @@ export class RoleManagerService {
     }
 
     public async registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-        const config = await this.findOneOrCreate(interaction.guildId);
-        const message_id = interaction.options.getString("message_id");
+        const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
+        const message_id: string = interaction.options.getString("message_id")!;
 
-        const channel: TextChannel = await interaction.guild.channels.fetch(config.reactionListeningChannel) as TextChannel;
+        const channel: TextChannel = await interaction.guild?.channels.fetch(config.reactionListeningChannel) as TextChannel;
 
         if (!channel) {
             this.logger.debug(`Expected failure: Could not find channel.`);
@@ -158,10 +158,10 @@ export class RoleManagerService {
     }
 
     public async unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-        const config = await this.findOneOrCreate(interaction.guildId);
-        const message_id = interaction.options.getString("message_id");
+        const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
+        const message_id: string = interaction.options.getString("message_id")!;
 
-        const channel: TextChannel = await interaction.guild.channels.fetch(config.reactionListeningChannel) as TextChannel;
+        const channel: TextChannel = await interaction.guild?.channels.fetch(config.reactionListeningChannel) as TextChannel;
 
         if (!channel) {
             this.logger.debug(`Expected failure: Could not find channel.`);
@@ -189,7 +189,11 @@ export class RoleManagerService {
         return interaction.reply({ content: "Successfully unregistered.", ephemeral: true });
     }
 
-    private async findOneOrCreate(id: string): Promise<RoleManagerConfig> {
+    private async findOneOrCreate(id: string | null): Promise<RoleManagerConfig> {
+        if (!id) {
+            throw new Error("Guild Id cannot be null.");
+        }
+
         let result = await this.roleManagerConfigRepository.findOne({ guildId: id });
         if (result) return result;
 

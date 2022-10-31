@@ -2,27 +2,24 @@
   "name": "lastwhisper-discord-bot",
   "version": "4.0.0",
   "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
+  "bin": "dist/index.js",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=16"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "start": "",
+    "watch": "",
+    "build": "",
+    "test": "",
+    "lint": "",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "yarn lint"
     }
   },
   "prettier": {
@@ -33,17 +30,6 @@
   },
   "author": "Shadowking124",
   "license": "GPL-3.0-only",
-  "module": "dist/lastwhisper-discord-bot.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/lastwhisper-discord-bot.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/lastwhisper-discord-bot.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "type": "module",
   "private": true,
   "dependencies": {
@@ -59,15 +45,12 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^8.1.0",
     "@types/inquirer": "^8.2.1",
     "@types/luxon": "^2.3.1",
     "@types/pino": "^7.0.5",
     "@types/uuid": "^8.3.4",
     "husky": "^8.0.1",
     "pino-pretty": "^9.1.0",
-    "size-limit": "^8.1.0",
-    "tsdx": "^0.14.1",
     "tslib": "^2.4.0",
     "typescript": "^4.8.4"
   }

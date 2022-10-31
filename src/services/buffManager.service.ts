@@ -62,20 +62,20 @@ export class BuffManagerService {
         if (config.buffs.length <= 0) {
             await interaction.reply({ content: "Sorry, there are not buffs set.", ephemeral: true });
             this.logger.debug(`No buffs were set in config.`);
-            return [ null, false ];
+            return [ null!, false ];
         }
 
         if (config.weeks.filter(week => !("isEnabled" in week) || week.isEnabled).length <= 0) {
             await interaction.reply({ content: "Sorry, there are not enabled weeks set.", ephemeral: true });
             this.logger.debug(`No weeks were set in config.`);
-            return [ null, false ];
+            return [ null!, false ];
         }
 
         this.logger.debug(`Returning results.`);
         return [ config, true ];
     }
 
-    public async postBuff(interaction: CommandInteraction, today = true): Promise<InteractionResponse<boolean>> {
+    public async postBuff(interaction: CommandInteraction, today = true): Promise<InteractionResponse | void> {
         const [ config, flag ] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
@@ -103,7 +103,7 @@ export class BuffManagerService {
         await interaction.reply({ embeds: [ this.createBuffEmbed(title, buff, date) ] });
     }
 
-    public async postWeeksBuffs(interaction: CommandInteraction, thisWeek = true): Promise<InteractionResponse<boolean>> {
+    public async postWeeksBuffs(interaction: CommandInteraction, thisWeek = true): Promise<InteractionResponse | void> {
         const [ config, flag ] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
@@ -143,7 +143,7 @@ export class BuffManagerService {
                 const filteredWeeks = config.weeks.filter(week => week.isEnabled);
                 const week: Week = filteredWeeks[now.weekNumber % filteredWeeks.length];
                 const buffId: string = BuffManagerService.getBuffId(week, now);
-                const buff: Buff = config.buffs.find(day => day.id === buffId);
+                const buff: Buff = config.buffs.find(day => day.id === buffId)!;
 
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID buffId for guild config.guildId. ${skipping}...`);
@@ -159,18 +159,18 @@ export class BuffManagerService {
                         embeds: [ this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now) ],
                     });
                 }
-            } catch (error: Error | unknown) {
-                this.logger.error(error instanceof Error ? error + error.stack : error);
+            } catch (error) {
+                this.logger.error(error instanceof Error ? error.stack : error);
             }
         }
     }
 
-    private async findOneOrCreate(id: string): Promise<BuffManagerConfig> {
-        let result = await this.buffManagerConfigRepository.findOne({ guildId: id });
+    private async findOneOrCreate(id: string | null): Promise<BuffManagerConfig> {
+        let result = await this.buffManagerConfigRepository.findOne({ guildId: id! });
         if (result) return result;
 
         result = new BuffManagerConfig();
-        result.guildId = id;
+        result.guildId = id!;
 
         return await this.buffManagerConfigRepository.save(result);
     }

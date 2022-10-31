@@ -89,7 +89,7 @@ export class DevModule extends ModuleBase {
 
     private async buttonTest(interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse> {
         await interaction.reply({
-            content: `${interaction.member.avatar} has clicked button ${interaction.commandName} ${(interaction as unknown as ButtonInteraction).customId}.`,
+            content: `${interaction.member?.avatar ?? "No avatar set"} has clicked button ${interaction.commandName} ${(interaction as unknown as ButtonInteraction).customId}.`,
             ephemeral: true,
         });
     }

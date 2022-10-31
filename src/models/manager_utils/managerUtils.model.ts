@@ -1,11 +1,12 @@
 import { IEntity } from "../../utils/objects/repositoryBase.js";
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 
 /**
  * Manager utils configuration object.
  */
-export class ManagerUtilsConfig implements IEntity {
+export class ManagerUtilsConfig extends ToJsonBase<ManagerUtilsConfig> implements IEntity {
     public _id;
-    public guildId: string;
-    public loggingChannel: string;
-    public clearChannelBlacklist: string[];
+    public guildId: string = null!;
+    public loggingChannel: string = null!;
+    public clearChannelBlacklist: string[] = [];
 }

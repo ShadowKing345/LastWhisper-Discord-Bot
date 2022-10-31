@@ -33,9 +33,9 @@ export class EventManagerModule extends ModuleBase {
         }),
     ];
     public eventListeners: EventListeners = [
-        new EventListener("messageCreate", (_, message) => this.createEvent(message)),
-        new EventListener("messageUpdate", (_, old, message) => this.updateEvent(old, message)),
-        new EventListener("messageDelete", (_, message) => this.deleteEvent(message)),
+        new EventListener("messageCreate", (_, [ message ]) => this.createEvent(message)),
+        new EventListener("messageUpdate", (_, [ old, message ]) => this.updateEvent(old, message)),
+        new EventListener("messageDelete", (_, [ message ]) => this.deleteEvent(message)),
         new EventListener("ready", client => this.onReady(client)),
     ];
     public timers: Timers = [

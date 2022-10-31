@@ -49,7 +49,7 @@ export class EventManagerService {
                     }
 
                     // Checks if it's hammer time.
-                    matchedResult = value?.match(hammerRegex);
+                    matchedResult = value?.match(hammerRegex)!;
 
                     if (!matchedResult) break;
                     unixTimeStr = matchedResult[1];
@@ -74,7 +74,7 @@ export class EventManagerService {
         return event;
     }
 
-    private async getConfig(guildId: string) {
+    private async getConfig(guildId: string | null) {
         if (guildId == null || !guildId.trim()) throw new ReferenceError("guildId cannot be null nor empty.");
 
         return this.findOneOrCreate(guildId);
@@ -128,7 +128,7 @@ export class EventManagerService {
         const oldEvent = config.events.find(event => event.messageId === oldMessage.id);
         if (!oldEvent) return;
 
-        const newEvent = this.parseMessage(oldMessage.id, newMessage.content, config);
+        const newEvent = this.parseMessage(oldMessage.id, newMessage.content!, config);
 
         try {
             const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
@@ -166,8 +166,8 @@ export class EventManagerService {
 
         for (const config of configs) {
             try {
-                if (client.channels.cache.has(config.postingChannelId)) {
-                    const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId) as TextChannel | null;
+                if (client.channels.cache.has(config.postingChannelId!)) {
+                    const postingChannel: TextChannel | null = await client.channels.fetch(config.postingChannelId!) as TextChannel | null;
                     if (postingChannel && postingChannel.guildId === config.guildId) {
                         for (const trigger of config.reminders.filter(trigger => trigger.timeDelta)) {
                             const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
@@ -200,7 +200,7 @@ export class EventManagerService {
                 });
 
                 if (before !== config.events.length) {
-                    alteredConfigs.push(config);
+                    alteredConfigs.push(config as never);
                 }
             } catch (err: Error | unknown) {
                 console.error(err);

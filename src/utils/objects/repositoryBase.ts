@@ -38,7 +38,7 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity>
     public async save(obj: T): Promise<T> {
         this.validateCollection();
         const result = await this.collection.findOneAndReplace({ _id: obj._id }, obj, { upsert: true });
-        return result.ok ? this.map(result.value) : null!;
+        return result.ok ? this.map(result.value as T) : null!;
     }
 
     /**

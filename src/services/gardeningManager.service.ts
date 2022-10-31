@@ -39,7 +39,7 @@ export class GardeningManagerService {
             return null;
         }
 
-        return [ plot, slot ];
+        return [ plot, slot! ];
     }
 
     protected static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 1): string {
@@ -89,7 +89,7 @@ export class GardeningManagerService {
         if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
-        const value: void | [ Plot, Slot ] = await GardeningManagerService.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
+        const value: void | [ Plot, Slot ] = (await GardeningManagerService.validatePlotAndSlot(interaction, config, plotNum, slotNum, false))!;
         if (!value) return;
         const plot: Plot = value[0];
         let slot: Slot = value[1];
@@ -133,14 +133,14 @@ export class GardeningManagerService {
         });
     }
 
-    public async cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse> {
+    public async cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse | void> {
         const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
 
         if (!(player && plant && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
 
-        const value: void | [ Plot, Slot ] = await GardeningManagerService.validatePlotAndSlot(interaction, config, plotNum, slotNum);
+        const value: void | [ Plot, Slot ] = (await GardeningManagerService.validatePlotAndSlot(interaction, config, plotNum, slotNum))!;
         if (!value) return;
         const plot: Plot = value[0];
         let slot: Slot = value[1];
@@ -154,7 +154,7 @@ export class GardeningManagerService {
             const nextReserved = slot.next;
             const next = nextReserved.pop();
 
-            slot = next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved) : undefined;
+            slot = next !== undefined ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved) : undefined!;
             plot.slots[plotNum] = slot;
         } else {
             const next = slot.next.find(reservation => reservation.player === player && reservation.plant === plant);
@@ -241,7 +241,7 @@ export class GardeningManagerService {
                     const nextReserved = slot.next;
                     const next = nextReserved.pop();
 
-                    plot.slots[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null;
+                    plot.slots[index] = next ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved) : null!;
                     altered.push(config);
                 }
             }
@@ -275,7 +275,11 @@ export class GardeningManagerService {
         await channel.send({ embeds: [ embed ] });
     }
 
-    private async findOneOrCreate(id: string): Promise<GardeningModuleConfig> {
+    private async findOneOrCreate(id: string | null): Promise<GardeningModuleConfig> {
+        if (!id) {
+            throw new Error("Guild ID cannot be null.");
+        }
+
         let result = await this.gardeningConfigRepository.findOne({ guildId: id });
         if (result) return result;
 
@@ -287,9 +291,9 @@ export class GardeningManagerService {
 }
 
 export class MessagePostArgs {
-    public title: string;
-    public description: string;
-    public memberUrl: string;
+    public title: string = null!;
+    public description: string = null!;
+    public memberUrl: string = null!;
     public slot?: Slot;
-    public fields: APIEmbedField[];
+    public fields: APIEmbedField[] = [];
 }

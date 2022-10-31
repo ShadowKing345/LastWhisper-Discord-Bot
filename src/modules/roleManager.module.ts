@@ -21,11 +21,11 @@ export class RoleManagerModule extends ModuleBase {
             name: "role_manager",
             description: "Manages roles within a guild.",
             subcommands: {
-                RevokeRole: {
+                RevokeRole: new Command({
                     name: "revoke_role",
                     description: "Revokes the role for all uses.",
-                },
-                RegisterMessage: {
+                }),
+                RegisterMessage: new Command({
                     name: "register_message",
                     description: "Registers a message to be reacted to.",
                     options: [
@@ -35,8 +35,8 @@ export class RoleManagerModule extends ModuleBase {
                             required: true,
                         }),
                     ],
-                },
-                UnregisterMessage: {
+                }),
+                UnregisterMessage: new Command({
                     name: "unregister_message",
                     description: "Unregisters a message to be reacted to.",
                     options: [
@@ -46,7 +46,7 @@ export class RoleManagerModule extends ModuleBase {
                             required: true,
                         }),
                     ],
-                },
+                }),
             },
             execute: interaction => this.commandResolver(interaction as ChatInputCommandInteraction),
         }),
