@@ -56,9 +56,7 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
 
     try {
         const route: RouteLike = commandConfigs.registerForGuild ?
-            //@ts-ignore
             Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId) :
-            //@ts-ignore
             Routes.applicationCommands(commandConfigs.clientId);
 
         logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
