@@ -5,10 +5,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "lib": [
-      "dom",
-      "ESNext"
-    ],
+    "lib": ["dom", "ESNext"],
     "outDir": "./dist",
     "importHelpers": true,
     // output .d.ts declaration files.
@@ -42,11 +39,6 @@
     // Removes comments
     "removeComments": true
   },
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["./src"],
+  "exclude": ["node_modules", "dist"]
 }

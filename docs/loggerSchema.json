@@ -6,17 +6,12 @@
   "properties": {
     "level": {
       "type": "string",
-      "enum": [
-        "debug",
-        "info",
-        "warn",
-        "error"
-      ],
+      "enum": ["debug", "info", "warn", "error"],
       "default": "info",
       "description": "The level the debugger will output to."
     },
     "transport": {
-      "type": "any",
+      "type": "object",
       "description": "Any additional transports following pino transports system."
     }
   },

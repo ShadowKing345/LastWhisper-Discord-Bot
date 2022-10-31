@@ -6,10 +6,10 @@ import { BuffManagerConfig } from "../models/buff_manager/index.js";
 
 @singleton()
 export class BuffManagerRepository extends RepositoryBase<BuffManagerConfig> {
-    protected readonly collectionName: string = "buff_manager";
-    protected readonly mappingObject = BuffManagerConfig;
+  protected readonly collectionName: string = "buff_manager";
+  protected readonly mappingObject = BuffManagerConfig;
 
-    constructor(db: DatabaseConfigurationService) {
-        super(db);
-    }
+  constructor(db: DatabaseConfigurationService) {
+    super(db);
+  }
 }

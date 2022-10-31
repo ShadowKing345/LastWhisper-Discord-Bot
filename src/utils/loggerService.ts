@@ -10,26 +10,26 @@ import { LOGGING_LEVELS, LoggerConfigs } from "./models/loggerConfigs.js";
  */
 @singleton()
 export class LoggerService {
-    private readonly configs?: LoggerConfigs;
-    private readonly pino: pino.Logger;
+  private readonly configs?: LoggerConfigs;
+  private readonly pino: pino.Logger;
 
-    constructor(appConfigs: ProjectConfiguration) {
-        this.configs = appConfigs.logger;
+  constructor(appConfigs: ProjectConfiguration) {
+    this.configs = appConfigs.logger;
 
-        this.pino = pino({
-            level: this.configs?.level ?? LOGGING_LEVELS.info,
-            transport: this.configs?.transports,
-        });
-    }
+    this.pino = pino({
+      level: this.configs?.level ?? LOGGING_LEVELS.info,
+      transport: this.configs?.transports,
+    });
+  }
 
-    /**
-     * Creates a child instance of a logger for the requesting class.
-     * @param context The context name.
-     * @return pino logger object.
-     */
-    buildLogger(context: string): pino.Logger {
-        return this.pino.child({ context });
-    }
+  /**
+   * Creates a child instance of a logger for the requesting class.
+   * @param context The context name.
+   * @return pino logger object.
+   */
+  buildLogger(context: string): pino.Logger {
+    return this.pino.child({ context });
+  }
 }
 
 /**
@@ -37,10 +37,12 @@ export class LoggerService {
  * Should be used in conduction with the decorator function.
  * @see createLogger
  */
-class LoggerFactoryTransformer implements Transform<LoggerService, pino.Logger> {
-    public transform(incoming: LoggerService, args: string): pino.Logger {
-        return incoming.buildLogger(args);
-    }
+class LoggerFactoryTransformer
+  implements Transform<LoggerService, pino.Logger>
+{
+  public transform(incoming: LoggerService, args: string): pino.Logger {
+    return incoming.buildLogger(args);
+  }
 }
 
 /**
@@ -50,5 +52,5 @@ class LoggerFactoryTransformer implements Transform<LoggerService, pino.Logger> 
  * @see LoggerService.buildLogger
  */
 export function createLogger(context: string) {
-    return injectWithTransform(LoggerService, LoggerFactoryTransformer, context);
+  return injectWithTransform(LoggerService, LoggerFactoryTransformer, context);
 }

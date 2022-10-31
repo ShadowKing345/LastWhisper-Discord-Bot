@@ -19,21 +19,23 @@ generateConfigObject();
 //     type: "confirm",
 // }).then(({ result }) => result ? generateConfigs({ minimal: true }) : Promise.resolve()) : Promise.resolve();
 
+program.name("discord-bot").description("Discord Bot.").version("0.0.1");
+
 program
-    .name("discord-bot")
-    .description("Discord Bot.")
-    .version("0.0.1");
+  .command("deploy", { isDefault: true })
+  .description("Runs to bot.")
+  .action(main);
 
-program.command("deploy", { isDefault: true })
-    .description("Runs to bot.")
-    .action(main);
-
-program.command("register-commands")
-    .description("Runs the command register script.")
-    .option("-t, --token <string>", "Token for bot.")
-    .option("-c, --client <string>", "Client ID.")
-    .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
-    .option("-u, --unregister", "Use to unregister commands instead.")
-    .action((args) => commandRegistration(args as unknown));
+program
+  .command("register-commands")
+  .description("Runs the command register script.")
+  .option("-t, --token <string>", "Token for bot.")
+  .option("-c, --client <string>", "Client ID.")
+  .option(
+    "-g, --guild <string>",
+    "Guild ID to register commands for. If this is set configuration file options will be ignored."
+  )
+  .option("-u, --unregister", "Use to unregister commands instead.")
+  .action((args) => commandRegistration(args as unknown));
 
 program.parse();

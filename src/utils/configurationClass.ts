@@ -1,3 +1,1 @@
-export abstract class ConfigurationClass {
-
-}
+export abstract class ConfigurationClass {}

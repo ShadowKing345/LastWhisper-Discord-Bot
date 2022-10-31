@@ -38,7 +38,7 @@ Clone, Download/unzip this project into your desired location.
 git clone https://github.com/ShadowKing345/LastWhisper-Discord-Bot.git Discord-Bot
 ```
 
-*Note: The folder name was used in later command examples.*
+_Note: The folder name was used in later command examples._
 
 ### Yarn
 
@@ -55,7 +55,7 @@ yarn run start
 ```
 
 The bot will begin setting up internal variables and start running.
-*Note: Assuming you have not configured the bot it will defiantly fail and throw errors.*
+_Note: Assuming you have not configured the bot it will defiantly fail and throw errors._
 However, this is done to just confirm that the environment is set up correctly.
 
 ### NPM
@@ -69,8 +69,8 @@ npm run start
 
 ### Docker
 
-For a more simplified and straight forward installation a [`docker-compose.yml`](.config/docker-compose.yml)
-and [`Dockerfile`](.config/Dockerfile) can be found in the root
+For a more simplified and straight forward installation a [`docker-compose.yml`](docker-compose.yml)
+and [`Dockerfile`](Dockerfile) can be found in the root
 of the project.
 The docker configuration is a minimal setup with as few commands as possible.
 For additional features such as volumes in case of storing logs, you can
@@ -84,8 +84,8 @@ of configuration a token and MongoDB database url. (It feels redundant to call s
 
 The token can be acquired by going to [Discord Developer Applications](https://discord.com/developers/applications) and
 creating a new application getting the token from there.
-*See: [Discord.js guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) for a
-more detailed guide*
+_See: [Discord.js guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) for a
+more detailed guide_
 
 The MongoDB can be acquired with a local database instance or using the database cloud services provided by MongoDB or
 other cloud hosting services. Sadly I am not confident enough to provide a definitive guide to getting this url.
@@ -95,7 +95,7 @@ the project. Simply provide the following.
 
 ```json
 {
-  "$schema": "../docs/schema.json",
+  "$schema": "docs/schema.json",
   "token": "[Your Discord bot token]",
   "database": {
     "url": "[The MongoDB DB url]"
@@ -105,16 +105,17 @@ the project. Simply provide the following.
 
 Assuming everything is configured correctly you can simply run the bot application without any issues.
 
-*Note: It is possible that the `config` folder is not created at the root at the project. You can simply create it if
-this is the case. Please note `.config` and `config` are two different folders.*
+_Note: It is possible that the `config` folder is not created at the root at the project. You can simply create it if
+this is the case._
 
 ```shell
 mkdir config
 ```
 
-*Note: A schema file is also provided to help with configuration of the bot. It can be found
+_Note: A schema file is also provided to help with configuration of the bot. It can be found
 under [`docs/schema.json`](docs/schema.json).
-Presuming the text editor you are using can handle JSON schemas.*
+Presuming the text editor you are using can handle JSON schemas. Additionally, if you are having issues seeing the
+schema try use `../docs/schema.json` instead._
 
 ## Command Setup
 
@@ -130,8 +131,8 @@ bot. In the configuration file add the following or use the configuration script
 }
 ```
 
-*Note: Unregister is actually not needed, but I would recommend keeping it so that you can easily toggle it without
-having to look through documentation or dealing with configuration tool.*
+_Note: Unregister is actually not needed, but I would recommend keeping it so that you can easily toggle it without
+having to look through documentation or dealing with configuration tool._
 
 Once the configuration file has been saved you can simply run.
 
@@ -162,8 +163,8 @@ In the application configuration inside commandRegistration add the following.
 }
 ```
 
-*Note: The guild ID does nothing by itself, so you can leave it there. Only the `registerForGuild` setting will trigger
-the register for guild procedure.*
+_Note: The guild ID does nothing by itself, so you can leave it there. Only the `registerForGuild` setting will trigger
+the register for guild procedure._
 
 One thing to mention is that guild command and global commands do not stack so if you have registered both of them you
 will see two entries in the slash command.
@@ -179,7 +180,8 @@ Things to note:
 ### Environment Variables
 
 There are special environment variables that can be set to change how the application handles certain tasks.
-For example the `CONFIG_PATH` variable sets the file path for the `ProjectConfiguration.json` file. *Note: It's the file
+For example the `CONFIG_PATH` variable sets the file path for the `ProjectConfiguration.json` file. \*Note: It's the
+file
 path and not the folder path.
 
 ### Logger
@@ -192,7 +194,7 @@ found there.
 
 Instead of using the configuration file you can simply pass the configuration you want to the command as arguments.
 Use `--help` to get a list of additional argument and what they mean.
-*Note: Not all configuration options have a command argument.*
+_Note: Not all configuration options have a command argument._
 
 ## Development
 
@@ -212,8 +214,8 @@ that can handle Typescript.
 
 Pino-pretty is included as a dev dependency to allow for easily readable debug messages.
 
-*Note: If by chance there is an important dev package missing please send an issue as it is very possible that the
-package was installed globally and not locally.*
+_Note: If by chance there is an important dev package missing please send an issue as it is very possible that the
+package was installed globally and not locally._
 
 This project mainly uses yarn as it package manager as well. While npm is alright to use for personal reasons, it is
 recommended to use yarn generally speaking for this project.
