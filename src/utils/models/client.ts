@@ -1,46 +1,27 @@
-import { Client as DiscordClient, ClientEvents, Collection, Intents } from "discord.js";
+import {
+  Client as DiscordClient,
+  GatewayIntentBits,
+  Collection,
+  ClientEvents,
+} from "discord.js";
+import { EventListeners } from "../objects/eventListener.js";
 
-import { Command } from "./command.js";
-import { Listener } from "./listener.js";
-import { ModuleBase } from "./moduleBase.js";
-import { Task } from "./task.js";
-
+/**
+ * Custom client class to hold the additional information about a discord client and the set-up flags.
+ */
 export class Client extends DiscordClient {
-    private readonly _modules: Collection<string, ModuleBase>;
-    private readonly _commands: Collection<string, Command>;
-    private readonly _moduleListeners: Collection<keyof ClientEvents, Listener[]>;
-    private readonly _tasks: Collection<string, Task>;
+  public readonly events: Collection<keyof ClientEvents, EventListeners> =
+    new Collection<keyof ClientEvents, EventListeners>();
 
-    constructor() {
-        super({
-            intents: [
-                Intents.FLAGS.GUILDS,
-                Intents.FLAGS.GUILD_BANS,
-                Intents.FLAGS.GUILD_MEMBERS,
-                Intents.FLAGS.GUILD_MESSAGES,
-                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            ],
-        });
-
-        this._commands = new Collection<string, Command>();
-        this._tasks = new Collection<string, Task>();
-        this._modules = new Collection<string, ModuleBase>();
-        this._moduleListeners = new Collection<keyof ClientEvents, Listener[]>();
-    }
-
-    get modules(): Collection<string, ModuleBase> {
-        return this._modules;
-    }
-
-    get commands(): Collection<string, Command> {
-        return this._commands;
-    }
-
-    get moduleListeners(): Collection<keyof ClientEvents, Listener[]> {
-        return this._moduleListeners;
-    }
-
-    get tasks(): Collection<string, Task> {
-        return this._tasks;
-    }
+  constructor() {
+    super({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+      ],
+    });
+  }
 }

@@ -1,8 +1,16 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 
-export class RoleManagerConfig extends BasicModel {
-    public guildId: string;
-    public acceptedRoleId: string;
-    public reactionMessageIds: string[];
-    public reactionListeningChannel: string;
+/**
+ * Role manager configuration object.
+ */
+export class RoleManagerConfig
+  extends ToJsonBase<RoleManagerConfig>
+  implements IEntity<string>
+{
+  public _id: string;
+  public guildId: string = null;
+  public acceptedRoleId: string = null;
+  public reactionMessageIds: string[] = [];
+  public reactionListeningChannel: string = null;
 }

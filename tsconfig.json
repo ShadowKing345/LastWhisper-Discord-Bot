@@ -3,25 +3,42 @@
     "esm": true
   },
   "compilerOptions": {
-    "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "forceConsistentCasingInFileNames": true,
+    "target": "ESNext",
+    "lib": ["dom", "ESNext"],
+    "outDir": "./dist",
+    "importHelpers": true,
+    // output .d.ts declaration files.
+    "declaration": true,
+    // output sourcemap files.
+    "sourceMap": true,
+    "declarationMap": true,
+    // match output dir to input dir. e.g. dist/index instead of dist/src/index
+    "rootDir": "./src",
+    // stricter type-checking for stronger correctness. Recommended by TS
+    "strict": true,
+    // linter checks for common issues
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    // noUnused* overlap with @typescript-eslint/no-unused-vars, can disable if duplicative
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": false,
+    // use Node's module resolution algorithm, instead of the legacy TS one
+    "moduleResolution": "node",
+    // interop between ESM and CJS modules. Recommended by TS
     "esModuleInterop": true,
+    // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
+    "skipLibCheck": true,
+    // error out if import and file system have a casing mismatch. Recommended by TS
+    "forceConsistentCasingInFileNames": true,
+    // enabled decorators
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "outDir": "build",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "skipLibCheck": true
+    // Removes comments
+    "removeComments": true
   },
-  "include": [
-    "src",
-    "test"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["./src"],
+  "exclude": ["node_modules", "dist"]
 }

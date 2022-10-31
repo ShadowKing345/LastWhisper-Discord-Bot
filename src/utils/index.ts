@@ -1,19 +1,24 @@
 import { Client, Message, Snowflake, TextChannel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
+import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
 
-export async function fetchMessages(client: Client, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
-    const result: Message[] = [];
+export async function fetchMessages(
+  client: Client,
+  channelId: Snowflake,
+  messageIds: Snowflake[]
+): Promise<Message[]> {
+  const result: Message[] = [];
 
-    if (!client.channels.cache.has(channelId)) return result;
-    const channel: TextChannel | null = await client.channels.fetch(channelId) as TextChannel;
-    if (!channel || !channel.isText) return result;
+  if (!client.channels.cache.has(channelId)) return result;
+  const channel = await client.channels.fetch(channelId);
+  if (!channel || !(channel instanceof TextChannel)) return result;
 
-    for (const id of messageIds) {
-        const message: Message | null = await channel.messages.fetch(id);
-        if (message) result.push(message);
-    }
+  for (const id of messageIds) {
+    const message: Message = await channel.messages.fetch(id);
+    if (message) result.push(message);
+  }
 
-    return result;
+  return result;
 }
 
 /**
@@ -24,12 +29,12 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
  * @param str Json string.
  * @return Newly created object.
  */
-export function toJson<T>(t: { new(): T }, str: string): T {
-    if (t instanceof ToJsonBase) {
-        return t.fromJson(str) as unknown as T;
-    }
+export function toJson<T>(t: T, str: string): T {
+  if (t instanceof ToJsonBase) {
+    return (t as ToJsonBase<T>).fromJson(str);
+  }
 
-    return Object.assign(t, JSON.parse(str));
+  return Object.assign<T, T>(t, JSON.parse(str) as T);
 }
 
 /**
@@ -40,25 +45,81 @@ export function toJson<T>(t: { new(): T }, str: string): T {
  * @return The newly created object.
  */
 export function deepMerge<T, O>(target: T, ...sources: O[]): T {
-    sources = sources.filter(source => source != null);
+  sources = sources.filter((source) => source != null);
 
-    if (sources.length <= 0) return target;
+  if (sources.length <= 0) return target;
 
+  if (target instanceof MergeableObjectBase) {
     for (const source of sources) {
-        for (const key in source) {
-            if (source[key]) {
-                if (!target[key.valueOf()]) {
-                    target[key.valueOf()] = source[key];
-                } else {
-                    if (typeof target[key.valueOf()] === "object") {
-                        deepMerge(target[key.valueOf()], source[key]);
-                    } else {
-                        target[key.valueOf()] = source[key];
-                    }
-                }
-            }
-        }
+      target.merge(source);
     }
 
     return target;
+  }
+
+  for (const source of sources) {
+    for (const key in source) {
+      const kValue = key.valueOf();
+      if (source[key]) {
+        if (!target[kValue]) {
+          target[kValue] = source[key];
+        } else {
+          if (target[kValue] instanceof Object) {
+            deepMerge(target[kValue], source[key]);
+          } else {
+            target[kValue] = source[key];
+          }
+        }
+      }
+    }
+  }
+
+  return target;
+}
+
+/**
+ * Flattens an object down to a depth of 1.
+ * @param obj Object to be flattened
+ */
+export function flattenObject(obj: object): object {
+  const result = new Map<string, unknown>();
+
+  for (const [k, v] of Object.entries(obj)) {
+    if (v instanceof Object && !Array.isArray(v)) {
+      for (const [k1, v1] of Object.entries(flattenObject(v as object))) {
+        result.set(`${k}.${k1}`, v1);
+      }
+
+      continue;
+    }
+
+    result.set(k, v);
+  }
+
+  return Object.assign({}, ...result.entries()) as object;
+}
+
+/**
+ * Does the opposite of flattenObject
+ *
+ * @see flattenObject
+ */
+export function unFlattenObject(obj: object): object {
+  const result = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    key
+      .split(".")
+      .reduce(
+        (prev, current, index, { length }) =>
+          (prev[current] ||
+            Object.assign(
+              prev[current],
+              length - 1 === index ? value : {}
+            )) as object,
+        result
+      );
+  }
+
+  return result;
 }

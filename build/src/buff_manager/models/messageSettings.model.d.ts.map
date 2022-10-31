@@ -1,1 +1,0 @@
-{"version":3,"file":"messageSettings.model.d.ts","sourceRoot":"","sources":["../../../../src/buff_manager/models/messageSettings.model.ts"],"names":[],"mappings":"AAAA,qBAAa,eAAe;IACjB,SAAS,EAAE,MAAM,CAAC;IAClB,IAAI,EAAE,MAAM,CAAC;IACb,GAAG,EAAE,MAAM,GAAG,IAAI,CAAC;IACnB,WAAW,EAAE,MAAM,CAAC;IACpB,WAAW,EAAE,MAAM,CAAC;CAC9B"}

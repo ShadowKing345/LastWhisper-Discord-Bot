@@ -1,139 +1,189 @@
-import { SlashCommandStringOption } from "@discordjs/builders";
-import { CommandInteraction, Role } from "discord.js";
-import { singleton } from "tsyringe";
+import {
+  Role,
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  ApplicationCommandOptionType,
+} from "discord.js";
 
 import { ModuleBase } from "../utils/models/index.js";
-import { addCommandKeys } from "../permission_manager/addCommandKeys.decorator.js";
-import { authorize } from "../permission_manager/authorize.decorator.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
+import { Commands, Command, CommandOption } from "../utils/objects/command.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
+import { authorize } from "../utils/decorators/authorize.js";
 
-@singleton()
+/**
+ * Module to manager the permissions of commands from a Discord client.
+ * @see PermissionManagerService
+ */
+@registerModule()
 export class PermissionManagerModule extends ModuleBase {
-    @addCommandKeys()
-    private static readonly commands = {
-        $index: "permission",
-        List: "list_permissions",
-        AddRole: "add_role",
-        RemoveRole: "remove_role",
-        Config: "set_config",
-        Reset: "reset_permission",
-    };
+  @addPermissionKeys()
+  public static permissionKeys = {
+    list: "PermissionManager.list",
+    addRole: "PermissionManager.addRole",
+    removeRole: "PermissionManager.removeRole",
+    config: "PermissionManager.config",
+    reset: "PermissionManager.reset",
+  };
 
-    constructor(private permissionManager: PermissionManagerService) {
-        super();
+  public moduleName = "PermissionManager";
+  public commands: Commands = [
+    new Command({
+      name: "permissions",
+      description: "Controls the permission for each command.",
+      subcommands: {
+        List: new Command({
+          name: "list",
+          description: "Lists out all permissions.",
+          options: [PermissionManagerModule.commandKeyHelperBuilder(false)],
+        }),
+        AddRole: new Command({
+          name: "add_role",
+          description: "Adds a role to a permission setting.",
+          options: [
+            PermissionManagerModule.commandKeyHelperBuilder(true),
+            new CommandOption({
+              name: "role",
+              description: "Role to be added.",
+              required: true,
+              type: ApplicationCommandOptionType.Role,
+            }),
+          ],
+        }),
+        RemoveRole: new Command({
+          name: "remove_role",
+          description: "Removes a role to a permission setting.",
+          options: [
+            PermissionManagerModule.commandKeyHelperBuilder(true),
+            new CommandOption({
+              name: "role",
+              description: "Role to be added.",
+              required: true,
+              type: ApplicationCommandOptionType.Role,
+            }),
+          ],
+        }),
+        Config: new Command({
+          name: "set_config",
+          description: "Configures a permission.",
+          options: [
+            PermissionManagerModule.commandKeyHelperBuilder(true),
+            new CommandOption({
+              name: "mode",
+              description:
+                "Sets the search mode for the command. Any: has any. Strict: has all.",
+              required: true,
+              choices: [
+                { name: "any", value: PermissionMode.ANY },
+                { name: "strict", value: PermissionMode.STRICT },
+              ],
+              type: ApplicationCommandOptionType.Integer,
+            }),
+            new CommandOption({
+              name: "black_list",
+              description:
+                "Reverses the final result. I.e. If list is empty, no one can use the command.",
+              type: ApplicationCommandOptionType.String,
+            }),
+          ],
+        }),
+        Reset: new Command({
+          name: "reset",
+          description: "Resets a permission to the default parameters.",
+          options: [PermissionManagerModule.commandKeyHelperBuilder(true)],
+        }),
+      },
+      execute: this.commandResolver.bind(this),
+    }),
+  ];
 
-        this.moduleName = "PermissionManager";
-        this.commands = [ {
-            command: builder => builder
-                .setName(PermissionManagerModule.commands.$index)
-                .setDescription("Controls the permission for each command.")
-                .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule.commands.List as string)
-                    .setDescription("Lists out all permissions.")
-                    .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input, false)),
-                )
-                .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule.commands.AddRole as string)
-                    .setDescription("Adds a role to a permission setting.")
-                    .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input))
-                    .addRoleOption(input => input
-                        .setName("role")
-                        .setDescription("Role to be added.")
-                        .setRequired(true),
-                    ),
-                )
-                .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule.commands.RemoveRole as string)
-                    .setDescription("Removes a role to a permission setting.")
-                    .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input))
-                    .addRoleOption(input => input
-                        .setName("role")
-                        .setDescription("Role to be removed.")
-                        .setRequired(true),
-                    ),
-                )
-                .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule.commands.Config as string)
-                    .setDescription("Configures a permission.")
-                    .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input))
-                    .addIntegerOption(input => input
-                        .setName("mode")
-                        .setDescription("Sets the search mode for the command. Any: has any. Strict: has all.")
-                        .addChoices([
-                            [ "any", PermissionMode.ANY ],
-                            [ "strict", PermissionMode.STRICT ],
-                        ]),
-                    )
-                    .addBooleanOption(input => input
-                        .setName("black_list")
-                        .setDescription("Reverses the final result. I.e. If list is empty, no one can use the command.")
-                        .setRequired(false),
-                    ),
-                )
-                .addSubcommand(sBuilder => sBuilder
-                    .setName(PermissionManagerModule.commands.Reset as string)
-                    .setDescription("Resets a permission to the default parameters.")
-                    .addStringOption(input => PermissionManagerModule.commandKeyHelperBuilder(input)),
-                ),
-            run: interaction => this.subcommandResolver(interaction),
-        } ];
+  protected commandResolverKeys = {
+    "permissions.list": this.listPermissions.bind(this),
+    "permissions.add_role": this.addRoles.bind(this),
+    "permissions.remove_role": this.removeRoles.bind(this),
+    "permissions.set_config": this.config.bind(this),
+    "permissions.reset": this.reset.bind(this),
+  };
+
+  constructor(
+    permissionManagerService: PermissionManagerService,
+    @createLogger(PermissionManagerModule.name) logger: pino.Logger
+  ) {
+    super(permissionManagerService, logger);
+  }
+
+  protected async commandResolver(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse | void> {
+    const f = await super.commandResolver(interaction, false);
+
+    const key = interaction.options.getString("key");
+    const role = interaction.options.getRole("role");
+
+    if (f instanceof Function) {
+      return f(interaction, key, role);
+    } else {
+      return f;
     }
+  }
 
-    private async subcommandResolver(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return interaction.reply({
-                content: "This command can only be used inside a server.",
-                ephemeral: true,
-            });
-        }
+  @authorize(PermissionManagerModule.permissionKeys.list)
+  private listPermissions(
+    interaction: ChatInputCommandInteraction,
+    key?: string
+  ): Promise<InteractionResponse> {
+    this.logger.debug("Requested listed permissions.");
+    return this.permissionManagerService.listPermissions(interaction, key);
+  }
 
-        const subcommand = interaction.options.getSubcommand();
-        const key: string = interaction.options.getString("key");
-        const role: Role = interaction.options.getRole("role") as Role;
+  @authorize(PermissionManagerModule.permissionKeys.addRole)
+  private addRoles(
+    interaction: ChatInputCommandInteraction,
+    key: string,
+    role: Role
+  ): Promise<InteractionResponse> {
+    this.logger.debug("Requested add role.");
+    return this.permissionManagerService.addRole(interaction, key, role);
+  }
 
-        switch (subcommand) {
-            case PermissionManagerModule.commands.List:
-                return this.listPermissions(interaction, key);
-            case PermissionManagerModule.commands.AddRole:
-                return this.addRoles(interaction, key, role);
-            case PermissionManagerModule.commands.RemoveRole:
-                return this.removeRoles(interaction, key, role);
-            case PermissionManagerModule.commands.Config:
-                return this.config(interaction, key);
-            case PermissionManagerModule.commands.Reset:
-                return this.reset(interaction, key);
-            default:
-                return interaction.reply({ content: "Cannot find command.", ephemeral: true });
-        }
-    }
+  @authorize(PermissionManagerModule.permissionKeys.removeRole)
+  private removeRoles(
+    interaction: ChatInputCommandInteraction,
+    key: string,
+    role: Role
+  ): Promise<InteractionResponse> {
+    this.logger.debug("Requested remove role.");
+    return this.permissionManagerService.removeRole(interaction, key, role);
+  }
 
-    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.List)
-    private listPermissions(interaction: CommandInteraction, key?: string): Promise<void> {
-        return this.permissionManager.listPermissions(interaction, key);
-    }
+  @authorize(PermissionManagerModule.permissionKeys.config)
+  private config(
+    interaction: ChatInputCommandInteraction,
+    key: string
+  ): Promise<InteractionResponse> {
+    this.logger.debug("Requested config.");
+    return this.permissionManagerService.config(interaction, key);
+  }
 
-    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.AddRole)
-    private addRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        return this.permissionManager.addRole(interaction, key, role);
-    }
+  @authorize(PermissionManagerModule.permissionKeys.reset)
+  private reset(
+    interaction: ChatInputCommandInteraction,
+    key: string
+  ): Promise<InteractionResponse> {
+    this.logger.debug("Requested reset.");
+    return this.permissionManagerService.reset(interaction, key);
+  }
 
-    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.RemoveRole)
-    private removeRoles(interaction: CommandInteraction, key: string, role: Role): Promise<void> {
-        return this.permissionManager.removeRole(interaction, key, role);
-    }
-
-    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Config)
-    private config(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManager.config(interaction, key);
-    }
-
-    @authorize(PermissionManagerModule.commands.$index, PermissionManagerModule.commands.Reset)
-    private reset(interaction: CommandInteraction, key: string): Promise<void> {
-        return this.permissionManager.reset(interaction, key);
-    }
-
-    private static commandKeyHelperBuilder(input: SlashCommandStringOption, boolOverride = true): SlashCommandStringOption {
-        return input.setName("key").setDescription("Command permission Key.").setRequired(boolOverride);
-    }
+  private static commandKeyHelperBuilder(boolOverride = true): CommandOption {
+    return new CommandOption({
+      name: "key",
+      description: "Command permission Key.",
+      required: boolOverride,
+      type: ApplicationCommandOptionType.String,
+    });
+  }
 }

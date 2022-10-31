@@ -14,16 +14,16 @@ application. Furthermore, additional information such as data-time format, loggi
 
 The project will require the following components in order to function as intended.
 
-+ Buff Manager: This component manages the posting of daily messages that define the buff for the day. Additionally, it
+- Buff Manager: This component manages the posting of daily messages that define the buff for the day. Additionally, it
   posts a weekly message.
-+ Event Manager: This component manages event (defined later on) as well as reminders about the event.
-+ Gardening Manager: This component tries to manager the state of the garden outside the FC house.
-+ Party Finder: This component attempts to mimic the party finder functionality but with the event system as well.
-+ Role Manager: This component manages roles for the user.
-+ Manager Utils Manager: This component deals with the various manager features that are missing.
-+ Logger: This component ensures that information from the bot is correctly output to the standard output for the
+- Event Manager: This component manages event (defined later on) as well as reminders about the event.
+- Gardening Manager: This component tries to manager the state of the garden outside the FC house.
+- Party Finder: This component attempts to mimic the party finder functionality but with the event system as well.
+- Role Manager: This component manages roles for the user.
+- Manager Utils Manager: This component deals with the various manager features that are missing.
+- Logger: This component ensures that information from the bot is correctly output to the standard output for the
   console or a log file if needed later on.
-+ Permission Manager: This component will manage the ability to execute a command.
+- Permission Manager: This component will manage the ability to execute a command.
 
 ## Structure
 
@@ -88,18 +88,18 @@ Commands for seeing what up and coming events as well as the details on a comman
 
 The event object will contain the following:
 
-+ Name of the event.
-+ Description.
-+ Time.
-+ Additional tags.
+- Name of the event.
+- Description.
+- Time.
+- Additional tags.
 
-*Note: Additional tags are just a collection of additional information outside the event object. They will be stored in
-key value pairs.*
+_Note: Additional tags are just a collection of additional information outside the event object. They will be stored in
+key value pairs._
 
 A reminder is as follows:
 
-+ Message to be posted. (Should allow for basic data binding for additional formatting).
-+ Time Delta. The amount of time between now and the event when the bot posts the event.
+- Message to be posted. (Should allow for basic data binding for additional formatting).
+- Time Delta. The amount of time between now and the event when the bot posts the event.
 
 ## Gardening Manager
 
@@ -113,7 +113,7 @@ message in a channel regarding state changes.
 
 ## Party Finder
 
-*WIP*
+_WIP_
 
 This module allows for creating events with the ability to register for them in a full party scenario. The unique
 message posted will allow a willing participant to react and be assigned a role for that event. If all the roles are
@@ -169,7 +169,7 @@ simple generic message then the color will be left as default. The color meaning
 For the logger level:
 
 | Color  | Meaning or usage |
-|--------|------------------|
+| ------ | ---------------- |
 | Red    | Errors           |
 | Yellow | Warnings         |
 | Cyan   | Information      |
@@ -179,7 +179,7 @@ For the logger level:
 For the logger message:
 
 | Color  | Meaning or Usage          |
-|--------|---------------------------|
+| ------ | ------------------------- |
 | Yellow | Any object value          |
 | Red    | Classes                   |
 | Green  | Events (Skipping, etc...) |

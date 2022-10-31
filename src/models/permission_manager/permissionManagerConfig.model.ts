@@ -1,7 +1,32 @@
-import { BasicModel } from "../../utils/models/index.js";
+import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { Permission } from "./permission.model.js";
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+import { deepMerge } from "../../utils/index.js";
 
-export class PermissionManagerConfig extends BasicModel {
-    public guildId: string;
-    public permissions: { [key: string]: Permission } = {};
+/**
+ * Permission manager configuration object.
+ */
+export class PermissionManagerConfig
+  extends ToJsonBase<PermissionManagerConfig>
+  implements IEntity<string>
+{
+  public _id: string;
+  public guildId: string = null;
+  public permissions: { [key: string]: Permission } = {};
+
+  public merge(obj: Partial<PermissionManagerConfig>): PermissionManagerConfig {
+    if (obj._id) {
+      this._id = obj._id;
+    }
+
+    if (obj.guildId) {
+      this.guildId = obj.guildId;
+    }
+
+    if (obj.permissions) {
+      this.permissions = deepMerge(this.permissions ?? {}, obj.permissions);
+    }
+
+    return this;
+  }
 }

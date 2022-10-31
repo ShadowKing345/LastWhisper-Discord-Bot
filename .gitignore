@@ -5,6 +5,9 @@ node_modules
 # Standard files.
 config/ProjectConfiguration*.json
 
+# Log files
+*.log
+
 # Development.
 tsconfig.tsbuildinfo
 yarn-error.log

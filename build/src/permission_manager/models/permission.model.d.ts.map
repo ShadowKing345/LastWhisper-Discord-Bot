@@ -1,1 +1,0 @@
-{"version":3,"file":"permission.model.d.ts","sourceRoot":"","sources":["../../../../src/permission_manager/models/permission.model.ts"],"names":[],"mappings":"AAAA,qBAAa,UAAU;IACZ,KAAK,EAAE,MAAM,EAAE,CAAM;IACrB,IAAI,CAAC,EAAE,cAAc,CAAsB;IAC3C,SAAS,CAAC,EAAE,OAAO,CAAS;CACtC;AAED,oBAAY,cAAc;IACtB,GAAG,IAAA;IACH,MAAM,IAAA;CACT"}

@@ -1,117 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://example.com/product.schema.json",
   "title": "Last Whisper Discord Bot Configuration Schema",
   "description": "The application configuration json schema",
   "type": "object",
   "properties": {
     "token": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "description": "The token for the Discord Bot."
-    },
-    "logging_level": {
-      "type": "string",
-      "description": "The level of logging to be output to the standard out.",
-      "enum": [
-        "emerg",
-        "alert",
-        "crit",
-        "error",
-        "warning",
-        "notice",
-        "info",
-        "debug"
-      ]
-    },
-    "commandRegistration": {
-      "type": "object",
-      "description": "The settings for registering the commands",
-      "properties": {
-        "clientId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "The bots Discord client ID."
-        },
-        "guildId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Guild Id used when registering for a guild."
-        },
-        "registerForGuild": {
-          "type": "boolean",
-          "description": "If the command should register for the guild not globally.",
-          "default": false
-        },
-        "unregister": {
-          "type": "boolean",
-          "description": "Should the command unregister all existing commands instead.",
-          "default": false
-        }
-      }
+      "type": "string"
     },
     "database": {
-      "type": "object",
-      "description": "Settings for database.",
-      "properties": {
-        "username": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Username for the database."
-        },
-        "password": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Password for the database."
-        },
-        "host": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Host url for the database."
-        },
-        "port": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Port number for the database."
-        },
-        "database": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Database name (Collection name) for the database."
-        },
-        "query": {
-          "type": "object",
-          "description": "Collection of key value pairs that create the query parameters in the url.",
-          "additionalProperties": true
-        },
-        "url": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Full url path for database. If this is set all other settings are ignored."
-        },
-        "useDns": {
-          "type": "boolean",
-          "description": "Enables DNS for the host."
-        }
-      }
+      "$ref": "./databaseSchema.json"
+    },
+    "commandRegistration": {
+      "$ref": "./commandRegistrationSchema.json"
+    },
+    "logger": {
+      "$ref": "./loggerSchema.json"
+    },
+    "moduleConfiguration": {
+      "$ref": "./moduleConfigurationSchema.json"
     }
-  }
+  },
+  "required": ["token"]
 }

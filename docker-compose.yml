@@ -1,6 +1,6 @@
 version: "2"
 services:
   bot:
-    build: ./
+    build: ..
     command: yarn start
     tty: true

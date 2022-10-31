@@ -1,4 +1,15 @@
-import { CommandInteraction, Guild, GuildBan, GuildMember, MessageEmbed, TextChannel, User } from "discord.js";
+import {
+  Guild,
+  GuildBan,
+  GuildMember,
+  TextChannel,
+  User,
+  InteractionResponse,
+  ChatInputCommandInteraction,
+  AuditLogEvent,
+  EmbedBuilder,
+  PartialGuildMember,
+} from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -7,116 +18,175 @@ import { ManagerUtilsRepository } from "../repositories/managerUtils.repository.
 
 @singleton()
 export class ManagerUtilsService {
+  constructor(private managerUtilsConfigRepository: ManagerUtilsRepository) {}
 
-    constructor(private managerUtilsConfigRepository: ManagerUtilsRepository) {
+  private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
+    const config: ManagerUtilsConfig = await this.findOneOrCreate(guild.id);
+
+    if (
+      config.loggingChannel &&
+      guild.channels.cache.has(config.loggingChannel)
+    ) {
+      return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
     }
 
-    private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
-        const config: ManagerUtilsConfig = await this.findOneOrCreate(guild.id);
+    return null;
+  }
 
-        if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
-            return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
+  public async onMemberRemoved(member: GuildMember | PartialGuildMember) {
+    if (member.partial) {
+      await member.fetch();
+    }
+
+    const loggingChannel: TextChannel | null = await this.getLoggingChannel(
+      member.guild
+    );
+    if (!loggingChannel) return;
+
+    const kickedData = (
+      await member.guild.fetchAuditLogs({
+        limit: 1,
+        type: AuditLogEvent.MemberKick,
+      })
+    ).entries.first();
+
+    const embed = new EmbedBuilder()
+      .setColor("Random")
+      .addFields(
+        {
+          name: "Joined On:",
+          value: DateTime.fromJSDate(member.joinedAt).toFormat(
+            "HH:mm:ss DD/MM/YYYY"
+          ),
+        },
+        { name: "Nickname was:", value: member.nickname ?? "None" },
+        {
+          name: "Roles:",
+          value: member.roles.cache.map((role) => role.toString()).join(" "),
         }
+      )
+      .setThumbnail(member.user.displayAvatarURL());
 
-        return null;
+    if (kickedData && kickedData.target.id === member.id) {
+      embed
+        .setTitle("User Kicked!")
+        .setDescription(
+          `User **${member.user.username}** was kicked by **${
+            (await member.guild.members.fetch(kickedData.executor.id))
+              .displayName
+          }** from the server.`
+        );
+    } else {
+      embed
+        .setTitle("User Left!")
+        .setDescription(
+          `User **${member.user.username}** has left this discord server`
+        );
     }
 
-    public async onMemberRemoved(member: GuildMember) {
-        const loggingChannel: TextChannel | null = await this.getLoggingChannel(member.guild);
-        if (!loggingChannel) return;
+    await loggingChannel.send({ embeds: [embed] });
+  }
 
-        const kickedData = (await member.guild.fetchAuditLogs({
-            limit: 1,
-            type: "MEMBER_KICK",
-        })).entries.first();
+  public async onMemberBanned(ban: GuildBan) {
+    const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
+    if (!loggingChannel) return;
 
-        const embed = new MessageEmbed()
-            .setColor("RANDOM")
-            .addFields(
-                { name: "Joined On:", value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY") },
-                { name: "Nickname was:", value: member.nickname ?? "None" },
-                { name: "Roles:", value: member.roles.cache.map(role => role.toString()).join(" ") })
-            .setThumbnail(member.user.displayAvatarURL());
+    const banLogs = (
+      await ban.guild.fetchAuditLogs({
+        limit: 1,
+        type: AuditLogEvent.MemberBanAdd,
+      })
+    ).entries.first();
 
-        if (kickedData && (kickedData.target as User).id === member.id) {
-            embed.setTitle("User Kicked!")
-                .setDescription(`User **${member.user.username}** was kicked by **${(await member.guild.members.fetch((kickedData.executor as User).id)).displayName}** from the server.`);
-        } else {
-            embed.setTitle("User Left!")
-                .setDescription(`User **${member.user.username}** has left this discord server`);
-        }
+    if (banLogs) {
+      const executor: User | null = banLogs.executor;
+      const target: User | null = banLogs.target;
 
-        await loggingChannel.send({ embeds: [ embed ] });
+      const embed = new EmbedBuilder()
+        .setTitle("Member Banned!")
+        .setColor("Random");
+
+      if (target) {
+        embed
+          .setDescription(
+            `User **${target.tag}** was banned by ${
+              executor
+                ? (await ban.guild.members.fetch(executor.id)).displayName
+                : "Someone who was not part of the server somehow... what how?? "
+            }!`
+          )
+          .setThumbnail(target.displayAvatarURL());
+      } else {
+        embed.setDescription(
+          "Somehow a user was banned but we cannot find out who it was!"
+        );
+      }
+
+      await loggingChannel.send({ embeds: [embed] });
+    } else {
+      await loggingChannel.send(
+        "A ban somehow occurred but no logs about it could be found!"
+      );
+    }
+  }
+
+  private async findOneOrCreate(
+    id: string | null
+  ): Promise<ManagerUtilsConfig> {
+    if (!id) {
+      throw new Error("Guild ID cannot be null.");
     }
 
-    public async onMemberBanned(ban: GuildBan) {
-        const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
-        if (!loggingChannel) return;
+    let result = await this.managerUtilsConfigRepository.findOne({
+      guildId: id,
+    });
+    if (result) return result;
 
-        const banLogs = (await ban.guild.fetchAuditLogs({ limit: 1, type: "MEMBER_BAN_ADD" })).entries.first();
+    result = new ManagerUtilsConfig();
+    result.guildId = id;
 
-        if (banLogs) {
-            const executor: User | null = banLogs.executor;
-            const target: User | null = banLogs.target as User;
+    return await this.managerUtilsConfigRepository.save(result);
+  }
 
-            const embed = new MessageEmbed()
-                .setTitle("Member Banned!")
-                .setColor("RANDOM");
+  public async clearChannelMessages(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse | void> {
+    const config = await this.findOneOrCreate(interaction.guildId);
 
-            if (target) {
-                embed
-                    .setDescription(`User **${target.tag}** was banned by ${executor ? (await ban.guild.members.fetch(executor.id)).displayName : "Someone who was not part of the server somehow... what how?? "}!`)
-                    .setThumbnail(target.displayAvatarURL());
-            } else {
-                embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
-            }
-
-            await loggingChannel.send({ embeds: [ embed ] });
-        } else {
-            await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
-        }
+    if (config.clearChannelBlacklist.includes(interaction.channelId)) {
+      return interaction.reply({
+        content:
+          "Wo hold it. No! Sorry this channel was blacklisted from the clear command to prevent accidental deletion.",
+        ephemeral: true,
+      });
     }
 
-    private async findOneOrCreate(id: string): Promise<ManagerUtilsConfig> {
-        let result = await this.managerUtilsConfigRepository.findOne({ guildId: id });
-        if (result) return result;
+    await interaction.deferReply({ ephemeral: true });
 
-        result = new ManagerUtilsConfig();
-        result.guildId = id;
+    const all = interaction.options.getBoolean("all");
+    let amount: number = all
+      ? 1000
+      : interaction.options.getNumber("amount") ?? 10;
 
-        return await this.managerUtilsConfigRepository.save(result);
+    let amountDeleted = 0;
+    for (amount; amount > 0; amount -= 100) {
+      const messages = await (
+        interaction.channel as TextChannel
+      ).messages.fetch({ limit: Math.min(amount, 100) });
+
+      for (const message of messages.values()) {
+        await message.delete();
+      }
+
+      amountDeleted += messages.size;
+
+      if (messages.size !== 100) {
+        break;
+      }
     }
 
-    public async clearChannelMessages(interaction: CommandInteraction): Promise<void> {
-        const config = await this.findOneOrCreate(interaction.guildId);
-
-        if (config.clearChannelBlacklist.includes(interaction.channelId)) {
-            return interaction.reply({
-                content: "Wo hold it. No! Sorry this channel was blacklisted from the clear command to prevent accidental deletion.",
-                ephemeral: true,
-            });
-        }
-
-        await interaction.deferReply({ ephemeral: true });
-
-        const all = interaction.options.getBoolean("all");
-        let amount: number = all ? 1000 : interaction.options.getNumber("amount") ?? 10;
-
-        let amountDeleted = 0;
-        for (amount; amount > 0; amount -= 100) {
-            const messages = await (interaction.channel as TextChannel).messages.fetch({ limit: Math.min(amount, 100) });
-
-            for (const message of messages.values()) {
-                await message.delete();
-            }
-
-            amountDeleted += messages.size;
-
-            if (messages.size !== 100) {
-                break;
-            }
-        }
-
-        await interaction.editReply({ content: `Done. Deleted **${amountDeleted}** messages.` });
-    }
+    await interaction.editReply({
+      content: `Done. Deleted **${amountDeleted}** messages.`,
+    });
+  }
 }

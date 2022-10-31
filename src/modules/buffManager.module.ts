@@ -1,136 +1,124 @@
-import { CommandInteraction } from "discord.js";
+import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
-
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { createLogger } from "../utils/logger/logger.decorator.js";
+import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
+import { Commands, Command } from "../utils/objects/command.js";
+import { Timers } from "../utils/objects/timer.js";
+import { authorize } from "../utils/decorators/authorize.js";
+import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 
-@singleton()
+@registerModule()
 export class BuffManagerModule extends ModuleBase {
-    @addCommandKeys()
-    private static readonly commands = {
-        $index: "buff_manager",
-        Buffs: { $index: "buffs", Today: "today", Tomorrow: "tomorrow" },
-        Weeks: { $index: "weeks", ThisWeek: "this_week", NextWeek: "next_week" },
-    };
+  @addPermissionKeys()
+  public static permissionKeys = {
+    buffs: {
+      today: "BuffManager.buffs.today",
+      tomorrow: "BuffManager.buffs.tomorrow",
+    },
+    weeks: {
+      thisWeek: "BuffManager.weeks.thisWeek",
+      nextWeek: "BuffManager.weeks.nextWeek",
+    },
+  };
 
-    constructor(
-        private buffManagerService: BuffManagerService,
-        @createLogger(BuffManagerModule.name) private logger: pino.Logger,
-    ) {
-        super();
+  public moduleName = "BuffManager";
+  public timers: Timers = [
+    {
+      name: `${this.moduleName}#dailyMessageTask`,
+      timeout: 60000,
+      execute: async (client) => this.postDailyMessage(client),
+    },
+  ];
 
-        this.moduleName = "BuffManager";
-        this.commands = [
-            {
-                command: builder =>
-                    builder
-                        .setName(BuffManagerModule.commands.$index)
-                        .setDescription("Manages all things related to buffs")
-                        .addSubcommandGroup(subGroup =>
-                            subGroup
-                                .setName(BuffManagerModule.commands.Buffs.$index)
-                                .setDescription("Shows you what buffs are set.")
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Buffs.Today).setDescription("Gets today's buff."))
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Buffs.Tomorrow).setDescription("Gets tomorrow's buff.")),
-                        )
-                        .addSubcommandGroup(subGroup =>
-                            subGroup
-                                .setName(BuffManagerModule.commands.Weeks.$index)
-                                .setDescription("Shows you what buffs for the week, are set to.")
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Weeks.ThisWeek).setDescription("Gets this week's buffs."))
-                                .addSubcommand(subBuilder => subBuilder.setName(BuffManagerModule.commands.Weeks.NextWeek).setDescription("Gets next week's buffs")),
-                        ),
-                run: async interaction => this.subcommandResolver(interaction),
-            },
-        ];
-        this.tasks = [
-            {
-                name: `${this.moduleName}#dailyMessageTask`,
-                timeout: 60000,
-                run: async client => this.postDailyMessage(client),
-            },
-        ];
-    }
+  public commands: Commands = [
+    new Command({
+      name: "buff_manager",
+      description: "Manages all things related to buffs",
+      subcommands: {
+        Buffs: new Command({
+          name: "buffs",
+          description: "Shows you what buffs are set.",
+          subcommands: {
+            Today: new Command({
+              name: "today",
+              description: "Gets today's buff.",
+            }),
+            Tomorrow: new Command({
+              name: "tomorrow",
+              description: "Gets tomorrow's buff.",
+            }),
+          },
+        }),
+        Weeks: new Command({
+          name: "weeks",
+          description: "Shows you what buffs for the week, are set to.",
+          subcommands: {
+            ThisWeek: new Command({
+              name: "this_week",
+              description: "Gets this week's buffs.",
+            }),
+            NextWeek: new Command({
+              name: "next_week",
+              description: "Gets next week's buffs",
+            }),
+          },
+        }),
+      },
+      execute: (interaction) =>
+        this.commandResolver(
+          interaction
+        ) as Promise<InteractionResponse | void>,
+    }),
+  ];
 
-    private subcommandResolver(interaction: CommandInteraction): Promise<void> {
-        this.logger.debug(`Command invoked, dealing with subcommand options.`);
+  protected commandResolverKeys = {
+    "buff_manager.buffs.today": this.postTodayBuff.bind(this),
+    "buff_manager.buffs.tomorrow": this.postTomorrowsBuff.bind(this),
+    "buff_manager.weeks.this_week": this.postThisWeeksBuffs.bind(this),
+    "buff_manager.weeks.next_week": this.postNextWeeksBuffs.bind(this),
+  };
 
-        const group = interaction.options.getSubcommandGroup();
-        const subCommand = interaction.options.getSubcommand();
-        if (!(subCommand && group)) {
-            this.logger.debug(`Expected Failure:")} no "subcommand" or group was used.`);
-            return interaction.reply({
-                content: "Sorry you can only use the group or subcommands not the src command.",
-                ephemeral: true,
-            });
-        }
+  constructor(
+    private buffManagerService: BuffManagerService,
+    @createLogger(BuffManagerModule.name) logger: pino.Logger,
+    permissionManagerService: PermissionManagerService
+  ) {
+    super(permissionManagerService, logger);
+  }
 
-        if (!interaction.guildId) {
-            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
-            return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-        }
+  @authorize(BuffManagerModule.permissionKeys.buffs.today)
+  private postTodayBuff(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse | void> {
+    return this.buffManagerService.postBuff(interaction);
+  }
 
-        switch (group) {
-            case BuffManagerModule.commands.Buffs.$index:
-                switch (subCommand) {
-                    case BuffManagerModule.commands.Buffs.Today:
-                        return this.postTodayBuff(interaction);
-                    case BuffManagerModule.commands.Buffs.Tomorrow:
-                        return this.postTomorrowsBuff(interaction);
-                    default:
-                        this.logger.debug(`Expected Failure: Cannot find subcommand.`);
-                        return interaction.reply({
-                            content: "Cannot find subcommand.",
-                            ephemeral: true,
-                        });
-                }
-            case BuffManagerModule.commands.Weeks.$index:
-                switch (subCommand) {
-                    case BuffManagerModule.commands.Weeks.ThisWeek:
-                        return this.postThisWeeksBuffs(interaction);
-                    case BuffManagerModule.commands.Weeks.NextWeek:
-                        return this.postNextWeeksBuffs(interaction);
-                    default:
-                        this.logger.debug(`Expected Failure: Cannot find subcommand.`);
-                        return interaction.reply({
-                            content: "Cannot find subcommand.",
-                            ephemeral: true,
-                        });
-                }
-            default:
-                this.logger.debug(`Expected Failure: Cannot find subcommand group.`);
-                return interaction.reply({
-                    content: "Cannot find group.",
-                    ephemeral: true,
-                });
-        }
-    }
+  @authorize(BuffManagerModule.permissionKeys.buffs.tomorrow)
+  private postTomorrowsBuff(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse | void> {
+    return this.buffManagerService.postBuff(interaction, false);
+  }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Buffs.$index, BuffManagerModule.commands.Buffs.Today)
-    private postTodayBuff(interaction: CommandInteraction): Promise<void> {
-        return this.buffManagerService.postBuff(interaction);
-    }
+  @authorize(BuffManagerModule.permissionKeys.weeks.thisWeek)
+  private postThisWeeksBuffs(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse | void> {
+    return this.buffManagerService.postWeeksBuffs(interaction);
+  }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Buffs.$index, BuffManagerModule.commands.Buffs.Tomorrow)
-    private postTomorrowsBuff(interaction: CommandInteraction): Promise<void> {
-        return this.buffManagerService.postBuff(interaction, false);
-    }
+  @authorize(BuffManagerModule.permissionKeys.weeks.nextWeek)
+  private postNextWeeksBuffs(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse | void> {
+    return this.buffManagerService.postWeeksBuffs(interaction, false);
+  }
 
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Weeks.$index, BuffManagerModule.commands.Weeks.ThisWeek)
-    private postThisWeeksBuffs(interaction: CommandInteraction): Promise<void> {
-        return this.buffManagerService.postWeeksBuffs(interaction);
-    }
-
-    @authorize(BuffManagerModule.commands.$index, BuffManagerModule.commands.Weeks.$index, BuffManagerModule.commands.Weeks.NextWeek)
-    private postNextWeeksBuffs(interaction: CommandInteraction): Promise<void> {
-        return this.buffManagerService.postWeeksBuffs(interaction, false);
-    }
-
-    private postDailyMessage(client: Client): Promise<void> {
-        return this.buffManagerService.postDailyMessage(client);
-    }
+  private postDailyMessage(client: Client): Promise<void> {
+    return this.buffManagerService.postDailyMessage(client);
+  }
 }

@@ -1,111 +1,96 @@
-import { CommandInteraction } from "discord.js";
+import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 
-import { addCommandKeys, authorize } from "../permission_manager/index.js";
-import { createLogger } from "../utils/logger/logger.decorator.js";
-import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
+import { createLogger } from "../utils/loggerService.js";
+import { Client } from "../utils/models/client.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { registerModule } from "../utils/decorators/registerModule.js";
+import { Commands, Command, CommandOption } from "../utils/objects/command.js";
+import {
+  EventListeners,
+  EventListener,
+} from "../utils/objects/eventListener.js";
 
-@singleton()
+@registerModule()
 export class RoleManagerModule extends ModuleBase {
-    @addCommandKeys()
-    private static readonly commands = {
-        $index: "role_manager",
-        RevokeRole: "revoke_role",
-        RegisterMessage: "register_message",
-        UnregisterMessage: "unregister_message",
-    };
+  public moduleName = "RoleManager";
+  public eventListeners: EventListeners = [
+    new EventListener("ready", async (client) => this.onReady(client)),
+  ];
+  public commands: Commands = [
+    new Command({
+      name: "role_manager",
+      description: "Manages roles within a guild.",
+      subcommands: {
+        RevokeRole: new Command({
+          name: "revoke_role",
+          description: "Revokes the role for all uses.",
+        }),
+        RegisterMessage: new Command({
+          name: "register_message",
+          description: "Registers a message to be reacted to.",
+          options: [
+            new CommandOption({
+              name: "message_id",
+              description: "The ID for the message.",
+              required: true,
+            }),
+          ],
+        }),
+        UnregisterMessage: new Command({
+          name: "unregister_message",
+          description: "Unregisters a message to be reacted to.",
+          options: [
+            new CommandOption({
+              name: "message_id",
+              description: "The ID for the message.",
+              required: true,
+            }),
+          ],
+        }),
+      },
+      execute: (interaction) =>
+        this.commandResolver(
+          interaction
+        ) as Promise<InteractionResponse | void>,
+    }),
+  ];
 
-    constructor(
-        private roleManagerService: RoleManagerService,
-        @createLogger(RoleManagerModule.name) private logger: pino.Logger,
-    ) {
-        super();
+  protected commandResolverKeys = {
+    "role_manager.revoke_role": this.revokeRole.bind(this),
+    "role_manager.register_message": this.registerMessage.bind(this),
+    "role_manager.unregister_message": this.unregisterMessage.bind(this),
+  };
 
-        this.moduleName = "RoleManager";
-        this.listeners = [
-            { event: "ready", run: async (client) => this.onReady(client) },
-        ];
-        this.commands = [
-            {
-                command: builder => builder
-                    .setName(RoleManagerModule.commands.$index)
-                    .setDescription("Manages roles within a guild.")
-                    .addSubcommand(sBuilder => sBuilder
-                        .setName(RoleManagerModule.commands.RevokeRole)
-                        .setDescription("Revokes the role for all uses."),
-                    )
-                    .addSubcommand(sBuilder => sBuilder
-                        .setName(RoleManagerModule.commands.RegisterMessage)
-                        .setDescription("Registers a message to be reacted to.")
-                        .addStringOption(iBuilder => iBuilder
-                            .setName("message_id")
-                            .setDescription("The ID for the message.")
-                            .setRequired(true),
-                        ),
-                    )
-                    .addSubcommand(sBuilder => sBuilder
-                        .setName(RoleManagerModule.commands.UnregisterMessage)
-                        .setDescription("Unregisters a message to be reacted to.")
-                        .addStringOption(iBuilder => iBuilder
-                            .setName("message_id")
-                            .setDescription("The ID for the message.")
-                            .setRequired(true),
-                        ),
-                    ),
-                run: interaction => this.subcommandResolver(interaction),
-            },
-        ];
-    }
+  constructor(
+    private roleManagerService: RoleManagerService,
+    @createLogger(RoleManagerModule.name) logger: pino.Logger,
+    permissionManagerService: PermissionManagerService
+  ) {
+    super(permissionManagerService, logger);
+  }
 
-    private onReady(client: Client): Promise<void> {
-        return this.roleManagerService.onReady(client);
-    }
+  private onReady(client: Client): Promise<void> {
+    return this.roleManagerService.onReady(client);
+  }
 
-    private subcommandResolver(interaction: CommandInteraction): Promise<void> {
-        this.logger.debug(`Command invoked, dealing with subcommand options.`);
+  private revokeRole(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse> {
+    return this.roleManagerService.revokeRole(interaction);
+  }
 
-        const subCommand = interaction.options.getSubcommand();
-        if (!subCommand) {
-            this.logger.debug(`Expected Failure:")} no subcommand was used.`);
-            return interaction.reply({
-                content: "Sorry you have to use a subcommand.",
-                ephemeral: true,
-            });
-        }
+  private registerMessage(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse> {
+    return this.roleManagerService.registerMessage(interaction);
+  }
 
-        if (!interaction.guildId) {
-            this.logger.debug(`Expected Failure: Command was attempted to be invoked inside of a direct message.`);
-            return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-        }
-
-        switch (subCommand) {
-            case "revoke_role":
-                return this.revokeRole(interaction);
-            case "register_message":
-                return this.registerMessage(interaction);
-            case "unregister_message":
-                return this.unregisterMessage(interaction);
-            default:
-                this.logger.debug(`Expected Failure: subcommand not found.`);
-                return interaction.reply("Sorry but this command can only be executed in a Guild not a direct / private message");
-        }
-    }
-
-    @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RevokeRole)
-    private revokeRole(interaction: CommandInteraction): Promise<void> {
-        return this.roleManagerService.revokeRole(interaction);
-    }
-
-    @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.RegisterMessage)
-    private registerMessage(interaction: CommandInteraction): Promise<void> {
-        return this.roleManagerService.registerMessage(interaction);
-    }
-
-    @authorize(RoleManagerModule.commands.$index, RoleManagerModule.commands.UnregisterMessage)
-    private unregisterMessage(interaction: CommandInteraction): Promise<void> {
-        return this.roleManagerService.unregisterMessage(interaction);
-    }
+  private unregisterMessage(
+    interaction: ChatInputCommandInteraction
+  ): Promise<InteractionResponse> {
+    return this.roleManagerService.unregisterMessage(interaction);
+  }
 }
