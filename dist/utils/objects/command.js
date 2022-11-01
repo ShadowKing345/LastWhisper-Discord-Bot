@@ -1,6 +1,6 @@
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ApplicationCommandOptionType as OptionType, SlashCommandStringOption, } from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ApplicationCommandOptionType as OptionType, SlashCommandStringOption } from "discord.js";
 import { deepMerge } from "../index.js";
 export class Command extends ToJsonBase {
     name = null;

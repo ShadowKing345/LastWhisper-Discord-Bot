@@ -5,7 +5,7 @@ declare type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBui
 export declare class Command extends ToJsonBase<Command> {
     name: string;
     description: string;
-    execute: (interaction: ChatInputCommandInteraction) => Promise<unknown>;
+    execute: (interaction: ChatInputCommandInteraction) => Promise<unknown> | unknown;
     subcommands?: {
         [key: string]: Command;
     };

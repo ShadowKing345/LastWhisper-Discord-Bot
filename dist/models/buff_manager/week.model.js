@@ -13,7 +13,7 @@ export class Week extends MergeableObjectBase {
             this.title = obj.title;
         }
         if (obj.days) {
-            this.days = deepMerge(this.days ?? new Days(), this.days);
+            this.days = deepMerge(this.days ?? new Days(), obj.days);
         }
         return this;
     }
