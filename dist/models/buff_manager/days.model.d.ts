@@ -6,5 +6,12 @@ export declare class Days {
     friday: string;
     saturday: string;
     sunday: string;
+    private current;
+    private get array();
+    [Symbol.iterator](): this;
+    next(): {
+        done: boolean;
+        value: string;
+    };
 }
 //# sourceMappingURL=days.model.d.ts.map

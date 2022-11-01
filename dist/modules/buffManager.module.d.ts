@@ -21,16 +21,12 @@ export declare class BuffManagerModule extends ModuleBase {
     timers: Timers;
     commands: Commands;
     protected commandResolverKeys: {
-        "buff_manager.buffs.today": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
-        "buff_manager.buffs.tomorrow": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
-        "buff_manager.weeks.this_week": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
-        "buff_manager.weeks.next_week": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+        "buff_manager.buffs": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+        "buff_manager.weeks": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
     };
     constructor(buffManagerService: BuffManagerService, logger: pino.Logger, permissionManagerService: PermissionManagerService);
-    private postTodayBuff;
-    private postTomorrowsBuff;
-    private postThisWeeksBuffs;
-    private postNextWeeksBuffs;
+    private postBuff;
+    private postWeek;
     private postDailyMessage;
 }
 //# sourceMappingURL=buffManager.module.d.ts.map

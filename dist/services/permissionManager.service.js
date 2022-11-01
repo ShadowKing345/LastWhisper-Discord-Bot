@@ -1,10 +1,10 @@
 var PermissionManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { EmbedBuilder, Role, ChatInputCommandInteraction, } from "discord.js";
+import { EmbedBuilder, Role, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
-import { Permission, PermissionManagerConfig, PermissionMode, } from "../models/permission_manager/index.js";
+import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
@@ -64,7 +64,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         if (permissions.roles.includes(role.id)) {
             return interaction.reply({
                 content: `Role is already there. Will not add again.`,
-                ephemeral: true,
+                ephemeral: true
             });
         }
         permissions.roles.push(role.id);
@@ -72,7 +72,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         this.logger.debug("Role added successfully.");
         return interaction.reply({
             content: `Role added to key ${key}`,
-            ephemeral: true,
+            ephemeral: true
         });
     }
     async removeRole(interaction, key, role) {
@@ -82,14 +82,14 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         if (!permission) {
             return interaction.reply({
                 content: `Cannot find key ${key}`,
-                ephemeral: true,
+                ephemeral: true
             });
         }
         const index = permission.roles.findIndex((r) => r === role.id);
         if (index === -1) {
             return interaction.reply({
                 content: `Cannot find role ${role.name} in the permission list ${key}`,
-                ephemeral: true,
+                ephemeral: true
             });
         }
         permission.roles.splice(index, 1);
@@ -97,7 +97,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         this.logger.debug("Role removed successfully.");
         return interaction.reply({
             content: `Role removed for key ${key}`,
-            ephemeral: true,
+            ephemeral: true
         });
     }
     async config(interaction, key) {
@@ -116,7 +116,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         this.logger.debug("Permission settings changed and saved.");
         return interaction.reply({
             content: "Config set.",
-            ephemeral: true,
+            ephemeral: true
         });
     }
     async reset(interaction, key) {
@@ -126,7 +126,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             this.logger.debug("No permissions options were set with this key for this guild. Exiting.");
             return interaction.reply({
                 content: `Cannot find permissions with key \`${key}\`.`,
-                ephemeral: true,
+                ephemeral: true
             });
         }
         delete config.permissions[key];
@@ -134,7 +134,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
         this.logger.debug("Permissions were reset.");
         return interaction.reply({
             content: `Permission ${key} was successfully reset (deleted).`,
-            ephemeral: true,
+            ephemeral: true
         });
     }
     async listPermissions(interaction, key) {
@@ -145,7 +145,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                 this.logger.debug("Key did not exist. Exiting out.");
                 return interaction.reply({
                     content: "Cannot find key. Please input the correct key.",
-                    ephemeral: true,
+                    ephemeral: true
                 });
             }
             const config = await this.findOneOrCreate(interaction.guildId);
@@ -159,12 +159,12 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                             {
                                 name: "Mode",
                                 value: PermissionMode[permission.mode],
-                                inline: false,
+                                inline: false
                             },
                             {
                                 name: "Is Blacklist",
                                 value: String(permission.blackList),
-                                inline: false,
+                                inline: false
                             },
                             {
                                 name: "Roles",
@@ -173,12 +173,12 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                                         .fetch(roleId)
                                         .then((role) => role?.name)))).join("\n")
                                     : "No roles were set.",
-                                inline: false,
-                            },
-                        ],
-                    }).setColor("Random"),
+                                inline: false
+                            }
+                        ]
+                    }).setColor("Random")
                 ],
-                ephemeral: true,
+                ephemeral: true
             });
         }
         else {
@@ -187,10 +187,10 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                 embeds: [
                     new EmbedBuilder({
                         title: "List of PermissionKeys",
-                        description: `\`\`\`\n${PermissionManagerService_1.keysFormatted}\n\`\`\``,
-                    }).setColor("Random"),
+                        description: `\`\`\`\n${PermissionManagerService_1.keysFormatted}\n\`\`\``
+                    }).setColor("Random")
                 ],
-                ephemeral: true,
+                ephemeral: true
             });
         }
     }
@@ -200,7 +200,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             throw new Error("Guild ID cannot be null.");
         }
         let result = await this.permissionManagerRepository.findOne({
-            guildId: id,
+            guildId: id
         });
         if (result)
             return result;
@@ -251,7 +251,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
                     this.logger.debug("Key did not exist. Exiting out.");
                     return interaction.reply({
                         content: "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.",
-                        ephemeral: true,
+                        ephemeral: true
                     });
                 }
                 return originalMethod.apply(this, [interaction, key, ...args]);

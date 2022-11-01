@@ -9,14 +9,14 @@ export declare class BuffManagerService {
     private logger;
     private readonly daysOfWeek;
     constructor(buffManagerConfigRepository: BuffManagerRepository, logger: pino.Logger);
+    postBuff(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void>;
+    postWeek(interaction: CommandInteraction, thisWeek?: boolean): Promise<InteractionResponse | void>;
+    postDailyMessage(client: Client): Promise<void>;
     private static getBuffId;
     private static daysToArray;
     createBuffEmbed(title: string, day: Buff, date: DateTime): EmbedBuilder;
     createWeekEmbed(title: string, week: Week, days: Buff[], date: DateTime): EmbedBuilder;
     tryGetConfig(interaction: CommandInteraction): Promise<[BuffManagerConfig, boolean]>;
-    postBuff(interaction: CommandInteraction, today?: boolean): Promise<InteractionResponse | void>;
-    postWeeksBuffs(interaction: CommandInteraction, thisWeek?: boolean): Promise<InteractionResponse | void>;
-    postDailyMessage(client: Client): Promise<void>;
     private findOneOrCreate;
 }
 //# sourceMappingURL=buffManager.service.d.ts.map
