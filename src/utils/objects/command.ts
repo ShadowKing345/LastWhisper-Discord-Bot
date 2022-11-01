@@ -1,14 +1,6 @@
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  SlashCommandSubcommandBuilder,
-  SlashCommandSubcommandGroupBuilder,
-  ChatInputCommandInteraction,
-  ApplicationCommandOptionType as OptionType,
-  APIApplicationCommandOptionChoice,
-  ApplicationCommandOptionBase,
-  SlashCommandStringOption,
-} from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
 import { deepMerge } from "../index.js";
 
 type SlashCommand =
@@ -23,9 +15,7 @@ export class Command extends ToJsonBase<Command> {
   public name: string = null;
   public description: string = null;
 
-  public execute: (
-    interaction: ChatInputCommandInteraction
-  ) => Promise<unknown> = null;
+  public execute: (interaction: ChatInputCommandInteraction) => Promise<unknown> | unknown = null;
   public subcommands?: { [key: string]: Command };
 
   public options: CommandOptions = [];
