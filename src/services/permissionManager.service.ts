@@ -36,11 +36,21 @@ export class PermissionManagerService {
    * @param interaction The interaction used to determine the rights.
    * @param key The name of the key to check against.
    */
-  @PermissionManagerService.validateKey()
   public async isAuthorized(
     interaction: ChatInputCommandInteraction,
     key: string
   ): Promise<boolean> {
+    if (!PermissionManagerService.keyExists(key)) {
+      (this as PermissionManagerService).logger.debug(
+        "Key did not exist. Exiting out."
+      );
+      await interaction.reply({
+        content: "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
+        ephemeral: true,
+      });
+      return false;
+    }
+
     this.logger.debug(`Attempting to authorize for key ${key}`);
     if (!interaction) {
       this.logger.error(

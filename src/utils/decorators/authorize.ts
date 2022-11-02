@@ -13,7 +13,7 @@ export function authorize<T extends ModuleBase>(
   propertyKey: string | symbol,
   descriptor: PropertyDescriptor
 ) => PropertyDescriptor {
-  return function (
+  return function(
     _target: T,
     _propertyKey: string | symbol,
     descriptor: PropertyDescriptor
@@ -23,7 +23,7 @@ export function authorize<T extends ModuleBase>(
       ...args: unknown[]
     ) => Promise<unknown>;
 
-    descriptor.value = async function (
+    descriptor.value = async function(
       interaction: ChatInputCommandInteraction,
       ...args: unknown[]
     ): Promise<unknown> {
@@ -34,13 +34,13 @@ export function authorize<T extends ModuleBase>(
           key
         ))
       ) {
-        return interaction.reply({
+        return interaction.isRepliable() ? interaction.reply({
           content: "Sorry you do not have the permissions to use this command.",
-          ephemeral: true,
-        });
+          ephemeral: true
+        }) : null;
       }
 
-      return originalMethod.apply(this, [interaction, ...args]);
+      return originalMethod.apply(this, [ interaction, ...args ]);
     };
 
     return descriptor;
