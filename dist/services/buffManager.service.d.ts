@@ -10,7 +10,7 @@ export declare class BuffManagerService {
     private readonly daysOfWeek;
     constructor(buffManagerConfigRepository: BuffManagerRepository, logger: pino.Logger);
     postBuff(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void>;
-    postWeek(interaction: CommandInteraction, thisWeek?: boolean): Promise<InteractionResponse | void>;
+    postWeek(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void>;
     postDailyMessage(client: Client): Promise<void>;
     private static getBuffId;
     private static daysToArray;

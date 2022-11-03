@@ -30,7 +30,6 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             return;
         }
         this.logger.debug(`Command invoked for buffs.`);
-        const title = `The Buff Shall Be:`;
         this.logger.debug(`Posting buff message for the date ${date.toISO()}`);
         const week = config.weeks[date.get("weekNumber") % config.weeks.length];
         const buffId = BuffManagerService_1.getBuffId(week, date);
@@ -44,22 +43,20 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             return;
         }
         await interaction.reply({
-            embeds: [this.createBuffEmbed(title, buff, date)]
+            embeds: [this.createBuffEmbed("The Buff Shall Be:", buff, date)]
         });
     }
-    async postWeek(interaction, thisWeek = true) {
+    async postWeek(interaction, date) {
         const [config, flag] = await this.tryGetConfig(interaction);
         if (!flag) {
             return;
         }
         this.logger.debug(`Command invoked for weeks.`);
-        const date = thisWeek ? DateTime.now() : DateTime.now().plus({ week: 1 });
-        const title = `The Buffs For ${thisWeek ? "The" : "Next"} Week Shall Be:`;
         this.logger.debug(`Posting week message for ${date.toISO()}`);
         const filteredWeeks = config.weeks.filter((week) => week.isEnabled);
         const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
         await interaction.reply({
-            embeds: [this.createWeekEmbed(title, week, config.buffs, date)]
+            embeds: [this.createWeekEmbed("The Buffs For The Week Shall Be:", week, config.buffs, date)]
         });
     }
     async postDailyMessage(client) {
@@ -72,8 +69,9 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 const messageSettings = config.messageSettings;
                 if (!messageSettings.channelId || !messageSettings.hour)
                     continue;
-                if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute"))
+                if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) {
                     continue;
+                }
                 const channel = (await client.channels.fetch(messageSettings.channelId));
                 if (!(channel?.isTextBased && channel.guildId === config.guildId)) {
                     this.logger.warn(`Invalid channel messageSettings.channelId  ID for guild config.guildId. Skipping...`);
@@ -83,25 +81,18 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 const week = filteredWeeks[now.weekNumber % filteredWeeks.length];
                 const buffId = BuffManagerService_1.getBuffId(week, now);
                 const buff = config.buffs.find((day) => day.id === buffId);
+                const embeds = [];
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID buffId for guild config.guildId. Skipping...`);
                     continue;
                 }
                 this.logger.debug(`Posting buff message.`);
-                await channel.send({
-                    embeds: [
-                        this.createBuffEmbed(messageSettings.buffMessage, buff, now)
-                    ]
-                });
-                if (messageSettings.dow !== null &&
-                    messageSettings.dow === now.weekday) {
+                embeds.push(this.createBuffEmbed(messageSettings.buffMessage, buff, now));
+                if (messageSettings.dow !== null && messageSettings.dow === now.weekday) {
                     this.logger.debug(`Posting week message.`);
-                    await channel.send({
-                        embeds: [
-                            this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now)
-                        ]
-                    });
+                    embeds.push(this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now));
                 }
+                await channel.send({ embeds });
             }
             catch (error) {
                 this.logger.error(error instanceof Error ? error.stack : error);
