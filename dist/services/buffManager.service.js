@@ -114,7 +114,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
     async tryGetConfig(interaction) {
         const guildId = interaction.guildId;
         this.logger.debug(`Attempting to acquire configuration for guild guildId.`);
-        const config = await this.findOneOrCreate(guildId);
+        const config = await this.getConfig(guildId);
         if (config.buffs?.length < 1) {
             this.logger.debug(`No buffs were set in config.`);
             await interaction.reply({

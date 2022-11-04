@@ -3,7 +3,7 @@ export class Service {
     constructor(repository) {
         this.repository = repository;
     }
-    async findOneOrCreate(id) {
+    async getConfig(id) {
         if (!id) {
             throw new Error("Guild ID cannot be null.");
         }

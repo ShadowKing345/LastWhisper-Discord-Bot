@@ -1,3 +1,4 @@
+import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -6,20 +7,35 @@ import { pino } from "pino";
 import { EventListeners } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
 export declare class EventManagerModule extends ModuleBase {
-    private eventManagerService;
+    private service;
     static permissionKeys: {
-        Event: string;
+        create: string;
+        update: string;
+        cancel: string;
+        test: string;
+        list: string;
     };
     moduleName: string;
     commands: Commands;
     eventListeners: EventListeners;
     timers: Timers;
-    constructor(eventManagerService: EventManagerService, permissionManagerService: PermissionManagerService, logger: pino.Logger);
+    protected commandResolverKeys: {
+        "event_manager.create": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+        "event_manager.update": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+        "event_manager.cancel": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+        "event_manager.test": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+        "event_manager.list": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
+    };
+    constructor(service: EventManagerService, permissionManagerService: PermissionManagerService, logger: pino.Logger);
+    private createEventCommand;
+    private updateEventCommand;
+    private cancelEventCommand;
+    private testEventCommand;
+    private listEventCommand;
     private createEvent;
     private updateEvent;
     private deleteEvent;
-    private reminderLoop;
-    private listEvents;
     private onReady;
+    private reminderLoop;
 }
 //# sourceMappingURL=eventManager.module.d.ts.map

@@ -1,6 +1,6 @@
 import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { EventObj } from "./eventObj.model.js";
-import { ReminderTrigger } from "./reminderTrigger.model.js";
+import { Reminder } from "./reminderTrigger.model.js";
 import { Tags } from "./tags.model.js";
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 export declare class EventManagerConfig extends ToJsonBase<EventManagerConfig> implements IEntity<string> {
@@ -12,6 +12,8 @@ export declare class EventManagerConfig extends ToJsonBase<EventManagerConfig> i
     tags: Tags;
     dateTimeFormat: string;
     events: EventObj[];
-    reminders: ReminderTrigger[];
+    reminders: Reminder[];
+    getEventByIndex(index: number): EventObj;
+    merge(obj: Partial<EventManagerConfig>): EventManagerConfig;
 }
 //# sourceMappingURL=eventManagerConfig.model.d.ts.map

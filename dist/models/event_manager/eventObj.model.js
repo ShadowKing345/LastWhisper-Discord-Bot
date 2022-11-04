@@ -1,18 +1,18 @@
-export class EventObj {
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+export class EventObj extends ToJsonBase {
     messageId = null;
     name = null;
     description = null;
     dateTime = null;
     additional = [];
-    constructor(messageId, name = "", description = "", dateTime = null, additional = []) {
-        this.messageId = messageId;
-        this.name = name;
-        this.description = description;
-        this.dateTime = dateTime;
-        this.additional = additional;
+    constructor(data = null) {
+        super();
+        if (data) {
+            this.merge(data);
+        }
     }
-    static isValid(obj) {
-        return obj.name != "" && obj.description != "" && obj.dateTime != null;
+    get isValid() {
+        return this.name != "" && this.description != "" && this.dateTime != null;
     }
 }
 //# sourceMappingURL=eventObj.model.js.map
