@@ -10,23 +10,23 @@ import { DatabaseConfigurationService } from "../config/databaseConfigurationSer
  */
 export interface IEntity<T> {
   _id: T;
+  guildId: string;
 }
 
 /**
  * Base repository object.
  * Manages the majority of basic CRUD repository actions.
  */
-export abstract class RepositoryBase<
-  T extends MergeableObjectBase<T> & IEntity<unknown>
-> {
+export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<unknown>> {
   // Name of the collection.
   protected abstract readonly collectionName: string;
   // A private internal collection object.
   private _collection: Collection<T> = null;
   // A class to create a new object.
-  protected abstract readonly mappingObject: { new (): T };
+  protected abstract readonly mappingObject: { new(): T };
 
-  protected constructor(protected db: DatabaseConfigurationService) {}
+  protected constructor(protected db: DatabaseConfigurationService) {
+  }
 
   /**
    * Saves a new database record.
@@ -36,11 +36,7 @@ export abstract class RepositoryBase<
    */
   public async save(obj: T): Promise<T> {
     this.validateCollection();
-    const result = await this.collection.findOneAndReplace(
-      { _id: obj._id },
-      obj,
-      { upsert: true }
-    );
+    const result = await this.collection.findOneAndReplace({ _id: obj._id }, obj, { upsert: true });
     return result.ok ? this.map(result.value as T) : null;
   }
 
@@ -51,10 +47,9 @@ export abstract class RepositoryBase<
    */
   public async findOne(filter: Filter<T>): Promise<T> {
     this.validateCollection();
-    // For some reason due to the void call Webstorm is having issues seeing this method call.
-    // noinspection JSVoidFunctionReturnValueUsed
-    const result = await this.collection.findOne(filter);
 
+    // see https://jira.mongodb.org/browse/NODE-723 as to why I am doing a find one like this.
+    const result = await this.collection.find(filter).batchSize(1).next();
     if (!result) {
       return null;
     }
@@ -69,9 +64,7 @@ export abstract class RepositoryBase<
    */
   public async findAll(filter: Filter<T>): Promise<T[]> {
     this.validateCollection();
-    return (await this.collection.find(filter).toArray()).map((obj) =>
-      this.map(obj)
-    );
+    return (await this.collection.find(filter).toArray()).map((obj) => this.map(obj));
   }
 
   /**
@@ -119,9 +112,7 @@ export abstract class RepositoryBase<
    */
   private validateCollection() {
     if (!this.collection) {
-      throw new DatabaseError(
-        "Could not find a collection. Please ensure one is assigned to the class."
-      );
+      throw new DatabaseError("Could not find a collection. Please ensure one is assigned to the class.");
     }
   }
 
@@ -132,13 +123,9 @@ export abstract class RepositoryBase<
    */
   protected get collection(): Collection<T> {
     if (!this.db.isConnected) {
-      throw new DatabaseError(
-        "Unable to get collection. Are you sure the database is connected?"
-      );
+      throw new DatabaseError("Unable to get collection. Are you sure the database is connected?");
     }
 
-    return (this._collection ??= this.db.db?.collection<T>(
-      this.collectionName
-    ));
+    return (this._collection ??= this.db.db?.collection<T>(this.collectionName));
   }
 }

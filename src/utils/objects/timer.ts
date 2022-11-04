@@ -7,7 +7,7 @@ import { Client } from "../models/client.js";
 export class Timer {
   public name: string = null;
   public timeout: number = null;
-  public execute: (client: Client) => Promise<void> = null;
+  public execute: (client: Client) => Promise<unknown> = null;
 
   /**
    * Function that waits till the client is ready then simply exits.
@@ -15,10 +15,7 @@ export class Timer {
    * @param client The client application.
    * @param checkAgainTime How long to wait before checking again. (Default 500ms).
    */
-  public static async waitTillReady(
-    client: DiscordClient,
-    checkAgainTime = 500
-  ) {
+  public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
     while (!client.isReady()) {
       await new Promise((resolve) => setTimeout(resolve, checkAgainTime));
     }
