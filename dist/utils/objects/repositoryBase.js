@@ -14,7 +14,7 @@ export class RepositoryBase {
     }
     async findOne(filter) {
         this.validateCollection();
-        const result = await this.collection.findOne(filter);
+        const result = await this.collection.find(filter).batchSize(1).next();
         if (!result) {
             return null;
         }

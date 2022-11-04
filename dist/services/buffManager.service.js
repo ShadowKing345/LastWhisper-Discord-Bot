@@ -1,68 +1,48 @@
 var BuffManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
-import { BuffManagerConfig } from "../models/buff_manager/index.js";
-let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
-    buffManagerConfigRepository;
+import { Service } from "../utils/objects/service.js";
+let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {
     logger;
-    daysOfWeek = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday"
-    ];
-    constructor(buffManagerConfigRepository, logger) {
-        this.buffManagerConfigRepository = buffManagerConfigRepository;
+    daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    constructor(repository, logger) {
+        super(repository);
         this.logger = logger;
     }
     async postBuff(interaction, date) {
-        const [config, flag] = await this.tryGetConfig(interaction);
-        if (!flag) {
+        const config = await this.tryGetConfig(interaction);
+        if (!config)
             return;
-        }
-        this.logger.debug(`Command invoked for buffs.`);
-        this.logger.debug(`Posting buff message for the date ${date.toISO()}`);
-        const week = config.weeks[date.get("weekNumber") % config.weeks.length];
-        const buffId = BuffManagerService_1.getBuffId(week, date);
-        const buff = config.buffs.find((day) => day.id === buffId);
+        this.logger.debug(`Command invoked for buffs.\nPosting buff message for the date ${date.toISO()}.`);
+        const week = config.getWeekOfYear(date);
+        const buff = config.getBuff(week.getBuffId(date));
         if (!buff) {
-            await interaction.reply({
-                content: `Sorry, but the buff with id **${buffId}** does not actually exist!\nKindly contact your FC Admin / Manager to fix this issue.`,
+            this.logger.debug(`Buff did not exit.`);
+            return interaction.reply({
+                content: `Sorry, The buff for the date ${date.toISO()} does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
                 ephemeral: true
             });
-            this.logger.debug(`Buff with id buffId does not exist.`);
-            return;
         }
-        await interaction.reply({
-            embeds: [this.createBuffEmbed("The Buff Shall Be:", buff, date)]
-        });
+        return interaction.reply({ embeds: [this.createBuffEmbed("The Buff Shall Be:", buff, date)] });
     }
     async postWeek(interaction, date) {
-        const [config, flag] = await this.tryGetConfig(interaction);
-        if (!flag) {
+        const config = await this.tryGetConfig(interaction);
+        if (!config)
             return;
-        }
-        this.logger.debug(`Command invoked for weeks.`);
-        this.logger.debug(`Posting week message for ${date.toISO()}`);
-        const filteredWeeks = config.weeks.filter((week) => week.isEnabled);
-        const week = filteredWeeks[date.get("weekNumber") % filteredWeeks.length];
-        await interaction.reply({
-            embeds: [this.createWeekEmbed("The Buffs For The Week Shall Be:", week, config.buffs, date)]
-        });
+        this.logger.debug(`Command invoked for weeks.\nPosting week message for ${date.toISO()}.`);
+        return interaction.reply({ embeds: [this.createWeekEmbed("The Buffs For The Week Shall Be:", config, date)] });
     }
     async postDailyMessage(client) {
         await Timer.waitTillReady(client);
         this.logger.debug("Posting daily buff message.");
-        const configs = (await this.buffManagerConfigRepository.getAll()).filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0);
+        const configs = await this.repository.getAll()
+            .then(configs => configs.filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
         const now = DateTime.now();
         for (const config of configs) {
             try {
@@ -72,15 +52,13 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) {
                     continue;
                 }
-                const channel = (await client.channels.fetch(messageSettings.channelId));
-                if (!(channel?.isTextBased && channel.guildId === config.guildId)) {
-                    this.logger.warn(`Invalid channel messageSettings.channelId  ID for guild config.guildId. Skipping...`);
+                const channel = await client.channels.fetch(messageSettings.channelId);
+                if (!(channel?.type === ChannelType.GuildText && channel.guildId === config.guildId)) {
+                    this.logger.warn(`Invalid channel ID for a guild. Skipping...`);
                     continue;
                 }
-                const filteredWeeks = config.weeks.filter((week) => week.isEnabled);
-                const week = filteredWeeks[now.weekNumber % filteredWeeks.length];
-                const buffId = BuffManagerService_1.getBuffId(week, now);
-                const buff = config.buffs.find((day) => day.id === buffId);
+                const week = config.getWeekOfYear(now);
+                const buff = config.getBuff(week.getBuffId(now));
                 const embeds = [];
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID buffId for guild config.guildId. Skipping...`);
@@ -88,9 +66,9 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
                 }
                 this.logger.debug(`Posting buff message.`);
                 embeds.push(this.createBuffEmbed(messageSettings.buffMessage, buff, now));
-                if (messageSettings.dow !== null && messageSettings.dow === now.weekday) {
+                if (!isNaN(messageSettings.dow) && Number(messageSettings.dow) === now.weekday) {
                     this.logger.debug(`Posting week message.`);
-                    embeds.push(this.createWeekEmbed(messageSettings.weekMessage, week, config.buffs, now));
+                    embeds.push(this.createWeekEmbed(messageSettings.weekMessage, config, now, week));
                 }
                 await channel.send({ embeds });
             }
@@ -99,39 +77,27 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
             }
         }
     }
-    static getBuffId(week, date) {
-        return BuffManagerService_1.daysToArray(week.days)[date.weekday - 1];
-    }
-    static daysToArray(days) {
-        return [
-            days.monday,
-            days.tuesday,
-            days.wednesday,
-            days.thursday,
-            days.friday,
-            days.saturday,
-            days.sunday
-        ];
-    }
-    createBuffEmbed(title, day, date) {
+    createBuffEmbed(title, buff, date) {
         this.logger.debug(`Creating Buff Embed.`);
         return new EmbedBuilder({
             title: title,
-            description: day.text,
-            thumbnail: { url: day.imageUrl },
+            description: buff.text,
+            thumbnail: { url: buff.imageUrl },
             footer: { text: date.toFormat("DDDD") }
         }).setColor("Random");
     }
-    createWeekEmbed(title, week, days, date) {
+    createWeekEmbed(title, config, date, week = config.getWeekOfYear(date)) {
         this.logger.debug(`Creating Week Embed.`);
+        if (!week) {
+            throw new Error("Cannot find a valid week.");
+        }
         return new EmbedBuilder({
             title: title,
             description: week.title,
-            fields: BuffManagerService_1.daysToArray(week.days).map((dayId, index) => {
+            fields: Array(...week.days).map((buffId, index) => {
                 const dow = this.daysOfWeek[index];
-                const day = days.find((entry) => entry.id === dayId) ??
-                    { text: "No Buff Found!" };
-                return { name: dow, value: day.text, inline: true };
+                const day = config.getBuff(buffId);
+                return { name: dow, value: day?.text ?? "No buff found.", inline: true };
             }),
             footer: { text: `Week ${date.get("weekNumber")}.` }
         }).setColor("Random");
@@ -140,37 +106,24 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService {
         const guildId = interaction.guildId;
         this.logger.debug(`Attempting to acquire configuration for guild guildId.`);
         const config = await this.findOneOrCreate(guildId);
-        if (config.buffs.length <= 0) {
+        if (config.buffs?.length < 1) {
+            this.logger.debug(`No buffs were set in config.`);
             await interaction.reply({
                 content: "Sorry, there are not buffs set.",
                 ephemeral: true
             });
-            this.logger.debug(`No buffs were set in config.`);
-            return [null, false];
+            return null;
         }
-        if (config.weeks.filter((week) => !("isEnabled" in week) || week.isEnabled).length <= 0) {
+        if (config.getFilteredWeeks?.length < 1) {
+            this.logger.debug(`No weeks were set in config.`);
             await interaction.reply({
                 content: "Sorry, there are not enabled weeks set.",
                 ephemeral: true
             });
-            this.logger.debug(`No weeks were set in config.`);
-            return [null, false];
+            return null;
         }
         this.logger.debug(`Returning results.`);
-        return [config, true];
-    }
-    async findOneOrCreate(id) {
-        if (!id) {
-            throw new Error("Guild ID cannot be null.");
-        }
-        let result = await this.buffManagerConfigRepository.findOne({
-            guildId: id
-        });
-        if (result)
-            return result;
-        result = new BuffManagerConfig();
-        result.guildId = id;
-        return await this.buffManagerConfigRepository.save(result);
+        return config;
     }
 };
 BuffManagerService = BuffManagerService_1 = __decorate([

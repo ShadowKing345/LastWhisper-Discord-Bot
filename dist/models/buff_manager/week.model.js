@@ -5,6 +5,9 @@ export class Week extends MergeableObjectBase {
     isEnabled = false;
     title = null;
     days = new Days();
+    getBuffId(date) {
+        return Array(...this.days)[date.weekday - 1];
+    }
     merge(obj) {
         if (obj.isEnabled) {
             this.isEnabled = obj.isEnabled;

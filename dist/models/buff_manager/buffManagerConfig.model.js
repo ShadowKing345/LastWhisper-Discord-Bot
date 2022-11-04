@@ -9,6 +9,16 @@ export class BuffManagerConfig extends ToJsonBase {
     messageSettings = new MessageSettings();
     buffs = [];
     weeks = [];
+    getWeekOfYear(date) {
+        const filteredWeeks = this.getFilteredWeeks;
+        return filteredWeeks[date.weekNumber % filteredWeeks.length];
+    }
+    get getFilteredWeeks() {
+        return this.weeks.filter(week => week.isEnabled);
+    }
+    getBuff(buffId) {
+        return this.buffs.find(buff => buff.id === buffId);
+    }
     merge(obj) {
         if (obj._id) {
             this._id = obj._id;

@@ -3,6 +3,7 @@ import { MergeableObjectBase } from "./mergeableObjectBase.js";
 import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
 export interface IEntity<T> {
     _id: T;
+    guildId: string;
 }
 export declare abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<unknown>> {
     protected db: DatabaseConfigurationService;

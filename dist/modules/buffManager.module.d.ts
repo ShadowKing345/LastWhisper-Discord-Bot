@@ -8,14 +8,8 @@ import { Timers } from "../utils/objects/timer.js";
 export declare class BuffManagerModule extends ModuleBase {
     private buffManagerService;
     static permissionKeys: {
-        buffs: {
-            today: string;
-            tomorrow: string;
-        };
-        weeks: {
-            thisWeek: string;
-            nextWeek: string;
-        };
+        buffs: string;
+        weeks: string;
     };
     moduleName: string;
     timers: Timers;

@@ -62,15 +62,13 @@ export function flattenObject(obj) {
         }
         result.set(k, v);
     }
-    return Object.assign({}, ...result.entries());
+    return Object.fromEntries(result);
 }
 export function unFlattenObject(obj) {
     const result = {};
     for (const [key, value] of Object.entries(obj)) {
-        key
-            .split(".")
-            .reduce((prev, current, index, { length }) => (prev[current] ||
-            Object.assign(prev[current], length - 1 === index ? value : {})), result);
+        key.split(".")
+            .reduce((prev, current, index, { length }) => (prev[current] || Object.assign(prev[current], length - 1 === index ? value : {})), result);
     }
     return result;
 }
