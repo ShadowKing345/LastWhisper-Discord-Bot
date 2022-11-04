@@ -9,10 +9,7 @@ import { generateConfigObject } from "./utils/config/appConfigs.js";
 console.log(`Welcome ${userInfo().username}.`);
 generateConfigObject();
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
-program
-    .command("deploy", { isDefault: true })
-    .description("Runs to bot.")
-    .action(main);
+program.command("deploy", { isDefault: true }).description("Runs to bot.").action(main);
 program
     .command("register-commands")
     .description("Runs the command register script.")

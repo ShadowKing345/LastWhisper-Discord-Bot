@@ -29,9 +29,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     return (!blacklist && inList) || (blacklist && !inList);
                 })
                 : modules;
-        this.moduleLogger.debug(`Modules list. [${this._modules
-            .map((module) => module.moduleName)
-            .join(",")}]`);
+        this.moduleLogger.debug(`Modules list. [${this._modules.map((module) => module.moduleName).join(",")}]`);
         if (this.moduleConfiguration.enableCommands) {
             this.moduleLogger.debug("Commands enabled.");
         }
@@ -46,18 +44,17 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     if (interaction.isUserContextMenuCommand()) {
                         await interaction.reply({
                             content: "Responded with a user",
-                            ephemeral: true
+                            ephemeral: true,
                         });
                     }
                     else {
                         await interaction.reply({
                             content: "Responded with a message",
-                            ephemeral: true
+                            ephemeral: true,
                         });
                     }
                 }
-                if (interaction.isChatInputCommand() &&
-                    this.moduleConfiguration.enableCommands) {
+                if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
                     this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
                     if (!interaction.guildId) {
                         this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
@@ -93,25 +90,24 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         catch (error) {
             this.interactionLogger.error(error instanceof Error ? error.stack : error);
             if (interaction &&
-                (interaction instanceof ButtonInteraction ||
-                    interaction instanceof CommandInteraction) &&
+                (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) &&
                 !interaction.replied) {
                 if (error instanceof CommandResolverError) {
                     await interaction.reply({
                         content: "Sorry there was an issue resolving the command name.",
-                        ephemeral: true
+                        ephemeral: true,
                     });
                     return;
                 }
                 if (interaction.deferred) {
                     await interaction.editReply({
-                        content: "There was an internal error that occurred when using this interaction."
+                        content: "There was an internal error that occurred when using this interaction.",
                     });
                 }
                 else {
                     await interaction.reply({
                         content: "There was an internal error that occurred when using this interaction.",
-                        ephemeral: true
+                        ephemeral: true,
                     });
                 }
             }
@@ -133,13 +129,9 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
     runTimer(timer, client) {
         try {
             this.intervalIds.push(setInterval(() => {
-                timer
-                    .execute(client)
-                    .catch((error) => this.taskLogger.error(error instanceof Error ? error.stack : error));
+                timer.execute(client).catch((error) => this.taskLogger.error(error instanceof Error ? error.stack : error));
             }, timer.timeout, client));
-            timer
-                .execute(client)
-                .catch((error) => this.taskLogger.error(error instanceof Error ? error.stack : error));
+            timer.execute(client).catch((error) => this.taskLogger.error(error instanceof Error ? error.stack : error));
         }
         catch (error) {
             this.taskLogger.error(error instanceof Error ? error.stack : error);

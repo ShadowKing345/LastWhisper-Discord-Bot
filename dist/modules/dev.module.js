@@ -28,14 +28,8 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
         super(permissionManagerService, logger);
     }
     async testInteractionTypes(interaction) {
-        const button = new ButtonBuilder()
-            .setCustomId("buttonTest1")
-            .setLabel("click me")
-            .setStyle(ButtonStyle.Danger);
-        const select = new SelectMenuBuilder()
-            .setCustomId("selectTest1")
-            .setPlaceholder("Nothing selected")
-            .addOptions({
+        const button = new ButtonBuilder().setCustomId("buttonTest1").setLabel("click me").setStyle(ButtonStyle.Danger);
+        const select = new SelectMenuBuilder().setCustomId("selectTest1").setPlaceholder("Nothing selected").addOptions({
             label: "Select me",
             description: "This is a description",
             value: "first_option",
@@ -54,9 +48,7 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
         });
     }
     async testModal(interaction) {
-        const modal = new ModalBuilder()
-            .setCustomId("TestModal1")
-            .setTitle("Test Modal");
+        const modal = new ModalBuilder().setCustomId("TestModal1").setTitle("Test Modal");
         const favoriteColorInput = new TextInputBuilder()
             .setCustomId("favoriteColorInput")
             .setLabel("What's your favorite color?")

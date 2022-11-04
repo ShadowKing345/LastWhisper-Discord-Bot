@@ -37,9 +37,7 @@ export class RepositoryBase {
     }
     map(source) {
         const result = new this.mappingObject();
-        return result instanceof MergeableObjectBase
-            ? result.merge(source)
-            : deepMerge(result, source);
+        return result instanceof MergeableObjectBase ? result.merge(source) : deepMerge(result, source);
     }
     validateCollection() {
         if (!this.collection) {

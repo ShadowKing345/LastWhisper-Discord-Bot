@@ -11,8 +11,7 @@ let ManagerUtilsService = class ManagerUtilsService {
     }
     async getLoggingChannel(guild) {
         const config = await this.findOneOrCreate(guild.id);
-        if (config.loggingChannel &&
-            guild.channels.cache.has(config.loggingChannel)) {
+        if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
             return (await guild.channels.fetch(config.loggingChannel));
         }
         return null;
@@ -41,13 +40,10 @@ let ManagerUtilsService = class ManagerUtilsService {
         if (kickedData && kickedData.target.id === member.id) {
             embed
                 .setTitle("User Kicked!")
-                .setDescription(`User **${member.user.username}** was kicked by **${(await member.guild.members.fetch(kickedData.executor.id))
-                .displayName}** from the server.`);
+                .setDescription(`User **${member.user.username}** was kicked by **${(await member.guild.members.fetch(kickedData.executor.id)).displayName}** from the server.`);
         }
         else {
-            embed
-                .setTitle("User Left!")
-                .setDescription(`User **${member.user.username}** has left this discord server`);
+            embed.setTitle("User Left!").setDescription(`User **${member.user.username}** has left this discord server`);
         }
         await loggingChannel.send({ embeds: [embed] });
     }
@@ -62,9 +58,7 @@ let ManagerUtilsService = class ManagerUtilsService {
         if (banLogs) {
             const executor = banLogs.executor;
             const target = banLogs.target;
-            const embed = new EmbedBuilder()
-                .setTitle("Member Banned!")
-                .setColor("Random");
+            const embed = new EmbedBuilder().setTitle("Member Banned!").setColor("Random");
             if (target) {
                 embed
                     .setDescription(`User **${target.tag}** was banned by ${executor
@@ -104,9 +98,7 @@ let ManagerUtilsService = class ManagerUtilsService {
         }
         await interaction.deferReply({ ephemeral: true });
         const all = interaction.options.getBoolean("all");
-        let amount = all
-            ? 1000
-            : interaction.options.getNumber("amount") ?? 10;
+        let amount = all ? 1000 : interaction.options.getNumber("amount") ?? 10;
         let amountDeleted = 0;
         for (amount; amount > 0; amount -= 100) {
             const messages = await interaction.channel.messages.fetch({ limit: Math.min(amount, 100) });

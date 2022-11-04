@@ -6,7 +6,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
-import { GardeningModuleConfig, Reservation, Slot, } from "../models/gardening_manager/index.js";
+import { GardeningModuleConfig, Reservation, Slot } from "../models/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService {
     gardeningConfigRepository;
@@ -72,12 +72,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
     }
     async register(interaction, player, plant, duration, reason, plotNum, slotNum) {
         const config = await this.findOneOrCreate(interaction.guildId);
-        if (!(player &&
-            plant &&
-            duration != null &&
-            reason &&
-            plotNum != null &&
-            slotNum != null)) {
+        if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
         const value = await GardeningManagerService_1.validatePlotAndSlot(interaction, config, plotNum, slotNum, false);
@@ -230,9 +225,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
             }
         }
         for (const config of altered) {
-            this.gardeningConfigRepository
-                .save(config)
-                .catch((err) => this.logger.error(err));
+            this.gardeningConfigRepository.save(config).catch((err) => this.logger.error(err));
             await this.postChannelMessage(client, config, {});
         }
     }
@@ -240,8 +233,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         if (!client.guilds.cache.has(config.guildId))
             return;
         const guild = await client.guilds.fetch(config.guildId);
-        if (config.messagePostingChannelId &&
-            !guild.channels.cache.has(config.messagePostingChannelId))
+        if (config.messagePostingChannelId && !guild.channels.cache.has(config.messagePostingChannelId))
             return;
         const channel = (await guild.channels.fetch(config.messagePostingChannelId));
         const embed = new EmbedBuilder({

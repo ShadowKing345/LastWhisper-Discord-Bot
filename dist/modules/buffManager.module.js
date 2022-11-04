@@ -15,15 +15,15 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
     buffManagerService;
     static permissionKeys = {
         buffs: "BuffManager.buffs",
-        weeks: "BuffManager.weeks"
+        weeks: "BuffManager.weeks",
     };
     moduleName = "BuffManager";
     timers = [
         {
             name: `${this.moduleName}#dailyMessageTask`,
             timeout: 60000,
-            execute: this.postDailyMessage.bind(this)
-        }
+            execute: this.postDailyMessage.bind(this),
+        },
     ];
     commands = [
         new Command({
@@ -38,15 +38,15 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                             name: "tomorrow",
                             description: "Set to true if buff is for tomorrow.",
                             required: false,
-                            type: ApplicationCommandOptionType.Boolean
+                            type: ApplicationCommandOptionType.Boolean,
                         }),
                         new CommandOption({
                             name: "date",
                             description: "Get the buff for a specific date. Use ISO 8601 format.",
                             required: false,
-                            type: ApplicationCommandOptionType.String
-                        })
-                    ]
+                            type: ApplicationCommandOptionType.String,
+                        }),
+                    ],
                 }),
                 Weeks: new Command({
                     name: "weeks",
@@ -56,23 +56,23 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                             name: "next_week",
                             description: "Set to true if buff is for tomorrow.",
                             required: false,
-                            type: ApplicationCommandOptionType.Boolean
+                            type: ApplicationCommandOptionType.Boolean,
                         }),
                         new CommandOption({
                             name: "date",
                             description: "Get the week for a specific date. Use ISO 8601 format.",
                             required: false,
-                            type: ApplicationCommandOptionType.String
-                        })
-                    ]
-                })
+                            type: ApplicationCommandOptionType.String,
+                        }),
+                    ],
+                }),
             },
-            execute: this.commandResolver.bind(this)
-        })
+            execute: this.commandResolver.bind(this),
+        }),
     ];
     commandResolverKeys = {
         "buff_manager.buffs": this.postBuff.bind(this),
-        "buff_manager.weeks": this.postWeek.bind(this)
+        "buff_manager.weeks": this.postWeek.bind(this),
     };
     constructor(buffManagerService, logger, permissionManagerService) {
         super(permissionManagerService, logger);

@@ -1,4 +1,4 @@
-import { Client as DiscordClient, GatewayIntentBits, Collection, } from "discord.js";
+import { Client as DiscordClient, GatewayIntentBits, Collection } from "discord.js";
 export class Client extends DiscordClient {
     events = new Collection();
     constructor() {

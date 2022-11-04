@@ -1,6 +1,6 @@
 var EventManagerService_1;
 import { __decorate, __metadata } from "tslib";
-import { EmbedBuilder, } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 import { Timer } from "../utils/objects/timer.js";
@@ -97,8 +97,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
         }
         const event = this.parseMessage(message.id, message.content, config);
         try {
-            if (EventObj.isValid(event) &&
-                event.dateTime > DateTime.now().toUnixInteger()) {
+            if (EventObj.isValid(event) && event.dateTime > DateTime.now().toUnixInteger()) {
                 config.events.push(event);
                 await message.react("✅");
                 await this.eventManagerRepository.save(config);
@@ -152,9 +151,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
     async reminderLoop(client) {
         await Timer.waitTillReady(client);
         const now = DateTime.now();
-        const configs = (await this.eventManagerRepository.getAll()).filter((config) => config.postingChannelId &&
-            config.events.length > 0 &&
-            client.guilds.cache.has(config.guildId));
+        const configs = (await this.eventManagerRepository.getAll()).filter((config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId));
         const alteredConfigs = [];
         for (const config of configs) {
             try {
@@ -168,8 +165,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService {
                                 if (eventTime.diff(now, ["days"]).days > 1)
                                     continue;
                                 const difference = eventTime.minus(triggerTime);
-                                if (difference.hour === now.hour &&
-                                    difference.minute === now.minute) {
+                                if (difference.hour === now.hour && difference.minute === now.minute) {
                                     const messageValues = {
                                         "%everyone%": "@everyone",
                                         "%eventName%": event.name,

@@ -1,6 +1,6 @@
 var PermissionManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { Role, ChatInputCommandInteraction, ApplicationCommandOptionType, } from "discord.js";
+import { Role, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";

@@ -1,6 +1,6 @@
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ApplicationCommandOptionType as OptionType, SlashCommandStringOption } from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ApplicationCommandOptionType as OptionType, SlashCommandStringOption, } from "discord.js";
 import { deepMerge } from "../index.js";
 export class Command extends ToJsonBase {
     name = null;
@@ -45,8 +45,7 @@ export class Command extends ToJsonBase {
                 if (!subcommand) {
                     continue;
                 }
-                if (Object.values(subcommand.subcommands ?? []).length > 0 &&
-                    builder instanceof SlashCommandBuilder) {
+                if (Object.values(subcommand.subcommands ?? []).length > 0 && builder instanceof SlashCommandBuilder) {
                     builder.addSubcommandGroup((subcommandGroupBuilder) => subcommand.build(subcommandGroupBuilder));
                 }
                 else if (!(builder instanceof SlashCommandSubcommandBuilder)) {
@@ -54,8 +53,7 @@ export class Command extends ToJsonBase {
                 }
             }
         }
-        if (this.options &&
-            !(builder instanceof SlashCommandSubcommandGroupBuilder)) {
+        if (this.options && !(builder instanceof SlashCommandSubcommandGroupBuilder)) {
             for (const option of this.options) {
                 option.build(builder);
             }
@@ -76,10 +74,7 @@ export class CommandOption extends ToJsonBase {
         }
     }
     buildOptionCallback(optionBuilder) {
-        optionBuilder
-            .setName(this.name)
-            .setDescription(this.description)
-            .setRequired(this.required);
+        optionBuilder.setName(this.name).setDescription(this.description).setRequired(this.required);
         if (this.choices && optionBuilder instanceof SlashCommandStringOption) {
             optionBuilder.addChoices(...this.choices);
         }

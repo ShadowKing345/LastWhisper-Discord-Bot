@@ -141,8 +141,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
         const player = `${interaction.user.username}#${interaction.user.discriminator}`;
         const plant = interaction.options.getString("plant");
         const duration = (interaction.options.getInteger("duration") ?? 0) * 360;
-        const reason = (interaction.options.getInteger("reason") ??
-            Reason.NONE);
+        const reason = (interaction.options.getInteger("reason") ?? Reason.NONE);
         if (f instanceof Function) {
             return f(interaction, plotNum, slotNum, player, plant, duration, reason);
         }

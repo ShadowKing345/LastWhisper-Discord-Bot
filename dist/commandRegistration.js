@@ -2,13 +2,11 @@ import { REST } from "@discordjs/rest";
 import { container } from "tsyringe";
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
-import { ProjectConfiguration, } from "./utils/models/index.js";
+import { ProjectConfiguration } from "./utils/models/index.js";
 import { Routes, } from "discord-api-types/v10";
 export async function commandRegistration(args) {
     const app = container.resolve(App);
-    const logger = container
-        .resolve(LoggerService)
-        .buildLogger("CommandRegistration");
+    const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
     logger.info("Welcome again to command registration or un-registration.");
     const appConfigs = container.resolve(ProjectConfiguration);
     const commandConfigs = appConfigs.commandRegistration;
@@ -26,12 +24,8 @@ export async function commandRegistration(args) {
     if (args.unregister)
         commandConfigs.unregister = true;
     const rest = new REST({ version: "10" }).setToken(appConfigs.token);
-    const isRegistering = commandConfigs.unregister
-        ? "unregistering"
-        : "registering";
-    const isGlobal = commandConfigs.registerForGuild
-        ? `guild ${commandConfigs.guildId}`
-        : "everyone";
+    const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
+    const isGlobal = commandConfigs.registerForGuild ? `guild ${commandConfigs.guildId}` : "everyone";
     try {
         const route = commandConfigs.registerForGuild
             ? Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId)

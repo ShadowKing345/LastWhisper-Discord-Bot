@@ -105,8 +105,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService {
                 content: `Cannot find role with id ${config.acceptedRoleId}.`,
             });
         }
-        for (const member of (await interaction.guild?.members.list())?.values() ??
-            []) {
+        for (const member of (await interaction.guild?.members.list())?.values() ?? []) {
             if (member.roles.cache.has(role.id)) {
                 await member.roles.remove(role, "Permission revoked by person.");
             }

@@ -1,6 +1,6 @@
 var EventManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { ApplicationCommandOptionType, } from "discord.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -8,7 +8,7 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { EventListener, } from "../utils/objects/eventListener.js";
+import { EventListener } from "../utils/objects/eventListener.js";
 import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
     eventManagerService;

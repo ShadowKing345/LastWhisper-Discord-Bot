@@ -7,7 +7,7 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { EventListener, } from "../utils/objects/eventListener.js";
+import { EventListener } from "../utils/objects/eventListener.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends ModuleBase {
     managerUtilsService;
     moduleName = "ManagerUtils";

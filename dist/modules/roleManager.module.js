@@ -7,13 +7,11 @@ import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { EventListener, } from "../utils/objects/eventListener.js";
+import { EventListener } from "../utils/objects/eventListener.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
     roleManagerService;
     moduleName = "RoleManager";
-    eventListeners = [
-        new EventListener("ready", async (client) => this.onReady(client)),
-    ];
+    eventListeners = [new EventListener("ready", async (client) => this.onReady(client))];
     commands = [
         new Command({
             name: "role_manager",

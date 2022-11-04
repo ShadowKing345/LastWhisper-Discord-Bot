@@ -10,7 +10,15 @@ import { BuffManagerRepository } from "../repositories/buffManager.repository.js
 import { Service } from "../utils/objects/service.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {
     logger;
-    daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    daysOfWeek = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
     constructor(repository, logger) {
         super(repository);
         this.logger = logger;
@@ -26,7 +34,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
             this.logger.debug(`Buff did not exit.`);
             return interaction.reply({
                 content: `Sorry, The buff for the date ${date.toISO()} does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
-                ephemeral: true
+                ephemeral: true,
             });
         }
         return interaction.reply({ embeds: [this.createBuffEmbed("The Buff Shall Be:", buff, date)] });
@@ -41,8 +49,9 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
     async postDailyMessage(client) {
         await Timer.waitTillReady(client);
         this.logger.debug("Posting daily buff message.");
-        const configs = await this.repository.getAll()
-            .then(configs => configs.filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
+        const configs = await this.repository
+            .getAll()
+            .then((configs) => configs.filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
         const now = DateTime.now();
         for (const config of configs) {
             try {
@@ -83,7 +92,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
             title: title,
             description: buff.text,
             thumbnail: { url: buff.imageUrl },
-            footer: { text: date.toFormat("DDDD") }
+            footer: { text: date.toFormat("DDDD") },
         }).setColor("Random");
     }
     createWeekEmbed(title, config, date, week = config.getWeekOfYear(date)) {
@@ -99,7 +108,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
                 const day = config.getBuff(buffId);
                 return { name: dow, value: day?.text ?? "No buff found.", inline: true };
             }),
-            footer: { text: `Week ${date.get("weekNumber")}.` }
+            footer: { text: `Week ${date.get("weekNumber")}.` },
         }).setColor("Random");
     }
     async tryGetConfig(interaction) {
@@ -110,7 +119,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
             this.logger.debug(`No buffs were set in config.`);
             await interaction.reply({
                 content: "Sorry, there are not buffs set.",
-                ephemeral: true
+                ephemeral: true,
             });
             return null;
         }
@@ -118,7 +127,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
             this.logger.debug(`No weeks were set in config.`);
             await interaction.reply({
                 content: "Sorry, there are not enabled weeks set.",
-                ephemeral: true
+                ephemeral: true,
             });
             return null;
         }
