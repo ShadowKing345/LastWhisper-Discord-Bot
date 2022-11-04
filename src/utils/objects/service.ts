@@ -9,7 +9,7 @@ export abstract class Service<T extends MergeableObjectBase<T> & IEntity<unknown
    * @param id The Guild ID to look for. Throws if null was set.
    * @protected
    */
-  protected async findOneOrCreate(id: string): Promise<T> {
+  protected async getConfig(id: string): Promise<T> {
     if (!id) {
       throw new Error("Guild ID cannot be null.");
     }

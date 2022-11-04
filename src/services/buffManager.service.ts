@@ -181,7 +181,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
   public async tryGetConfig(interaction: CommandInteraction): Promise<BuffManagerConfig | null> {
     const guildId = interaction.guildId;
     this.logger.debug(`Attempting to acquire configuration for guild guildId.`);
-    const config: BuffManagerConfig = await this.findOneOrCreate(guildId);
+    const config: BuffManagerConfig = await this.getConfig(guildId);
 
     // "Throws" if the number of buffs are less than 1.
     if (config.buffs?.length < 1) {
