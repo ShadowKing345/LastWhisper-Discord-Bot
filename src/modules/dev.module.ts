@@ -19,6 +19,9 @@ import { Commands, Command } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 
+/**
+ * Development module used for testing features and random things.
+ */
 @registerModule()
 export class DevModule extends ModuleBase {
   public moduleName = "DevModule";
