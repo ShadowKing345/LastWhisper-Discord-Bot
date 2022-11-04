@@ -5,9 +5,7 @@ import { ModuleBase } from "../objects/moduleBase.js";
 /**
  * Decorator that registers a module base class as a singleton of its own type and of token ModuleBase.name.
  */
-export function registerModule<T extends ModuleBase>(): (
-  target: constructor<T>
-) => void {
+export function registerModule<T extends ModuleBase>(): (target: constructor<T>) => void {
   return function (target: constructor<T>) {
     injectable()(target);
     container.registerSingleton<T>(target);

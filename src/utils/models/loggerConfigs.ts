@@ -1,19 +1,11 @@
-import {
-  TransportSingleOptions,
-  TransportMultiOptions,
-  TransportPipelineOptions,
-  pino,
-} from "pino";
+import { TransportSingleOptions, TransportMultiOptions, TransportPipelineOptions, pino } from "pino";
 
 /**
  * Configuration object for the logger service.
  */
 export class LoggerConfigs {
   level: pino.LevelWithSilent = LOGGING_LEVELS.info;
-  transports:
-    | TransportSingleOptions
-    | TransportMultiOptions
-    | TransportPipelineOptions = null;
+  transports: TransportSingleOptions | TransportMultiOptions | TransportPipelineOptions = null;
 }
 
 export enum LOGGING_LEVELS {

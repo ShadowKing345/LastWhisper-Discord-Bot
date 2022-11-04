@@ -36,8 +36,7 @@ export class DevModule extends ModuleBase {
   ];
 
   public buttons = {
-    buttonTest1: (interaction: ChatInputCommandInteraction) =>
-      this.buttonTest(interaction),
+    buttonTest1: (interaction: ChatInputCommandInteraction) => this.buttonTest(interaction),
   };
 
   public constructor(
@@ -47,29 +46,21 @@ export class DevModule extends ModuleBase {
     super(permissionManagerService, logger);
   }
 
-  private async testInteractionTypes(
-    interaction: CommandInteraction
-  ): Promise<void> {
-    const button = new ButtonBuilder()
-      .setCustomId("buttonTest1")
-      .setLabel("click me")
-      .setStyle(ButtonStyle.Danger);
+  private async testInteractionTypes(interaction: CommandInteraction): Promise<void> {
+    const button = new ButtonBuilder().setCustomId("buttonTest1").setLabel("click me").setStyle(ButtonStyle.Danger);
 
-    const select = new SelectMenuBuilder()
-      .setCustomId("selectTest1")
-      .setPlaceholder("Nothing selected")
-      .addOptions(
-        {
-          label: "Select me",
-          description: "This is a description",
-          value: "first_option",
-        },
-        {
-          label: "You can select me too",
-          description: "This is also a description",
-          value: "second_option",
-        }
-      );
+    const select = new SelectMenuBuilder().setCustomId("selectTest1").setPlaceholder("Nothing selected").addOptions(
+      {
+        label: "Select me",
+        description: "This is a description",
+        value: "first_option",
+      },
+      {
+        label: "You can select me too",
+        description: "This is also a description",
+        value: "second_option",
+      }
+    );
 
     await interaction.reply({
       fetchReply: true,
@@ -82,9 +73,7 @@ export class DevModule extends ModuleBase {
   }
 
   private async testModal(interaction: ChatInputCommandInteraction) {
-    const modal = new ModalBuilder()
-      .setCustomId("TestModal1")
-      .setTitle("Test Modal");
+    const modal = new ModalBuilder().setCustomId("TestModal1").setTitle("Test Modal");
 
     const favoriteColorInput = new TextInputBuilder()
       .setCustomId("favoriteColorInput")
@@ -96,26 +85,16 @@ export class DevModule extends ModuleBase {
       .setLabel("What's some of your favorite hobbies?")
       .setStyle(TextInputStyle.Paragraph);
 
-    const firstActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-        favoriteColorInput
-      );
-    const secondActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
-        hobbiesInput
-      );
+    const firstActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(favoriteColorInput);
+    const secondActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(hobbiesInput);
 
     modal.addComponents(firstActionRow, secondActionRow);
     await interaction.showModal(modal);
   }
 
-  private async buttonTest(
-    interaction: ChatInputCommandInteraction
-  ): Promise<void | InteractionResponse> {
+  private async buttonTest(interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse> {
     await interaction.reply({
-      content: `${
-        interaction.member?.avatar ?? "No avatar set"
-      } has clicked button ${interaction.commandName} ${
+      content: `${interaction.member?.avatar ?? "No avatar set"} has clicked button ${interaction.commandName} ${
         (interaction as unknown as ButtonInteraction).customId
       }.`,
       ephemeral: true,

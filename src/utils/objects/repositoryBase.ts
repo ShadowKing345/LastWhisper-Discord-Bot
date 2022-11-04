@@ -23,10 +23,9 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<
   // A private internal collection object.
   private _collection: Collection<T> = null;
   // A class to create a new object.
-  protected abstract readonly mappingObject: { new(): T };
+  protected abstract readonly mappingObject: { new (): T };
 
-  protected constructor(protected db: DatabaseConfigurationService) {
-  }
+  protected constructor(protected db: DatabaseConfigurationService) {}
 
   /**
    * Saves a new database record.
@@ -84,9 +83,7 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<
     if (objs.length <= 0) return;
 
     const bulk = this.collection.initializeOrderedBulkOp();
-    objs.forEach((config) =>
-      bulk.find({ _id: config._id }).upsert().replaceOne(config)
-    );
+    objs.forEach((config) => bulk.find({ _id: config._id }).upsert().replaceOne(config));
 
     await bulk.execute();
   }
@@ -100,9 +97,7 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<
   protected map(source: object): T {
     const result = new this.mappingObject();
 
-    return result instanceof MergeableObjectBase
-      ? result.merge(source)
-      : deepMerge(result, source);
+    return result instanceof MergeableObjectBase ? result.merge(source) : deepMerge(result, source);
   }
 
   /**

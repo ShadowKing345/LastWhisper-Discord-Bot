@@ -1,9 +1,4 @@
-import {
-  Role,
-  ChatInputCommandInteraction,
-  InteractionResponse,
-  ApplicationCommandOptionType,
-} from "discord.js";
+import { Role, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
 
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
@@ -74,8 +69,7 @@ export class PermissionManagerModule extends ModuleBase {
             PermissionManagerModule.commandKeyHelperBuilder(true),
             new CommandOption({
               name: "mode",
-              description:
-                "Sets the search mode for the command. Any: has any. Strict: has all.",
+              description: "Sets the search mode for the command. Any: has any. Strict: has all.",
               required: true,
               choices: [
                 { name: "any", value: PermissionMode.ANY },
@@ -85,8 +79,7 @@ export class PermissionManagerModule extends ModuleBase {
             }),
             new CommandOption({
               name: "black_list",
-              description:
-                "Reverses the final result. I.e. If list is empty, no one can use the command.",
+              description: "Reverses the final result. I.e. If list is empty, no one can use the command.",
               type: ApplicationCommandOptionType.String,
             }),
           ],
@@ -116,9 +109,7 @@ export class PermissionManagerModule extends ModuleBase {
     super(permissionManagerService, logger);
   }
 
-  protected async commandResolver(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse | void> {
+  protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const f = await super.commandResolver(interaction, false);
 
     const key = interaction.options.getString("key");
@@ -132,48 +123,31 @@ export class PermissionManagerModule extends ModuleBase {
   }
 
   @authorize(PermissionManagerModule.permissionKeys.list)
-  private listPermissions(
-    interaction: ChatInputCommandInteraction,
-    key?: string
-  ): Promise<InteractionResponse> {
+  private listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
     this.logger.debug("Requested listed permissions.");
     return this.permissionManagerService.listPermissions(interaction, key);
   }
 
   @authorize(PermissionManagerModule.permissionKeys.addRole)
-  private addRoles(
-    interaction: ChatInputCommandInteraction,
-    key: string,
-    role: Role
-  ): Promise<InteractionResponse> {
+  private addRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
     this.logger.debug("Requested add role.");
     return this.permissionManagerService.addRole(interaction, key, role);
   }
 
   @authorize(PermissionManagerModule.permissionKeys.removeRole)
-  private removeRoles(
-    interaction: ChatInputCommandInteraction,
-    key: string,
-    role: Role
-  ): Promise<InteractionResponse> {
+  private removeRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
     this.logger.debug("Requested remove role.");
     return this.permissionManagerService.removeRole(interaction, key, role);
   }
 
   @authorize(PermissionManagerModule.permissionKeys.config)
-  private config(
-    interaction: ChatInputCommandInteraction,
-    key: string
-  ): Promise<InteractionResponse> {
+  private config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
     this.logger.debug("Requested config.");
     return this.permissionManagerService.config(interaction, key);
   }
 
   @authorize(PermissionManagerModule.permissionKeys.reset)
-  private reset(
-    interaction: ChatInputCommandInteraction,
-    key: string
-  ): Promise<InteractionResponse> {
+  private reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
     this.logger.debug("Requested reset.");
     return this.permissionManagerService.reset(interaction, key);
   }

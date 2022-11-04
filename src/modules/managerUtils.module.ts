@@ -12,10 +12,7 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Command, CommandOption, Commands } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import {
-  EventListeners,
-  EventListener,
-} from "../utils/objects/eventListener.js";
+import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
 @registerModule()
 export class ManagerUtilsModule extends ModuleBase {
@@ -36,20 +33,12 @@ export class ManagerUtilsModule extends ModuleBase {
           ],
         }),
       },
-      execute: (interaction) =>
-        this.commandResolver(
-          interaction
-        ) as Promise<InteractionResponse | void>,
+      execute: (interaction) => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }),
   ];
   public eventListeners: EventListeners = [
-    new EventListener("guildBanAdd", (_, [member]) =>
-      this.onMemberBanned(member)
-    ),
-    new EventListener(
-      "guildMemberRemove",
-      async (_, [member]) => await this.onMemberRemoved(member)
-    ),
+    new EventListener("guildBanAdd", (_, [member]) => this.onMemberBanned(member)),
+    new EventListener("guildMemberRemove", async (_, [member]) => await this.onMemberRemoved(member)),
   ];
 
   protected commandResolverKeys = {
@@ -64,9 +53,7 @@ export class ManagerUtilsModule extends ModuleBase {
     super(permissionManagerService, logger);
   }
 
-  private onMemberRemoved(
-    member: GuildMember | PartialGuildMember
-  ): Promise<void> {
+  private onMemberRemoved(member: GuildMember | PartialGuildMember): Promise<void> {
     return this.managerUtilsService.onMemberRemoved(member);
   }
 
@@ -74,9 +61,7 @@ export class ManagerUtilsModule extends ModuleBase {
     return this.managerUtilsService.onMemberBanned(ban);
   }
 
-  private clear(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse | void> {
+  private clear(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     return this.managerUtilsService.clearChannelMessages(interaction);
   }
 }

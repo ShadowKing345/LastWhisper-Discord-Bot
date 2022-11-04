@@ -20,8 +20,7 @@ export class PermissionManagerService {
   constructor(
     private permissionManagerRepository: PermissionManagerRepository,
     @createLogger(PermissionManagerService.name) private logger: pino.Logger
-  ) {
-  }
+  ) {}
 
   /**
    * Checks if a member is authorized to use the given key of a command.
@@ -32,8 +31,9 @@ export class PermissionManagerService {
     if (!PermissionManagerService.keyExists(key)) {
       (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
       await interaction.reply({
-        content: "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
-        ephemeral: true
+        content:
+          "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
+        ephemeral: true,
       });
       return false;
     }
@@ -80,8 +80,7 @@ export class PermissionManagerService {
       }
     }
 
-    const authorized: boolean =
-      (!permission.blackList && result) || (permission.blackList && !result);
+    const authorized: boolean = (!permission.blackList && result) || (permission.blackList && !result);
 
     this.logger.debug(`User is ${authorized ? "Authenticated" : "Unauthenticated"}.`);
     return authorized;
@@ -99,16 +98,14 @@ export class PermissionManagerService {
     key: string,
     role: Role
   ): Promise<InteractionResponse> {
-    this.logger.debug(
-      `Add role command invoked for guild ${interaction.guildId}.`
-    );
+    this.logger.debug(`Add role command invoked for guild ${interaction.guildId}.`);
     const config = await this.findOneOrCreate(interaction.guildId);
     const permissions = (config.permissions[key] ??= new Permission());
 
     if (permissions.roles.includes(role.id)) {
       return interaction.reply({
         content: `Role is already there. Will not add again.`,
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
@@ -119,7 +116,7 @@ export class PermissionManagerService {
 
     return interaction.reply({
       content: `Role added to key ${key}`,
-      ephemeral: true
+      ephemeral: true,
     });
   }
 
@@ -135,16 +132,14 @@ export class PermissionManagerService {
     key: string,
     role: Role
   ): Promise<InteractionResponse> {
-    this.logger.debug(
-      `Remove role command invoked for guild ${interaction.guildId}.`
-    );
+    this.logger.debug(`Remove role command invoked for guild ${interaction.guildId}.`);
     const config = await this.findOneOrCreate(interaction.guildId);
 
     const permission = config.permissions[key];
     if (!permission) {
       return interaction.reply({
         content: `Cannot find key ${key}`,
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
@@ -152,7 +147,7 @@ export class PermissionManagerService {
     if (index === -1) {
       return interaction.reply({
         content: `Cannot find role ${role.name} in the permission list ${key}`,
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
@@ -163,7 +158,7 @@ export class PermissionManagerService {
 
     return interaction.reply({
       content: `Role removed for key ${key}`,
-      ephemeral: true
+      ephemeral: true,
     });
   }
 
@@ -173,10 +168,7 @@ export class PermissionManagerService {
    * @param key The key of the permission
    */
   @PermissionManagerService.validateKey()
-  public async config(
-    interaction: ChatInputCommandInteraction,
-    key: string
-  ): Promise<InteractionResponse> {
+  public async config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
     this.logger.debug(`Config invoked for guild ${interaction.guildId}.`);
     const config = await this.findOneOrCreate(interaction.guildId);
     const permission = (config.permissions[key] ??= new Permission());
@@ -197,7 +189,7 @@ export class PermissionManagerService {
 
     return interaction.reply({
       content: "Config set.",
-      ephemeral: true
+      ephemeral: true,
     });
   }
 
@@ -207,20 +199,15 @@ export class PermissionManagerService {
    * @param key The key of the permission
    */
   @PermissionManagerService.validateKey()
-  public async reset(
-    interaction: ChatInputCommandInteraction,
-    key: string
-  ): Promise<InteractionResponse> {
+  public async reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
     this.logger.debug(`Reset invoked for guild ${interaction.guildId}.`);
     const config = await this.findOneOrCreate(interaction.guildId);
 
     if (!config.permissions[key]) {
-      this.logger.debug(
-        "No permissions options were set with this key for this guild. Exiting."
-      );
+      this.logger.debug("No permissions options were set with this key for this guild. Exiting.");
       return interaction.reply({
         content: `Cannot find permissions with key \`${key}\`.`,
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
@@ -231,7 +218,7 @@ export class PermissionManagerService {
 
     return interaction.reply({
       content: `Permission ${key} was successfully reset (deleted).`,
-      ephemeral: true
+      ephemeral: true,
     });
   }
 
@@ -241,13 +228,8 @@ export class PermissionManagerService {
    * @param interaction The interaction the command was invoked with.
    * @param key The key of the permission (optional)
    */
-  public async listPermissions(
-    interaction: ChatInputCommandInteraction,
-    key?: string
-  ): Promise<InteractionResponse> {
-    this.logger.debug(
-      `Permission key list requested by guild ${interaction.guildId}.`
-    );
+  public async listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
+    this.logger.debug(`Permission key list requested by guild ${interaction.guildId}.`);
 
     if (key) {
       this.logger.debug(`Detailed request information for key ${key}.`);
@@ -256,7 +238,7 @@ export class PermissionManagerService {
         this.logger.debug("Key did not exist. Exiting out.");
         return interaction.reply({
           content: "Cannot find key. Please input the correct key.",
-          ephemeral: true
+          ephemeral: true,
         });
       }
 
@@ -273,33 +255,31 @@ export class PermissionManagerService {
               {
                 name: "Mode",
                 value: PermissionMode[permission.mode],
-                inline: false
+                inline: false,
               },
               {
                 name: "Is Blacklist",
                 value: String(permission.blackList),
-                inline: false
+                inline: false,
               },
               {
                 name: "Roles",
                 value:
                   permission.roles.length > 0
                     ? (
-                      await Promise.allSettled(
-                        permission.roles.map((roleId) =>
-                          interaction.guild?.roles
-                            .fetch(roleId)
-                            .then((role) => role?.name)
+                        await Promise.allSettled(
+                          permission.roles.map((roleId) =>
+                            interaction.guild?.roles.fetch(roleId).then((role) => role?.name)
+                          )
                         )
-                      )
-                    ).join("\n")
+                      ).join("\n")
                     : "No roles were set.",
-                inline: false
-              }
-            ]
-          }).setColor("Random")
+                inline: false,
+              },
+            ],
+          }).setColor("Random"),
         ],
-        ephemeral: true
+        ephemeral: true,
       });
     } else {
       this.logger.debug("Key not specified. Returning all available keys.");
@@ -308,10 +288,10 @@ export class PermissionManagerService {
         embeds: [
           new EmbedBuilder({
             title: "List of PermissionKeys",
-            description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``
-          }).setColor("Random")
+            description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
+          }).setColor("Random"),
         ],
-        ephemeral: true
+        ephemeral: true,
       });
     }
   }
@@ -321,9 +301,7 @@ export class PermissionManagerService {
    * @param id Id for the guild.
    * @private
    */
-  private async findOneOrCreate(
-    id: string | null
-  ): Promise<PermissionManagerConfig> {
+  private async findOneOrCreate(id: string | null): Promise<PermissionManagerConfig> {
     this.logger.debug(`Attempting to get config file for guild ${id}.`);
 
     if (!id) {
@@ -331,7 +309,7 @@ export class PermissionManagerService {
     }
 
     let result = await this.permissionManagerRepository.findOne({
-      guildId: id
+      guildId: id,
     });
     if (result) return result;
 
@@ -380,20 +358,20 @@ export class PermissionManagerService {
       return PermissionManagerService._keysFormatted;
     }
 
-    const obj: object = unFlattenObject(PermissionManagerService.keys.reduce((previousValue, currentValue) => {
-      previousValue[currentValue] = currentValue;
-      return previousValue;
-    }, {}));
+    const obj: object = unFlattenObject(
+      PermissionManagerService.keys.reduce((previousValue, currentValue) => {
+        previousValue[currentValue] = currentValue;
+        return previousValue;
+      }, {})
+    );
 
     function format(obj: object, index = 0) {
       const spaces = "\t".repeat(index);
       let result = "";
 
-      for (const [ key, value ] of Object.entries(obj)) {
+      for (const [key, value] of Object.entries(obj)) {
         result +=
-          typeof value === "object"
-            ? `${spaces}${key}:\n${format(value as object, index + 1)}`
-            : `${spaces}${key};\n`;
+          typeof value === "object" ? `${spaces}${key}:\n${format(value as object, index + 1)}` : `${spaces}${key};\n`;
       }
 
       return result;
@@ -406,20 +384,29 @@ export class PermissionManagerService {
    * Internal decorator used to check if a key exists before a command is actually invoked.
    * @private
    */
-  private static validateKey(): (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
-    return function(_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
-      const originalMethod = descriptor.value as (interaction: ChatInputCommandInteraction, key: string, ...args: unknown[]) => unknown;
+  private static validateKey(): (
+    target: PermissionManagerService,
+    property: string | symbol,
+    descriptor: PropertyDescriptor
+  ) => PropertyDescriptor {
+    return function (_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
+      const originalMethod = descriptor.value as (
+        interaction: ChatInputCommandInteraction,
+        key: string,
+        ...args: unknown[]
+      ) => unknown;
 
-      descriptor.value = function(interaction: ChatInputCommandInteraction, key: string, ...args: unknown[]) {
+      descriptor.value = function (interaction: ChatInputCommandInteraction, key: string, ...args: unknown[]) {
         if (!PermissionManagerService.keyExists(key)) {
           (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
           return interaction.reply({
-            content: "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.",
-            ephemeral: true
+            content:
+              "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.",
+            ephemeral: true,
           });
         }
 
-        return originalMethod.apply(this, [ interaction, key, ...args ]);
+        return originalMethod.apply(this, [interaction, key, ...args]);
       };
 
       return descriptor;

@@ -14,13 +14,7 @@ import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
-import {
-  GardeningModuleConfig,
-  Plot,
-  Reason,
-  Reservation,
-  Slot,
-} from "../models/gardening_manager/index.js";
+import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../models/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
 
 @singleton()
@@ -38,16 +32,12 @@ export class GardeningManagerService {
     slotShouldExist = true
   ): Promise<null | [Plot, Slot]> {
     if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
-      throw new InvalidArgumentError(
-        "One or more of the provided arguments were invalid."
-      );
+      throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
 
     if (config.plots.length <= plotNum) {
       await interaction.reply({
-        content: `Sorry but the plot number has to be from 0 to ${
-          config.plots.length - 1
-        }.`,
+        content: `Sorry but the plot number has to be from 0 to ${config.plots.length - 1}.`,
         ephemeral: true,
       });
       return null;
@@ -65,16 +55,9 @@ export class GardeningManagerService {
     return [plot, slot];
   }
 
-  protected static printPlotInfo(
-    plot: Plot,
-    plotNum: number,
-    detailed = false,
-    indent = 1
-  ): string {
+  protected static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 1): string {
     if (!(plot && plotNum != null && detailed != null && indent != null)) {
-      throw new InvalidArgumentError(
-        "One or more of the provided arguments were invalid."
-      );
+      throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
 
     const indentStr = " ".repeat(2 * indent);
@@ -83,11 +66,7 @@ export class GardeningManagerService {
 
     if (detailed && plot.slots) {
       for (let i = 0; i < plot.slots.length; i++) {
-        result += GardeningManagerService.printSlotInfo(
-          plot.slots[i],
-          i,
-          indent + 1
-        );
+        result += GardeningManagerService.printSlotInfo(plot.slots[i], i, indent + 1);
       }
     }
 
@@ -96,15 +75,9 @@ export class GardeningManagerService {
     return result;
   }
 
-  protected static printSlotInfo(
-    slot: Slot,
-    slotNum: number,
-    indent = 1
-  ): string {
+  protected static printSlotInfo(slot: Slot, slotNum: number, indent = 1): string {
     if (!(slotNum != null && indent != null)) {
-      throw new InvalidArgumentError(
-        "One or more of the provided arguments were invalid."
-      );
+      throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
 
     const indentStr = " ".repeat(2 * indent);
@@ -132,44 +105,24 @@ export class GardeningManagerService {
     plotNum: number,
     slotNum: number
   ): Promise<void> {
-    const config: GardeningModuleConfig = await this.findOneOrCreate(
-      interaction.guildId
-    );
+    const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
 
-    if (
-      !(
-        player &&
-        plant &&
-        duration != null &&
-        reason &&
-        plotNum != null &&
-        slotNum != null
-      )
-    ) {
-      throw new InvalidArgumentError(
-        "One or more of the provided arguments were invalid."
-      );
+    if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
+      throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
-    const value: void | [Plot, Slot] =
-      await GardeningManagerService.validatePlotAndSlot(
-        interaction,
-        config,
-        plotNum,
-        slotNum,
-        false
-      );
+    const value: void | [Plot, Slot] = await GardeningManagerService.validatePlotAndSlot(
+      interaction,
+      config,
+      plotNum,
+      slotNum,
+      false
+    );
     if (!value) return;
     const plot: Plot = value[0];
     let slot: Slot = value[1];
 
     if (!slot) {
-      slot = new Slot(
-        player,
-        plant,
-        duration,
-        reason,
-        DateTime.now().toUnixInteger()
-      );
+      slot = new Slot(player, plant, duration, reason, DateTime.now().toUnixInteger());
       plot.slots[plotNum] = slot;
     } else {
       slot.next.push(new Reservation(player, plant, duration, reason));
@@ -179,9 +132,7 @@ export class GardeningManagerService {
     await interaction.reply({ content: "Reservation has been created." });
     await this.postChannelMessage(interaction.client as Client, config, {
       title: "Gardening Plot Has Been Reserved!",
-      description: `${
-        (interaction.member as GuildMember).displayName
-      } has registered the plot **${
+      description: `${(interaction.member as GuildMember).displayName} has registered the plot **${
         plot.name
       }**, slot **${slotNum}** for the plant **${plant}**.`,
       memberUrl: (interaction.member as GuildMember).displayAvatarURL(),
@@ -218,23 +169,18 @@ export class GardeningManagerService {
     plotNum: number,
     slotNum: number
   ): Promise<InteractionResponse | void> {
-    const config: GardeningModuleConfig = await this.findOneOrCreate(
-      interaction.guildId
-    );
+    const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
 
     if (!(player && plant && plotNum != null && slotNum != null)) {
-      throw new InvalidArgumentError(
-        "One or more of the provided arguments were invalid."
-      );
+      throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
 
-    const value: void | [Plot, Slot] =
-      await GardeningManagerService.validatePlotAndSlot(
-        interaction,
-        config,
-        plotNum,
-        slotNum
-      );
+    const value: void | [Plot, Slot] = await GardeningManagerService.validatePlotAndSlot(
+      interaction,
+      config,
+      plotNum,
+      slotNum
+    );
     if (!value) return;
     const plot: Plot = value[0];
     let slot: Slot = value[1];
@@ -251,21 +197,11 @@ export class GardeningManagerService {
 
       slot =
         next !== undefined
-          ? new Slot(
-              next.player,
-              next.plant,
-              next.duration,
-              next.reason,
-              DateTime.now().toUnixInteger(),
-              nextReserved
-            )
+          ? new Slot(next.player, next.plant, next.duration, next.reason, DateTime.now().toUnixInteger(), nextReserved)
           : undefined;
       plot.slots[plotNum] = slot;
     } else {
-      const next = slot.next.find(
-        (reservation) =>
-          reservation.player === player && reservation.plant === plant
-      );
+      const next = slot.next.find((reservation) => reservation.player === player && reservation.plant === plant);
       if (!next)
         return interaction.reply({
           content: "There is no reservation currently registered to you.",
@@ -278,29 +214,20 @@ export class GardeningManagerService {
     return interaction.reply("Reservation has been canceled.");
   }
 
-  public async list(
-    interaction: ChatInputCommandInteraction,
-    plotNum: number,
-    slotNum: number
-  ) {
-    const config: GardeningModuleConfig = await this.findOneOrCreate(
-      interaction.guildId
-    );
-    const showDetailed: boolean =
-      interaction.options.getBoolean("detailed") ?? false;
+  public async list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number) {
+    const config: GardeningModuleConfig = await this.findOneOrCreate(interaction.guildId);
+    const showDetailed: boolean = interaction.options.getBoolean("detailed") ?? false;
 
     if (config.plots.length === 0) {
       return interaction.reply({
-        content:
-          "No plot and slot information has been set. Kindly contact the management if this is an issue.",
+        content: "No plot and slot information has been set. Kindly contact the management if this is an issue.",
         ephemeral: true,
       });
     }
 
     if (plotNum == null && slotNum != null) {
       return interaction.reply({
-        content:
-          "Sorry you must include a plot number if you are gonna get the details of a slot.",
+        content: "Sorry you must include a plot number if you are gonna get the details of a slot.",
         ephemeral: true,
       });
     }
@@ -310,50 +237,30 @@ export class GardeningManagerService {
     if (plotNum != null) {
       if (plotNum >= config.plots.length)
         return interaction.reply({
-          content: `Sorry but the plot option must be a number from 0 to ${
-            config.plots.length - 1
-          }`,
+          content: `Sorry but the plot option must be a number from 0 to ${config.plots.length - 1}`,
           ephemeral: true,
         });
 
       const plot = config.plots[plotNum];
 
-      text += GardeningManagerService.printPlotInfo(
-        plot,
-        plotNum,
-        showDetailed
-      );
+      text += GardeningManagerService.printPlotInfo(plot, plotNum, showDetailed);
 
       if (slotNum != null && !showDetailed) {
         if (slotNum >= plot.slots.length)
           return interaction.reply({
-            content: `Sorry but the slot option must be a number from 0 to ${
-              plot.slots.length - 1
-            }`,
+            content: `Sorry but the slot option must be a number from 0 to ${plot.slots.length - 1}`,
             ephemeral: true,
           });
 
-        text += GardeningManagerService.printSlotInfo(
-          plot.slots[slotNum],
-          slotNum,
-          1
-        );
+        text += GardeningManagerService.printSlotInfo(plot.slots[slotNum], slotNum, 1);
       }
     } else {
       for (let plotNum = 0; plotNum < config.plots.length; plotNum++) {
         const plot = config.plots[plotNum];
-        text += GardeningManagerService.printPlotInfo(
-          plot,
-          plotNum,
-          !showDetailed
-        );
+        text += GardeningManagerService.printPlotInfo(plot, plotNum, !showDetailed);
         if (showDetailed) {
           for (let slotNum = 0; slotNum < plot.slots.length; slotNum++) {
-            text += GardeningManagerService.printSlotInfo(
-              plot.slots[slotNum],
-              slotNum,
-              1
-            );
+            text += GardeningManagerService.printSlotInfo(plot.slots[slotNum], slotNum, 1);
           }
         }
       }
@@ -365,8 +272,7 @@ export class GardeningManagerService {
 
   public async tick(client: Client) {
     const now: number = DateTime.now().toUnixInteger();
-    const configs: GardeningModuleConfig[] =
-      await this.gardeningConfigRepository.getAll();
+    const configs: GardeningModuleConfig[] = await this.gardeningConfigRepository.getAll();
     const altered: GardeningModuleConfig[] = [];
 
     for (const config of configs) {
@@ -382,14 +288,7 @@ export class GardeningManagerService {
           const next = nextReserved.pop();
 
           plot.slots[index] = next
-            ? new Slot(
-                next.player,
-                next.plant,
-                next.duration,
-                next.reason,
-                now,
-                nextReserved
-              )
+            ? new Slot(next.player, next.plant, next.duration, next.reason, now, nextReserved)
             : null;
           altered.push(config);
         }
@@ -397,33 +296,17 @@ export class GardeningManagerService {
     }
 
     for (const config of altered) {
-      this.gardeningConfigRepository
-        .save(config)
-        .catch((err) => this.logger.error(err));
-      await this.postChannelMessage(
-        client,
-        config,
-        {} as unknown as MessagePostArgs
-      );
+      this.gardeningConfigRepository.save(config).catch((err) => this.logger.error(err));
+      await this.postChannelMessage(client, config, {} as unknown as MessagePostArgs);
     }
   }
 
-  public async postChannelMessage(
-    client: Client,
-    config: GardeningModuleConfig,
-    messageArgs: MessagePostArgs
-  ) {
+  public async postChannelMessage(client: Client, config: GardeningModuleConfig, messageArgs: MessagePostArgs) {
     if (!client.guilds.cache.has(config.guildId)) return;
     const guild = await client.guilds.fetch(config.guildId);
 
-    if (
-      config.messagePostingChannelId &&
-      !guild.channels.cache.has(config.messagePostingChannelId)
-    )
-      return;
-    const channel = (await guild.channels.fetch(
-      config.messagePostingChannelId
-    )) as TextChannel;
+    if (config.messagePostingChannelId && !guild.channels.cache.has(config.messagePostingChannelId)) return;
+    const channel = (await guild.channels.fetch(config.messagePostingChannelId)) as TextChannel;
 
     const embed: EmbedBuilder = new EmbedBuilder({
       title: messageArgs.title,
@@ -440,9 +323,7 @@ export class GardeningManagerService {
     await channel.send({ embeds: [embed] });
   }
 
-  private async findOneOrCreate(
-    id: string | null
-  ): Promise<GardeningModuleConfig> {
+  private async findOneOrCreate(id: string | null): Promise<GardeningModuleConfig> {
     if (!id) {
       throw new Error("Guild ID cannot be null.");
     }

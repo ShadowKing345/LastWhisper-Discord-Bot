@@ -42,22 +42,13 @@ export class RoleManagerService {
     }
   }
 
-  private static async processMessageReactions(
-    message: Message,
-    config: RoleManagerConfig
-  ): Promise<void> {
+  private static async processMessageReactions(message: Message, config: RoleManagerConfig): Promise<void> {
     for (const reaction of message.reactions.cache.values()) {
       await reaction.users.fetch();
       for (const user of reaction.users.cache.values()) {
         try {
-          const member: GuildMember = await message.guild?.members.fetch(
-            user.id
-          );
-          if (member)
-            await RoleManagerService.alterMembersRoles(
-              member,
-              config.acceptedRoleId
-            );
+          const member: GuildMember = await message.guild?.members.fetch(user.id);
+          if (member) await RoleManagerService.alterMembersRoles(member, config.acceptedRoleId);
         } catch (error) {
           console.error(error);
         }
@@ -67,16 +58,12 @@ export class RoleManagerService {
     await message.reactions.removeAll();
   }
 
-  private registerReactionCollector(
-    message: Message,
-    config: RoleManagerConfig
-  ) {
+  private registerReactionCollector(message: Message, config: RoleManagerConfig) {
     if (this.collectors[message.id] != null) {
       return;
     }
 
-    const filter = (reaction: MessageReaction) =>
-      config.reactionMessageIds.includes(reaction.message.id);
+    const filter = (reaction: MessageReaction) => config.reactionMessageIds.includes(reaction.message.id);
 
     this.collectors[message.id] ??= message
       .createReactionCollector({ filter })
@@ -87,9 +74,7 @@ export class RoleManagerService {
 
   public async onReady(client: Client) {
     await Timer.waitTillReady(client);
-    const configs: RoleManagerConfig[] = (
-      await this.roleManagerConfigRepository.getAll()
-    ).filter(
+    const configs: RoleManagerConfig[] = (await this.roleManagerConfigRepository.getAll()).filter(
       (config) =>
         client.guilds.cache.has(config.guildId) &&
         config.reactionListeningChannel &&
@@ -123,9 +108,7 @@ export class RoleManagerService {
 
     const member: GuildMember | null = await guild.members.fetch(user.id);
     if (!member) {
-      console.error(
-        "How the actual... did a user that is not in the guild react to a message?"
-      );
+      console.error("How the actual... did a user that is not in the guild react to a message?");
       return;
     }
 
@@ -150,17 +133,14 @@ export class RoleManagerService {
       });
     }
 
-    const role: Role = await interaction.guild?.roles.fetch(
-      config.acceptedRoleId
-    );
+    const role: Role = await interaction.guild?.roles.fetch(config.acceptedRoleId);
     if (!role) {
       return interaction.reply({
         content: `Cannot find role with id ${config.acceptedRoleId}.`,
       });
     }
 
-    for (const member of (await interaction.guild?.members.list())?.values() ??
-      []) {
+    for (const member of (await interaction.guild?.members.list())?.values() ?? []) {
       if (member.roles.cache.has(role.id)) {
         await member.roles.remove(role, "Permission revoked by person.");
       }
@@ -169,12 +149,8 @@ export class RoleManagerService {
     return interaction.reply({ content: "Done", ephemeral: true });
   }
 
-  public async registerMessage(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse> {
-    const config: RoleManagerConfig = await this.findOneOrCreate(
-      interaction.guildId
-    );
+  public async registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
     const message_id: string = interaction.options.getString("message_id");
 
     const channel: TextChannel = (await interaction.guild?.channels.fetch(
@@ -184,8 +160,7 @@ export class RoleManagerService {
     if (!channel) {
       this.logger.debug(`Expected failure: Could not find channel.`);
       return interaction.reply({
-        content:
-          "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
+        content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
         ephemeral: true,
       });
     }
@@ -195,8 +170,7 @@ export class RoleManagerService {
     if (!message) {
       this.logger.debug(`Expected failure: Could not find message.`);
       return interaction.reply({
-        content:
-          "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
+        content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
         ephemeral: true,
       });
     }
@@ -213,23 +187,16 @@ export class RoleManagerService {
     });
   }
 
-  public async unregisterMessage(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse> {
-    const config: RoleManagerConfig = await this.findOneOrCreate(
-      interaction.guildId
-    );
+  public async unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
+    const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
     const message_id: string = interaction.options.getString("message_id");
 
-    const channel: Channel = await interaction.guild?.channels.fetch(
-      config.reactionListeningChannel
-    );
+    const channel: Channel = await interaction.guild?.channels.fetch(config.reactionListeningChannel);
 
     if (!channel) {
       this.logger.debug(`Expected failure: Could not find channel.`);
       return interaction.reply({
-        content:
-          "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
+        content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
         ephemeral: true,
       });
     }
@@ -246,8 +213,7 @@ export class RoleManagerService {
     if (!message) {
       this.logger.debug(`Expected failure: Could not find message.`);
       return interaction.reply({
-        content:
-          "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
+        content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
         ephemeral: true,
       });
     }

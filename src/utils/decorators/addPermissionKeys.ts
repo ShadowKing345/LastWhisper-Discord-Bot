@@ -7,7 +7,7 @@ import { PermissionManagerService } from "../../services/permissionManager.servi
  * The keys of the object will be ignored.
  */
 export function addPermissionKeys() {
-  return function(target: object, propertyKey: string) {
+  return function (target: object, propertyKey: string) {
     for (const value of Object.values(flattenObject(target[propertyKey] as object))) {
       PermissionManagerService.addPermissionKey(value as string);
     }

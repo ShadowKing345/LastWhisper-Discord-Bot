@@ -1,12 +1,17 @@
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
+import {
+  SlashCommandSubcommandBuilder,
+  SlashCommandSubcommandGroupBuilder,
+  ChatInputCommandInteraction,
+  ApplicationCommandOptionType as OptionType,
+  APIApplicationCommandOptionChoice,
+  ApplicationCommandOptionBase,
+  SlashCommandStringOption,
+} from "discord.js";
 import { deepMerge } from "../index.js";
 
-type SlashCommand =
-  | SlashCommandBuilder
-  | SlashCommandSubcommandGroupBuilder
-  | SlashCommandSubcommandBuilder;
+type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 
 /**
  * Class representation of a collection of permission keys.
@@ -42,10 +47,7 @@ export class Command extends ToJsonBase<Command> {
       }
 
       for (const key in obj.subcommands) {
-        this.subcommands[key] = deepMerge(
-          this.subcommands[key] ?? new Command(),
-          obj.subcommands[key]
-        );
+        this.subcommands[key] = deepMerge(this.subcommands[key] ?? new Command(), obj.subcommands[key]);
       }
     }
 
@@ -55,17 +57,13 @@ export class Command extends ToJsonBase<Command> {
 
     if (obj.options) {
       this.options = obj.options;
-      this.options = (this.options ?? []).map((option) =>
-        deepMerge(new CommandOption(), option)
-      );
+      this.options = (this.options ?? []).map((option) => deepMerge(new CommandOption(), option));
     }
 
     return this;
   }
 
-  public build(
-    builder: SlashCommand = new SlashCommandBuilder()
-  ): SlashCommand {
+  public build(builder: SlashCommand = new SlashCommandBuilder()): SlashCommand {
     builder.setName(this.name).setDescription(this.description);
 
     if (this.subcommands) {
@@ -74,31 +72,19 @@ export class Command extends ToJsonBase<Command> {
           continue;
         }
 
-        if (
-          Object.values(subcommand.subcommands ?? []).length > 0 &&
-          builder instanceof SlashCommandBuilder
-        ) {
+        if (Object.values(subcommand.subcommands ?? []).length > 0 && builder instanceof SlashCommandBuilder) {
           builder.addSubcommandGroup(
-            (subcommandGroupBuilder) =>
-              subcommand.build(
-                subcommandGroupBuilder
-              ) as SlashCommandSubcommandGroupBuilder
+            (subcommandGroupBuilder) => subcommand.build(subcommandGroupBuilder) as SlashCommandSubcommandGroupBuilder
           );
         } else if (!(builder instanceof SlashCommandSubcommandBuilder)) {
           builder.addSubcommand(
-            (subcommandBuilder) =>
-              subcommand.build(
-                subcommandBuilder
-              ) as SlashCommandSubcommandBuilder
+            (subcommandBuilder) => subcommand.build(subcommandBuilder) as SlashCommandSubcommandBuilder
           );
         }
       }
     }
 
-    if (
-      this.options &&
-      !(builder instanceof SlashCommandSubcommandGroupBuilder)
-    ) {
+    if (this.options && !(builder instanceof SlashCommandSubcommandGroupBuilder)) {
       for (const option of this.options) {
         option.build(builder);
       }
@@ -124,18 +110,11 @@ export class CommandOption extends ToJsonBase<CommandOption> {
     }
   }
 
-  private buildOptionCallback<S extends ApplicationCommandOptionBase>(
-    optionBuilder: S
-  ): S {
-    optionBuilder
-      .setName(this.name)
-      .setDescription(this.description)
-      .setRequired(this.required);
+  private buildOptionCallback<S extends ApplicationCommandOptionBase>(optionBuilder: S): S {
+    optionBuilder.setName(this.name).setDescription(this.description).setRequired(this.required);
 
     if (this.choices && optionBuilder instanceof SlashCommandStringOption) {
-      optionBuilder.addChoices(
-        ...(this.choices as APIApplicationCommandOptionChoice<string>[])
-      );
+      optionBuilder.addChoices(...(this.choices as APIApplicationCommandOptionChoice<string>[]));
     }
 
     return optionBuilder;
@@ -172,9 +151,7 @@ export class CommandOption extends ToJsonBase<CommandOption> {
         break;
       case OptionType.Subcommand:
       case OptionType.SubcommandGroup:
-        throw new Error(
-          "You cannot set a option to be of type Subcommand or SubcommandGroup."
-        );
+        throw new Error("You cannot set a option to be of type Subcommand or SubcommandGroup.");
       default:
         break;
     }

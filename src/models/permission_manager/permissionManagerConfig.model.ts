@@ -6,10 +6,7 @@ import { deepMerge } from "../../utils/index.js";
 /**
  * Permission manager configuration object.
  */
-export class PermissionManagerConfig
-  extends ToJsonBase<PermissionManagerConfig>
-  implements IEntity<string>
-{
+export class PermissionManagerConfig extends ToJsonBase<PermissionManagerConfig> implements IEntity<string> {
   public _id: string;
   public guildId: string = null;
   public permissions: { [key: string]: Permission } = {};

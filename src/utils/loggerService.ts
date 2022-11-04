@@ -37,9 +37,7 @@ export class LoggerService {
  * Should be used in conduction with the decorator function.
  * @see createLogger
  */
-class LoggerFactoryTransformer
-  implements Transform<LoggerService, pino.Logger>
-{
+class LoggerFactoryTransformer implements Transform<LoggerService, pino.Logger> {
   public transform(incoming: LoggerService, args: string): pino.Logger {
     return incoming.buildLogger(args);
   }

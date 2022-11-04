@@ -7,10 +7,7 @@ import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 /**
  * Event manager configuration object.
  */
-export class EventManagerConfig
-  extends ToJsonBase<EventManagerConfig>
-  implements IEntity<string>
-{
+export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implements IEntity<string> {
   public _id: string;
   public guildId: string = null;
   public listenerChannelId: string | null = null;

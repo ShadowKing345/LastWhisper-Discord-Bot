@@ -1,10 +1,4 @@
-import {
-  Client,
-  Message,
-  ChatInputCommandInteraction,
-  ApplicationCommandOptionType,
-  PartialMessage,
-} from "discord.js";
+import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -12,10 +6,7 @@ import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import {
-  EventListeners,
-  EventListener,
-} from "../utils/objects/eventListener.js";
+import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
 import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 
@@ -42,15 +33,9 @@ export class EventManagerModule extends ModuleBase {
     }),
   ];
   public eventListeners: EventListeners = [
-    new EventListener("messageCreate", (_, [message]) =>
-      this.createEvent(message)
-    ),
-    new EventListener("messageUpdate", (_, [old, message]) =>
-      this.updateEvent(old, message)
-    ),
-    new EventListener("messageDelete", (_, [message]) =>
-      this.deleteEvent(message)
-    ),
+    new EventListener("messageCreate", (_, [message]) => this.createEvent(message)),
+    new EventListener("messageUpdate", (_, [old, message]) => this.updateEvent(old, message)),
+    new EventListener("messageDelete", (_, [message]) => this.deleteEvent(message)),
     new EventListener("ready", (client) => this.onReady(client)),
   ];
   public timers: Timers = [
@@ -73,10 +58,7 @@ export class EventManagerModule extends ModuleBase {
     return this.eventManagerService.createEvent(message);
   }
 
-  private updateEvent(
-    oldMessage: Message | PartialMessage,
-    newMessage: Message | PartialMessage
-  ): Promise<void> {
+  private updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
     return this.eventManagerService.updateEvent(oldMessage, newMessage);
   }
 

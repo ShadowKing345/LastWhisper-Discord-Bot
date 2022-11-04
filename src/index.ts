@@ -21,10 +21,7 @@ generateConfigObject();
 
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
 
-program
-  .command("deploy", { isDefault: true })
-  .description("Runs to bot.")
-  .action(main);
+program.command("deploy", { isDefault: true }).description("Runs to bot.").action(main);
 
 program
   .command("register-commands")

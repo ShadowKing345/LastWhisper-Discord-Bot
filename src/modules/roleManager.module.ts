@@ -8,17 +8,12 @@ import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import {
-  EventListeners,
-  EventListener,
-} from "../utils/objects/eventListener.js";
+import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
 @registerModule()
 export class RoleManagerModule extends ModuleBase {
   public moduleName = "RoleManager";
-  public eventListeners: EventListeners = [
-    new EventListener("ready", async (client) => this.onReady(client)),
-  ];
+  public eventListeners: EventListeners = [new EventListener("ready", async (client) => this.onReady(client))];
   public commands: Commands = [
     new Command({
       name: "role_manager",
@@ -51,10 +46,7 @@ export class RoleManagerModule extends ModuleBase {
           ],
         }),
       },
-      execute: (interaction) =>
-        this.commandResolver(
-          interaction
-        ) as Promise<InteractionResponse | void>,
+      execute: (interaction) => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }),
   ];
 
@@ -76,21 +68,15 @@ export class RoleManagerModule extends ModuleBase {
     return this.roleManagerService.onReady(client);
   }
 
-  private revokeRole(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse> {
+  private revokeRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     return this.roleManagerService.revokeRole(interaction);
   }
 
-  private registerMessage(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse> {
+  private registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     return this.roleManagerService.registerMessage(interaction);
   }
 
-  private unregisterMessage(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse> {
+  private unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     return this.roleManagerService.unregisterMessage(interaction);
   }
 }

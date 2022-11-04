@@ -16,29 +16,20 @@ export abstract class ModuleBase {
   public timers: Timers = [];
 
   public buttons: {
-    [key: string]: (
-      interaction: ChatInputCommandInteraction
-    ) => Promise<InteractionResponse | void>;
+    [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
   } = null;
   public selectMenus: {
-    [key: string]: (
-      interaction: ChatInputCommandInteraction
-    ) => Promise<InteractionResponse | void>;
+    [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
   } = null;
   public modalSubmits: {
-    [key: string]: (
-      interaction: ChatInputCommandInteraction
-    ) => Promise<InteractionResponse | void>;
+    [key: string]: (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
   } = null;
 
   protected commandResolverKeys: {
     [key: string]: (...args) => Promise<InteractionResponse | void>;
   } = {};
 
-  protected constructor(
-    public permissionManagerService: PermissionManagerService,
-    protected logger: pino.Logger
-  ) {}
+  protected constructor(public permissionManagerService: PermissionManagerService, protected logger: pino.Logger) {}
 
   /**
    * Method to resolve a slash command call from the discord client.
@@ -48,10 +39,7 @@ export abstract class ModuleBase {
    * @throws Error
    * @protected
    */
-  protected commandResolver(
-    interaction: ChatInputCommandInteraction,
-    call = true
-  ) {
+  protected commandResolver(interaction: ChatInputCommandInteraction, call = true) {
     this.logger.debug(`Command invoked, dealing with subcommand options.`);
 
     const command = [
@@ -64,9 +52,7 @@ export abstract class ModuleBase {
     const f = this.commandResolverKeys[command];
 
     if (!f) {
-      const error = new CommandResolverError(
-        "No command found with this name."
-      );
+      const error = new CommandResolverError("No command found with this name.");
       this.logger.error(error.stack);
       throw error;
     }

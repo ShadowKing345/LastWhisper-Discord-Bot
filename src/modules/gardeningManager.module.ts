@@ -47,8 +47,7 @@ export class GardeningManagerModule extends ModuleBase {
             }),
             new CommandOption({
               name: "duration",
-              description:
-                "For how long do you wish to reserve this spot. In hours.",
+              description: "For how long do you wish to reserve this spot. In hours.",
               type: ApplicationCommandOptionType.String,
               required: true,
             }),
@@ -58,10 +57,7 @@ export class GardeningManagerModule extends ModuleBase {
               type: ApplicationCommandOptionType.String,
               required: true,
               choices: Object.keys(Reason).map((value) => ({
-                name: value.replace(
-                  /(\w)(\w*)/g,
-                  (_, g1, g2) => (g1 as string) + (g2 as string).toLowerCase()
-                ),
+                name: value.replace(/(\w)(\w*)/g, (_, g1, g2) => (g1 as string) + (g2 as string).toLowerCase()),
                 value: value,
               })),
             }),
@@ -69,8 +65,7 @@ export class GardeningManagerModule extends ModuleBase {
         }),
         Cancel: new Command({
           name: "cancel",
-          description:
-            "Cancel any reservations you have made to a slot in a plot.",
+          description: "Cancel any reservations you have made to a slot in a plot.",
           options: [
             new CommandOption({
               name: "plot",
@@ -149,15 +144,7 @@ export class GardeningManagerModule extends ModuleBase {
     plotNum: number,
     slotNum: number
   ): Promise<void> {
-    return this.gardeningManagerService.register(
-      interaction,
-      player,
-      plant,
-      duration,
-      reason,
-      plotNum,
-      slotNum
-    );
+    return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
   }
 
   private cancel(
@@ -167,20 +154,10 @@ export class GardeningManagerModule extends ModuleBase {
     plotNum: number,
     slotNum: number
   ): Promise<InteractionResponse | void> {
-    return this.gardeningManagerService.cancel(
-      interaction,
-      player,
-      plant,
-      plotNum,
-      slotNum
-    );
+    return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
   }
 
-  private list(
-    interaction: ChatInputCommandInteraction,
-    plotNum: number,
-    slotNum: number
-  ) {
+  private list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number) {
     return this.gardeningManagerService.list(interaction, plotNum, slotNum);
   }
 
@@ -188,19 +165,15 @@ export class GardeningManagerModule extends ModuleBase {
     return this.gardeningManagerService.tick(client);
   }
 
-  protected async commandResolver(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse | void> {
+  protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const f = await super.commandResolver(interaction, false);
 
     const plotNum: number = interaction.options.getInteger("plot");
     const slotNum: number = interaction.options.getInteger("slot");
     const player = `${interaction.user.username}#${interaction.user.discriminator}`;
     const plant: string = interaction.options.getString("plant");
-    const duration: number =
-      (interaction.options.getInteger("duration") ?? 0) * 360;
-    const reason: Reason = (interaction.options.getInteger("reason") ??
-      Reason.NONE) as Reason;
+    const duration: number = (interaction.options.getInteger("duration") ?? 0) * 360;
+    const reason: Reason = (interaction.options.getInteger("reason") ?? Reason.NONE) as Reason;
 
     if (f instanceof Function) {
       return f(interaction, plotNum, slotNum, player, plant, duration, reason);

@@ -30,7 +30,7 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
    * Returns a collection of filtered weeks based if they are enabled.
    */
   public get getFilteredWeeks(): Week[] {
-    return this.weeks.filter(week => week.isEnabled);
+    return this.weeks.filter((week) => week.isEnabled);
   }
 
   /**
@@ -38,7 +38,7 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
    * @param buffId The ID of the buff to be returned.
    */
   public getBuff(buffId: string): Buff | null {
-    return this.buffs.find(buff => buff.id === buffId);
+    return this.buffs.find((buff) => buff.id === buffId);
   }
 
   public merge(obj: BuffManagerConfig): BuffManagerConfig {
@@ -51,24 +51,17 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
     }
 
     if (obj.messageSettings) {
-      this.messageSettings = deepMerge(
-        this.messageSettings ?? new MessageSettings(),
-        this.messageSettings
-      );
+      this.messageSettings = deepMerge(this.messageSettings ?? new MessageSettings(), this.messageSettings);
     }
 
     if (obj.buffs) {
       this.buffs = obj.buffs;
-      this.buffs = (this.buffs ?? []).map((buff) =>
-        deepMerge(new Buff(), buff)
-      );
+      this.buffs = (this.buffs ?? []).map((buff) => deepMerge(new Buff(), buff));
     }
 
     if (obj.weeks) {
       this.weeks = obj.weeks;
-      this.weeks = (this.weeks ?? []).map((week) =>
-        deepMerge(new Week(), week)
-      );
+      this.weeks = (this.weeks ?? []).map((week) => deepMerge(new Week(), week));
     }
 
     return this;

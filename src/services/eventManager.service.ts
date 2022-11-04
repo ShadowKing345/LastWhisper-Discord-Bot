@@ -1,11 +1,4 @@
-import {
-  Client,
-  Message,
-  TextChannel,
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-  PartialMessage,
-} from "discord.js";
+import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder, PartialMessage } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -26,11 +19,7 @@ export class EventManagerService {
     });
   }
 
-  private parseMessage(
-    messageId: string,
-    content: string,
-    config: EventManagerConfig
-  ): EventObj {
+  private parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
     const event = new EventObj(messageId);
     const hammerRegex = /<.*:(\d+):.*>/;
     const [l, r] = config.delimiterCharacters as [string, string];
@@ -41,10 +30,7 @@ export class EventManagerService {
       const key = match[1]?.trim();
       const value = match[2]?.trim();
 
-      let date: DateTime,
-        matchedResult: RegExpMatchArray,
-        unixTimeStr: string,
-        number: number;
+      let date: DateTime, matchedResult: RegExpMatchArray, unixTimeStr: string, number: number;
       switch (key) {
         case config.tags.announcement:
           event.name = value;
@@ -90,8 +76,7 @@ export class EventManagerService {
   }
 
   private async getConfig(guildId: string | null) {
-    if (guildId == null || !guildId.trim())
-      throw new ReferenceError("guildId cannot be null nor empty.");
+    if (guildId == null || !guildId.trim()) throw new ReferenceError("guildId cannot be null nor empty.");
 
     return this.findOneOrCreate(guildId);
   }
@@ -120,16 +105,9 @@ export class EventManagerService {
       return;
     }
 
-    const event: EventObj = this.parseMessage(
-      message.id,
-      message.content,
-      config
-    );
+    const event: EventObj = this.parseMessage(message.id, message.content, config);
     try {
-      if (
-        EventObj.isValid(event) &&
-        event.dateTime > DateTime.now().toUnixInteger()
-      ) {
+      if (EventObj.isValid(event) && event.dateTime > DateTime.now().toUnixInteger()) {
         config.events.push(event);
         await message.react("✅");
         await this.eventManagerRepository.save(config);
@@ -141,31 +119,20 @@ export class EventManagerService {
     }
   }
 
-  public async updateEvent(
-    oldMessage: Message | PartialMessage,
-    newMessage: Message | PartialMessage
-  ) {
+  public async updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage) {
     if (oldMessage.partial) await oldMessage.fetch();
     if (newMessage.partial) await newMessage.fetch();
 
     const config = await this.getConfig(oldMessage.guildId);
 
     if (config.listenerChannelId !== oldMessage.channelId) return;
-    const oldEvent = config.events.find(
-      (event) => event.messageId === oldMessage.id
-    );
+    const oldEvent = config.events.find((event) => event.messageId === oldMessage.id);
     if (!oldEvent) return;
 
-    const newEvent = this.parseMessage(
-      oldMessage.id,
-      newMessage.content,
-      config
-    );
+    const newEvent = this.parseMessage(oldMessage.id, newMessage.content, config);
 
     try {
-      const reaction = newMessage.reactions.cache.find(
-        (reaction) => reaction.me
-      );
+      const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
       if (reaction) await reaction.users.remove(oldMessage.client.user?.id);
 
       if (EventObj.isValid(newEvent)) {
@@ -198,36 +165,25 @@ export class EventManagerService {
 
     const now: DateTime = DateTime.now();
     const configs = (await this.eventManagerRepository.getAll()).filter(
-      (config) =>
-        config.postingChannelId &&
-        config.events.length > 0 &&
-        client.guilds.cache.has(config.guildId)
+      (config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)
     );
     const alteredConfigs: EventManagerConfig[] = [];
 
     for (const config of configs) {
       try {
         if (client.channels.cache.has(config.postingChannelId)) {
-          const postingChannel: TextChannel | null =
-            (await client.channels.fetch(
-              config.postingChannelId
-            )) as TextChannel | null;
+          const postingChannel: TextChannel | null = (await client.channels.fetch(
+            config.postingChannelId
+          )) as TextChannel | null;
           if (postingChannel && postingChannel.guildId === config.guildId) {
-            for (const trigger of config.reminders.filter(
-              (trigger) => trigger.timeDelta
-            )) {
-              const triggerTime = EventManagerService.parseTriggerDuration(
-                trigger.timeDelta
-              );
+            for (const trigger of config.reminders.filter((trigger) => trigger.timeDelta)) {
+              const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
               for (const event of config.events) {
                 const eventTime = DateTime.fromSeconds(event.dateTime);
                 if (eventTime.diff(now, ["days"]).days > 1) continue;
 
                 const difference = eventTime.minus(triggerTime);
-                if (
-                  difference.hour === now.hour &&
-                  difference.minute === now.minute
-                ) {
+                if (difference.hour === now.hour && difference.minute === now.minute) {
                   const messageValues: { [key: string]: string } = {
                     "%everyone%": "@everyone",
                     "%eventName%": event.name,
@@ -235,12 +191,7 @@ export class EventManagerService {
                     "%minuteDiff%": triggerTime.get("minutes").toString(),
                   };
 
-                  await postingChannel.send(
-                    trigger.message.replace(
-                      /%\w+%/g,
-                      (v) => messageValues[v] || v
-                    )
-                  );
+                  await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
                 }
               }
             }
@@ -315,8 +266,7 @@ export class EventManagerService {
   }
 
   public async onReady(client: Client) {
-    const configs: EventManagerConfig[] =
-      await this.eventManagerRepository.findAll({});
+    const configs: EventManagerConfig[] = await this.eventManagerRepository.findAll({});
 
     for (const config of configs) {
       if (!config.listenerChannelId || !config.events.length) continue;

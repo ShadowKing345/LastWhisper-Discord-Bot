@@ -17,12 +17,17 @@ import { Service } from "../utils/objects/service.js";
  */
 @singleton()
 export class BuffManagerService extends Service<BuffManagerConfig> {
-  private readonly daysOfWeek: string[] = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ];
+  private readonly daysOfWeek: string[] = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
-  constructor(
-    repository: BuffManagerRepository,
-    @createLogger(BuffManagerService.name) private logger: pino.Logger
-  ) {
+  constructor(repository: BuffManagerRepository, @createLogger(BuffManagerService.name) private logger: pino.Logger) {
     super(repository);
   }
 
@@ -46,11 +51,11 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
       this.logger.debug(`Buff did not exit.`);
       return interaction.reply({
         content: `Sorry, The buff for the date ${date.toISO()} does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
-        ephemeral: true
+        ephemeral: true,
       });
     }
 
-    return interaction.reply({ embeds: [ this.createBuffEmbed("The Buff Shall Be:", buff, date) ] });
+    return interaction.reply({ embeds: [this.createBuffEmbed("The Buff Shall Be:", buff, date)] });
   }
 
   /**
@@ -63,7 +68,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     if (!config) return;
 
     this.logger.debug(`Command invoked for weeks.\nPosting week message for ${date.toISO()}.`);
-    return interaction.reply({ embeds: [ this.createWeekEmbed("The Buffs For The Week Shall Be:", config, date) ] });
+    return interaction.reply({ embeds: [this.createWeekEmbed("The Buffs For The Week Shall Be:", config, date)] });
   }
 
   /**
@@ -74,8 +79,11 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     await Timer.waitTillReady(client);
     this.logger.debug("Posting daily buff message.");
 
-    const configs: BuffManagerConfig[] = await this.repository.getAll()
-      .then(configs => configs.filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
+    const configs: BuffManagerConfig[] = await this.repository
+      .getAll()
+      .then((configs) =>
+        configs.filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0)
+      );
     const now: DateTime = DateTime.now();
 
     for (const config of configs) {
@@ -130,7 +138,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
       title: title,
       description: buff.text,
       thumbnail: { url: buff.imageUrl },
-      footer: { text: date.toFormat("DDDD") }
+      footer: { text: date.toFormat("DDDD") },
     }).setColor("Random");
   }
 
@@ -141,7 +149,12 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
    * @param date The date context for the week. Used to get the week and fill in footer data.
    * @param week An optional week object to override the default find week behavior.
    */
-  public createWeekEmbed(title: string, config: BuffManagerConfig, date: DateTime, week: Week = config.getWeekOfYear(date)): EmbedBuilder {
+  public createWeekEmbed(
+    title: string,
+    config: BuffManagerConfig,
+    date: DateTime,
+    week: Week = config.getWeekOfYear(date)
+  ): EmbedBuilder {
     this.logger.debug(`Creating Week Embed.`);
 
     if (!week) {
@@ -157,7 +170,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
 
         return { name: dow, value: day?.text ?? "No buff found.", inline: true };
       }),
-      footer: { text: `Week ${date.get("weekNumber")}.` }
+      footer: { text: `Week ${date.get("weekNumber")}.` },
     }).setColor("Random");
   }
 
@@ -175,7 +188,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
       this.logger.debug(`No buffs were set in config.`);
       await interaction.reply({
         content: "Sorry, there are not buffs set.",
-        ephemeral: true
+        ephemeral: true,
       });
       return null;
     }
@@ -185,7 +198,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
       this.logger.debug(`No weeks were set in config.`);
       await interaction.reply({
         content: "Sorry, there are not enabled weeks set.",
-        ephemeral: true
+        ephemeral: true,
       });
       return null;
     }

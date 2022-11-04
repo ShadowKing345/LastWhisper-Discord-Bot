@@ -37,10 +37,5 @@
       "description": "Should the modules list be treated as a blacklist instead?"
     }
   },
-  "required": [
-    "enableCommands",
-    "enableEventListeners",
-    "enableTimers",
-    "enableInteractions"
-  ]
+  "required": ["enableCommands", "enableEventListeners", "enableTimers", "enableInteractions"]
 }

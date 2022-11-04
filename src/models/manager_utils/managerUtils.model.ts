@@ -4,10 +4,7 @@ import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 /**
  * Manager utils configuration object.
  */
-export class ManagerUtilsConfig
-  extends ToJsonBase<ManagerUtilsConfig>
-  implements IEntity<string>
-{
+export class ManagerUtilsConfig extends ToJsonBase<ManagerUtilsConfig> implements IEntity<string> {
   public _id: string;
   public guildId: string = null;
   public loggingChannel: string = null;

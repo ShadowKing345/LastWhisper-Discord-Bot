@@ -23,10 +23,7 @@ export class ManagerUtilsService {
   private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
     const config: ManagerUtilsConfig = await this.findOneOrCreate(guild.id);
 
-    if (
-      config.loggingChannel &&
-      guild.channels.cache.has(config.loggingChannel)
-    ) {
+    if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
       return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
     }
 
@@ -38,9 +35,7 @@ export class ManagerUtilsService {
       await member.fetch();
     }
 
-    const loggingChannel: TextChannel | null = await this.getLoggingChannel(
-      member.guild
-    );
+    const loggingChannel: TextChannel | null = await this.getLoggingChannel(member.guild);
     if (!loggingChannel) return;
 
     const kickedData = (
@@ -55,9 +50,7 @@ export class ManagerUtilsService {
       .addFields(
         {
           name: "Joined On:",
-          value: DateTime.fromJSDate(member.joinedAt).toFormat(
-            "HH:mm:ss DD/MM/YYYY"
-          ),
+          value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY"),
         },
         { name: "Nickname was:", value: member.nickname ?? "None" },
         {
@@ -72,16 +65,11 @@ export class ManagerUtilsService {
         .setTitle("User Kicked!")
         .setDescription(
           `User **${member.user.username}** was kicked by **${
-            (await member.guild.members.fetch(kickedData.executor.id))
-              .displayName
+            (await member.guild.members.fetch(kickedData.executor.id)).displayName
           }** from the server.`
         );
     } else {
-      embed
-        .setTitle("User Left!")
-        .setDescription(
-          `User **${member.user.username}** has left this discord server`
-        );
+      embed.setTitle("User Left!").setDescription(`User **${member.user.username}** has left this discord server`);
     }
 
     await loggingChannel.send({ embeds: [embed] });
@@ -102,9 +90,7 @@ export class ManagerUtilsService {
       const executor: User | null = banLogs.executor;
       const target: User | null = banLogs.target;
 
-      const embed = new EmbedBuilder()
-        .setTitle("Member Banned!")
-        .setColor("Random");
+      const embed = new EmbedBuilder().setTitle("Member Banned!").setColor("Random");
 
       if (target) {
         embed
@@ -117,22 +103,16 @@ export class ManagerUtilsService {
           )
           .setThumbnail(target.displayAvatarURL());
       } else {
-        embed.setDescription(
-          "Somehow a user was banned but we cannot find out who it was!"
-        );
+        embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
       }
 
       await loggingChannel.send({ embeds: [embed] });
     } else {
-      await loggingChannel.send(
-        "A ban somehow occurred but no logs about it could be found!"
-      );
+      await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
     }
   }
 
-  private async findOneOrCreate(
-    id: string | null
-  ): Promise<ManagerUtilsConfig> {
+  private async findOneOrCreate(id: string | null): Promise<ManagerUtilsConfig> {
     if (!id) {
       throw new Error("Guild ID cannot be null.");
     }
@@ -148,9 +128,7 @@ export class ManagerUtilsService {
     return await this.managerUtilsConfigRepository.save(result);
   }
 
-  public async clearChannelMessages(
-    interaction: ChatInputCommandInteraction
-  ): Promise<InteractionResponse | void> {
+  public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const config = await this.findOneOrCreate(interaction.guildId);
 
     if (config.clearChannelBlacklist.includes(interaction.channelId)) {
@@ -164,15 +142,11 @@ export class ManagerUtilsService {
     await interaction.deferReply({ ephemeral: true });
 
     const all = interaction.options.getBoolean("all");
-    let amount: number = all
-      ? 1000
-      : interaction.options.getNumber("amount") ?? 10;
+    let amount: number = all ? 1000 : interaction.options.getNumber("amount") ?? 10;
 
     let amountDeleted = 0;
     for (amount; amount > 0; amount -= 100) {
-      const messages = await (
-        interaction.channel as TextChannel
-      ).messages.fetch({ limit: Math.min(amount, 100) });
+      const messages = await (interaction.channel as TextChannel).messages.fetch({ limit: Math.min(amount, 100) });
 
       for (const message of messages.values()) {
         await message.delete();

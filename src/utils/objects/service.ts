@@ -2,8 +2,7 @@ import { RepositoryBase, IEntity } from "./repositoryBase.js";
 import { MergeableObjectBase } from "./mergeableObjectBase.js";
 
 export abstract class Service<T extends MergeableObjectBase<T> & IEntity<unknown>> {
-  protected constructor(protected repository: RepositoryBase<T>) {
-  }
+  protected constructor(protected repository: RepositoryBase<T>) {}
 
   /**
    * Attempts to find or create a new configuration file.
@@ -20,5 +19,4 @@ export abstract class Service<T extends MergeableObjectBase<T> & IEntity<unknown
 
     return await this.repository.save({ guildId: id } as T);
   }
-
 }

@@ -14,8 +14,7 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
   // Database settings.
   public database?: DatabaseConfiguration = new DatabaseConfiguration();
   // Configuration for command registration.
-  public commandRegistration?: CommandRegistrationConfiguration =
-    new CommandRegistrationConfiguration();
+  public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
   // Configuration for logger.
   public logger?: LoggerConfigs = new LoggerConfigs();
   // Configuration for module service.
@@ -27,10 +26,7 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     }
 
     if (obj.database) {
-      this.database = deepMerge(
-        this.database ?? new DatabaseConfiguration(),
-        obj.database
-      );
+      this.database = deepMerge(this.database ?? new DatabaseConfiguration(), obj.database);
     }
 
     if (obj.commandRegistration) {

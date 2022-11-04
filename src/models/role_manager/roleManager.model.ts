@@ -4,10 +4,7 @@ import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 /**
  * Role manager configuration object.
  */
-export class RoleManagerConfig
-  extends ToJsonBase<RoleManagerConfig>
-  implements IEntity<string>
-{
+export class RoleManagerConfig extends ToJsonBase<RoleManagerConfig> implements IEntity<string> {
   public _id: string;
   public guildId: string = null;
   public acceptedRoleId: string = null;

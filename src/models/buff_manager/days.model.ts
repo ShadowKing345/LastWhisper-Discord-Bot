@@ -13,7 +13,7 @@ export class Days {
   private current = 0;
 
   private get array() {
-    return [ this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday, this.sunday ];
+    return [this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday, this.sunday];
   }
 
   [Symbol.iterator]() {
