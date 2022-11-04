@@ -34,19 +34,85 @@ export class EventManagerModule extends ModuleBase {
       subcommands: {
         CreateEvent: new Command({
           name: "create",
-          description: "Creates a new event. Note no message will be posted only the data saved."
+          description: "Creates a new event. Note no message will be posted only the data saved.",
+          options: [
+            new CommandOption({
+              name: "text",
+              description: "The new message you want to use instead. (Will not update the exiting message)",
+              type: ApplicationCommandOptionType.String
+            }),
+            new CommandOption({
+              name: "name",
+              description: "Name of event.",
+              type: ApplicationCommandOptionType.String
+            }),
+            new CommandOption({
+              name: "description",
+              description: "Description of event.",
+              type: ApplicationCommandOptionType.String
+            }),
+            new CommandOption({
+              name: "time",
+              description: "Time of event.",
+              type: ApplicationCommandOptionType.String
+            })
+          ]
         }),
         UpdateEvent: new Command({
           name: "update",
-          description: "Updates event information with new one."
+          description: "Updates event information with new one.",
+          options: [
+            new CommandOption({
+              name: "index",
+              description: "The index for the event, starting at 0.",
+              type: ApplicationCommandOptionType.Integer,
+              required: true
+            }),
+            new CommandOption({
+              name: "text",
+              description: "The new message you want to use instead. (Will not update the exiting message)",
+              type: ApplicationCommandOptionType.String
+            }),
+            new CommandOption({
+              name: "name",
+              description: "Name of event.",
+              type: ApplicationCommandOptionType.String
+            }),
+            new CommandOption({
+              name: "description",
+              description: "Description of event.",
+              type: ApplicationCommandOptionType.String
+            }),
+            new CommandOption({
+              name: "time",
+              description: "Time of event.",
+              type: ApplicationCommandOptionType.String
+            })
+          ]
         }),
         CancelEvent: new Command({
           name: "cancel",
-          description: "Cancels an event. This is will effectively stop it."
+          description: "Cancels an event. This is will effectively stop it.",
+          options: [
+            new CommandOption({
+              name: "index",
+              description: "The index for the event, starting at 0.",
+              type: ApplicationCommandOptionType.Integer,
+              required: true
+            })
+          ]
         }),
         TestEvent: new Command({
           name: "test",
-          description: "Tests a given string with the event parser. Checking if it's valid and returning event details."
+          description: "Tests a given string with the event parser. Checking if it's valid and returning event details.",
+          options: [
+            new CommandOption({
+              name: "text",
+              description: "The message you wish to check against.",
+              type: ApplicationCommandOptionType.String,
+              required: true
+            })
+          ]
         }),
         ListEvent: new Command({
           name: "list",
@@ -57,10 +123,10 @@ export class EventManagerModule extends ModuleBase {
               description: "The index for the event, starting at 0.",
               type: ApplicationCommandOptionType.Integer
             })
-          ],
-          execute: this.commandResolver.bind(this)
+          ]
         })
-      }
+      },
+      execute: this.commandResolver.bind(this)
     })
   ];
   public eventListeners: EventListeners = [

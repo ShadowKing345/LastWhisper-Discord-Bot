@@ -1,5 +1,5 @@
-import { Client, Message, TextChannel, ChatInputCommandInteraction, EmbedBuilder, PartialMessage, InteractionResponse } from "discord.js";
-import { DateTime, Duration } from "luxon";
+import { Client, Message, ChatInputCommandInteraction, EmbedBuilder, PartialMessage, InteractionResponse, Channel, ChannelType } from "discord.js";
+import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
 import { Timer } from "../utils/objects/timer.js";
@@ -7,19 +7,16 @@ import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.repository.js";
 import { EventManagerConfig, EventObj } from "../models/event_manager/index.js";
 import { Service } from "../utils/objects/service.js";
+import { createLogger } from "../utils/loggerService.js";
+import { pino } from "pino";
 
 @singleton()
 export class EventManagerService extends Service<EventManagerConfig> {
-  constructor(repository: EventManagerRepository) {
+  constructor(
+    repository: EventManagerRepository,
+    @createLogger(EventManagerService.name) private logger: pino.Logger
+  ) {
     super(repository);
-  }
-
-  protected static parseTriggerDuration(triggerTime: string): Duration {
-    const hold = DateTime.fromFormat(triggerTime, "HH:mm");
-    return Duration.fromObject({
-      hours: hold.get("hour"),
-      minutes: hold.get("minute")
-    });
   }
 
   // region Command
@@ -54,59 +51,61 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * No event will be created.
    * @param interaction The Discord Interaction.
    */
-  public testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return interaction.reply("Yellow");
+  public async testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const config = await this.getConfig(interaction.guildId);
+
+    const text = interaction.options.getString("text", true);
+    const event = this.parseMessage(null, text, config);
+
+    return interaction.reply({
+      embeds: [
+        new EmbedBuilder({
+          title: event.isValid ? "Event is valid." : "Event is not valid.",
+          fields: [
+            { name: "Name", value: event.name ?? "Name cannot be null." },
+            { name: "Description", value: event.description ?? "Description cannot be null." },
+            {
+              name: "Time",
+              value: event.dateTime ?
+                `<t:${event.dateTime}:F>` :
+                "The format for the time was not correct. Use the Hammer time syntax to help."
+            },
+            { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") }
+          ]
+        }).setColor(event.isValid ? "Green" : "Red")
+      ]
+    });
   }
 
   /**
-   * Todo: Cleanup
    * Responds with an embed saying information about a specific event or lists a brief description of all events.
    * @param interaction The Discord Interaction.
    */
   public async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const config = await this.getConfig(interaction.guildId);
 
-    const embed: EmbedBuilder = new EmbedBuilder().setColor("Random");
-
-    if (config.events.length <= 0) {
-      embed.addFields({
-        name: "Notice",
-        value: "There are no upcoming events!"
+    if (config.events.length < 1) {
+      return interaction.reply({
+        embeds: [ new EmbedBuilder({
+          title: "No events were set.",
+          description: "There are currently no active events going on in your guild."
+        }) ]
       });
-      await interaction.reply({ embeds: [ embed ] });
-      return;
     }
 
     const index = interaction.options.getInteger("index");
-    if (index !== null) {
-      const event: EventObj = config.events[index % config.events.length];
-      embed.setTitle(event.name);
-      embed.setDescription(event.description);
-
-      for (const [ key, value ] of event.additional) {
-        embed.addFields({ name: key, value, inline: false });
-      }
-
-      embed.addFields(
-        {
-          name: "Time Remaining:",
-          value: `<t:${event.dateTime}:R>`,
-          inline: false
-        },
-        { name: "Set For:", value: `<t:${event.dateTime}:f>`, inline: false }
-      );
-    } else {
-      embed.setTitle("Upcoming Events");
-
-      for (const [ index, event ] of config.events.entries()) {
-        embed.addFields({
+    const embed: EmbedBuilder = index ?
+      this.createEventEmbed(config.getEventByIndex(index)) :
+      new EmbedBuilder({
+        title: "Upcoming Events",
+        fields: config.events.map((event, index) => ({
           name: `Index ${index}:`,
           value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
           inline: false
-        });
-      }
-    }
-    await interaction.reply({ embeds: [ embed ] });
+        }))
+      }).setColor("Random");
+
+    return interaction.reply({ embeds: [ embed ] });
   }
 
   //endregion
@@ -118,7 +117,11 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * Will react to the message if it completed successfully or not.
    * @param message The Discord message object to create a new event from.
    */
-  public async createEvent(message: Message): Promise<void> {
+  public async createEvent(message: Message | PartialMessage): Promise<void> {
+    if (message.partial) {
+      await message.fetch();
+    }
+
     if (message.author.id === message.client.application?.id) return;
     if (!message.guildId) return;
     const config = await this.getConfig(message.guildId);
@@ -144,7 +147,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
     const event: EventObj = this.parseMessage(message.id, message.content, config);
     try {
-      if (EventObj.isValid(event) && event.dateTime > DateTime.now().toUnixInteger()) {
+      if (event.isValid && event.dateTime > DateTime.now().toUnixInteger()) {
         config.events.push(event);
         await message.react("✅");
         await this.repository.save(config);
@@ -178,7 +181,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
       const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
       if (reaction) await reaction.users.remove(oldMessage.client.user?.id);
 
-      if (EventObj.isValid(newEvent)) {
+      if (newEvent.isValid) {
         await newMessage.react("✅");
         config.events[config.events.indexOf(oldEvent)] = newEvent;
         await this.repository.save(config);
@@ -224,7 +227,6 @@ export class EventManagerService extends Service<EventManagerConfig> {
   // endregion
 
   /**
-   * Todo: Cleanup
    * The main loop used to post reminders about events.
    * @param client The client.
    */
@@ -232,53 +234,52 @@ export class EventManagerService extends Service<EventManagerConfig> {
     await Timer.waitTillReady(client);
 
     const now: DateTime = DateTime.now();
-    const configs = (await this.repository.getAll()).filter(
-      (config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)
-    );
     const alteredConfigs: EventManagerConfig[] = [];
+    const configs = await this.repository.getAll()
+      .then(configs => configs.filter((config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)));
 
     for (const config of configs) {
       try {
-        if (client.channels.cache.has(config.postingChannelId)) {
-          const postingChannel: TextChannel | null = (await client.channels.fetch(
-            config.postingChannelId
-          )) as TextChannel | null;
-          if (postingChannel && postingChannel.guildId === config.guildId) {
-            for (const trigger of config.reminders.filter((trigger) => trigger.timeDelta)) {
-              const triggerTime = EventManagerService.parseTriggerDuration(trigger.timeDelta);
-              for (const event of config.events) {
-                const eventTime = DateTime.fromSeconds(event.dateTime);
-                if (eventTime.diff(now, [ "days" ]).days > 1) continue;
+        const postingChannel: Channel | null = (await client.channels.fetch(config.postingChannelId));
 
-                const difference = eventTime.minus(triggerTime);
-                if (difference.hour === now.hour && difference.minute === now.minute) {
-                  const messageValues: { [key: string]: string } = {
-                    "%everyone%": "@everyone",
-                    "%eventName%": event.name,
-                    "%hourDiff%": triggerTime.get("hours").toString(),
-                    "%minuteDiff%": triggerTime.get("minutes").toString()
-                  };
+        if (!(postingChannel.type === ChannelType.GuildText && postingChannel.guildId === config.guildId)) {
+          this.logger.warn("Either posting channel does not exist or it is not inside of guild. Skipping...");
+          continue;
+        }
 
-                  await postingChannel.send(trigger.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
-                }
-              }
+        for (const reminder of config.reminders.filter((trigger) => trigger.timeDelta)) {
+          const reminderTimeDelta = reminder.asDuration;
+          for (const event of config.events) {
+            const eventTime = DateTime.fromSeconds(event.dateTime);
+            if (eventTime.diff(now, [ "days" ]).days > 1) continue;
+
+            const difference = eventTime.minus(reminderTimeDelta);
+            if (difference.hour === now.hour && difference.minute === now.minute) {
+              const messageValues: { [key: string]: string } = {
+                "%everyone%": "@everyone",
+                "%eventName%": event.name,
+                "%hourDiff%": reminderTimeDelta.hours.toString(),
+                "%minuteDiff%": reminderTimeDelta.minutes.toString()
+              };
+
+              await postingChannel.send(reminder.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
             }
           }
         }
 
-        const before = config.events.length;
-
+        let changeFlag = false;
         config.events.forEach((event, index, array) => {
           if (event.dateTime <= now.toUnixInteger()) {
             array.splice(index, 1);
+            changeFlag = true;
           }
         });
 
-        if (before !== config.events.length) {
+        if (changeFlag) {
           alteredConfigs.push(config);
         }
-      } catch (err: Error | unknown) {
-        console.error(err);
+      } catch (error) {
+        this.logger.error(error instanceof Error ? error.stack : error);
       }
     }
 
@@ -289,6 +290,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
   /**
    * Todo: Cleanup
+   * Todo: Fix issue with additional loosing their formatting.
    * Attempts to parse a string into a EventObject.
    * @param messageId The message ID.
    * @param content The content of the message. As in its text.
@@ -296,7 +298,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @private
    */
   private parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
-    const event = new EventObj(messageId);
+    const event = new EventObj({ messageId });
     const hammerRegex = /<.*:(\d+):.*>/;
     const [ l, r ] = config.delimiterCharacters as [ string, string ];
     const re = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
@@ -349,5 +351,21 @@ export class EventManagerService extends Service<EventManagerConfig> {
     }
 
     return event;
+  }
+
+  /**
+   * Creates a Discord Embed based on an Event Object.
+   * @param event The event object.
+   * @private
+   */
+  private createEventEmbed(event: EventObj): EmbedBuilder {
+    return new EmbedBuilder({
+      title: event.name,
+      description: event.description,
+      fields: [
+        { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
+        ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true }))
+      ]
+    }).setColor("Random");
   }
 }
