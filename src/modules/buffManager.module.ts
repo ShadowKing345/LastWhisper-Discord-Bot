@@ -21,7 +21,7 @@ export class BuffManagerModule extends ModuleBase {
     @addPermissionKeys()
     public static permissionKeys = {
         buffs: "BuffManager.buffs",
-        weeks: "BuffManager.weeks.thisWeek",
+        weeks: "BuffManager.weeks",
     };
 
     public moduleName = "BuffManager";

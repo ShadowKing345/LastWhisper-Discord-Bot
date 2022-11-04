@@ -28,29 +28,20 @@ export class PermissionManagerService {
    * @param interaction The interaction used to determine the rights.
    * @param key The name of the key to check against.
    */
-  public async isAuthorized(
-    interaction: ChatInputCommandInteraction,
-    key: string
-  ): Promise<boolean> {
+  public async isAuthorized(interaction: ChatInputCommandInteraction, key: string): Promise<boolean> {
     if (!PermissionManagerService.keyExists(key)) {
-      (this as PermissionManagerService).logger.debug(
-        "Key did not exist. Exiting out."
-      );
+      (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
       await interaction.reply({
         content: "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
-        ephemeral: true,
+        ephemeral: true
       });
       return false;
     }
 
     this.logger.debug(`Attempting to authorize for key ${key}`);
     if (!interaction) {
-      this.logger.error(
-        "An interaction was null that should not be. Throwing."
-      );
-      throw new InvalidArgumentError(
-        "Interaction was null. This is not allowed."
-      );
+      this.logger.error("An interaction was null that should not be. Throwing.");
+      throw new InvalidArgumentError("Interaction was null. This is not allowed.");
     }
 
     // The guild owner should always be allowed to use commands to prevent a lockout scenario.
@@ -59,9 +50,7 @@ export class PermissionManagerService {
       return true;
     }
 
-    const config: PermissionManagerConfig = await this.findOneOrCreate(
-      interaction.guildId
-    );
+    const config: PermissionManagerConfig = await this.findOneOrCreate(interaction.guildId);
     const permission: Permission = config.permissions[key];
 
     if (!permission) {
@@ -94,9 +83,7 @@ export class PermissionManagerService {
     const authorized: boolean =
       (!permission.blackList && result) || (permission.blackList && !result);
 
-    this.logger.debug(
-      `User is ${authorized ? "Authenticated" : "Unauthenticated"}.`
-    );
+    this.logger.debug(`User is ${authorized ? "Authenticated" : "Unauthenticated"}.`);
     return authorized;
   }
 
@@ -371,10 +358,7 @@ export class PermissionManagerService {
    */
   public static removePermissionKey(key: string): void {
     if (PermissionManagerService.keyExists(key)) {
-      PermissionManagerService.keys.splice(
-        PermissionManagerService.keys.indexOf(key),
-        1
-      );
+      PermissionManagerService.keys.splice(PermissionManagerService.keys.indexOf(key), 1);
     }
   }
 
@@ -396,12 +380,10 @@ export class PermissionManagerService {
       return PermissionManagerService._keysFormatted;
     }
 
-    const obj: object = unFlattenObject(
-      PermissionManagerService.keys.reduce((previousValue, currentValue) => {
-        previousValue[currentValue] = currentValue;
-        return previousValue;
-      }, {})
-    );
+    const obj: object = unFlattenObject(PermissionManagerService.keys.reduce((previousValue, currentValue) => {
+      previousValue[currentValue] = currentValue;
+      return previousValue;
+    }, {}));
 
     function format(obj: object, index = 0) {
       const spaces = "\t".repeat(index);
