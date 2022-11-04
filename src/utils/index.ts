@@ -80,9 +80,9 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 export function flattenObject(obj: object): object {
   const result = new Map<string, unknown>();
 
-  for (const [k, v] of Object.entries(obj)) {
+  for (const [ k, v ] of Object.entries(obj)) {
     if (v instanceof Object && !Array.isArray(v)) {
-      for (const [k1, v1] of Object.entries(flattenObject(v as object))) {
+      for (const [ k1, v1 ] of Object.entries(flattenObject(v as object))) {
         result.set(`${k}.${k1}`, v1);
       }
 
@@ -97,21 +97,9 @@ export function flattenObject(obj: object): object {
 
 /**
  * Does the opposite of flattenObject
- *
+ * Todo: Finish this.
  * @see flattenObject
  */
 export function unFlattenObject(obj: object): object {
-  const result = {};
-
-  for (const [key, value] of Object.entries(obj)) {
-    key
-      .split(".")
-      .reduce(
-        (prev, current, index, { length }) =>
-          (prev[current] || Object.assign(prev[current], length - 1 === index ? value : {})) as object,
-        result
-      );
-  }
-
-  return result;
+  return obj;
 }
