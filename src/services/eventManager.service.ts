@@ -94,7 +94,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
     }
 
     const index = interaction.options.getInteger("index");
-    const embed: EmbedBuilder = index ?
+    const embed: EmbedBuilder = index != null ?
       this.createEventEmbed(config.getEventByIndex(index)) :
       new EmbedBuilder({
         title: "Upcoming Events",
