@@ -59,7 +59,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             });
         }
         const index = interaction.options.getInteger("index");
-        const embed = index ?
+        const embed = index != null ?
             this.createEventEmbed(config.getEventByIndex(index)) :
             new EmbedBuilder({
                 title: "Upcoming Events",
@@ -207,52 +207,50 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             await this.repository.bulkSave(alteredConfigs);
         }
     }
-    parseMessage(messageId, content, config) {
+    parseMessage(messageId, content, { tags, dateTimeFormat, delimiterCharacters }) {
         const event = new EventObj({ messageId });
-        const hammerRegex = /<.*:(\d+):.*>/;
-        const [l, r] = config.delimiterCharacters;
+        const [l, r] = delimiterCharacters;
         const re = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
-        let match = re.exec(content);
-        while (match != null) {
-            const key = match[1]?.trim();
-            const value = match[2]?.trim();
-            let date, matchedResult, unixTimeStr, number;
+        for (const [, k, v] of content.matchAll(re)) {
+            if (!k || !v)
+                continue;
+            const key = k.trim(), value = v.trim();
+            let date, time;
             switch (key) {
-                case config.tags.announcement:
+                case tags.announcement:
                     event.name = value;
                     break;
-                case config.tags.description:
+                case tags.description:
                     event.description = value;
                     break;
-                case config.tags.dateTime:
-                    if (config.dateTimeFormat.length > 0) {
-                        date = DateTime.fromFormat(value, config.dateTimeFormat, {});
-                        if (date.isValid) {
-                            event.dateTime = date.toUnixInteger();
-                            break;
+                case tags.dateTime:
+                    if (dateTimeFormat.length > 0) {
+                        let flag = false;
+                        for (const format of dateTimeFormat) {
+                            date = DateTime.fromFormat(value, format);
+                            if (date.isValid) {
+                                event.dateTime = date.toUnixInteger();
+                                flag = true;
+                                break;
+                            }
                         }
+                        if (flag)
+                            break;
                     }
-                    matchedResult = value?.match(hammerRegex);
-                    if (!matchedResult)
+                    time = Number(value.match(/<.:(\d+):.>/)?.[1] ?? undefined);
+                    if (!time || isNaN(time))
                         break;
-                    unixTimeStr = matchedResult[1];
-                    if (!unixTimeStr)
-                        break;
-                    number = Number(unixTimeStr);
-                    if (isNaN(number))
-                        break;
-                    date = DateTime.fromSeconds(number);
+                    date = DateTime.fromSeconds(time);
                     if (!date.isValid)
                         break;
                     event.dateTime = date.toUnixInteger();
                     break;
                 default:
-                    if (!config.tags.exclusionList.every((e) => e !== key))
+                    if (!tags.exclusionList.every((e) => e !== key))
                         continue;
                     event.additional.push([key, value]);
                     break;
             }
-            match = re.exec(content);
         }
         return event;
     }

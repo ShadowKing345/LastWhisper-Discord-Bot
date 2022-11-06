@@ -10,7 +10,7 @@ export class EventManagerConfig extends ToJsonBase {
     postingChannelId = null;
     delimiterCharacters = ["[", "]"];
     tags = new Tags();
-    dateTimeFormat = null;
+    dateTimeFormat = [];
     events = [];
     reminders = [];
     getEventByIndex(index) {
