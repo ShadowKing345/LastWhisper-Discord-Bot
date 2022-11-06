@@ -54,18 +54,18 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * Attempt to create an event and returns it.
    * Will return null if it was unable to do so.
    * @param guildId Guild ID to get the configuration from.
+   * @param id ID of the event.
    * @param content Text content of the message.
-   * @param messageId ID of the message for fetching on startup. Can be null if you do not wish to perform this action.
    * @param channelId ID of the channel the message was posted in. Used for additional validation.
    */
-  public async create(guildId: string | null, content: string, messageId?: string, channelId?: string): Promise<EventObj | null> {
+  public async create(guildId: string | null, id: string, content: string, channelId?: string): Promise<EventObj | null> {
     const config = await this.getConfig(guildId);
 
     if (channelId && config.listenerChannelId !== channelId) {
       throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
     }
 
-    const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+    const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
     if (!event.isValid) {
       return null;
     }
@@ -78,7 +78,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
   /**
    * Creates an event with raw data.
    * @param guildId Guild ID to get the configuration from.
-   * @param id ID of the event for fetching on startup. Can be null if you do not wish to perform this action.
+   * @param id ID of the event.
    * @param name Name of event.
    * @param description Description of event.
    * @param time Time of event. Note has to be in the expected format for the guild.
@@ -115,7 +115,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
   public async update(guildId: string | null, messageId: string, content: string): Promise<EventObj | null> {
     const config = await this.getConfig(guildId);
 
-    const oldEvent = config.events.find((event) => event.messageId === messageId);
+    const oldEvent = config.events.find((event) => event.id === messageId);
     if (!oldEvent) {
       throw new Error("Event does not exist.");
     }
@@ -134,12 +134,12 @@ export class EventManagerService extends Service<EventManagerConfig> {
   /**
    * Attempts to cancel an event if it exists.
    * @param guildId Guild ID to ge the configuration from.
-   * @param messageId ID of the message.
+   * @param id ID of the event.
    */
-  public async cancel(guildId: string | null, messageId: string): Promise<void> {
+  public async cancel(guildId: string | null, id: string): Promise<void> {
     const config = await this.getConfig(guildId);
 
-    const index = config.events.findIndex((event) => event.messageId === messageId);
+    const index = config.events.findIndex((event) => event.id === id);
     if (index === -1) return;
 
     config.events.splice(index, 1);
@@ -148,10 +148,11 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
   public async eventExists(guildId: string | null, id: string): Promise<boolean> {
     const config = await this.getConfig(guildId);
-    return config.events.findIndex((event) => event.messageId === id) !== -1;
+    return config.events.findIndex((event) => event.id === id) !== -1;
   }
 
   /**
+   * Fixme: Need to make this look for the message keyword first.
    * Fetches all event messages to ensure they are loaded for Discord events to fire.
    * @param client The client.
    */
@@ -160,7 +161,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
     for (const config of configs) {
       if (!config.listenerChannelId || !config.events.length) continue;
-      await fetchMessages(client, config.listenerChannelId, config.events.map((event) => event.messageId));
+      await fetchMessages(client, config.listenerChannelId, config.events.map((event) => event.id));
     }
   }
 
@@ -253,16 +254,16 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
   /**
    * Attempts to parse a string into a EventObject.
-   * @param messageId The message ID.
+   * @param id The event ID.
    * @param content The content of the message. As in its text.
    * @param tags Tags to parse with
    * @param dateTimeFormats Collection of all possible formats for data and time parsing.
    * @param delimiter Tuple containing the two delimiter characters.
    * @private
    */
-  private parseMessage(messageId: string, content: string, tags: Tags, dateTimeFormats: string[], delimiter: [ string, string ]): EventObj {
+  private parseMessage(id: string, content: string, tags: Tags, dateTimeFormats: string[], delimiter: [ string, string ]): EventObj {
     const [ l, r ] = delimiter.map((c) => this.regexpEscape(c));
-    const event = new EventObj({ messageId });
+    const event = new EventObj({ id });
     const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
 
     for (const [ , k, v ] of content.matchAll(regExp)) {

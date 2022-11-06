@@ -172,7 +172,7 @@ export class EventManagerModule extends ModuleBase {
     const description = interaction.options.getString("description");
     const time = interaction.options.getString("time");
 
-    const event = await (text ? this.service.create(interaction.guildId, text) : this.service.createRaw(interaction.guildId, null, name, description, time));
+    const event = await (text ? this.service.create(interaction.guildId, null, text) : this.service.createRaw(interaction.guildId, null, name, description, time));
     await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
 
     return response;
@@ -260,7 +260,7 @@ export class EventManagerModule extends ModuleBase {
     }
 
     try {
-      const event: EventObj = await this.service.create(message.guildId, message.content, message.id, message.channelId);
+      const event: EventObj = await this.service.create(message.guildId, `message#${message.id}`, message.content, message.channelId);
       await message.react(event ? "✅" : "❎");
       this.logger.debug("New event created.");
     } catch (error) {
@@ -287,7 +287,7 @@ export class EventManagerModule extends ModuleBase {
     }
 
     try {
-      const event = await this.service.update(oldMessage.guildId, oldMessage.id, newMessage.content);
+      const event = await this.service.update(oldMessage.guildId, `message#${oldMessage.id}`, newMessage.content);
 
       const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
       if (reaction) await reaction.users.remove(oldMessage.client.user?.id);
@@ -302,7 +302,7 @@ export class EventManagerModule extends ModuleBase {
   private async deleteEvent(message: Message | PartialMessage): Promise<void> {
     if (message.partial) message = await message.fetch();
 
-    return this.service.cancel(message.guildId, message.id);
+    return this.service.cancel(message.guildId, `message#${message.id}`);
   }
 
   private onReady(client: Client): Promise<void> {
