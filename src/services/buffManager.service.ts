@@ -31,7 +31,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     super(repository);
   }
 
-  //region Discord API
+  //region Commands
 
   /**
    * Creates an interaction response with the buffs for the day requested.
