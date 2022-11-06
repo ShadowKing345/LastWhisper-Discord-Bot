@@ -1,0 +1,1 @@
+{"version":3,"file":"wrongChannelError.js","sourceRoot":"","sources":["../../../src/utils/errors/wrongChannelError.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,iBAAkB,SAAQ,KAAK;IAC1C,YAAY,OAAe;QACzB,KAAK,CAAC,OAAO,CAAC,CAAC;QAEf,IAAI,CAAC,IAAI,GAAG,iBAAiB,CAAC,IAAI,CAAC;QACnC,MAAM,CAAC,cAAc,CAAC,IAAI,EAAE,iBAAiB,CAAC,SAAS,CAAC,CAAC;IAC3D,CAAC;CACF"}

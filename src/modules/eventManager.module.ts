@@ -1,4 +1,4 @@
-import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse } from "discord.js";
+import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -10,6 +10,9 @@ import { EventListeners, EventListener } from "../utils/objects/eventListener.js
 import { Timers } from "../utils/objects/timer.js";
 import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 import { authorize } from "../utils/decorators/authorize.js";
+import { EventObj } from "../models/event_manager/index.js";
+import { WrongChannelError } from "../utils/errors/wrongChannelError.js";
+import { DateTime } from "luxon";
 
 /**
  * Module designed to deal with events. (Not Discord event)
@@ -161,43 +164,145 @@ export class EventManagerModule extends ModuleBase {
   // region Commands
 
   @authorize(EventManagerModule.permissionKeys.create)
-  private createEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return this.service.createEventCommand(interaction);
+  private async createEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const response = await interaction.deferReply({ ephemeral: true });
+
+    const text = interaction.options.getString("text");
+    const name = interaction.options.getString("name");
+    const description = interaction.options.getString("description");
+    const time = interaction.options.getString("time");
+
+    const event = await (text ? this.service.create(interaction.guildId, text) : this.service.createRaw(interaction.guildId, null, name, description, time));
+    await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
+
+    return response;
   }
 
   @authorize(EventManagerModule.permissionKeys.update)
   private updateEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return this.service.updateEventCommand(interaction);
+    return interaction.reply("Yellow");
   }
 
   @authorize(EventManagerModule.permissionKeys.cancel)
   private cancelEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return this.service.cancelEventCommand(interaction);
+    return interaction.reply("Yellow");
   }
 
   @authorize(EventManagerModule.permissionKeys.test)
-  private testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return this.service.testEventCommand(interaction);
+  private async testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const response = await interaction.deferReply();
+
+    const event = await this.service.parseEvent(interaction.guildId, interaction.options.getString("text", true));
+    await interaction.editReply({
+      embeds: [
+        new EmbedBuilder({
+          title: event.isValid ? "Event is valid." : "Event is not valid.",
+          fields: [
+            { name: "Name", value: event.name ?? "Name cannot be null." },
+            { name: "Description", value: event.description ?? "Description cannot be null." },
+            {
+              name: "Time",
+              value: event.dateTime ?
+                (event.dateTime < DateTime.now().toUnixInteger() ? `<t:${event.dateTime}:F>` : "Time is before the present.") :
+                "The format for the time was not correct. Use the Hammer time syntax to help."
+            },
+            { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") }
+          ]
+        }).setColor(event.isValid ? "Green" : "Red")
+      ]
+    });
+
+    return response;
+
   }
 
   @authorize(EventManagerModule.permissionKeys.list)
-  private listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return this.service.listEventCommand(interaction);
+  private async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const response = await interaction.deferReply();
+
+    const event = await this.service.findIndex(interaction.guildId, interaction.options.getInteger("index"));
+
+    if (event == null) {
+      await interaction.editReply({
+        embeds: [ new EmbedBuilder({
+          title: "No events were set.",
+          description: "There are currently no active events going on in your guild."
+        }) ]
+      });
+      return response;
+    }
+
+    const embed: EmbedBuilder = event instanceof EventObj ?
+      this.service.createEventEmbed(event) :
+      new EmbedBuilder({
+        title: "Upcoming Events",
+        fields: event.map((event, index) => ({
+          name: `Index ${index}:`,
+          value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
+          inline: false
+        }))
+      }).setColor("Random");
+
+    await interaction.editReply({ embeds: [ embed ] });
+    return response;
   }
 
   // endregion
   // region Events
 
-  private createEvent(message: Message): Promise<void> {
-    return this.service.createEvent(message);
+  private async createEvent(message: Message | PartialMessage): Promise<void> {
+    this.logger.debug("On Message Create fired. Creating new event.");
+
+    if (message.partial) message = await message.fetch();
+    if (message.author?.id === message.client?.application?.id || message.applicationId) {
+      this.logger.debug("Author is an application and message is ignored.");
+      return;
+    }
+
+    try {
+      const event: EventObj = await this.service.create(message.guildId, message.content, message.id, message.channelId);
+      await message.react(event ? "✅" : "❎");
+      this.logger.debug("New event created.");
+    } catch (error) {
+      if (error instanceof WrongChannelError) {
+        this.logger.debug("Channel was wrong.");
+        return;
+      }
+
+      this.logger.error(error instanceof Error ? error.stack : error);
+      await message.react("❓");
+    }
   }
 
-  private updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
-    return this.service.updateEvent(oldMessage, newMessage);
+  private async updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
+    if (oldMessage.partial) await oldMessage.fetch();
+    if (newMessage.partial) await newMessage.fetch();
+    if (newMessage.author?.id === newMessage.client?.application?.id || newMessage.applicationId) {
+      this.logger.debug("Author is an application and message is ignored.");
+      return;
+    }
+
+    if (!await this.service.eventExists(oldMessage.guildId, oldMessage.id)) {
+      return;
+    }
+
+    try {
+      const event = await this.service.update(oldMessage.guildId, oldMessage.id, newMessage.content);
+
+      const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
+      if (reaction) await reaction.users.remove(oldMessage.client.user?.id);
+
+      await newMessage.react(event ? "✅" : "❎");
+    } catch (error) {
+      this.logger.error(error instanceof Error ? error.stack : error);
+      await newMessage.react("❓");
+    }
   }
 
-  private deleteEvent(message: Message | PartialMessage): Promise<void> {
-    return this.service.deleteEvent(message);
+  private async deleteEvent(message: Message | PartialMessage): Promise<void> {
+    if (message.partial) message = await message.fetch();
+
+    return this.service.cancel(message.guildId, message.id);
   }
 
   private onReady(client: Client): Promise<void> {

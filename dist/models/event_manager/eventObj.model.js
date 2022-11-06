@@ -1,4 +1,5 @@
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+import { DateTime } from "luxon";
 export class EventObj extends ToJsonBase {
     messageId = null;
     name = null;
@@ -12,7 +13,7 @@ export class EventObj extends ToJsonBase {
         }
     }
     get isValid() {
-        return this.name != "" && this.description != "" && this.dateTime != null;
+        return this.name != "" && this.description != "" && this.dateTime != null && this.dateTime > DateTime.now().toUnixInteger();
     }
 }
 //# sourceMappingURL=eventObj.model.js.map

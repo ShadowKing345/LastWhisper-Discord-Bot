@@ -5,10 +5,8 @@ import { EventListeners } from "../objects/eventListener.js";
  * Custom client class to hold the additional information about a discord client and the set-up flags.
  */
 export class Client extends DiscordClient {
-  public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<
-    keyof ClientEvents,
-    EventListeners
-  >();
+  public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<keyof ClientEvents,
+    EventListeners>();
 
   constructor() {
     super({
@@ -18,7 +16,8 @@ export class Client extends DiscordClient {
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMessageReactions,
-      ],
+        GatewayIntentBits.MessageContent
+      ]
     });
   }
 }

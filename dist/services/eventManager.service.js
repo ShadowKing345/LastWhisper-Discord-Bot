@@ -10,146 +10,79 @@ import { EventObj } from "../models/event_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { WrongChannelError } from "../utils/errors/wrongChannelError.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
     logger;
     constructor(repository, logger) {
         super(repository);
         this.logger = logger;
     }
-    createEventCommand(interaction) {
-        return interaction.reply("Yellow");
+    async parseEvent(guildId, text) {
+        const { dateTimeFormat, delimiterCharacters, tags } = await this.getConfig(guildId);
+        return this.parseMessage(null, text, tags, dateTimeFormat, delimiterCharacters);
     }
-    updateEventCommand(interaction) {
-        return interaction.reply("Yellow");
-    }
-    cancelEventCommand(interaction) {
-        return interaction.reply("Yellow");
-    }
-    async testEventCommand(interaction) {
-        const response = await interaction.deferReply();
-        const config = await this.getConfig(interaction.guildId);
-        const text = interaction.options.getString("text", true);
-        const event = this.parseMessage(null, text, config);
-        await interaction.editReply({
-            embeds: [
-                new EmbedBuilder({
-                    title: event.isValid ? "Event is valid." : "Event is not valid.",
-                    fields: [
-                        { name: "Name", value: event.name ?? "Name cannot be null." },
-                        { name: "Description", value: event.description ?? "Description cannot be null." },
-                        {
-                            name: "Time",
-                            value: event.dateTime ?
-                                `<t:${event.dateTime}:F>` :
-                                "The format for the time was not correct. Use the Hammer time syntax to help."
-                        },
-                        { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") }
-                    ]
-                }).setColor(event.isValid ? "Green" : "Red")
-            ]
-        });
-        return response;
-    }
-    async listEventCommand(interaction) {
-        const config = await this.getConfig(interaction.guildId);
+    async findIndex(guildId, index) {
+        const config = await this.getConfig(guildId);
         if (config.events.length < 1) {
-            return interaction.reply({
-                embeds: [new EmbedBuilder({
-                        title: "No events were set.",
-                        description: "There are currently no active events going on in your guild."
-                    })]
-            });
+            return null;
         }
-        const index = interaction.options.getInteger("index");
-        const embed = index != null ?
-            this.createEventEmbed(config.getEventByIndex(index)) :
-            new EmbedBuilder({
-                title: "Upcoming Events",
-                fields: config.events.map((event, index) => ({
-                    name: `Index ${index}:`,
-                    value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
-                    inline: false
-                }))
-            }).setColor("Random");
-        return interaction.reply({ embeds: [embed] });
+        return index == null ? config.events : config.getEventByIndex(index);
     }
-    async createEvent(message) {
-        if (message.partial) {
-            await message.fetch();
+    async create(guildId, content, messageId, channelId) {
+        const config = await this.getConfig(guildId);
+        if (channelId && config.listenerChannelId !== channelId) {
+            throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
         }
-        if (message.author.id === message.client.application?.id)
-            return;
-        if (!message.guildId)
-            return;
-        const config = await this.getConfig(message.guildId);
-        if (config.listenerChannelId !== message.channelId)
-            return;
-        const [l, r] = config.delimiterCharacters;
-        const regex = new RegExp(`${l}(.*?)${r}`, "g");
-        let flag = false;
-        let match = regex.exec(message.content);
-        while (match != null) {
-            if (match[1].trim() === config.tags.announcement) {
-                flag = true;
-                break;
-            }
-            match = regex.exec(message.content);
+        const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        if (!event.isValid) {
+            return null;
         }
-        if (!flag) {
-            return;
-        }
-        const event = this.parseMessage(message.id, message.content, config);
-        try {
-            if (event.isValid && event.dateTime > DateTime.now().toUnixInteger()) {
-                config.events.push(event);
-                await message.react("✅");
-                await this.repository.save(config);
-            }
-            else {
-                await message.react("❎");
-            }
-        }
-        catch (e) {
-            console.error(e);
-        }
-    }
-    async updateEvent(oldMessage, newMessage) {
-        if (oldMessage.partial)
-            await oldMessage.fetch();
-        if (newMessage.partial)
-            await newMessage.fetch();
-        const config = await this.getConfig(oldMessage.guildId);
-        if (config.listenerChannelId !== oldMessage.channelId)
-            return;
-        const oldEvent = config.events.find((event) => event.messageId === oldMessage.id);
-        if (!oldEvent)
-            return;
-        const newEvent = this.parseMessage(oldMessage.id, newMessage.content, config);
-        try {
-            const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
-            if (reaction)
-                await reaction.users.remove(oldMessage.client.user?.id);
-            if (newEvent.isValid) {
-                await newMessage.react("✅");
-                config.events[config.events.indexOf(oldEvent)] = newEvent;
-                await this.repository.save(config);
-            }
-            else {
-                await newMessage.react("❎");
-            }
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
-    async deleteEvent(message) {
-        if (message.partial)
-            await message.fetch();
-        const config = await this.getConfig(message.guildId);
-        if (!config.events.find((event) => event.messageId === message.id))
-            return;
-        config.events.splice(config.events.findIndex((event) => event.messageId === message.id), 1);
+        config.events.push(event);
         await this.repository.save(config);
+        return event;
+    }
+    async createRaw(guildId, id, name, description, time, additional = []) {
+        const config = await this.getConfig(guildId);
+        const [l, r] = config.delimiterCharacters;
+        let finalString = l + config.tags.announcement + r + name + "\n";
+        finalString += `${l}${config.tags.description}${r}\n${description}\n`;
+        finalString += `${l}${config.tags.dateTime}${r}\n${time}\n`;
+        for (const [k, v] of additional) {
+            finalString += `${l}${k}${r}\n${v}\n`;
+        }
+        const event = this.parseMessage(id, finalString, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        if (!event.isValid) {
+            return null;
+        }
+        config.events.push(event);
+        await this.repository.save(config);
+        return event;
+    }
+    async update(guildId, messageId, content) {
+        const config = await this.getConfig(guildId);
+        const oldEvent = config.events.find((event) => event.messageId === messageId);
+        if (!oldEvent) {
+            throw new Error("Event does not exist.");
+        }
+        const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        if (!event.isValid) {
+            return null;
+        }
+        oldEvent.merge(event);
+        await this.repository.save(config);
+        return event;
+    }
+    async cancel(guildId, messageId) {
+        const config = await this.getConfig(guildId);
+        const index = config.events.findIndex((event) => event.messageId === messageId);
+        if (index === -1)
+            return;
+        config.events.splice(index, 1);
+        await this.repository.save(config);
+    }
+    async eventExists(guildId, id) {
+        const config = await this.getConfig(guildId);
+        return config.events.findIndex((event) => event.messageId === id) !== -1;
     }
     async onReady(client) {
         const configs = await this.repository.findAll({});
@@ -209,7 +142,21 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             await this.repository.bulkSave(alteredConfigs);
         }
     }
-    parseMessage(messageId, content, { tags, dateTimeFormat, delimiterCharacters: [l, r] }) {
+    createEventEmbed(event) {
+        return new EmbedBuilder({
+            title: event.name,
+            description: event.description,
+            fields: [
+                { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
+                ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true }))
+            ]
+        }).setColor("Random");
+    }
+    regexpEscape(text) {
+        return text.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+    }
+    parseMessage(messageId, content, tags, dateTimeFormats, delimiter) {
+        const [l, r] = delimiter.map((c) => this.regexpEscape(c));
         const event = new EventObj({ messageId });
         const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
         for (const [, k, v] of content.matchAll(regExp)) {
@@ -225,9 +172,9 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                     event.description = value;
                     break;
                 case tags.dateTime:
-                    if (dateTimeFormat.length > 0) {
+                    if (dateTimeFormats.length > 0) {
                         let flag = false;
-                        for (const format of dateTimeFormat) {
+                        for (const format of dateTimeFormats) {
                             date = DateTime.fromFormat(value, format);
                             if (date.isValid) {
                                 event.dateTime = date.toUnixInteger();
@@ -254,16 +201,6 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             }
         }
         return event;
-    }
-    createEventEmbed(event) {
-        return new EmbedBuilder({
-            title: event.name,
-            description: event.description,
-            fields: [
-                { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
-                ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true }))
-            ]
-        }).setColor("Random");
     }
 };
 EventManagerService = EventManagerService_1 = __decorate([

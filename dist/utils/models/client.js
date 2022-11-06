@@ -9,7 +9,8 @@ export class Client extends DiscordClient {
                 GatewayIntentBits.GuildMembers,
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMessageReactions,
-            ],
+                GatewayIntentBits.MessageContent
+            ]
         });
     }
 }

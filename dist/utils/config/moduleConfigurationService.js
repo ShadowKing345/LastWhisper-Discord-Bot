@@ -44,13 +44,13 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                     if (interaction.isUserContextMenuCommand()) {
                         await interaction.reply({
                             content: "Responded with a user",
-                            ephemeral: true,
+                            ephemeral: true
                         });
                     }
                     else {
                         await interaction.reply({
                             content: "Responded with a message",
-                            ephemeral: true,
+                            ephemeral: true
                         });
                     }
                 }
@@ -95,19 +95,19 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
                 if (error instanceof CommandResolverError) {
                     await interaction.reply({
                         content: "Sorry there was an issue resolving the command name.",
-                        ephemeral: true,
+                        ephemeral: true
                     });
                     return;
                 }
                 if (interaction.deferred) {
                     await interaction.editReply({
-                        content: "There was an internal error that occurred when using this interaction.",
+                        content: "There was an internal error that occurred when using this interaction."
                     });
                 }
                 else {
                     await interaction.reply({
                         content: "There was an internal error that occurred when using this interaction.",
-                        ephemeral: true,
+                        ephemeral: true
                     });
                 }
             }
@@ -158,7 +158,7 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
         if (this.moduleConfiguration.enableEventListeners) {
             this.moduleLogger.debug("Registering event.");
             for (const [event, listeners] of client.events) {
-                client.on(event, (...args) => this.runEvent(listeners, client, args));
+                client.on(event, (...args) => this.runEvent(listeners, client, ...args));
             }
         }
         if (this.moduleConfiguration.enableTimers) {

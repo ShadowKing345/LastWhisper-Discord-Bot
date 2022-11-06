@@ -2,6 +2,7 @@
  * Event object.
  */
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+import { DateTime } from "luxon";
 
 export class EventObj extends ToJsonBase<EventObj> {
   public messageId: string = null;
@@ -22,6 +23,6 @@ export class EventObj extends ToJsonBase<EventObj> {
    * Checks if teh event is valid.
    */
   public get isValid(): boolean {
-    return this.name != "" && this.description != "" && this.dateTime != null;
+    return this.name != "" && this.description != "" && this.dateTime != null && this.dateTime > DateTime.now().toUnixInteger();
   }
 }
