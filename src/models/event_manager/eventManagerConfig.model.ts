@@ -15,7 +15,7 @@ export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implement
   public postingChannelId: string | null = null;
   public delimiterCharacters: [ string, string ] = [ "[", "]" ];
   public tags: Tags = new Tags();
-  public dateTimeFormat: string = null;
+  public dateTimeFormat: string[] = [];
   public events: EventObj[] = [];
   public reminders: Reminder[] = [];
 
@@ -57,7 +57,7 @@ export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implement
     }
 
     if (obj.reminders) {
-      this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder))
+      this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder));
     }
 
     return this;
