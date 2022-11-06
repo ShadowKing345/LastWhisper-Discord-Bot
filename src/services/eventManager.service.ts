@@ -10,6 +10,12 @@ import { Service } from "../utils/objects/service.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 
+/**
+ * Event manager service.
+ * Handles all things related to real life event not Discord events.
+ * Todo: Make service options be passed in and collected from interaction.
+ * Todo: Cleanup.
+ */
 @singleton()
 export class EventManagerService extends Service<EventManagerConfig> {
   constructor(
