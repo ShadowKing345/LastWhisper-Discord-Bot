@@ -289,65 +289,62 @@ export class EventManagerService extends Service<EventManagerConfig> {
   }
 
   /**
-   * Todo: Cleanup
-   * Todo: Fix issue with additional loosing their formatting.
    * Attempts to parse a string into a EventObject.
    * @param messageId The message ID.
    * @param content The content of the message. As in its text.
    * @param config The config to parse the message against.
    * @private
    */
-  private parseMessage(messageId: string, content: string, config: EventManagerConfig): EventObj {
+  private parseMessage(messageId: string, content: string, {
+    tags,
+    dateTimeFormat,
+    delimiterCharacters: [ l, r ]
+  }: EventManagerConfig): EventObj {
     const event = new EventObj({ messageId });
-    const hammerRegex = /<.*:(\d+):.*>/;
-    const [ l, r ] = config.delimiterCharacters as [ string, string ];
-    const re = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
-    let match = re.exec(content);
+    const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
 
-    while (match != null) {
-      const key = match[1]?.trim();
-      const value = match[2]?.trim();
+    for (const [ , k, v ] of content.matchAll(regExp)) {
+      if (!k || !v) continue;
+      const key = k.trim(), value = v.trim();
 
-      let date: DateTime, matchedResult: RegExpMatchArray, unixTimeStr: string, number: number;
+      let date: DateTime, time: number;
       switch (key) {
-        case config.tags.announcement:
+        case tags.announcement:
           event.name = value;
           break;
 
-        case config.tags.description:
+        case tags.description:
           event.description = value;
           break;
 
-        case config.tags.dateTime:
-          if (config.dateTimeFormat.length > 0) {
-            date = DateTime.fromFormat(value, config.dateTimeFormat, {});
-            if (date.isValid) {
-              event.dateTime = date.toUnixInteger();
-              break;
+        case tags.dateTime:
+          if (dateTimeFormat.length > 0) {
+            let flag = false;
+            for (const format of dateTimeFormat) {
+              date = DateTime.fromFormat(value, format);
+              if (date.isValid) {
+                event.dateTime = date.toUnixInteger();
+                flag = true;
+                break;
+              }
             }
+            if (flag) break;
           }
 
           // Checks if it's hammer time.
-          matchedResult = value?.match(hammerRegex);
+          time = Number(value.match(/<.:(\d+):.>/)?.[1] ?? undefined);
+          if (!time || isNaN(time)) break;
 
-          if (!matchedResult) break;
-          unixTimeStr = matchedResult[1];
-          if (!unixTimeStr) break;
-          number = Number(unixTimeStr);
-          if (isNaN(number)) break;
-
-          date = DateTime.fromSeconds(number);
+          date = DateTime.fromSeconds(time);
           if (!date.isValid) break;
           event.dateTime = date.toUnixInteger();
           break;
 
         default:
-          if (!config.tags.exclusionList.every((e) => e !== key)) continue;
+          if (!tags.exclusionList.every((e) => e !== key)) continue;
           event.additional.push([ key, value ]);
           break;
       }
-
-      match = re.exec(content);
     }
 
     return event;
