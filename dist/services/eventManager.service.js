@@ -26,10 +26,11 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         return interaction.reply("Yellow");
     }
     async testEventCommand(interaction) {
+        const response = await interaction.deferReply();
         const config = await this.getConfig(interaction.guildId);
         const text = interaction.options.getString("text", true);
         const event = this.parseMessage(null, text, config);
-        return interaction.reply({
+        await interaction.editReply({
             embeds: [
                 new EmbedBuilder({
                     title: event.isValid ? "Event is valid." : "Event is not valid.",
@@ -47,6 +48,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                 }).setColor(event.isValid ? "Green" : "Red")
             ]
         });
+        return response;
     }
     async listEventCommand(interaction) {
         const config = await this.getConfig(interaction.guildId);
@@ -207,11 +209,10 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             await this.repository.bulkSave(alteredConfigs);
         }
     }
-    parseMessage(messageId, content, { tags, dateTimeFormat, delimiterCharacters }) {
+    parseMessage(messageId, content, { tags, dateTimeFormat, delimiterCharacters: [l, r] }) {
         const event = new EventObj({ messageId });
-        const [l, r] = delimiterCharacters;
-        const re = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
-        for (const [, k, v] of content.matchAll(re)) {
+        const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
+        for (const [, k, v] of content.matchAll(regExp)) {
             if (!k || !v)
                 continue;
             const key = k.trim(), value = v.trim();

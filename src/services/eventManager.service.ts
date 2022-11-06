@@ -52,12 +52,13 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param interaction The Discord Interaction.
    */
   public async testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const response = await interaction.deferReply();
     const config = await this.getConfig(interaction.guildId);
 
     const text = interaction.options.getString("text", true);
     const event = this.parseMessage(null, text, config);
 
-    return interaction.reply({
+    await interaction.editReply({
       embeds: [
         new EmbedBuilder({
           title: event.isValid ? "Event is valid." : "Event is not valid.",
@@ -75,6 +76,8 @@ export class EventManagerService extends Service<EventManagerConfig> {
         }).setColor(event.isValid ? "Green" : "Red")
       ]
     });
+
+    return response;
   }
 
   /**
@@ -82,15 +85,18 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param interaction The Discord Interaction.
    */
   public async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const response = await interaction.deferReply();
     const config = await this.getConfig(interaction.guildId);
 
     if (config.events.length < 1) {
-      return interaction.reply({
+      await interaction.editReply({
         embeds: [ new EmbedBuilder({
           title: "No events were set.",
           description: "There are currently no active events going on in your guild."
         }) ]
       });
+
+      return response;
     }
 
     const index = interaction.options.getInteger("index");
@@ -105,7 +111,8 @@ export class EventManagerService extends Service<EventManagerConfig> {
         }))
       }).setColor("Random");
 
-    return interaction.reply({ embeds: [ embed ] });
+    await interaction.editReply({ embeds: [ embed ] });
+    return response;
   }
 
   //endregion
