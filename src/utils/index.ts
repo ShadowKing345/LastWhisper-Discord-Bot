@@ -111,9 +111,12 @@ export function flattenObject(obj: object): object {
 
 /**
  * Does the opposite of flattenObject
- * Todo: Finish this.
  * @see flattenObject
  */
 export function unFlattenObject(obj: object): object {
-  return obj;
+  const result = {};
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
+  Object.keys(obj).forEach(key => key.split(".").reduce((r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []), result));
+  console.log(result);
+  return result;
 }
