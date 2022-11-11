@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import { container, singleton } from "tsyringe";
+import { singleton, container } from "tsyringe";
 
 import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
 import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
@@ -74,15 +74,11 @@ export class App {
  */
 export async function main() {
   process.setMaxListeners(30);
-  console.log(
-    "Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon."
-  );
+  console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
   let app: App;
-
   try {
     app = container.resolve(App);
-
     await app.init();
 
     // process.on("SIGTERM", () => app.stop())
@@ -92,5 +88,6 @@ export async function main() {
     await app.run();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
+    await app.stop();
   }
 }
