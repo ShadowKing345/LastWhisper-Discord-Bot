@@ -152,17 +152,27 @@ export class EventManagerService extends Service<EventManagerConfig> {
   }
 
   /**
-   * Fixme: Need to make this look for the message keyword first.
    * Fetches all event messages to ensure they are loaded for Discord events to fire.
    * @param client The client.
    */
   public async onReady(client: Client): Promise<void> {
-    const configs: EventManagerConfig[] = await this.repository.findAll({});
+    const promises: Promise<unknown>[] = [];
+    const configs: EventManagerConfig[] = await this.repository.getAll();
 
     for (const config of configs) {
-      if (!config.listenerChannelId || !config.events.length) continue;
-      await fetchMessages(client, config.listenerChannelId, config.events.map((event) => event.id));
+      if (!config.listenerChannelId || config.events?.length < 1) continue;
+
+      const messageIds: string[] = [];
+      for (const event of config.events) {
+        if (!event.id) {
+          messageIds.push(event.id);
+        }
+      }
+
+      promises.push(fetchMessages(client, config.listenerChannelId, messageIds));
     }
+
+    await Promise.all(promises);
   }
 
   /**

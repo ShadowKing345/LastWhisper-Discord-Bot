@@ -260,7 +260,7 @@ export class EventManagerModule extends ModuleBase {
     }
 
     try {
-      const event: EventObj = await this.service.create(message.guildId, `message#${message.id}`, message.content, message.channelId);
+      const event: EventObj = await this.service.create(message.guildId, message.id, message.content, message.channelId);
       await message.react(event ? "✅" : "❎");
       this.logger.debug("New event created.");
     } catch (error) {
