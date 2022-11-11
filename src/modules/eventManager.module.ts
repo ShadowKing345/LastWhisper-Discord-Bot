@@ -2,17 +2,15 @@ import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionT
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule } from "../utils/decorators/registerModule.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
-import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
 import { EventObj } from "../models/event_manager/index.js";
 import { WrongChannelError } from "../utils/errors/wrongChannelError.js";
 import { DateTime } from "luxon";
+import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 
 /**
  * Module designed to deal with events. (Not Discord event)
@@ -163,37 +161,82 @@ export class EventManagerModule extends ModuleBase {
 
   // region Commands
 
+  /**
+   * Creates an event using the slash commands.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   @authorize(EventManagerModule.permissionKeys.create)
-  private async createEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const response = await interaction.deferReply({ ephemeral: true });
+  @deferReply(true)
+  private async createEventCommand({
+                                     editReply,
+                                     options,
+                                     guildId
+                                   }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const name = options.getString("name");
+    const description = options.getString("description");
+    const time = options.getString("time");
 
-    const text = interaction.options.getString("text");
-    const name = interaction.options.getString("name");
-    const description = interaction.options.getString("description");
-    const time = interaction.options.getString("time");
+    const text = options.getString("text") ?? await this.service.createContent(guildId, name, description, time);
 
-    const event = await (text ? this.service.create(interaction.guildId, null, text) : this.service.createRaw(interaction.guildId, null, name, description, time));
-    await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
-
-    return response;
+    const event = await this.service.create(guildId, null, text);
+    await editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
   }
 
+  /**
+   * Updates existing events with slash commands.
+   * Does not update the original message if it exists.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   @authorize(EventManagerModule.permissionKeys.update)
-  private updateEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return interaction.reply("Yellow");
+  @deferReply(true)
+  private async updateEventCommand({
+                                     editReply,
+                                     options,
+                                     guildId
+                                   }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const index = options.getNumber("index", true);
+    const name = options.getString("name");
+    const description = options.getString("description");
+    const time = options.getString("time");
+
+    const event = await this.service.updateByIndex(guildId, index, await this.service.createContent(guildId, name, description, time));
+    await editReply({ content: event ? "Event was successfully updated." : "Event failed to be updated." });
   }
 
+  /**
+   * Cancels an event with slash commands.
+   * @param interaction The Discord interaction. The
+   * @private
+   */
   @authorize(EventManagerModule.permissionKeys.cancel)
-  private cancelEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    return interaction.reply("Yellow");
+  @deferReply(true)
+  private async cancelEventCommand({
+                                     editReply,
+                                     options,
+                                     guildId
+                                   }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const index = options.getNumber("index", true);
+
+    try {
+      await this.service.cancelByIndex(guildId, index);
+      await editReply({ content: "Event was successfully canceled." });
+    } catch (error) {
+      this.logger.error(error instanceof Error ? error.stack : error);
+      await editReply({ content: "Event failed to be canceled." });
+    }
   }
 
   @authorize(EventManagerModule.permissionKeys.test)
-  private async testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const response = await interaction.deferReply();
-
-    const event = await this.service.parseEvent(interaction.guildId, interaction.options.getString("text", true));
-    await interaction.editReply({
+  @deferReply()
+  private async testEventCommand({
+                                   editReply,
+                                   options,
+                                   guildId
+                                 }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const event = await this.service.parseEvent(guildId, options.getString("text", true));
+    await editReply({
       embeds: [
         new EmbedBuilder({
           title: event.isValid ? "Event is valid." : "Event is not valid.",
@@ -211,25 +254,25 @@ export class EventManagerModule extends ModuleBase {
         }).setColor(event.isValid ? "Green" : "Red")
       ]
     });
-
-    return response;
-
   }
 
   @authorize(EventManagerModule.permissionKeys.list)
-  private async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const response = await interaction.deferReply();
-
-    const event = await this.service.findIndex(interaction.guildId, interaction.options.getInteger("index"));
+  @deferReply()
+  private async listEventCommand({
+                                   editReply,
+                                   options,
+                                   guildId
+                                 }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const event = await this.service.findIndex(guildId, options.getInteger("index"));
 
     if (event == null) {
-      await interaction.editReply({
+      await editReply({
         embeds: [ new EmbedBuilder({
           title: "No events were set.",
           description: "There are currently no active events going on in your guild."
         }) ]
       });
-      return response;
+      return;
     }
 
     const embed: EmbedBuilder = event instanceof EventObj ?
@@ -243,8 +286,7 @@ export class EventManagerModule extends ModuleBase {
         }))
       }).setColor("Random");
 
-    await interaction.editReply({ embeds: [ embed ] });
-    return response;
+    await editReply({ embeds: [ embed ] });
   }
 
   // endregion
@@ -287,7 +329,7 @@ export class EventManagerModule extends ModuleBase {
     }
 
     try {
-      const event = await this.service.update(oldMessage.guildId, `message#${oldMessage.id}`, newMessage.content);
+      const event = await this.service.update(oldMessage.guildId, oldMessage.id, newMessage.content);
 
       const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
       if (reaction) await reaction.users.remove(oldMessage.client.user?.id);
@@ -302,7 +344,7 @@ export class EventManagerModule extends ModuleBase {
   private async deleteEvent(message: Message | PartialMessage): Promise<void> {
     if (message.partial) message = await message.fetch();
 
-    return this.service.cancel(message.guildId, `message#${message.id}`);
+    return this.service.cancel(message.guildId, message.id);
   }
 
   private onReady(client: Client): Promise<void> {
