@@ -1,20 +1,34 @@
-import { Client, Message, Snowflake, TextChannel } from "discord.js";
+import { Client, Message, Snowflake, TextChannel, Channel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
 import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
 
+/**
+ * Fetches the messages from a channel.
+ * Returns all the fetched messages.
+ * @param client The discord client.
+ * @param channelId The channel ID to look for.
+ * @param messageIds A collection of messages by their IDs to fetch.
+ */
 export async function fetchMessages(client: Client, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
-  const result: Message[] = [];
+  const promises: Promise<Message>[] = [];
 
-  if (!client.channels.cache.has(channelId)) return result;
-  const channel = await client.channels.fetch(channelId);
-  if (!channel || !(channel instanceof TextChannel)) return result;
+  const channel: Channel = await client.channels.fetch(channelId);
+  if (!(channel && channel instanceof TextChannel)) return [];
 
   for (const id of messageIds) {
-    const message: Message = await channel.messages.fetch(id);
-    if (message) result.push(message);
+    promises.push(channel.messages.fetch(id));
   }
 
-  return result;
+  const allSettled = await Promise.allSettled(promises);
+  const results: Message[] = [];
+
+  for (const result of allSettled) {
+    if (result.status === "fulfilled") {
+      results.push(result.value);
+    }
+  }
+
+  return results;
 }
 
 /**
