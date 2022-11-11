@@ -2,18 +2,21 @@ import { TextChannel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
 import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
 export async function fetchMessages(client, channelId, messageIds) {
-    const result = [];
-    if (!client.channels.cache.has(channelId))
-        return result;
+    const promises = [];
     const channel = await client.channels.fetch(channelId);
-    if (!channel || !(channel instanceof TextChannel))
-        return result;
+    if (!(channel && channel instanceof TextChannel))
+        return [];
     for (const id of messageIds) {
-        const message = await channel.messages.fetch(id);
-        if (message)
-            result.push(message);
+        promises.push(channel.messages.fetch(id));
     }
-    return result;
+    const allSettled = await Promise.allSettled(promises);
+    const results = [];
+    for (const result of allSettled) {
+        if (result.status === "fulfilled") {
+            results.push(result.value);
+        }
+    }
+    return results;
 }
 export function toJson(t, str) {
     if (t instanceof ToJsonBase) {
@@ -65,6 +68,9 @@ export function flattenObject(obj) {
     return Object.fromEntries(result);
 }
 export function unFlattenObject(obj) {
-    return obj;
+    const result = {};
+    Object.keys(obj).forEach(key => key.split(".").reduce((r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []), result));
+    console.log(result);
+    return result;
 }
 //# sourceMappingURL=index.js.map

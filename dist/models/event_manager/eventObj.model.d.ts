@@ -1,6 +1,6 @@
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 export declare class EventObj extends ToJsonBase<EventObj> {
-    messageId: string;
+    id: string;
     name: string;
     description: string;
     dateTime: number;

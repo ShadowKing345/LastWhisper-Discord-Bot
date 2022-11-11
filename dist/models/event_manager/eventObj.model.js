@@ -1,7 +1,7 @@
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { DateTime } from "luxon";
 export class EventObj extends ToJsonBase {
-    messageId = null;
+    id = null;
     name = null;
     description = null;
     dateTime = null;

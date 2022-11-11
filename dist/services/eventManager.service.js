@@ -28,12 +28,12 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         }
         return index == null ? config.events : config.getEventByIndex(index);
     }
-    async create(guildId, content, messageId, channelId) {
+    async create(guildId, id, content, channelId) {
         const config = await this.getConfig(guildId);
         if (channelId && config.listenerChannelId !== channelId) {
             throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
         }
-        const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
         if (!event.isValid) {
             return null;
         }
@@ -60,7 +60,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
     async update(guildId, messageId, content) {
         const config = await this.getConfig(guildId);
-        const oldEvent = config.events.find((event) => event.messageId === messageId);
+        const oldEvent = config.events.find((event) => event.id === messageId);
         if (!oldEvent) {
             throw new Error("Event does not exist.");
         }
@@ -72,9 +72,9 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         await this.repository.save(config);
         return event;
     }
-    async cancel(guildId, messageId) {
+    async cancel(guildId, id) {
         const config = await this.getConfig(guildId);
-        const index = config.events.findIndex((event) => event.messageId === messageId);
+        const index = config.events.findIndex((event) => event.id === id);
         if (index === -1)
             return;
         config.events.splice(index, 1);
@@ -82,15 +82,23 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
     async eventExists(guildId, id) {
         const config = await this.getConfig(guildId);
-        return config.events.findIndex((event) => event.messageId === id) !== -1;
+        return config.events.findIndex((event) => event.id === id) !== -1;
     }
     async onReady(client) {
-        const configs = await this.repository.findAll({});
+        const promises = [];
+        const configs = await this.repository.getAll();
         for (const config of configs) {
-            if (!config.listenerChannelId || !config.events.length)
+            if (!config.listenerChannelId || config.events?.length < 1)
                 continue;
-            await fetchMessages(client, config.listenerChannelId, config.events.map((event) => event.messageId));
+            const messageIds = [];
+            for (const event of config.events) {
+                if (!event.id) {
+                    messageIds.push(event.id);
+                }
+            }
+            promises.push(fetchMessages(client, config.listenerChannelId, messageIds));
         }
+        await Promise.all(promises);
     }
     async reminderLoop(client) {
         await Timer.waitTillReady(client);
@@ -155,9 +163,9 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     regexpEscape(text) {
         return text.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
     }
-    parseMessage(messageId, content, tags, dateTimeFormats, delimiter) {
+    parseMessage(id, content, tags, dateTimeFormats, delimiter) {
         const [l, r] = delimiter.map((c) => this.regexpEscape(c));
-        const event = new EventObj({ messageId });
+        const event = new EventObj({ id });
         const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
         for (const [, k, v] of content.matchAll(regExp)) {
             if (!k || !v)

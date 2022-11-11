@@ -156,7 +156,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         const name = interaction.options.getString("name");
         const description = interaction.options.getString("description");
         const time = interaction.options.getString("time");
-        const event = await (text ? this.service.create(interaction.guildId, text) : this.service.createRaw(interaction.guildId, null, name, description, time));
+        const event = await (text ? this.service.create(interaction.guildId, null, text) : this.service.createRaw(interaction.guildId, null, name, description, time));
         await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
         return response;
     }
@@ -223,7 +223,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             return;
         }
         try {
-            const event = await this.service.create(message.guildId, message.content, message.id, message.channelId);
+            const event = await this.service.create(message.guildId, message.id, message.content, message.channelId);
             await message.react(event ? "✅" : "❎");
             this.logger.debug("New event created.");
         }
@@ -249,7 +249,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             return;
         }
         try {
-            const event = await this.service.update(oldMessage.guildId, oldMessage.id, newMessage.content);
+            const event = await this.service.update(oldMessage.guildId, `message#${oldMessage.id}`, newMessage.content);
             const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
             if (reaction)
                 await reaction.users.remove(oldMessage.client.user?.id);
@@ -263,7 +263,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
     async deleteEvent(message) {
         if (message.partial)
             message = await message.fetch();
-        return this.service.cancel(message.guildId, message.id);
+        return this.service.cancel(message.guildId, `message#${message.id}`);
     }
     onReady(client) {
         return this.service.onReady(client);
