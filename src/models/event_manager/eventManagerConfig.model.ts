@@ -13,7 +13,7 @@ export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implement
   public guildId: string = null;
   public listenerChannelId: string | null = null;
   public postingChannelId: string | null = null;
-  public delimiterCharacters: [ string, string ] = [ "[", "]" ];
+  public delimiterCharacters: [string, string] = ["[", "]"];
   public tags: Tags = new Tags();
   public dateTimeFormat: string[] = [];
   public events: EventObj[] = [];
@@ -53,11 +53,11 @@ export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implement
     }
 
     if (obj.events) {
-      this.events = obj.events.map(event => deepMerge(new EventObj(), event));
+      this.events = obj.events.map((event) => deepMerge(new EventObj(), event));
     }
 
     if (obj.reminders) {
-      this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder));
+      this.reminders = obj.reminders.map((reminder) => deepMerge(new Reminder(), reminder));
     }
 
     return this;

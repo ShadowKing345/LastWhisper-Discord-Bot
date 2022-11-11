@@ -17,10 +17,7 @@ import { WrongChannelError } from "../utils/errors/wrongChannelError.js";
  */
 @singleton()
 export class EventManagerService extends Service<EventManagerConfig> {
-  constructor(
-    repository: EventManagerRepository,
-    @createLogger(EventManagerService.name) private logger: pino.Logger
-  ) {
+  constructor(repository: EventManagerRepository, @createLogger(EventManagerService.name) private logger: pino.Logger) {
     super(repository);
   }
 
@@ -58,15 +55,21 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param time Time fo the event.
    * @param additional Additional tags for the event.
    */
-  public async createContent(guildId: string | null, name: string, description: string, time: string, additional: [ string, string ][] = []): Promise<string> {
+  public async createContent(
+    guildId: string | null,
+    name: string,
+    description: string,
+    time: string,
+    additional: [string, string][] = []
+  ): Promise<string> {
     const config = await this.getConfig(guildId);
-    const [ l, r ] = config.delimiterCharacters;
+    const [l, r] = config.delimiterCharacters;
 
     let result = l + config.tags.announcement + r + name + "\n";
     result += `${l}${config.tags.description}${r}\n${description}\n`;
     result += `${l}${config.tags.dateTime}${r}\n${time}\n`;
 
-    for (const [ k, v ] of additional) {
+    for (const [k, v] of additional) {
       result += `${l}${k}${r}\n${v}\n`;
     }
 
@@ -81,7 +84,12 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param content Text content of the message.
    * @param channelId ID of the channel the message was posted in. Used for additional validation.
    */
-  public async create(guildId: string | null, id: string, content: string, channelId?: string): Promise<EventObj | null> {
+  public async create(
+    guildId: string | null,
+    id: string,
+    content: string,
+    channelId?: string
+  ): Promise<EventObj | null> {
     const config = await this.getConfig(guildId);
 
     if (channelId && config.listenerChannelId !== channelId) {
@@ -134,7 +142,13 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
     const oldEvent = config.getEventByIndex(index);
 
-    const event = this.parseMessage(oldEvent.id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+    const event = this.parseMessage(
+      oldEvent.id,
+      content,
+      config.tags,
+      config.dateTimeFormat,
+      config.delimiterCharacters
+    );
     if (!event.isValid) {
       return null;
     }
@@ -214,12 +228,17 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
     const now: DateTime = DateTime.now();
     const alteredConfigs: EventManagerConfig[] = [];
-    const configs = await this.repository.getAll()
-      .then(configs => configs.filter((config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)));
+    const configs = await this.repository
+      .getAll()
+      .then((configs) =>
+        configs.filter(
+          (config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)
+        )
+      );
 
     for (const config of configs) {
       try {
-        const postingChannel: Channel | null = (await client.channels.fetch(config.postingChannelId));
+        const postingChannel: Channel | null = await client.channels.fetch(config.postingChannelId);
 
         if (!(postingChannel.type === ChannelType.GuildText && postingChannel.guildId === config.guildId)) {
           this.logger.warn("Either posting channel does not exist or it is not inside of guild. Skipping...");
@@ -230,7 +249,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
           const reminderTimeDelta = reminder.asDuration;
           for (const event of config.events) {
             const eventTime = DateTime.fromSeconds(event.dateTime);
-            if (eventTime.diff(now, [ "days" ]).days > 1) continue;
+            if (eventTime.diff(now, ["days"]).days > 1) continue;
 
             const difference = eventTime.minus(reminderTimeDelta);
             if (difference.hour === now.hour && difference.minute === now.minute) {
@@ -238,7 +257,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
                 "%everyone%": "@everyone",
                 "%eventName%": event.name,
                 "%hourDiff%": reminderTimeDelta.hours.toString(),
-                "%minuteDiff%": reminderTimeDelta.minutes.toString()
+                "%minuteDiff%": reminderTimeDelta.minutes.toString(),
               };
 
               await postingChannel.send(reminder.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
@@ -278,8 +297,8 @@ export class EventManagerService extends Service<EventManagerConfig> {
       description: event.description,
       fields: [
         { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
-        ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true }))
-      ]
+        ...event.additional.map((pair) => ({ name: pair[0], value: pair[1], inline: true })),
+      ],
     }).setColor("Random");
   }
 
@@ -301,14 +320,21 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param delimiter Tuple containing the two delimiter characters.
    * @private
    */
-  private parseMessage(id: string, content: string, tags: Tags, dateTimeFormats: string[], delimiter: [ string, string ]): EventObj {
-    const [ l, r ] = delimiter.map((c) => this.regexpEscape(c));
+  private parseMessage(
+    id: string,
+    content: string,
+    tags: Tags,
+    dateTimeFormats: string[],
+    delimiter: [string, string]
+  ): EventObj {
+    const [l, r] = delimiter.map((c) => this.regexpEscape(c));
     const event = new EventObj({ id });
     const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
 
-    for (const [ , k, v ] of content.matchAll(regExp)) {
+    for (const [, k, v] of content.matchAll(regExp)) {
       if (!k || !v) continue;
-      const key = k.trim(), value = v.trim();
+      const key = k.trim(),
+        value = v.trim();
 
       let date: DateTime, time: number;
       switch (key) {
@@ -345,7 +371,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
         default:
           if (!tags.exclusionList.every((e) => e !== key)) continue;
-          event.additional.push([ key, value ]);
+          event.additional.push([key, value]);
           break;
       }
     }

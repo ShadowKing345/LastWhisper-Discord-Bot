@@ -74,7 +74,9 @@ export class App {
  */
 export async function main() {
   process.setMaxListeners(30);
-  console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
+  console.log(
+    "Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon."
+  );
 
   let app: App;
   try {

@@ -45,10 +45,10 @@ export class ModuleConfigurationService extends ConfigurationClass {
     this._modules =
       this.moduleConfiguration.modules?.length !== 0
         ? modules.filter((module) => {
-          const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-          const blacklist = this.moduleConfiguration.blacklist;
-          return (!blacklist && inList) || (blacklist && !inList);
-        })
+            const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
+            const blacklist = this.moduleConfiguration.blacklist;
+            return (!blacklist && inList) || (blacklist && !inList);
+          })
         : modules;
 
     this.moduleLogger.debug(`Modules list. [${this._modules.map((module) => module.moduleName).join(",")}]`);
@@ -81,12 +81,12 @@ export class ModuleConfigurationService extends ConfigurationClass {
           if (interaction.isUserContextMenuCommand()) {
             await interaction.reply({
               content: "Responded with a user",
-              ephemeral: true
+              ephemeral: true,
             });
           } else {
             await interaction.reply({
               content: "Responded with a message",
-              ephemeral: true
+              ephemeral: true,
             });
           }
         }
@@ -148,19 +148,19 @@ export class ModuleConfigurationService extends ConfigurationClass {
         if (error instanceof CommandResolverError) {
           await interaction.reply({
             content: "Sorry there was an issue resolving the command name.",
-            ephemeral: true
+            ephemeral: true,
           });
           return;
         }
 
         if (interaction.deferred) {
           await interaction.editReply({
-            content: "There was an internal error that occurred when using this interaction."
+            content: "There was an internal error that occurred when using this interaction.",
           });
         } else {
           await interaction.reply({
             content: "There was an internal error that occurred when using this interaction.",
-            ephemeral: true
+            ephemeral: true,
           });
         }
       }
@@ -247,7 +247,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
     if (this.moduleConfiguration.enableEventListeners) {
       this.moduleLogger.debug("Registering event.");
 
-      for (const [ event, listeners ] of client.events) {
+      for (const [event, listeners] of client.events) {
         client.on(event, (...args) => this.runEvent(listeners, client, ...args));
       }
     }

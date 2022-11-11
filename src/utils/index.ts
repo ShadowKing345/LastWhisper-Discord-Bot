@@ -94,9 +94,9 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 export function flattenObject(obj: object): object {
   const result = new Map<string, unknown>();
 
-  for (const [ k, v ] of Object.entries(obj)) {
+  for (const [k, v] of Object.entries(obj)) {
     if (v instanceof Object && !Array.isArray(v)) {
-      for (const [ k1, v1 ] of Object.entries(flattenObject(v as object))) {
+      for (const [k1, v1] of Object.entries(flattenObject(v as object))) {
         result.set(`${k}.${k1}`, v1);
       }
 
@@ -115,8 +115,15 @@ export function flattenObject(obj: object): object {
  */
 export function unFlattenObject(obj: object): object {
   const result = {};
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
-  Object.keys(obj).forEach(key => key.split(".").reduce((r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []), result));
+  Object.keys(obj).forEach((key) =>
+    key
+      .split(".")
+      .reduce(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
+        (r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []),
+        result
+      )
+  );
   console.log(result);
   return result;
 }

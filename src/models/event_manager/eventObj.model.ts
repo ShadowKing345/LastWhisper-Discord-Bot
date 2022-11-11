@@ -9,7 +9,7 @@ export class EventObj extends ToJsonBase<EventObj> {
   public name: string = null;
   public description: string = null;
   public dateTime: number = null;
-  public additional: [ string, string ][] = [];
+  public additional: [string, string][] = [];
 
   constructor(data: Partial<EventObj> = null) {
     super();
@@ -23,6 +23,11 @@ export class EventObj extends ToJsonBase<EventObj> {
    * Checks if teh event is valid.
    */
   public get isValid(): boolean {
-    return this.name != "" && this.description != "" && this.dateTime != null && this.dateTime > DateTime.now().toUnixInteger();
+    return (
+      this.name != "" &&
+      this.description != "" &&
+      this.dateTime != null &&
+      this.dateTime > DateTime.now().toUnixInteger()
+    );
   }
 }

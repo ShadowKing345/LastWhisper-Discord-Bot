@@ -1,4 +1,12 @@
-import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
+import {
+  Client,
+  Message,
+  ChatInputCommandInteraction,
+  ApplicationCommandOptionType,
+  PartialMessage,
+  InteractionResponse,
+  EmbedBuilder,
+} from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
@@ -24,7 +32,7 @@ export class EventManagerModule extends ModuleBase {
     update: "EventManager.update",
     cancel: "EventManager.cancel",
     test: "EventManager.test",
-    list: "EventManager.list"
+    list: "EventManager.list",
   };
 
   public moduleName = "EventManager";
@@ -40,24 +48,24 @@ export class EventManagerModule extends ModuleBase {
             new CommandOption({
               name: "text",
               description: "The new message you want to use instead. (Will not update the exiting message)",
-              type: ApplicationCommandOptionType.String
+              type: ApplicationCommandOptionType.String,
             }),
             new CommandOption({
               name: "name",
               description: "Name of event.",
-              type: ApplicationCommandOptionType.String
+              type: ApplicationCommandOptionType.String,
             }),
             new CommandOption({
               name: "description",
               description: "Description of event.",
-              type: ApplicationCommandOptionType.String
+              type: ApplicationCommandOptionType.String,
             }),
             new CommandOption({
               name: "time",
               description: "Time of event.",
-              type: ApplicationCommandOptionType.String
-            })
-          ]
+              type: ApplicationCommandOptionType.String,
+            }),
+          ],
         }),
         UpdateEvent: new Command({
           name: "update",
@@ -67,29 +75,29 @@ export class EventManagerModule extends ModuleBase {
               name: "index",
               description: "The index for the event, starting at 0.",
               type: ApplicationCommandOptionType.Integer,
-              required: true
+              required: true,
             }),
             new CommandOption({
               name: "text",
               description: "The new message you want to use instead. (Will not update the exiting message)",
-              type: ApplicationCommandOptionType.String
+              type: ApplicationCommandOptionType.String,
             }),
             new CommandOption({
               name: "name",
               description: "Name of event.",
-              type: ApplicationCommandOptionType.String
+              type: ApplicationCommandOptionType.String,
             }),
             new CommandOption({
               name: "description",
               description: "Description of event.",
-              type: ApplicationCommandOptionType.String
+              type: ApplicationCommandOptionType.String,
             }),
             new CommandOption({
               name: "time",
               description: "Time of event.",
-              type: ApplicationCommandOptionType.String
-            })
-          ]
+              type: ApplicationCommandOptionType.String,
+            }),
+          ],
         }),
         CancelEvent: new Command({
           name: "cancel",
@@ -99,21 +107,22 @@ export class EventManagerModule extends ModuleBase {
               name: "index",
               description: "The index for the event, starting at 0.",
               type: ApplicationCommandOptionType.Integer,
-              required: true
-            })
-          ]
+              required: true,
+            }),
+          ],
         }),
         TestEvent: new Command({
           name: "test",
-          description: "Tests a given string with the event parser. Checking if it's valid and returning event details.",
+          description:
+            "Tests a given string with the event parser. Checking if it's valid and returning event details.",
           options: [
             new CommandOption({
               name: "text",
               description: "The message you wish to check against.",
               type: ApplicationCommandOptionType.String,
-              required: true
-            })
-          ]
+              required: true,
+            }),
+          ],
         }),
         ListEvent: new Command({
           name: "list",
@@ -122,33 +131,33 @@ export class EventManagerModule extends ModuleBase {
             new CommandOption({
               name: "index",
               description: "The index for the event, starting at 0.",
-              type: ApplicationCommandOptionType.Integer
-            })
-          ]
-        })
+              type: ApplicationCommandOptionType.Integer,
+            }),
+          ],
+        }),
       },
-      execute: this.commandResolver.bind(this)
-    })
+      execute: this.commandResolver.bind(this),
+    }),
   ];
   public eventListeners: EventListeners = [
-    new EventListener("messageCreate", (_, [ message ]) => this.createEvent(message)),
-    new EventListener("messageUpdate", (_, [ old, message ]) => this.updateEvent(old, message)),
-    new EventListener("messageDelete", (_, [ message ]) => this.deleteEvent(message)),
-    new EventListener("ready", (client) => this.onReady(client))
+    new EventListener("messageCreate", (_, [message]) => this.createEvent(message)),
+    new EventListener("messageUpdate", (_, [old, message]) => this.updateEvent(old, message)),
+    new EventListener("messageDelete", (_, [message]) => this.deleteEvent(message)),
+    new EventListener("ready", (client) => this.onReady(client)),
   ];
   public timers: Timers = [
     {
       name: `${this.moduleName}#postMessageTask`,
       timeout: 60000,
-      execute: (client) => this.reminderLoop(client)
-    }
+      execute: (client) => this.reminderLoop(client),
+    },
   ];
   protected commandResolverKeys = {
     "event_manager.create": this.createEventCommand.bind(this),
     "event_manager.update": this.updateEventCommand.bind(this),
     "event_manager.cancel": this.cancelEventCommand.bind(this),
     "event_manager.test": this.testEventCommand.bind(this),
-    "event_manager.list": this.listEventCommand.bind(this)
+    "event_manager.list": this.listEventCommand.bind(this),
   };
 
   constructor(
@@ -169,15 +178,15 @@ export class EventManagerModule extends ModuleBase {
   @authorize(EventManagerModule.permissionKeys.create)
   @deferReply(true)
   private async createEventCommand({
-                                     editReply,
-                                     options,
-                                     guildId
-                                   }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    editReply,
+    options,
+    guildId,
+  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const name = options.getString("name");
     const description = options.getString("description");
     const time = options.getString("time");
 
-    const text = options.getString("text") ?? await this.service.createContent(guildId, name, description, time);
+    const text = options.getString("text") ?? (await this.service.createContent(guildId, name, description, time));
 
     const event = await this.service.create(guildId, null, text);
     await editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
@@ -192,16 +201,20 @@ export class EventManagerModule extends ModuleBase {
   @authorize(EventManagerModule.permissionKeys.update)
   @deferReply(true)
   private async updateEventCommand({
-                                     editReply,
-                                     options,
-                                     guildId
-                                   }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    editReply,
+    options,
+    guildId,
+  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const index = options.getNumber("index", true);
     const name = options.getString("name");
     const description = options.getString("description");
     const time = options.getString("time");
 
-    const event = await this.service.updateByIndex(guildId, index, await this.service.createContent(guildId, name, description, time));
+    const event = await this.service.updateByIndex(
+      guildId,
+      index,
+      await this.service.createContent(guildId, name, description, time)
+    );
     await editReply({ content: event ? "Event was successfully updated." : "Event failed to be updated." });
   }
 
@@ -213,10 +226,10 @@ export class EventManagerModule extends ModuleBase {
   @authorize(EventManagerModule.permissionKeys.cancel)
   @deferReply(true)
   private async cancelEventCommand({
-                                     editReply,
-                                     options,
-                                     guildId
-                                   }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    editReply,
+    options,
+    guildId,
+  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const index = options.getNumber("index", true);
 
     try {
@@ -231,10 +244,10 @@ export class EventManagerModule extends ModuleBase {
   @authorize(EventManagerModule.permissionKeys.test)
   @deferReply()
   private async testEventCommand({
-                                   editReply,
-                                   options,
-                                   guildId
-                                 }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    editReply,
+    options,
+    guildId,
+  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const event = await this.service.parseEvent(guildId, options.getString("text", true));
     await editReply({
       embeds: [
@@ -245,48 +258,53 @@ export class EventManagerModule extends ModuleBase {
             { name: "Description", value: event.description ?? "Description cannot be null." },
             {
               name: "Time",
-              value: event.dateTime ?
-                (event.dateTime < DateTime.now().toUnixInteger() ? `<t:${event.dateTime}:F>` : "Time is before the present.") :
-                "The format for the time was not correct. Use the Hammer time syntax to help."
+              value: event.dateTime
+                ? event.dateTime < DateTime.now().toUnixInteger()
+                  ? `<t:${event.dateTime}:F>`
+                  : "Time is before the present."
+                : "The format for the time was not correct. Use the Hammer time syntax to help.",
             },
-            { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") }
-          ]
-        }).setColor(event.isValid ? "Green" : "Red")
-      ]
+            { name: "Additional", value: event.additional.map((pair) => `[${pair[0]}]\n${pair[1]}`).join("\n") },
+          ],
+        }).setColor(event.isValid ? "Green" : "Red"),
+      ],
     });
   }
 
   @authorize(EventManagerModule.permissionKeys.list)
   @deferReply()
   private async listEventCommand({
-                                   editReply,
-                                   options,
-                                   guildId
-                                 }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    editReply,
+    options,
+    guildId,
+  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const event = await this.service.findIndex(guildId, options.getInteger("index"));
 
     if (event == null) {
       await editReply({
-        embeds: [ new EmbedBuilder({
-          title: "No events were set.",
-          description: "There are currently no active events going on in your guild."
-        }) ]
+        embeds: [
+          new EmbedBuilder({
+            title: "No events were set.",
+            description: "There are currently no active events going on in your guild.",
+          }),
+        ],
       });
       return;
     }
 
-    const embed: EmbedBuilder = event instanceof EventObj ?
-      this.service.createEventEmbed(event) :
-      new EmbedBuilder({
-        title: "Upcoming Events",
-        fields: event.map((event, index) => ({
-          name: `Index ${index}:`,
-          value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
-          inline: false
-        }))
-      }).setColor("Random");
+    const embed: EmbedBuilder =
+      event instanceof EventObj
+        ? this.service.createEventEmbed(event)
+        : new EmbedBuilder({
+            title: "Upcoming Events",
+            fields: event.map((event, index) => ({
+              name: `Index ${index}:`,
+              value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
+              inline: false,
+            })),
+          }).setColor("Random");
 
-    await editReply({ embeds: [ embed ] });
+    await editReply({ embeds: [embed] });
   }
 
   // endregion
@@ -302,7 +320,12 @@ export class EventManagerModule extends ModuleBase {
     }
 
     try {
-      const event: EventObj = await this.service.create(message.guildId, message.id, message.content, message.channelId);
+      const event: EventObj = await this.service.create(
+        message.guildId,
+        message.id,
+        message.content,
+        message.channelId
+      );
       await message.react(event ? "✅" : "❎");
       this.logger.debug("New event created.");
     } catch (error) {
@@ -324,7 +347,7 @@ export class EventManagerModule extends ModuleBase {
       return;
     }
 
-    if (!await this.service.eventExists(oldMessage.guildId, oldMessage.id)) {
+    if (!(await this.service.eventExists(oldMessage.guildId, oldMessage.id))) {
       return;
     }
 
