@@ -51,6 +51,29 @@ export class EventManagerService extends Service<EventManagerConfig> {
   }
 
   /**
+   * Creates the content string for a valid event based on the config of a guild.
+   * @param guildId Guild ID to get the configuration file.
+   * @param name Name of the event.
+   * @param description Description of the event.
+   * @param time Time fo the event.
+   * @param additional Additional tags for the event.
+   */
+  public async createContent(guildId: string | null, name: string, description: string, time: string, additional: [ string, string ][] = []): Promise<string> {
+    const config = await this.getConfig(guildId);
+    const [ l, r ] = config.delimiterCharacters;
+
+    let result = l + config.tags.announcement + r + name + "\n";
+    result += `${l}${config.tags.description}${r}\n${description}\n`;
+    result += `${l}${config.tags.dateTime}${r}\n${time}\n`;
+
+    for (const [ k, v ] of additional) {
+      result += `${l}${k}${r}\n${v}\n`;
+    }
+
+    return result;
+  }
+
+  /**
    * Attempt to create an event and returns it.
    * Will return null if it was unable to do so.
    * @param guildId Guild ID to get the configuration from.
@@ -76,38 +99,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
   }
 
   /**
-   * Creates an event with raw data.
-   * @param guildId Guild ID to get the configuration from.
-   * @param id ID of the event.
-   * @param name Name of event.
-   * @param description Description of event.
-   * @param time Time of event. Note has to be in the expected format for the guild.
-   * @param additional Additional tags to be added.
-   */
-  public async createRaw(guildId: string | null, id: string, name: string, description: string, time: string, additional: [ string, string ][] = []): Promise<EventObj | null> {
-    const config = await this.getConfig(guildId);
-    const [ l, r ] = config.delimiterCharacters;
-
-    let finalString = l + config.tags.announcement + r + name + "\n";
-    finalString += `${l}${config.tags.description}${r}\n${description}\n`;
-    finalString += `${l}${config.tags.dateTime}${r}\n${time}\n`;
-
-    for (const [ k, v ] of additional) {
-      finalString += `${l}${k}${r}\n${v}\n`;
-    }
-
-    const event = this.parseMessage(id, finalString, config.tags, config.dateTimeFormat, config.delimiterCharacters);
-    if (!event.isValid) {
-      return null;
-    }
-
-    config.events.push(event);
-    await this.repository.save(config);
-    return event;
-  }
-
-  /**
-   * Attempts to synchronize the data from the event with the new text of the message.
+   * Attempts to information with an event with the new text of the message.
    * @param guildId Guild ID to ge the configuration from.
    * @param messageId ID of the message.
    * @param content Text content of the message.
@@ -121,6 +113,28 @@ export class EventManagerService extends Service<EventManagerConfig> {
     }
 
     const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+    if (!event.isValid) {
+      return null;
+    }
+
+    oldEvent.merge(event);
+    await this.repository.save(config);
+
+    return event;
+  }
+
+  /**
+   * Attempts to information with an event with the new text of the message by the index rather than the ID.
+   * @param guildId Guild ID to ge the configuration from.
+   * @param index Index of the event.
+   * @param content Text content of the message.
+   */
+  public async updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObj | null> {
+    const config = await this.getConfig(guildId);
+
+    const oldEvent = config.getEventByIndex(index);
+
+    const event = this.parseMessage(oldEvent.id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
     if (!event.isValid) {
       return null;
     }
@@ -146,6 +160,22 @@ export class EventManagerService extends Service<EventManagerConfig> {
     await this.repository.save(config);
   }
 
+  /**
+   * Attempts to cancel an event if it exists.
+   * @param guildId Guild ID to ge the configuration from.
+   * @param index Index of the event.
+   */
+  public async cancelByIndex(guildId: string | null, index: number): Promise<void> {
+    const config = await this.getConfig(guildId);
+    config.events.splice(index % config.events.length, 1);
+    await this.repository.save(config);
+  }
+
+  /**
+   * Returns if the event exists or not.
+   * @param guildId Guild ID to get the configuration from.
+   * @param id ID of the event.
+   */
   public async eventExists(guildId: string | null, id: string): Promise<boolean> {
     const config = await this.getConfig(guildId);
     return config.events.findIndex((event) => event.id === id) !== -1;
