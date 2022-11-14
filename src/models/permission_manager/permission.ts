@@ -1,9 +1,10 @@
+import { Guild } from "discord.js";
+import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+
 /**
  * Representation of a permission.
  */
-import { Guild } from "discord.js";
-
-export class Permission {
+export class Permission extends ToJsonBase<Permission> {
   public roles: string[] = [];
   public mode: PermissionMode = PermissionMode.ANY;
   public blackList?: boolean = false;
@@ -27,8 +28,24 @@ export class Permission {
    * Formats all the roles into an enum friendly format.
    * @param guild The guild to fetch the role names from.
    */
-  public async formatRoles(guild: Guild): Promise<string>{
-    return this.roles.length > 0 ? (await Promise.allSettled(this.fetchRoleNames(guild))).join("\n") : "No roles were set."
+  public async formatRoles(guild: Guild): Promise<string> {
+    return this.roles.length > 0 ? (await Promise.allSettled(this.fetchRoleNames(guild))).join("\n") : "No roles were set.";
+  }
+
+  public merge(obj: Partial<Permission>): Permission {
+    if (obj.blackList) {
+      this.blackList = obj.blackList;
+    }
+
+    if (obj.mode) {
+      this.mode = obj.mode;
+    }
+
+    if (obj.roles) {
+      this.roles = obj.roles;
+    }
+
+    return this;
   }
 }
 
