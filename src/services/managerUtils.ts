@@ -2,7 +2,7 @@ import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, C
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
-import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.js";
+import { ManagerUtilsConfig } from "../models/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 
 @singleton()

@@ -1,5 +1,5 @@
-import { IEntity } from "../../utils/objects/repositoryBase.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+import { IEntity } from "../utils/objects/repositoryBase.js";
+import { ToJsonBase } from "../utils/objects/toJsonBase.js";
 
 /**
  * Role manager configuration object.
