@@ -1,4 +1,4 @@
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule } from "../utils/decorators/index.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import {

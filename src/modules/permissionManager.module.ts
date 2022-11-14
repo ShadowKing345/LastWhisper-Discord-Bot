@@ -3,12 +3,10 @@ import { Role, ChatInputCommandInteraction, InteractionResponse, ApplicationComm
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule, addPermissionKeys, authorize } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
-import { authorize } from "../utils/decorators/authorize.js";
 
 /**
  * Module to manager the permissions of commands from a Discord client.
@@ -22,7 +20,7 @@ export class PermissionManagerModule extends ModuleBase {
     addRole: "PermissionManager.addRole",
     removeRole: "PermissionManager.removeRole",
     config: "PermissionManager.config",
-    reset: "PermissionManager.reset",
+    reset: "PermissionManager.reset"
   };
 
   public moduleName = "PermissionManager";
@@ -34,7 +32,7 @@ export class PermissionManagerModule extends ModuleBase {
         List: new Command({
           name: "list",
           description: "Lists out all permissions.",
-          options: [PermissionManagerModule.commandKeyHelperBuilder(false)],
+          options: [ PermissionManagerModule.commandKeyHelperBuilder(false) ]
         }),
         AddRole: new Command({
           name: "add_role",
@@ -45,9 +43,9 @@ export class PermissionManagerModule extends ModuleBase {
               name: "role",
               description: "Role to be added.",
               required: true,
-              type: ApplicationCommandOptionType.Role,
-            }),
-          ],
+              type: ApplicationCommandOptionType.Role
+            })
+          ]
         }),
         RemoveRole: new Command({
           name: "remove_role",
@@ -58,9 +56,9 @@ export class PermissionManagerModule extends ModuleBase {
               name: "role",
               description: "Role to be added.",
               required: true,
-              type: ApplicationCommandOptionType.Role,
-            }),
-          ],
+              type: ApplicationCommandOptionType.Role
+            })
+          ]
         }),
         Config: new Command({
           name: "set_config",
@@ -73,25 +71,25 @@ export class PermissionManagerModule extends ModuleBase {
               required: true,
               choices: [
                 { name: "any", value: PermissionMode.ANY },
-                { name: "strict", value: PermissionMode.STRICT },
+                { name: "strict", value: PermissionMode.STRICT }
               ],
-              type: ApplicationCommandOptionType.Integer,
+              type: ApplicationCommandOptionType.Integer
             }),
             new CommandOption({
               name: "black_list",
               description: "Reverses the final result. I.e. If list is empty, no one can use the command.",
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
+              type: ApplicationCommandOptionType.String
+            })
+          ]
         }),
         Reset: new Command({
           name: "reset",
           description: "Resets a permission to the default parameters.",
-          options: [PermissionManagerModule.commandKeyHelperBuilder(true)],
-        }),
+          options: [ PermissionManagerModule.commandKeyHelperBuilder(true) ]
+        })
       },
-      execute: this.commandResolver.bind(this),
-    }),
+      execute: this.commandResolver.bind(this)
+    })
   ];
 
   protected commandResolverKeys = {
@@ -99,7 +97,7 @@ export class PermissionManagerModule extends ModuleBase {
     "permissions.add_role": this.addRoles.bind(this),
     "permissions.remove_role": this.removeRoles.bind(this),
     "permissions.set_config": this.config.bind(this),
-    "permissions.reset": this.reset.bind(this),
+    "permissions.reset": this.reset.bind(this)
   };
 
   constructor(
@@ -157,7 +155,7 @@ export class PermissionManagerModule extends ModuleBase {
       name: "key",
       description: "Command permission Key.",
       required: boolOverride,
-      type: ApplicationCommandOptionType.String,
+      type: ApplicationCommandOptionType.String
     });
   }
 }

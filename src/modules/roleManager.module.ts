@@ -6,7 +6,7 @@ import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 

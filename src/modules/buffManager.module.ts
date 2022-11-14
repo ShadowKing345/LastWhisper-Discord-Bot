@@ -5,11 +5,9 @@ import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule, authorize, addPermissionKeys } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
-import { authorize } from "../utils/decorators/authorize.js";
-import { addPermissionKeys } from "../utils/decorators/addPermissionKeys.js";
 import { DateTime } from "luxon";
 
 /**
@@ -21,7 +19,7 @@ export class BuffManagerModule extends ModuleBase {
   @addPermissionKeys()
   public static permissionKeys = {
     buffs: "BuffManager.buffs",
-    weeks: "BuffManager.weeks",
+    weeks: "BuffManager.weeks"
   };
 
   public moduleName = "BuffManager";
@@ -29,8 +27,8 @@ export class BuffManagerModule extends ModuleBase {
     {
       name: `${this.moduleName}#dailyMessageTask`,
       timeout: 60000,
-      execute: this.postDailyMessage.bind(this),
-    },
+      execute: this.postDailyMessage.bind(this)
+    }
   ];
 
   public commands: Commands = [
@@ -46,15 +44,15 @@ export class BuffManagerModule extends ModuleBase {
               name: "tomorrow",
               description: "Set to true if buff is for tomorrow.",
               required: false,
-              type: ApplicationCommandOptionType.Boolean,
+              type: ApplicationCommandOptionType.Boolean
             }),
             new CommandOption({
               name: "date",
               description: "Get the buff for a specific date. Use ISO 8601 format.",
               required: false,
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
+              type: ApplicationCommandOptionType.String
+            })
+          ]
         }),
         Weeks: new Command({
           name: "weeks",
@@ -64,24 +62,24 @@ export class BuffManagerModule extends ModuleBase {
               name: "next_week",
               description: "Set to true if buff is for tomorrow.",
               required: false,
-              type: ApplicationCommandOptionType.Boolean,
+              type: ApplicationCommandOptionType.Boolean
             }),
             new CommandOption({
               name: "date",
               description: "Get the week for a specific date. Use ISO 8601 format.",
               required: false,
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
-        }),
+              type: ApplicationCommandOptionType.String
+            })
+          ]
+        })
       },
-      execute: this.commandResolver.bind(this),
-    }),
+      execute: this.commandResolver.bind(this)
+    })
   ];
 
   protected commandResolverKeys = {
     "buff_manager.buffs": this.postBuff.bind(this),
-    "buff_manager.weeks": this.postWeek.bind(this),
+    "buff_manager.weeks": this.postWeek.bind(this)
   };
 
   constructor(
