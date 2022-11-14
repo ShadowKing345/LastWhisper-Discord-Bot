@@ -59,7 +59,7 @@ export class PermissionManagerService extends Service<PermissionManagerConfig> {
       await interaction.reply({
         content:
           "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
-        ephemeral: true
+        ephemeral: true,
       });
       return false;
     }
@@ -157,7 +157,7 @@ export class PermissionManagerService extends Service<PermissionManagerConfig> {
       const spaces = "\t".repeat(index);
       let result = "";
 
-      for (const [ key, value ] of Object.entries(obj)) {
+      for (const [key, value] of Object.entries(obj)) {
         result +=
           typeof value === "object" ? `${spaces}${key}:\n${format(value as object, index + 1)}` : `${spaces}${key};\n`;
       }
@@ -173,11 +173,17 @@ export class PermissionManagerService extends Service<PermissionManagerConfig> {
    * @param index Position of argument in function parameter list.
    * @private
    */
-  private static validateKey(index: number): (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
-    return function(_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
+  private static validateKey(
+    index: number
+  ): (
+    target: PermissionManagerService,
+    property: string | symbol,
+    descriptor: PropertyDescriptor
+  ) => PropertyDescriptor {
+    return function (_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
       const originalMethod = descriptor.value as (...args: unknown[]) => unknown;
 
-      descriptor.value = function(...args: unknown[]) {
+      descriptor.value = function (...args: unknown[]) {
         const key = args[index];
 
         if (!(key && typeof key === "string")) {
@@ -190,7 +196,9 @@ export class PermissionManagerService extends Service<PermissionManagerConfig> {
         }
 
         (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
-        throw new BadAuthorizationKeyError("Cannot find key. Please input a correct key. Use the list command to find out which keys are available.");
+        throw new BadAuthorizationKeyError(
+          "Cannot find key. Please input a correct key. Use the list command to find out which keys are available."
+        );
       };
 
       return descriptor;

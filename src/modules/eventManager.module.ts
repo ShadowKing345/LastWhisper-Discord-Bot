@@ -182,7 +182,9 @@ export class EventManagerModule extends ModuleBase {
     const description = interaction.options.getString("description");
     const time = interaction.options.getString("time");
 
-    const text = interaction.options.getString("text") ?? (await this.service.createContent(interaction.guildId, name, description, time));
+    const text =
+      interaction.options.getString("text") ??
+      (await this.service.createContent(interaction.guildId, name, description, time));
 
     const event = await this.service.create(interaction.guildId, null, text);
     await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });

@@ -27,8 +27,10 @@ export class Permission {
    * Formats all the roles into an enum friendly format.
    * @param guild The guild to fetch the role names from.
    */
-  public async formatRoles(guild: Guild): Promise<string>{
-    return this.roles.length > 0 ? (await Promise.allSettled(this.fetchRoleNames(guild))).join("\n") : "No roles were set."
+  public async formatRoles(guild: Guild): Promise<string> {
+    return this.roles.length > 0
+      ? (await Promise.allSettled(this.fetchRoleNames(guild))).join("\n")
+      : "No roles were set.";
   }
 }
 
