@@ -2,7 +2,7 @@ import { Collection, Filter } from "mongodb";
 
 import { MergeableObjectBase } from "./mergeableObjectBase.js";
 import { deepMerge } from "../index.js";
-import { DatabaseError } from "../errors/DatabaseError.js";
+import { DatabaseError } from "../errors/index.js";
 import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
 
 /**
