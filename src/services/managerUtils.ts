@@ -4,13 +4,16 @@ import { singleton } from "tsyringe";
 
 import { ManagerUtilsConfig } from "../models/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
+import { Service } from "../utils/objects/service.js";
 
 @singleton()
-export class ManagerUtilsService {
-  constructor(private managerUtilsConfigRepository: ManagerUtilsRepository) {}
+export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
+  constructor(repository: ManagerUtilsRepository) {
+    super(repository);
+  }
 
   private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
-    const config: ManagerUtilsConfig = await this.findOneOrCreate(guild.id);
+    const config: ManagerUtilsConfig = await this.getConfig(guild.id);
 
     if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
       return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
@@ -45,7 +48,7 @@ export class ManagerUtilsService {
         {
           name: "Roles:",
           value: member.roles.cache.map((role) => role.toString()).join(" "),
-        }
+        },
       )
       .setThumbnail(member.user.displayAvatarURL());
 
@@ -55,13 +58,13 @@ export class ManagerUtilsService {
         .setDescription(
           `User **${member.user.username}** was kicked by **${
             (await member.guild.members.fetch(kickedData.executor.id)).displayName
-          }** from the server.`
+          }** from the server.`,
         );
     } else {
       embed.setTitle("User Left!").setDescription(`User **${member.user.username}** has left this discord server`);
     }
 
-    await loggingChannel.send({ embeds: [embed] });
+    await loggingChannel.send({ embeds: [ embed ] });
   }
 
   public async onMemberBanned(ban: GuildBan) {
@@ -88,37 +91,21 @@ export class ManagerUtilsService {
               executor
                 ? (await ban.guild.members.fetch(executor.id)).displayName
                 : "Someone who was not part of the server somehow... what how?? "
-            }!`
+            }!`,
           )
           .setThumbnail(target.displayAvatarURL());
       } else {
         embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
       }
 
-      await loggingChannel.send({ embeds: [embed] });
+      await loggingChannel.send({ embeds: [ embed ] });
     } else {
       await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
     }
   }
 
-  private async findOneOrCreate(id: string | null): Promise<ManagerUtilsConfig> {
-    if (!id) {
-      throw new Error("Guild ID cannot be null.");
-    }
-
-    let result = await this.managerUtilsConfigRepository.findOne({
-      guildId: id,
-    });
-    if (result) return result;
-
-    result = new ManagerUtilsConfig();
-    result.guildId = id;
-
-    return await this.managerUtilsConfigRepository.save(result);
-  }
-
   public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const config = await this.findOneOrCreate(interaction.guildId);
+    const config = await this.getConfig(interaction.guildId);
 
     if (config.clearChannelBlacklist.includes(interaction.channelId)) {
       return interaction.reply({

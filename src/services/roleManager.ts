@@ -8,15 +8,18 @@ import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../models/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
+import { Service } from "../utils/objects/service.js";
 
 @singleton()
-export class RoleManagerService {
+export class RoleManagerService extends Service<RoleManagerConfig> {
   private collectors: { [key: string]: ReactionCollector } = {};
 
   constructor(
-    private roleManagerConfigRepository: RoleManagerRepository,
-    @createLogger(RoleManagerService.name) private logger: pino.Logger
-  ) {}
+    repository: RoleManagerRepository,
+    @createLogger(RoleManagerService.name) private logger: pino.Logger,
+  ) {
+    super(repository);
+  }
 
   private static async alterMembersRoles(member: GuildMember, roleId: string) {
     if (member.roles.cache.has(roleId)) {
@@ -61,12 +64,12 @@ export class RoleManagerService {
 
   public async onReady(client: Client) {
     await Timer.waitTillReady(client);
-    const configs: RoleManagerConfig[] = (await this.roleManagerConfigRepository.getAll()).filter(
+    const configs: RoleManagerConfig[] = (await this.repository.getAll()).filter(
       (config) =>
         client.guilds.cache.has(config.guildId) &&
         config.reactionListeningChannel &&
         config.acceptedRoleId &&
-        config.reactionMessageIds.length > 0
+        config.reactionMessageIds.length > 0,
     );
 
     for (const config of configs) {
@@ -74,7 +77,7 @@ export class RoleManagerService {
         const messages: Message[] | void = await fetchMessages(
           client,
           config.reactionListeningChannel,
-          config.reactionMessageIds
+          config.reactionMessageIds,
         );
         if (!messages) continue;
 
@@ -99,7 +102,7 @@ export class RoleManagerService {
       return;
     }
 
-    const config: RoleManagerConfig = await this.findOneOrCreate(guild.id);
+    const config: RoleManagerConfig = await this.getConfig(guild.id);
 
     if (!config.reactionMessageIds.includes(messageReaction.message.id)) {
       return;
@@ -111,7 +114,7 @@ export class RoleManagerService {
   }
 
   public async revokeRole(interaction: CommandInteraction) {
-    const config = await this.findOneOrCreate(interaction.guildId);
+    const config = await this.getConfig(interaction.guildId);
 
     if (!config?.acceptedRoleId) {
       return interaction.reply({
@@ -137,11 +140,11 @@ export class RoleManagerService {
   }
 
   public async registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
+    const config: RoleManagerConfig = await this.getConfig(interaction.guildId);
     const message_id: string = interaction.options.getString("message_id");
 
     const channel: TextChannel = (await interaction.guild?.channels.fetch(
-      config.reactionListeningChannel
+      config.reactionListeningChannel,
     )) as TextChannel;
 
     if (!channel) {
@@ -163,7 +166,7 @@ export class RoleManagerService {
     }
 
     config.reactionMessageIds.push(message_id);
-    await this.roleManagerConfigRepository.save(config);
+    await this.repository.save(config);
 
     await RoleManagerService.processMessageReactions(message, config);
     this.registerReactionCollector(message, config);
@@ -175,7 +178,7 @@ export class RoleManagerService {
   }
 
   public async unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    const config: RoleManagerConfig = await this.findOneOrCreate(interaction.guildId);
+    const config: RoleManagerConfig = await this.getConfig(interaction.guildId);
     const message_id: string = interaction.options.getString("message_id");
 
     const channel: Channel = await interaction.guild?.channels.fetch(config.reactionListeningChannel);
@@ -207,9 +210,9 @@ export class RoleManagerService {
 
     config.reactionMessageIds.splice(
       config.reactionMessageIds.findIndex((id) => id === message_id),
-      1
+      1,
     );
-    await this.roleManagerConfigRepository.save(config);
+    await this.repository.save(config);
 
     this.collectors[message_id]?.stop();
 
@@ -217,21 +220,5 @@ export class RoleManagerService {
       content: "Successfully unregistered.",
       ephemeral: true,
     });
-  }
-
-  private async findOneOrCreate(id: string | null): Promise<RoleManagerConfig> {
-    if (!id) {
-      throw new Error("Guild Id cannot be null.");
-    }
-
-    let result = await this.roleManagerConfigRepository.findOne({
-      guildId: id,
-    });
-    if (result) return result;
-
-    result = new RoleManagerConfig();
-    result.guildId = id;
-
-    return await this.roleManagerConfigRepository.save(result);
   }
 }
