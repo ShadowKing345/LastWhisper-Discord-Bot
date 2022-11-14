@@ -7,7 +7,6 @@ import { ManagerUtilsConfig } from "../models/managerUtils.js";
 @singleton()
 export class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {
   protected readonly collectionName: string = "manager_utils";
-
   protected readonly mappingObject = ManagerUtilsConfig;
 
   constructor(db: DatabaseConfigurationService) {

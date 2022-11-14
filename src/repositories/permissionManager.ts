@@ -7,7 +7,6 @@ import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 @singleton()
 export class PermissionManagerRepository extends RepositoryBase<PermissionManagerConfig> {
   protected readonly collectionName: string = "permission_manager";
-
   protected readonly mappingObject = PermissionManagerConfig;
 
   constructor(db: DatabaseConfigurationService) {
