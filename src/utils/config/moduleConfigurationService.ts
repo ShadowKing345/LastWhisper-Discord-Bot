@@ -9,7 +9,7 @@ import { Client } from "../models/client.js";
 import { ModuleBase, ProjectConfiguration } from "../models/index.js";
 import { Timer } from "../objects/timer.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
-import { CommandResolverError } from "../errors/commandResolverError.js";
+import { CommandResolverError } from "../errors/index.js";
 import { Command } from "../objects/command.js";
 import { EventListeners } from "../objects/eventListener.js";
 

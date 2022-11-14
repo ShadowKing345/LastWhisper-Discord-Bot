@@ -1,0 +1,1 @@
+{"version":3,"file":"roleManager.js","sourceRoot":"","sources":["../../src/models/roleManager.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,UAAU,EAAE,MAAM,gCAAgC,CAAC;AAK5D,MAAM,OAAO,iBAAkB,SAAQ,UAA6B;IAC3D,GAAG,CAAS;IACZ,OAAO,GAAW,IAAI,CAAC;IACvB,cAAc,GAAW,IAAI,CAAC;IAC9B,kBAAkB,GAAa,EAAE,CAAC;IAClC,wBAAwB,GAAW,IAAI,CAAC;CAChD"}

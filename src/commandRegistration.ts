@@ -4,12 +4,7 @@ import { container } from "tsyringe";
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
 import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
-import {
-  Routes,
-  RESTPostAPIChatInputApplicationCommandsJSONBody,
-  APIApplicationCommandSubcommandOption,
-  APIApplicationCommandSubcommandGroupOption,
-} from "discord-api-types/v10";
+import { Routes, RESTPostAPIChatInputApplicationCommandsJSONBody, APIApplicationCommandSubcommandOption, APIApplicationCommandSubcommandGroupOption } from "discord-api-types/v10";
 
 /**
  * Command registration argument used when registering commands.
