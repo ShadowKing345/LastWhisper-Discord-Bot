@@ -1,13 +1,12 @@
 var App_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
+import { singleton, container } from "tsyringe";
 import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
 import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
 import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
 import { ProjectConfiguration } from "./utils/models/index.js";
-import { PermissionManagerService } from "./services/permissionManager.service.js";
 let App = App_1 = class App {
     appConfig;
     databaseService;
@@ -59,11 +58,15 @@ export { App };
 export async function main() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
+    let app;
     try {
-        console.log(PermissionManagerService.keysFormatted);
+        app = container.resolve(App);
+        await app.init();
+        await app.run();
     }
     catch (error) {
         console.error(error instanceof Error ? error.stack : error);
+        await app.stop();
     }
 }
 //# sourceMappingURL=app.js.map

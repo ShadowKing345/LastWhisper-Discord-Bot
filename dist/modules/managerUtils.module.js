@@ -3,7 +3,7 @@ import { __decorate, __metadata, __param } from "tslib";
 import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";

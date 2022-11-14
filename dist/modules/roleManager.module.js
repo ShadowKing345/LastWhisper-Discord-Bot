@@ -5,7 +5,7 @@ import { ModuleBase } from "../utils/models/index.js";
 import { createLogger } from "../utils/loggerService.js";
 import { RoleManagerService } from "../services/roleManager.service.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { EventListener } from "../utils/objects/eventListener.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {

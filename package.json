@@ -1,6 +1,6 @@
 {
   "name": "lastwhisper-discord-bot",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
   "bin": "dist/index.js",
   "main": "dist/index.js",

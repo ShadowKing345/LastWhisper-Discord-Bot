@@ -1,19 +1,15 @@
-import { Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
+import { Permission, PermissionManagerConfig } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
-export declare class PermissionManagerService {
-    private permissionManagerRepository;
+import { Service } from "../utils/objects/service.js";
+export declare class PermissionManagerService extends Service<PermissionManagerConfig> {
     private logger;
     private static readonly keys;
     private static _keysFormatted;
-    constructor(permissionManagerRepository: PermissionManagerRepository, logger: pino.Logger);
+    constructor(repository: PermissionManagerRepository, logger: pino.Logger);
+    getPermission(guildId: string | null, key: string): Promise<Permission | null>;
     isAuthorized(interaction: ChatInputCommandInteraction, key: string): Promise<boolean>;
-    addRole(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse>;
-    removeRole(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse>;
-    config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse>;
-    reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse>;
-    listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse>;
-    private findOneOrCreate;
     static addPermissionKey(key: string): void;
     static removePermissionKey(key: string): void;
     static keyExists(key: string): boolean;

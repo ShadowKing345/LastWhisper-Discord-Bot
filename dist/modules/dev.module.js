@@ -1,6 +1,6 @@
 var DevModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { registerModule } from "../utils/decorators/registerModule.js";
+import { registerModule } from "../utils/decorators/index.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, } from "discord.js";

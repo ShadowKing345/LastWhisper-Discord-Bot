@@ -13,7 +13,7 @@ export class Reminder extends ToJsonBase {
         const hold = DateTime.fromFormat(this.timeDelta, "HH:mm");
         return Duration.fromObject({
             hours: hold.get("hour"),
-            minutes: hold.get("minute")
+            minutes: hold.get("minute"),
         });
     }
 }

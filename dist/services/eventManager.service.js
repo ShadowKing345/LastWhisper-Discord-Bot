@@ -28,29 +28,23 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         }
         return index == null ? config.events : config.getEventByIndex(index);
     }
+    async createContent(guildId, name, description, time, additional = []) {
+        const config = await this.getConfig(guildId);
+        const [l, r] = config.delimiterCharacters;
+        let result = l + config.tags.announcement + r + name + "\n";
+        result += `${l}${config.tags.description}${r}\n${description}\n`;
+        result += `${l}${config.tags.dateTime}${r}\n${time}\n`;
+        for (const [k, v] of additional) {
+            result += `${l}${k}${r}\n${v}\n`;
+        }
+        return result;
+    }
     async create(guildId, id, content, channelId) {
         const config = await this.getConfig(guildId);
         if (channelId && config.listenerChannelId !== channelId) {
             throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
         }
         const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
-        if (!event.isValid) {
-            return null;
-        }
-        config.events.push(event);
-        await this.repository.save(config);
-        return event;
-    }
-    async createRaw(guildId, id, name, description, time, additional = []) {
-        const config = await this.getConfig(guildId);
-        const [l, r] = config.delimiterCharacters;
-        let finalString = l + config.tags.announcement + r + name + "\n";
-        finalString += `${l}${config.tags.description}${r}\n${description}\n`;
-        finalString += `${l}${config.tags.dateTime}${r}\n${time}\n`;
-        for (const [k, v] of additional) {
-            finalString += `${l}${k}${r}\n${v}\n`;
-        }
-        const event = this.parseMessage(id, finalString, config.tags, config.dateTimeFormat, config.delimiterCharacters);
         if (!event.isValid) {
             return null;
         }
@@ -72,12 +66,28 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         await this.repository.save(config);
         return event;
     }
+    async updateByIndex(guildId, index, content) {
+        const config = await this.getConfig(guildId);
+        const oldEvent = config.getEventByIndex(index);
+        const event = this.parseMessage(oldEvent.id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        if (!event.isValid) {
+            return null;
+        }
+        oldEvent.merge(event);
+        await this.repository.save(config);
+        return event;
+    }
     async cancel(guildId, id) {
         const config = await this.getConfig(guildId);
         const index = config.events.findIndex((event) => event.id === id);
         if (index === -1)
             return;
         config.events.splice(index, 1);
+        await this.repository.save(config);
+    }
+    async cancelByIndex(guildId, index) {
+        const config = await this.getConfig(guildId);
+        config.events.splice(index % config.events.length, 1);
         await this.repository.save(config);
     }
     async eventExists(guildId, id) {
@@ -104,11 +114,12 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         await Timer.waitTillReady(client);
         const now = DateTime.now();
         const alteredConfigs = [];
-        const configs = await this.repository.getAll()
-            .then(configs => configs.filter((config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)));
+        const configs = await this.repository
+            .getAll()
+            .then((configs) => configs.filter((config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)));
         for (const config of configs) {
             try {
-                const postingChannel = (await client.channels.fetch(config.postingChannelId));
+                const postingChannel = await client.channels.fetch(config.postingChannelId);
                 if (!(postingChannel.type === ChannelType.GuildText && postingChannel.guildId === config.guildId)) {
                     this.logger.warn("Either posting channel does not exist or it is not inside of guild. Skipping...");
                     continue;
@@ -125,7 +136,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                                 "%everyone%": "@everyone",
                                 "%eventName%": event.name,
                                 "%hourDiff%": reminderTimeDelta.hours.toString(),
-                                "%minuteDiff%": reminderTimeDelta.minutes.toString()
+                                "%minuteDiff%": reminderTimeDelta.minutes.toString(),
                             };
                             await postingChannel.send(reminder.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
                         }
@@ -156,8 +167,8 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             description: event.description,
             fields: [
                 { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
-                ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true }))
-            ]
+                ...event.additional.map((pair) => ({ name: pair[0], value: pair[1], inline: true })),
+            ],
         }).setColor("Random");
     }
     regexpEscape(text) {

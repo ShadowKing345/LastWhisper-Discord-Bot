@@ -1,6 +1,6 @@
 import { MergeableObjectBase } from "./mergeableObjectBase.js";
 import { deepMerge } from "../index.js";
-import { DatabaseError } from "../errors/DatabaseError.js";
+import { DatabaseError } from "../errors/index.js";
 export class RepositoryBase {
     db;
     _collection = null;
