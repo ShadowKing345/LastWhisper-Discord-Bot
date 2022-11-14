@@ -16,7 +16,7 @@ import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
 import { EventObj } from "../models/event_manager/index.js";
-import { WrongChannelError } from "../utils/errors/wrongChannelError.js";
+import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 
@@ -177,19 +177,15 @@ export class EventManagerModule extends ModuleBase {
    */
   @authorize(EventManagerModule.permissionKeys.create)
   @deferReply(true)
-  private async createEventCommand({
-    editReply,
-    options,
-    guildId,
-  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const name = options.getString("name");
-    const description = options.getString("description");
-    const time = options.getString("time");
+  private async createEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const name = interaction.options.getString("name");
+    const description = interaction.options.getString("description");
+    const time = interaction.options.getString("time");
 
-    const text = options.getString("text") ?? (await this.service.createContent(guildId, name, description, time));
+    const text = interaction.options.getString("text") ?? (await this.service.createContent(interaction.guildId, name, description, time));
 
-    const event = await this.service.create(guildId, null, text);
-    await editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
+    const event = await this.service.create(interaction.guildId, null, text);
+    await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
   }
 
   /**
@@ -200,22 +196,18 @@ export class EventManagerModule extends ModuleBase {
    */
   @authorize(EventManagerModule.permissionKeys.update)
   @deferReply(true)
-  private async updateEventCommand({
-    editReply,
-    options,
-    guildId,
-  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const index = options.getNumber("index", true);
-    const name = options.getString("name");
-    const description = options.getString("description");
-    const time = options.getString("time");
+  private async updateEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const index = interaction.options.getNumber("index", true);
+    const name = interaction.options.getString("name");
+    const description = interaction.options.getString("description");
+    const time = interaction.options.getString("time");
 
     const event = await this.service.updateByIndex(
-      guildId,
+      interaction.guildId,
       index,
-      await this.service.createContent(guildId, name, description, time)
+      await this.service.createContent(interaction.guildId, name, description, time)
     );
-    await editReply({ content: event ? "Event was successfully updated." : "Event failed to be updated." });
+    await interaction.editReply({ content: event ? "Event was successfully updated." : "Event failed to be updated." });
   }
 
   /**
@@ -225,31 +217,23 @@ export class EventManagerModule extends ModuleBase {
    */
   @authorize(EventManagerModule.permissionKeys.cancel)
   @deferReply(true)
-  private async cancelEventCommand({
-    editReply,
-    options,
-    guildId,
-  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const index = options.getNumber("index", true);
+  private async cancelEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const index = interaction.options.getNumber("index", true);
 
     try {
-      await this.service.cancelByIndex(guildId, index);
-      await editReply({ content: "Event was successfully canceled." });
+      await this.service.cancelByIndex(interaction.guildId, index);
+      await interaction.editReply({ content: "Event was successfully canceled." });
     } catch (error) {
       this.logger.error(error instanceof Error ? error.stack : error);
-      await editReply({ content: "Event failed to be canceled." });
+      await interaction.editReply({ content: "Event failed to be canceled." });
     }
   }
 
   @authorize(EventManagerModule.permissionKeys.test)
   @deferReply()
-  private async testEventCommand({
-    editReply,
-    options,
-    guildId,
-  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const event = await this.service.parseEvent(guildId, options.getString("text", true));
-    await editReply({
+  private async testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const event = await this.service.parseEvent(interaction.guildId, interaction.options.getString("text", true));
+    await interaction.editReply({
       embeds: [
         new EmbedBuilder({
           title: event.isValid ? "Event is valid." : "Event is not valid.",
@@ -273,15 +257,11 @@ export class EventManagerModule extends ModuleBase {
 
   @authorize(EventManagerModule.permissionKeys.list)
   @deferReply()
-  private async listEventCommand({
-    editReply,
-    options,
-    guildId,
-  }: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const event = await this.service.findIndex(guildId, options.getInteger("index"));
+  private async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    const event = await this.service.findIndex(interaction.guildId, interaction.options.getInteger("index"));
 
     if (event == null) {
-      await editReply({
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder({
             title: "No events were set.",
@@ -304,7 +284,7 @@ export class EventManagerModule extends ModuleBase {
             })),
           }).setColor("Random");
 
-    await editReply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
   }
 
   // endregion
