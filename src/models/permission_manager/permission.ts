@@ -21,7 +21,7 @@ export class Permission extends ToJsonBase<Permission> {
    * @param guild The guild to fetch the role names from.
    */
   public fetchRoleNames(guild: Guild): Promise<string>[] {
-    return this.roles.map((roleId) => guild?.roles.fetch(roleId).then((role) => role?.name));
+    return this.roles.map(roleId => guild?.roles.fetch(roleId).then(role => role?.name));
   }
 
   /**
@@ -29,7 +29,9 @@ export class Permission extends ToJsonBase<Permission> {
    * @param guild The guild to fetch the role names from.
    */
   public async formatRoles(guild: Guild): Promise<string> {
-    return this.roles.length > 0 ? (await Promise.allSettled(this.fetchRoleNames(guild))).join("\n") : "No roles were set.";
+    return this.roles.length > 0
+      ? (await Promise.allSettled(this.fetchRoleNames(guild))).join("\n")
+      : "No roles were set.";
   }
 
   public merge(obj: Partial<Permission>): Permission {

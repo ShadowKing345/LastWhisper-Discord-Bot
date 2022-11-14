@@ -32,7 +32,7 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     if (obj.commandRegistration) {
       this.commandRegistration = deepMerge(
         this.commandRegistration ?? new CommandRegistrationConfiguration(),
-        obj.commandRegistration
+        obj.commandRegistration,
       );
     }
 
@@ -43,7 +43,7 @@ export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
     if (obj.moduleConfiguration) {
       this.moduleConfiguration = deepMerge(
         this.moduleConfiguration ?? new ModuleConfiguration(),
-        obj.moduleConfiguration
+        obj.moduleConfiguration,
       );
     }
 

@@ -4,7 +4,12 @@ import { container } from "tsyringe";
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
 import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
-import { Routes, RESTPostAPIChatInputApplicationCommandsJSONBody, APIApplicationCommandSubcommandOption, APIApplicationCommandSubcommandGroupOption } from "discord-api-types/v10";
+import {
+  Routes,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  APIApplicationCommandSubcommandOption,
+  APIApplicationCommandSubcommandGroupOption,
+} from "discord-api-types/v10";
 
 /**
  * Command registration argument used when registering commands.
@@ -62,14 +67,14 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
     let promise: Promise<unknown>;
     if (commandConfigs.unregister) {
       const commands = (await rest.get(route)) as { id: string }[];
-      promise = Promise.all(commands.map((command) => rest.delete(`${route}/${command.id}`)));
+      promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
     } else {
       const commands: (
         | RESTPostAPIChatInputApplicationCommandsJSONBody
         | APIApplicationCommandSubcommandGroupOption
         | APIApplicationCommandSubcommandOption
       )[] = [];
-      app.modules.forEach((module) => {
+      app.modules.forEach(module => {
         for (const command of module.commands) {
           commands.push(command.build().toJSON());
         }

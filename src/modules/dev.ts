@@ -1,7 +1,20 @@
 import { registerModule } from "../utils/decorators/index.js";
 import { ModuleBase } from "../utils/objects/moduleBase.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder, InteractionResponse, ButtonInteraction } from "discord.js";
+import {
+  CommandInteraction,
+  SelectMenuBuilder,
+  ButtonStyle,
+  ButtonBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder,
+  ChatInputCommandInteraction,
+  ModalActionRowComponentBuilder,
+  InteractionResponse,
+  ButtonInteraction,
+} from "discord.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
@@ -16,12 +29,12 @@ export class DevModule extends ModuleBase {
     new Command({
       name: "test_inputs",
       description: "Testing command.",
-      execute: (interaction) => this.testInteractionTypes(interaction),
+      execute: interaction => this.testInteractionTypes(interaction),
     }),
     new Command({
       name: "test_modal",
       description: "Testing command.",
-      execute: (interaction) => this.testModal(interaction),
+      execute: interaction => this.testModal(interaction),
     }),
   ];
 
@@ -31,7 +44,7 @@ export class DevModule extends ModuleBase {
 
   public constructor(
     permissionManagerService: PermissionManagerService,
-    @createLogger(DevModule.name) logger: pino.Logger
+    @createLogger(DevModule.name) logger: pino.Logger,
   ) {
     super(permissionManagerService, logger);
   }
@@ -49,7 +62,7 @@ export class DevModule extends ModuleBase {
         label: "You can select me too",
         description: "This is also a description",
         value: "second_option",
-      }
+      },
     );
 
     await interaction.reply({

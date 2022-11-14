@@ -1,4 +1,15 @@
-import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, AuditLogEvent, EmbedBuilder, PartialGuildMember } from "discord.js";
+import {
+  Guild,
+  GuildBan,
+  GuildMember,
+  TextChannel,
+  User,
+  InteractionResponse,
+  ChatInputCommandInteraction,
+  AuditLogEvent,
+  EmbedBuilder,
+  PartialGuildMember,
+} from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
@@ -47,7 +58,7 @@ export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
         { name: "Nickname was:", value: member.nickname ?? "None" },
         {
           name: "Roles:",
-          value: member.roles.cache.map((role) => role.toString()).join(" "),
+          value: member.roles.cache.map(role => role.toString()).join(" "),
         },
       )
       .setThumbnail(member.user.displayAvatarURL());
@@ -64,7 +75,7 @@ export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
       embed.setTitle("User Left!").setDescription(`User **${member.user.username}** has left this discord server`);
     }
 
-    await loggingChannel.send({ embeds: [ embed ] });
+    await loggingChannel.send({ embeds: [embed] });
   }
 
   public async onMemberBanned(ban: GuildBan) {
@@ -98,7 +109,7 @@ export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
         embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
       }
 
-      await loggingChannel.send({ embeds: [ embed ] });
+      await loggingChannel.send({ embeds: [embed] });
     } else {
       await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
     }

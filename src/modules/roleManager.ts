@@ -13,7 +13,7 @@ import { EventListeners, EventListener } from "../utils/objects/eventListener.js
 @registerModule()
 export class RoleManagerModule extends ModuleBase {
   public moduleName = "RoleManager";
-  public eventListeners: EventListeners = [new EventListener("ready", async (client) => this.onReady(client))];
+  public eventListeners: EventListeners = [new EventListener("ready", async client => this.onReady(client))];
   public commands: Commands = [
     new Command({
       name: "role_manager",
@@ -46,7 +46,7 @@ export class RoleManagerModule extends ModuleBase {
           ],
         }),
       },
-      execute: (interaction) => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
+      execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }),
   ];
 
@@ -59,7 +59,7 @@ export class RoleManagerModule extends ModuleBase {
   constructor(
     private roleManagerService: RoleManagerService,
     @createLogger(RoleManagerModule.name) logger: pino.Logger,
-    permissionManagerService: PermissionManagerService
+    permissionManagerService: PermissionManagerService,
   ) {
     super(permissionManagerService, logger);
   }

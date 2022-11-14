@@ -1,4 +1,10 @@
-import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
+import {
+  GuildBan,
+  GuildMember,
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  PartialGuildMember,
+} from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -27,7 +33,7 @@ export class ManagerUtilsModule extends ModuleBase {
           ],
         }),
       },
-      execute: (interaction) => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
+      execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }),
   ];
   public eventListeners: EventListeners = [
@@ -42,7 +48,7 @@ export class ManagerUtilsModule extends ModuleBase {
   constructor(
     private managerUtilsService: ManagerUtilsService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(ManagerUtilsModule.name) logger: pino.Logger
+    @createLogger(ManagerUtilsModule.name) logger: pino.Logger,
   ) {
     super(permissionManagerService, logger);
   }

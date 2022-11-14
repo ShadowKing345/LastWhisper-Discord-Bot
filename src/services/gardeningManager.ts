@@ -1,4 +1,12 @@
-import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
+import {
+  CommandInteraction,
+  GuildMember,
+  EmbedBuilder,
+  TextChannel,
+  InteractionResponse,
+  ChatInputCommandInteraction,
+  APIEmbedField,
+} from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -25,7 +33,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
     plotNum: number,
     slotNum: number,
     slotShouldExist = true,
-  ): Promise<null | [ Plot, Slot ]> {
+  ): Promise<null | [Plot, Slot]> {
     if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {
       throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
@@ -47,7 +55,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
       return null;
     }
 
-    return [ plot, slot ];
+    return [plot, slot];
   }
 
   protected static printPlotInfo(plot: Plot, plotNum: number, detailed = false, indent = 1): string {
@@ -105,7 +113,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
     if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
       throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
-    const value: void | [ Plot, Slot ] = await GardeningManagerService.validatePlotAndSlot(
+    const value: void | [Plot, Slot] = await GardeningManagerService.validatePlotAndSlot(
       interaction,
       config,
       plotNum,
@@ -170,7 +178,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
       throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
     }
 
-    const value: void | [ Plot, Slot ] = await GardeningManagerService.validatePlotAndSlot(
+    const value: void | [Plot, Slot] = await GardeningManagerService.validatePlotAndSlot(
       interaction,
       config,
       plotNum,
@@ -196,13 +204,13 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
           : undefined;
       plot.slots[plotNum] = slot;
     } else {
-      const next = slot.next.find((reservation) => reservation.player === player && reservation.plant === plant);
+      const next = slot.next.find(reservation => reservation.player === player && reservation.plant === plant);
       if (!next)
         return interaction.reply({
           content: "There is no reservation currently registered to you.",
           ephemeral: true,
         });
-      slot.next = slot.next.filter((res) => res !== next);
+      slot.next = slot.next.filter(res => res !== next);
     }
 
     await this.repository.save(config);
@@ -291,7 +299,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
     }
 
     for (const config of altered) {
-      this.repository.save(config).catch((err) => this.logger.error(err));
+      this.repository.save(config).catch(err => this.logger.error(err));
       await this.postChannelMessage(client, config, {} as unknown as MessagePostArgs);
     }
   }
@@ -315,7 +323,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
       },
     });
 
-    await channel.send({ embeds: [ embed ] });
+    await channel.send({ embeds: [embed] });
   }
 }
 

@@ -63,7 +63,7 @@ export abstract class RepositoryBase<T extends MergeObjectBase<T> & IEntity<unkn
    */
   public async findAll(filter: Filter<T>): Promise<T[]> {
     this.validateCollection();
-    return (await this.collection.find(filter).toArray()).map((obj) => this.map(obj));
+    return (await this.collection.find(filter).toArray()).map(obj => this.map(obj));
   }
 
   /**
@@ -83,7 +83,7 @@ export abstract class RepositoryBase<T extends MergeObjectBase<T> & IEntity<unkn
     if (objs.length <= 0) return;
 
     const bulk = this.collection.initializeOrderedBulkOp();
-    objs.forEach((config) => bulk.find({ _id: config._id }).upsert().replaceOne(config));
+    objs.forEach(config => bulk.find({ _id: config._id }).upsert().replaceOne(config));
 
     await bulk.execute();
   }

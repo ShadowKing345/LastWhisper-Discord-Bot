@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  ApplicationCommandOptionType,
+  EmbedBuilder,
+} from "discord.js";
 
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode, Permission } from "../models/permission_manager/index.js";
@@ -15,7 +20,8 @@ import { BadAuthorizationKeyError } from "../utils/errors/index.js";
  */
 @registerModule()
 export class PermissionManagerModule extends ModuleBase {
-  private readonly BadKeyErrorMessages = "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
+  private readonly BadKeyErrorMessages =
+    "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
 
   @addPermissionKeys()
   public static permissionKeys = {
@@ -35,7 +41,7 @@ export class PermissionManagerModule extends ModuleBase {
         List: new Command({
           name: "list",
           description: "Lists out all permissions.",
-          options: [ this.commandKeyHelperBuilder(false) ],
+          options: [this.commandKeyHelperBuilder(false)],
         }),
         AddRole: new Command({
           name: "add_role",
@@ -88,7 +94,7 @@ export class PermissionManagerModule extends ModuleBase {
         Reset: new Command({
           name: "reset",
           description: "Resets a permission to the default parameters.",
-          options: [ this.commandKeyHelperBuilder(true) ],
+          options: [this.commandKeyHelperBuilder(true)],
         }),
       },
       execute: this.commandResolver.bind(this),
@@ -139,7 +145,7 @@ export class PermissionManagerModule extends ModuleBase {
     const key = interaction.options.getString("key", true);
     const role = interaction.options.getRole("role", true);
 
-    const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+    const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
 
     if (permission.roles.includes(role.id)) {
       await interaction.editReply({ content: `Role is already there. Will not add again.` });
@@ -165,9 +171,9 @@ export class PermissionManagerModule extends ModuleBase {
     const key = interaction.options.getString("key", true);
     const role = interaction.options.getRole("role", true);
 
-    const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+    const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
 
-    const index = permission.roles.findIndex((r) => r === role.id);
+    const index = permission.roles.findIndex(r => r === role.id);
     if (index < 0) {
       await interaction.editReply({ content: `Cannot find role ${role.name} in the permission list ${key}` });
     }
@@ -193,7 +199,7 @@ export class PermissionManagerModule extends ModuleBase {
     const mode: number = interaction.options.getInteger("mode");
     const blackList: boolean = interaction.options.getBoolean("black_list");
 
-    const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+    const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
 
     permission.merge({ mode, blackList });
     await this.service.setPermission(interaction.guildId, key, permission);
@@ -233,7 +239,7 @@ export class PermissionManagerModule extends ModuleBase {
     if (key) {
       this.logger.debug(`Detailed request information for key ${key}.`);
 
-      const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+      const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
       this.logger.debug("Permissions found returning parsed object.");
 
       await interaction.editReply({
@@ -261,10 +267,12 @@ export class PermissionManagerModule extends ModuleBase {
       this.logger.debug("Key not specified. Returning all available keys.");
 
       await interaction.editReply({
-        embeds: [ new EmbedBuilder({
-          title: "List of PermissionKeys",
-          description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
-        }).setColor("Random") ],
+        embeds: [
+          new EmbedBuilder({
+            title: "List of PermissionKeys",
+            description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
+          }).setColor("Random"),
+        ],
       });
     }
   }

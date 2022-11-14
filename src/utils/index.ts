@@ -55,7 +55,7 @@ export function toJson<T>(t: T, str: string): T {
  * @return The newly created object.
  */
 export function deepMerge<T, O>(target: T, ...sources: O[]): T {
-  sources = sources.filter((source) => source != null);
+  sources = sources.filter(source => source != null);
 
   if (sources.length <= 0) return target;
 
@@ -115,14 +115,12 @@ export function flattenObject(obj: object): object {
  */
 export function unFlattenObject(obj: object): object {
   const result = {};
-  Object.keys(obj).forEach((key) =>
-    key
-      .split(".")
-      .reduce(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
-        (r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []),
-        result
-      )
+  Object.keys(obj).forEach(key =>
+    key.split(".").reduce(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
+      (r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []),
+      result,
+    ),
   );
   console.log(result);
   return result;

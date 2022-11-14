@@ -1,6 +1,14 @@
 import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
+import {
+  SlashCommandSubcommandBuilder,
+  SlashCommandSubcommandGroupBuilder,
+  ChatInputCommandInteraction,
+  ApplicationCommandOptionType as OptionType,
+  APIApplicationCommandOptionChoice,
+  ApplicationCommandOptionBase,
+  SlashCommandStringOption,
+} from "discord.js";
 import { deepMerge } from "../index.js";
 
 type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
@@ -49,7 +57,7 @@ export class Command extends ToJsonBase<Command> {
 
     if (obj.options) {
       this.options = obj.options;
-      this.options = (this.options ?? []).map((option) => deepMerge(new CommandOption(), option));
+      this.options = (this.options ?? []).map(option => deepMerge(new CommandOption(), option));
     }
 
     return this;
@@ -66,11 +74,11 @@ export class Command extends ToJsonBase<Command> {
 
         if (Object.values(subcommand.subcommands ?? []).length > 0 && builder instanceof SlashCommandBuilder) {
           builder.addSubcommandGroup(
-            (subcommandGroupBuilder) => subcommand.build(subcommandGroupBuilder) as SlashCommandSubcommandGroupBuilder
+            subcommandGroupBuilder => subcommand.build(subcommandGroupBuilder) as SlashCommandSubcommandGroupBuilder,
           );
         } else if (!(builder instanceof SlashCommandSubcommandBuilder)) {
           builder.addSubcommand(
-            (subcommandBuilder) => subcommand.build(subcommandBuilder) as SlashCommandSubcommandBuilder
+            subcommandBuilder => subcommand.build(subcommandBuilder) as SlashCommandSubcommandBuilder,
           );
         }
       }

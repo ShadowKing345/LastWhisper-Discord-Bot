@@ -1,4 +1,17 @@
-import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, Channel } from "discord.js";
+import {
+  CommandInteraction,
+  Guild,
+  GuildMember,
+  Message,
+  MessageReaction,
+  ReactionCollector,
+  Role,
+  TextChannel,
+  User,
+  InteractionResponse,
+  ChatInputCommandInteraction,
+  Channel,
+} from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
@@ -14,10 +27,7 @@ import { Service } from "../utils/objects/service.js";
 export class RoleManagerService extends Service<RoleManagerConfig> {
   private collectors: { [key: string]: ReactionCollector } = {};
 
-  constructor(
-    repository: RoleManagerRepository,
-    @createLogger(RoleManagerService.name) private logger: pino.Logger,
-  ) {
+  constructor(repository: RoleManagerRepository, @createLogger(RoleManagerService.name) private logger: pino.Logger) {
     super(repository);
   }
 
@@ -65,7 +75,7 @@ export class RoleManagerService extends Service<RoleManagerConfig> {
   public async onReady(client: Client) {
     await Timer.waitTillReady(client);
     const configs: RoleManagerConfig[] = (await this.repository.getAll()).filter(
-      (config) =>
+      config =>
         client.guilds.cache.has(config.guildId) &&
         config.reactionListeningChannel &&
         config.acceptedRoleId &&
@@ -209,7 +219,7 @@ export class RoleManagerService extends Service<RoleManagerConfig> {
     }
 
     config.reactionMessageIds.splice(
-      config.reactionMessageIds.findIndex((id) => id === message_id),
+      config.reactionMessageIds.findIndex(id => id === message_id),
       1,
     );
     await this.repository.save(config);

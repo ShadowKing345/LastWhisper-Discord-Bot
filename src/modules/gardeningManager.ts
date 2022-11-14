@@ -1,4 +1,9 @@
-import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
+import {
+  CommandInteraction,
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  ApplicationCommandOptionType,
+} from "discord.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
@@ -51,7 +56,7 @@ export class GardeningManagerModule extends ModuleBase {
               description: "The reason you are reserving this spot.",
               type: ApplicationCommandOptionType.String,
               required: true,
-              choices: Object.keys(Reason).map((value) => ({
+              choices: Object.keys(Reason).map(value => ({
                 name: value.replace(/(\w)(\w*)/g, (_, g1, g2) => (g1 as string) + (g2 as string).toLowerCase()),
                 value: value,
               })),
@@ -104,7 +109,7 @@ export class GardeningManagerModule extends ModuleBase {
           ],
         }),
       },
-      execute: async (interaction) => this.commandResolver(interaction),
+      execute: async interaction => this.commandResolver(interaction),
     }),
   ];
 
@@ -112,7 +117,7 @@ export class GardeningManagerModule extends ModuleBase {
     {
       name: `${this.moduleName}#TickTask`,
       timeout: 60000,
-      execute: (client) => this.tick(client),
+      execute: client => this.tick(client),
     },
   ];
 
@@ -125,7 +130,7 @@ export class GardeningManagerModule extends ModuleBase {
   constructor(
     private gardeningManagerService: GardeningManagerService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(GardeningManagerModule.name) logger: pino.Logger
+    @createLogger(GardeningManagerModule.name) logger: pino.Logger,
   ) {
     super(permissionManagerService, logger);
   }
@@ -137,7 +142,7 @@ export class GardeningManagerModule extends ModuleBase {
     duration: number,
     reason: Reason,
     plotNum: number,
-    slotNum: number
+    slotNum: number,
   ): Promise<void> {
     return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
   }
@@ -147,7 +152,7 @@ export class GardeningManagerModule extends ModuleBase {
     player: string,
     plant: string,
     plotNum: number,
-    slotNum: number
+    slotNum: number,
   ): Promise<InteractionResponse | void> {
     return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
   }

@@ -81,9 +81,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
 
     const configs: BuffManagerConfig[] = await this.repository
       .getAll()
-      .then((configs) =>
-        configs.filter((config) => client.guilds.cache.has(config.guildId) && config.buffs.length > 0)
-      );
+      .then(configs => configs.filter(config => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
     const now: DateTime = DateTime.now();
 
     for (const config of configs) {
@@ -153,7 +151,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     title: string,
     config: BuffManagerConfig,
     date: DateTime,
-    week: Week = config.getWeekOfYear(date)
+    week: Week = config.getWeekOfYear(date),
   ): EmbedBuilder {
     this.logger.debug(`Creating Week Embed.`);
 

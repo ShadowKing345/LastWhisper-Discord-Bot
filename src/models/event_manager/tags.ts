@@ -11,7 +11,7 @@ export class Tags {
     announcement = "Event Announcement",
     description = "Event Description",
     dateTime = "Time",
-    exclusionList: string[] = []
+    exclusionList: string[] = [],
   ) {
     this.announcement = announcement;
     this.description = description;

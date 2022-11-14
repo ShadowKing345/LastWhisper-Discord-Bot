@@ -1,4 +1,12 @@
-import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
+import {
+  Client,
+  Message,
+  ChatInputCommandInteraction,
+  ApplicationCommandOptionType,
+  PartialMessage,
+  InteractionResponse,
+  EmbedBuilder,
+} from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -135,13 +143,13 @@ export class EventManagerModule extends ModuleBase {
     new EventListener("messageCreate", (_, [message]) => this.createEvent(message)),
     new EventListener("messageUpdate", (_, [old, message]) => this.updateEvent(old, message)),
     new EventListener("messageDelete", (_, [message]) => this.deleteEvent(message)),
-    new EventListener("ready", (client) => this.onReady(client)),
+    new EventListener("ready", client => this.onReady(client)),
   ];
   public timers: Timers = [
     {
       name: `${this.moduleName}#postMessageTask`,
       timeout: 60000,
-      execute: (client) => this.reminderLoop(client),
+      execute: client => this.reminderLoop(client),
     },
   ];
   protected commandResolverKeys = {
@@ -155,7 +163,7 @@ export class EventManagerModule extends ModuleBase {
   constructor(
     private service: EventManagerService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(EventManagerModule.name) logger: pino.Logger
+    @createLogger(EventManagerModule.name) logger: pino.Logger,
   ) {
     super(permissionManagerService, logger);
   }
@@ -174,7 +182,9 @@ export class EventManagerModule extends ModuleBase {
     const description = interaction.options.getString("description");
     const time = interaction.options.getString("time");
 
-    const text = interaction.options.getString("text") ?? (await this.service.createContent(interaction.guildId, name, description, time));
+    const text =
+      interaction.options.getString("text") ??
+      (await this.service.createContent(interaction.guildId, name, description, time));
 
     const event = await this.service.create(interaction.guildId, null, text);
     await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
@@ -197,7 +207,7 @@ export class EventManagerModule extends ModuleBase {
     const event = await this.service.updateByIndex(
       interaction.guildId,
       index,
-      await this.service.createContent(interaction.guildId, name, description, time)
+      await this.service.createContent(interaction.guildId, name, description, time),
     );
     await interaction.editReply({ content: event ? "Event was successfully updated." : "Event failed to be updated." });
   }
@@ -240,7 +250,7 @@ export class EventManagerModule extends ModuleBase {
                   : "Time is before the present."
                 : "The format for the time was not correct. Use the Hammer time syntax to help.",
             },
-            { name: "Additional", value: event.additional.map((pair) => `[${pair[0]}]\n${pair[1]}`).join("\n") },
+            { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") },
           ],
         }).setColor(event.isValid ? "Green" : "Red"),
       ],
@@ -296,7 +306,7 @@ export class EventManagerModule extends ModuleBase {
         message.guildId,
         message.id,
         message.content,
-        message.channelId
+        message.channelId,
       );
       await message.react(event ? "✅" : "❎");
       this.logger.debug("New event created.");
@@ -326,7 +336,7 @@ export class EventManagerModule extends ModuleBase {
     try {
       const event = await this.service.update(oldMessage.guildId, oldMessage.id, newMessage.content);
 
-      const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
+      const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
       if (reaction) await reaction.users.remove(oldMessage.client.user?.id);
 
       await newMessage.react(event ? "✅" : "❎");

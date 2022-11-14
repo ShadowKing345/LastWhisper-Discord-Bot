@@ -31,7 +31,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
   constructor(
     config: ProjectConfiguration,
     @injectAll(ModuleBase.name) modules: ModuleBase[],
-    loggerFactory: LoggerService
+    loggerFactory: LoggerService,
   ) {
     super();
 
@@ -44,14 +44,14 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
     this._modules =
       this.moduleConfiguration.modules?.length !== 0
-        ? modules.filter((module) => {
+        ? modules.filter(module => {
             const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
             const blacklist = this.moduleConfiguration.blacklist;
             return (!blacklist && inList) || (blacklist && !inList);
           })
         : modules;
 
-    this.moduleLogger.debug(`Modules list. [${this._modules.map((module) => module.moduleName).join(",")}]`);
+    this.moduleLogger.debug(`Modules list. [${this._modules.map(module => module.moduleName).join(",")}]`);
 
     if (this.moduleConfiguration.enableCommands) {
       this.moduleLogger.debug("Commands enabled.");
@@ -75,7 +75,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
         if (interaction.isContextMenuCommand()) {
           this.interactionLogger.debug(
-            `Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`
+            `Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`,
           );
 
           if (interaction.isUserContextMenuCommand()) {
@@ -101,7 +101,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
           }
 
           const command: Command | undefined = this.modules
-            .find((module) => module.hasCommand(interaction.commandName))
+            .find(module => module.hasCommand(interaction.commandName))
             ?.getCommand(interaction.commandName);
           if (!command) {
             this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
@@ -177,18 +177,18 @@ export class ModuleConfigurationService extends ConfigurationClass {
   private async runEvent(listeners: EventListeners, client: Client, ...args): Promise<void> {
     const results = await Promise.allSettled(
       listeners.map(
-        (listener) =>
+        listener =>
           new Promise((resolve, reject) => {
             try {
               resolve(listener.execute(client, args));
             } catch (error) {
               reject(error);
             }
-          })
-      )
+          }),
+      ),
     );
 
-    for (const result of results.filter((result) => result.status === "rejected") as PromiseRejectedResult[]) {
+    for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
       this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
     }
   }
@@ -205,13 +205,13 @@ export class ModuleConfigurationService extends ConfigurationClass {
       this.intervalIds.push(
         setInterval(
           () => {
-            timer.execute(client).catch((error) => this.taskLogger.error(error instanceof Error ? error.stack : error));
+            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
           },
           timer.timeout,
-          client
-        )
+          client,
+        ),
       );
-      timer.execute(client).catch((error) => this.taskLogger.error(error instanceof Error ? error.stack : error));
+      timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
     } catch (error) {
       this.taskLogger.error(error instanceof Error ? error.stack : error);
     }
@@ -254,7 +254,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
     if (this.moduleConfiguration.enableTimers) {
       this.moduleLogger.debug("Timers were enabled.");
-      for (const timer of this.modules.map((module) => module.timers).flat()) {
+      for (const timer of this.modules.map(module => module.timers).flat()) {
         this.runTimer(timer, client);
       }
     }

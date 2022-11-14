@@ -19,7 +19,7 @@ export class Slot implements ISlotBase {
     duration: number,
     reason: Reason,
     started: number,
-    next: Reservation[] = []
+    next: Reservation[] = [],
   ) {
     this.player = player;
     this.duration = duration;

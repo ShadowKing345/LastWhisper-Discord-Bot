@@ -53,11 +53,11 @@ export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implement
     }
 
     if (obj.events) {
-      this.events = obj.events.map((event) => deepMerge(new EventObj(), event));
+      this.events = obj.events.map(event => deepMerge(new EventObj(), event));
     }
 
     if (obj.reminders) {
-      this.reminders = obj.reminders.map((reminder) => deepMerge(new Reminder(), reminder));
+      this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder));
     }
 
     return this;

@@ -60,7 +60,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
     name: string,
     description: string,
     time: string,
-    additional: [string, string][] = []
+    additional: [string, string][] = [],
   ): Promise<string> {
     const config = await this.getConfig(guildId);
     const [l, r] = config.delimiterCharacters;
@@ -88,7 +88,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
     guildId: string | null,
     id: string,
     content: string,
-    channelId?: string
+    channelId?: string,
   ): Promise<EventObj | null> {
     const config = await this.getConfig(guildId);
 
@@ -115,7 +115,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
   public async update(guildId: string | null, messageId: string, content: string): Promise<EventObj | null> {
     const config = await this.getConfig(guildId);
 
-    const oldEvent = config.events.find((event) => event.id === messageId);
+    const oldEvent = config.events.find(event => event.id === messageId);
     if (!oldEvent) {
       throw new Error("Event does not exist.");
     }
@@ -147,7 +147,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
       content,
       config.tags,
       config.dateTimeFormat,
-      config.delimiterCharacters
+      config.delimiterCharacters,
     );
     if (!event.isValid) {
       return null;
@@ -167,7 +167,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
   public async cancel(guildId: string | null, id: string): Promise<void> {
     const config = await this.getConfig(guildId);
 
-    const index = config.events.findIndex((event) => event.id === id);
+    const index = config.events.findIndex(event => event.id === id);
     if (index === -1) return;
 
     config.events.splice(index, 1);
@@ -192,7 +192,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
    */
   public async eventExists(guildId: string | null, id: string): Promise<boolean> {
     const config = await this.getConfig(guildId);
-    return config.events.findIndex((event) => event.id === id) !== -1;
+    return config.events.findIndex(event => event.id === id) !== -1;
   }
 
   /**
@@ -230,10 +230,10 @@ export class EventManagerService extends Service<EventManagerConfig> {
     const alteredConfigs: EventManagerConfig[] = [];
     const configs = await this.repository
       .getAll()
-      .then((configs) =>
+      .then(configs =>
         configs.filter(
-          (config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)
-        )
+          config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId),
+        ),
       );
 
     for (const config of configs) {
@@ -245,7 +245,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
           continue;
         }
 
-        for (const reminder of config.reminders.filter((trigger) => trigger.timeDelta)) {
+        for (const reminder of config.reminders.filter(trigger => trigger.timeDelta)) {
           const reminderTimeDelta = reminder.asDuration;
           for (const event of config.events) {
             const eventTime = DateTime.fromSeconds(event.dateTime);
@@ -260,7 +260,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
                 "%minuteDiff%": reminderTimeDelta.minutes.toString(),
               };
 
-              await postingChannel.send(reminder.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
+              await postingChannel.send(reminder.message.replace(/%\w+%/g, v => messageValues[v] || v));
             }
           }
         }
@@ -297,7 +297,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
       description: event.description,
       fields: [
         { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
-        ...event.additional.map((pair) => ({ name: pair[0], value: pair[1], inline: true })),
+        ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true })),
       ],
     }).setColor("Random");
   }
@@ -325,9 +325,9 @@ export class EventManagerService extends Service<EventManagerConfig> {
     content: string,
     tags: Tags,
     dateTimeFormats: string[],
-    delimiter: [string, string]
+    delimiter: [string, string],
   ): EventObj {
-    const [l, r] = delimiter.map((c) => this.regexpEscape(c));
+    const [l, r] = delimiter.map(c => this.regexpEscape(c));
     const event = new EventObj({ id });
     const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
 
@@ -370,7 +370,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
           break;
 
         default:
-          if (!tags.exclusionList.every((e) => e !== key)) continue;
+          if (!tags.exclusionList.every(e => e !== key)) continue;
           event.additional.push([key, value]);
           break;
       }
