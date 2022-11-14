@@ -4,7 +4,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
-import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
+import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "../utils/objects/service.js";

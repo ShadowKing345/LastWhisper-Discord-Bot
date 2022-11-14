@@ -1,15 +1,7 @@
-import {
-  Client,
-  Message,
-  ChatInputCommandInteraction,
-  ApplicationCommandOptionType,
-  PartialMessage,
-  InteractionResponse,
-  EmbedBuilder,
-} from "discord.js";
+import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
-import { EventManagerService } from "../services/eventManager.service.js";
-import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { EventManagerService } from "../services/eventManager.js";
+import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";

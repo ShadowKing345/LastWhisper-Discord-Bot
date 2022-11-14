@@ -1,6 +1,6 @@
-import { Buff } from "./buff.model.js";
-import { MessageSettings } from "./messageSettings.model.js";
-import { Week } from "./week.model.js";
+import { Buff } from "./buff.js";
+import { MessageSettings } from "./messageSettings.js";
+import { Week } from "./week.js";
 import { IEntity } from "../../utils/objects/repositoryBase.js";
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { deepMerge } from "../../utils/index.js";

@@ -1,7 +1,7 @@
-import { Slot } from "./slot.model.js";
+import { Slot } from "./slot.js";
 
 /**
- * Representation of a FFXIV gardening plot.
+ * Representation of an FF XIV gardening plot.
  */
 export class Plot {
   public name: string = null;

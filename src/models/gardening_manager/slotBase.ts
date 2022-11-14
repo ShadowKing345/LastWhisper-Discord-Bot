@@ -1,4 +1,4 @@
-import { Reason } from "./reason.enum.js";
+import { Reason } from "./reason.js";
 
 /**
  * Base class for a slot.

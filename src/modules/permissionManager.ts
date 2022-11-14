@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOpt
 
 import { ModuleBase } from "../utils/models/index.js";
 import { PermissionMode, Permission } from "../models/permission_manager/index.js";
-import { PermissionManagerService } from "../services/permissionManager.service.js";
+import { PermissionManagerService } from "../services/permissionManager.js";
 import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";

@@ -1,5 +1,5 @@
-export * from "./eventManagerConfig.model.js";
-export * from "./eventObj.model.js";
-export * from "./reminderTrigger.model.js";
-export * from "./tags.model.js";
+export * from "./eventManagerConfig.js";
+export * from "./eventObj.js";
+export * from "./reminderTrigger.js";
+export * from "./tags.js";
 //# sourceMappingURL=index.d.ts.map

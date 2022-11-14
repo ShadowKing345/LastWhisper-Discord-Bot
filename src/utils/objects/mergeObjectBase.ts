@@ -1,7 +1,7 @@
 /**
  * Abstract class that provides additional creation functions.
  */
-export abstract class MergeableObjectBase<T> {
+export abstract class MergeObjectBase<T> {
   /**
    * Override function merging two objects of the same class.
    * When extended it may perform additional steps in order to ensure the object was created properly.

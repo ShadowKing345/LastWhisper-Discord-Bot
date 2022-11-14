@@ -4,12 +4,12 @@ import { singleton } from "tsyringe";
 
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
-import { EventManagerRepository } from "../repositories/eventManager.repository.js";
+import { EventManagerRepository } from "../repositories/eventManager.js";
 import { EventManagerConfig, EventObj, Tags } from "../models/event_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { WrongChannelError } from "../utils/errors/wrongChannelError.js";
+import { WrongChannelError } from "../utils/errors/index.js";
 
 /**
  * Event manager service.

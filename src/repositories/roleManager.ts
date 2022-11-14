@@ -2,13 +2,13 @@ import { singleton } from "tsyringe";
 
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
-import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.js";
+import { RoleManagerConfig } from "../models/role_manager/roleManager.js";
 
 @singleton()
-export class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {
-  protected readonly collectionName: string = "manager_utils";
+export class RoleManagerRepository extends RepositoryBase<RoleManagerConfig> {
+  protected readonly collectionName: string = "role_manager";
 
-  protected readonly mappingObject = ManagerUtilsConfig;
+  protected readonly mappingObject = RoleManagerConfig;
 
   constructor(db: DatabaseConfigurationService) {
     super(db);

@@ -1,7 +1,7 @@
 import { IEntity } from "../../utils/objects/repositoryBase.js";
-import { EventObj } from "./eventObj.model.js";
-import { Reminder } from "./reminderTrigger.model.js";
-import { Tags } from "./tags.model.js";
+import { EventObj } from "./eventObj.js";
+import { Reminder } from "./reminderTrigger.js";
+import { Tags } from "./tags.js";
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { deepMerge } from "../../utils/index.js";
 

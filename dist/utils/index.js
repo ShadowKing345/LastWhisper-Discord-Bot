@@ -1,6 +1,6 @@
 import { TextChannel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
-import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
+import { MergeObjectBase } from "./objects/mergeObjectBase.js";
 export async function fetchMessages(client, channelId, messageIds) {
     const promises = [];
     const channel = await client.channels.fetch(channelId);
@@ -28,7 +28,7 @@ export function deepMerge(target, ...sources) {
     sources = sources.filter((source) => source != null);
     if (sources.length <= 0)
         return target;
-    if (target instanceof MergeableObjectBase) {
+    if (target instanceof MergeObjectBase) {
         for (const source of sources) {
             target.merge(source);
         }

@@ -6,13 +6,13 @@ import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { Timer } from "../utils/objects/timer.js";
-import { BuffManagerRepository } from "../repositories/buffManager.repository.js";
+import { BuffManagerRepository } from "../repositories/buffManager.js";
 import { Buff, BuffManagerConfig, MessageSettings, Week } from "../models/buff_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 
 /**
  * Buff manager service.
- * This service manages actions related to FFXIV FC buffs.
+ * This service manages actions related to FF XIV FC buffs.
  * Obviously not within the game as I am very sure that is against TOS.
  */
 @singleton()

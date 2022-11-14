@@ -1,6 +1,6 @@
 import { Collection, Filter } from "mongodb";
 
-import { MergeableObjectBase } from "./mergeableObjectBase.js";
+import { MergeObjectBase } from "./mergeObjectBase.js";
 import { deepMerge } from "../index.js";
 import { DatabaseError } from "../errors/index.js";
 import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
@@ -17,7 +17,7 @@ export interface IEntity<T> {
  * Base repository object.
  * Manages the majority of basic CRUD repository actions.
  */
-export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<unknown>> {
+export abstract class RepositoryBase<T extends MergeObjectBase<T> & IEntity<unknown>> {
   // Name of the collection.
   protected abstract readonly collectionName: string;
   // A private internal collection object.
@@ -97,7 +97,7 @@ export abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<
   protected map(source: object): T {
     const result = new this.mappingObject();
 
-    return result instanceof MergeableObjectBase ? result.merge(source) : deepMerge(result, source);
+    return result instanceof MergeObjectBase ? result.merge(source) : deepMerge(result, source);
   }
 
   /**

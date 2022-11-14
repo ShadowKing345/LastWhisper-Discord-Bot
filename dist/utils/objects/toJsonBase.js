@@ -1,5 +1,5 @@
-import { MergeableObjectBase } from "./mergeableObjectBase.js";
-export class ToJsonBase extends MergeableObjectBase {
+import { MergeObjectBase } from "./mergeObjectBase.js";
+export class ToJsonBase extends MergeObjectBase {
     toJson() {
         return JSON.stringify(this);
     }

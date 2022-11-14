@@ -1,4 +1,4 @@
-import { CommandResolverError } from "../errors/commandResolverError.js";
+import { CommandResolverError } from "../errors/index.js";
 export class ModuleBase {
     permissionManagerService;
     logger;

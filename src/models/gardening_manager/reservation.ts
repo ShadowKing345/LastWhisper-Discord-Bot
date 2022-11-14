@@ -1,5 +1,5 @@
-import { Reason } from "./reason.enum.js";
-import { ISlotBase } from "./slotBase.interface.js";
+import { Reason } from "./reason.js";
+import { ISlotBase } from "./slotBase.js";
 
 /**
  * Reservation object.

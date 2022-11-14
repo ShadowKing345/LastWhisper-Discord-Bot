@@ -1,4 +1,4 @@
-import { MergeableObjectBase } from "./mergeableObjectBase.js";
+import { MergeObjectBase } from "./mergeObjectBase.js";
 import { deepMerge } from "../index.js";
 import { DatabaseError } from "../errors/index.js";
 export class RepositoryBase {
@@ -37,7 +37,7 @@ export class RepositoryBase {
     }
     map(source) {
         const result = new this.mappingObject();
-        return result instanceof MergeableObjectBase ? result.merge(source) : deepMerge(result, source);
+        return result instanceof MergeObjectBase ? result.merge(source) : deepMerge(result, source);
     }
     validateCollection() {
         if (!this.collection) {

@@ -1,20 +1,9 @@
-import {
-  Guild,
-  GuildBan,
-  GuildMember,
-  TextChannel,
-  User,
-  InteractionResponse,
-  ChatInputCommandInteraction,
-  AuditLogEvent,
-  EmbedBuilder,
-  PartialGuildMember,
-} from "discord.js";
+import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, AuditLogEvent, EmbedBuilder, PartialGuildMember } from "discord.js";
 import { DateTime } from "luxon";
 import { singleton } from "tsyringe";
 
-import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.model.js";
-import { ManagerUtilsRepository } from "../repositories/managerUtils.repository.js";
+import { ManagerUtilsConfig } from "../models/manager_utils/managerUtils.js";
+import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 
 @singleton()
 export class ManagerUtilsService {

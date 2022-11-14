@@ -1,5 +1,5 @@
 import { Timers } from "./timer.js";
-import { PermissionManagerService } from "../../services/permissionManager.service.js";
+import { PermissionManagerService } from "../../services/permissionManager.js";
 import { EventListeners } from "./eventListener.js";
 import { Commands, Command } from "./command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";

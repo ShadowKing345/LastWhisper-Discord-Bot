@@ -1,5 +1,5 @@
 import { IEntity } from "../../utils/objects/repositoryBase.js";
-import { Plot } from "./plot.model.js";
+import { Plot } from "./plot.js";
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 
 /**

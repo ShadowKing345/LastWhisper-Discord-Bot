@@ -1,17 +1,4 @@
-import {
-  CommandInteraction,
-  Guild,
-  GuildMember,
-  Message,
-  MessageReaction,
-  ReactionCollector,
-  Role,
-  TextChannel,
-  User,
-  InteractionResponse,
-  ChatInputCommandInteraction,
-  Channel,
-} from "discord.js";
+import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, Channel } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
@@ -19,8 +6,8 @@ import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
-import { RoleManagerConfig } from "../models/role_manager/roleManager.model.js";
-import { RoleManagerRepository } from "../repositories/roleManager.repository.js";
+import { RoleManagerConfig } from "../models/role_manager/roleManager.js";
+import { RoleManagerRepository } from "../repositories/roleManager.js";
 
 @singleton()
 export class RoleManagerService {

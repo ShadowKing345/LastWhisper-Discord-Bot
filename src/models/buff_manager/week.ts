@@ -1,12 +1,12 @@
-import { Days } from "./days.model.js";
-import { MergeableObjectBase } from "../../utils/objects/mergeableObjectBase.js";
+import { Days } from "./days.js";
+import { MergeObjectBase } from "../../utils/objects/mergeObjectBase.js";
 import { deepMerge } from "../../utils/index.js";
 import { DateTime } from "luxon";
 
 /**
  * Information about a week.
  */
-export class Week extends MergeableObjectBase<Week> {
+export class Week extends MergeObjectBase<Week> {
   public isEnabled = false;
   public title: string = null;
   public days: Days = new Days();

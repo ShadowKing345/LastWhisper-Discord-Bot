@@ -1,6 +1,6 @@
 import { Client, Message, Snowflake, TextChannel, Channel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
-import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
+import { MergeObjectBase } from "./objects/mergeObjectBase.js";
 
 /**
  * Fetches the messages from a channel.
@@ -59,7 +59,7 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 
   if (sources.length <= 0) return target;
 
-  if (target instanceof MergeableObjectBase) {
+  if (target instanceof MergeObjectBase) {
     for (const source of sources) {
       target.merge(source);
     }

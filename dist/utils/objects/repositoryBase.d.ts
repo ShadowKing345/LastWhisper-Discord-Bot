@@ -1,11 +1,11 @@
 import { Collection, Filter } from "mongodb";
-import { MergeableObjectBase } from "./mergeableObjectBase.js";
+import { MergeObjectBase } from "./mergeObjectBase.js";
 import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
 export interface IEntity<T> {
     _id: T;
     guildId: string;
 }
-export declare abstract class RepositoryBase<T extends MergeableObjectBase<T> & IEntity<unknown>> {
+export declare abstract class RepositoryBase<T extends MergeObjectBase<T> & IEntity<unknown>> {
     protected db: DatabaseConfigurationService;
     protected abstract readonly collectionName: string;
     private _collection;

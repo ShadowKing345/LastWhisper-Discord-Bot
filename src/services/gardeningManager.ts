@@ -1,21 +1,13 @@
-import {
-  CommandInteraction,
-  GuildMember,
-  EmbedBuilder,
-  TextChannel,
-  InteractionResponse,
-  ChatInputCommandInteraction,
-  APIEmbedField,
-} from "discord.js";
+import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { GardeningManagerRepository } from "../repositories/gardeningManager.repository.js";
+import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../models/gardening_manager/index.js";
-import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
+import { InvalidArgumentError } from "../utils/errors/index.js";
 
 @singleton()
 export class GardeningManagerService {
