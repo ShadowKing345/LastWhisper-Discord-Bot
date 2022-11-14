@@ -1,4 +1,4 @@
-import { EmbedBuilder, Role, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
@@ -6,21 +6,47 @@ import { createLogger } from "../utils/loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.repository.js";
 import { unFlattenObject } from "../utils/index.js";
-import { InvalidArgumentError } from "../utils/errors/invalidArgumentError.js";
+import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
+import { Service } from "../utils/objects/service.js";
 
 /**
  * Service that manages the permissions of commands throughout the project.
  * The reason for this service is that while you are able to change certain permissions for regular slash commands, subcommands cannot have their permissions changed in the same way.
  */
 @singleton()
-export class PermissionManagerService {
+export class PermissionManagerService extends Service<PermissionManagerConfig> {
   private static readonly keys: string[] = [];
   private static _keysFormatted: string = null;
 
   constructor(
-    private permissionManagerRepository: PermissionManagerRepository,
+    repository: PermissionManagerRepository,
     @createLogger(PermissionManagerService.name) private logger: pino.Logger
-  ) {}
+  ) {
+    super(repository);
+  }
+
+  /**
+   * Gets the permission object of a given key and config file. Null if none exist.
+   * @param guildId Guild ID to ge the configuration from.
+   * @param key Key for the permission.
+   */
+  @PermissionManagerService.validateKey(1)
+  public async getPermission(guildId: string | null, key: string): Promise<Permission | null> {
+    return (await this.getConfig(guildId)).permissions[key];
+  }
+
+  /**
+   * Sets the permission object of a given key and config file. Returns the saved version.
+   * @param guildId Guild ID to ge the configuration from.
+   * @param key Key for the permission.
+   * @param permission The permission object to set.
+   */
+  @PermissionManagerService.validateKey(1)
+  public async setPermission(guildId: string | null, key: string, permission: Permission): Promise<Permission | null> {
+    const config = await this.getConfig(guildId);
+    config.permissions[key] = permission;
+    return (await this.repository.save(config)).permissions[key];
+  }
 
   /**
    * Checks if a member is authorized to use the given key of a command.
@@ -33,7 +59,7 @@ export class PermissionManagerService {
       await interaction.reply({
         content:
           "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
-        ephemeral: true,
+        ephemeral: true
       });
       return false;
     }
@@ -50,9 +76,7 @@ export class PermissionManagerService {
       return true;
     }
 
-    const config: PermissionManagerConfig = await this.findOneOrCreate(interaction.guildId);
-    const permission: Permission = config.permissions[key];
-
+    const permission: Permission = await this.getPermission(interaction.guildId, key);
     if (!permission) {
       this.logger.debug("Permissions do not exist. Defaulting to true.");
       return true;
@@ -87,249 +111,17 @@ export class PermissionManagerService {
   }
 
   /**
-   * Adds a role to a permission.
-   * @param interaction The interaction the command was invoked with.
-   * @param key The key of the permission
-   * @param role The role.
-   */
-  @PermissionManagerService.validateKey()
-  public async addRole(
-    interaction: ChatInputCommandInteraction,
-    key: string,
-    role: Role
-  ): Promise<InteractionResponse> {
-    this.logger.debug(`Add role command invoked for guild ${interaction.guildId}.`);
-    const config = await this.findOneOrCreate(interaction.guildId);
-    const permissions = (config.permissions[key] ??= new Permission());
-
-    if (permissions.roles.includes(role.id)) {
-      return interaction.reply({
-        content: `Role is already there. Will not add again.`,
-        ephemeral: true,
-      });
-    }
-
-    permissions.roles.push(role.id);
-    await this.permissionManagerRepository.save(config);
-
-    this.logger.debug("Role added successfully.");
-
-    return interaction.reply({
-      content: `Role added to key ${key}`,
-      ephemeral: true,
-    });
-  }
-
-  /**
-   * Removes a role from a permission.
-   * @param interaction The interaction the command was invoked with.
-   * @param key The key of the permission
-   * @param role The role.
-   */
-  @PermissionManagerService.validateKey()
-  public async removeRole(
-    interaction: ChatInputCommandInteraction,
-    key: string,
-    role: Role
-  ): Promise<InteractionResponse> {
-    this.logger.debug(`Remove role command invoked for guild ${interaction.guildId}.`);
-    const config = await this.findOneOrCreate(interaction.guildId);
-
-    const permission = config.permissions[key];
-    if (!permission) {
-      return interaction.reply({
-        content: `Cannot find key ${key}`,
-        ephemeral: true,
-      });
-    }
-
-    const index = permission.roles.findIndex((r) => r === role.id);
-    if (index === -1) {
-      return interaction.reply({
-        content: `Cannot find role ${role.name} in the permission list ${key}`,
-        ephemeral: true,
-      });
-    }
-
-    permission.roles.splice(index, 1);
-    await this.permissionManagerRepository.save(config);
-
-    this.logger.debug("Role removed successfully.");
-
-    return interaction.reply({
-      content: `Role removed for key ${key}`,
-      ephemeral: true,
-    });
-  }
-
-  /**
-   * Configures a permission.
-   * @param interaction The interaction the command was invoked with.
-   * @param key The key of the permission
-   */
-  @PermissionManagerService.validateKey()
-  public async config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
-    this.logger.debug(`Config invoked for guild ${interaction.guildId}.`);
-    const config = await this.findOneOrCreate(interaction.guildId);
-    const permission = (config.permissions[key] ??= new Permission());
-
-    const mode: number = interaction.options.getInteger("mode", false);
-    if (mode != null) {
-      permission.mode = mode;
-    }
-
-    const black_list: boolean = interaction.options.getBoolean("black_list");
-    if (black_list != null) {
-      permission.blackList = black_list;
-    }
-
-    await this.permissionManagerRepository.save(config);
-
-    this.logger.debug("Permission settings changed and saved.");
-
-    return interaction.reply({
-      content: "Config set.",
-      ephemeral: true,
-    });
-  }
-
-  /**
-   * Resets all permission options and roles set.
-   * @param interaction The interaction the command was invoked with.
-   * @param key The key of the permission
-   */
-  @PermissionManagerService.validateKey()
-  public async reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
-    this.logger.debug(`Reset invoked for guild ${interaction.guildId}.`);
-    const config = await this.findOneOrCreate(interaction.guildId);
-
-    if (!config.permissions[key]) {
-      this.logger.debug("No permissions options were set with this key for this guild. Exiting.");
-      return interaction.reply({
-        content: `Cannot find permissions with key \`${key}\`.`,
-        ephemeral: true,
-      });
-    }
-
-    delete config.permissions[key];
-    await this.permissionManagerRepository.save(config);
-
-    this.logger.debug("Permissions were reset.");
-
-    return interaction.reply({
-      content: `Permission ${key} was successfully reset (deleted).`,
-      ephemeral: true,
-    });
-  }
-
-  /**
-   * List all permissions keys.
-   * If key is set then it gives a detailed view of that permission settings.
-   * @param interaction The interaction the command was invoked with.
-   * @param key The key of the permission (optional)
-   */
-  public async listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
-    this.logger.debug(`Permission key list requested by guild ${interaction.guildId}.`);
-
-    if (key) {
-      this.logger.debug(`Detailed request information for key ${key}.`);
-
-      if (!PermissionManagerService.keyExists(key)) {
-        this.logger.debug("Key did not exist. Exiting out.");
-        return interaction.reply({
-          content: "Cannot find key. Please input the correct key.",
-          ephemeral: true,
-        });
-      }
-
-      const config = await this.findOneOrCreate(interaction.guildId);
-      const permission = config.permissions[key] ?? new Permission();
-
-      this.logger.debug("Permissions found returning parsed object.");
-
-      return interaction.reply({
-        embeds: [
-          new EmbedBuilder({
-            title: `Settings for Permission ${key}`,
-            fields: [
-              {
-                name: "Mode",
-                value: PermissionMode[permission.mode],
-                inline: false,
-              },
-              {
-                name: "Is Blacklist",
-                value: String(permission.blackList),
-                inline: false,
-              },
-              {
-                name: "Roles",
-                value:
-                  permission.roles.length > 0
-                    ? (
-                        await Promise.allSettled(
-                          permission.roles.map((roleId) =>
-                            interaction.guild?.roles.fetch(roleId).then((role) => role?.name)
-                          )
-                        )
-                      ).join("\n")
-                    : "No roles were set.",
-                inline: false,
-              },
-            ],
-          }).setColor("Random"),
-        ],
-        ephemeral: true,
-      });
-    } else {
-      this.logger.debug("Key not specified. Returning all available keys.");
-
-      return interaction.reply({
-        embeds: [
-          new EmbedBuilder({
-            title: "List of PermissionKeys",
-            description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
-          }).setColor("Random"),
-        ],
-        ephemeral: true,
-      });
-    }
-  }
-
-  /**
-   * Finds a config file or creates one.
-   * @param id Id for the guild.
-   * @private
-   */
-  private async findOneOrCreate(id: string | null): Promise<PermissionManagerConfig> {
-    this.logger.debug(`Attempting to get config file for guild ${id}.`);
-
-    if (!id) {
-      throw new Error("Guild ID cannot be null.");
-    }
-
-    let result = await this.permissionManagerRepository.findOne({
-      guildId: id,
-    });
-    if (result) return result;
-
-    this.logger.debug("Config not found generating new one.");
-    result = new PermissionManagerConfig();
-    result.guildId = id;
-
-    return await this.permissionManagerRepository.save(result);
-  }
-
-  /**
    * Adds a permission key to the list of keys.
    * @param key The key to be added.
    */
   public static addPermissionKey(key: string) {
     if (!PermissionManagerService.keyExists(key)) {
       PermissionManagerService.keys.push(key);
+      this._keysFormatted = null;
     }
   }
 
+  // noinspection JSUnusedGlobalSymbols
   /**
    * Removes a permission from the list of keys.
    * @param key The key to be removed.
@@ -337,6 +129,7 @@ export class PermissionManagerService {
   public static removePermissionKey(key: string): void {
     if (PermissionManagerService.keyExists(key)) {
       PermissionManagerService.keys.splice(PermissionManagerService.keys.indexOf(key), 1);
+      this._keysFormatted = null;
     }
   }
 
@@ -364,7 +157,7 @@ export class PermissionManagerService {
       const spaces = "\t".repeat(index);
       let result = "";
 
-      for (const [key, value] of Object.entries(obj)) {
+      for (const [ key, value ] of Object.entries(obj)) {
         result +=
           typeof value === "object" ? `${spaces}${key}:\n${format(value as object, index + 1)}` : `${spaces}${key};\n`;
       }
@@ -377,31 +170,27 @@ export class PermissionManagerService {
 
   /**
    * Internal decorator used to check if a key exists before a command is actually invoked.
+   * @param index Position of argument in function parameter list.
    * @private
    */
-  private static validateKey(): (
-    target: PermissionManagerService,
-    property: string | symbol,
-    descriptor: PropertyDescriptor
-  ) => PropertyDescriptor {
-    return function (_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
-      const originalMethod = descriptor.value as (
-        interaction: ChatInputCommandInteraction,
-        key: string,
-        ...args: unknown[]
-      ) => unknown;
+  private static validateKey(index: number): (target: PermissionManagerService, property: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
+    return function(_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
+      const originalMethod = descriptor.value as (...args: unknown[]) => unknown;
 
-      descriptor.value = function (interaction: ChatInputCommandInteraction, key: string, ...args: unknown[]) {
+      descriptor.value = function(...args: unknown[]) {
+        const key = args[index];
+
+        if (!(key && typeof key === "string")) {
+          (this as PermissionManagerService).logger.error("Argument index resulted in null or not a string.");
+          throw new DecoratorError("Argument index resulted in null or not a string.");
+        }
+
         if (PermissionManagerService.keyExists(key)) {
-          return originalMethod.apply(this, [interaction, key, ...args]);
+          return originalMethod.apply(this, args);
         }
 
         (this as PermissionManagerService).logger.debug("Key did not exist. Exiting out.");
-        return interaction.reply({
-          content:
-            "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.",
-          ephemeral: true,
-        });
+        throw new BadAuthorizationKeyError("Cannot find key. Please input a correct key. Use the list command to find out which keys are available.");
       };
 
       return descriptor;

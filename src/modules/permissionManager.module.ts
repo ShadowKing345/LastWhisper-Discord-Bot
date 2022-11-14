@@ -1,12 +1,13 @@
-import { Role, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 
 import { ModuleBase } from "../utils/models/index.js";
-import { PermissionMode } from "../models/permission_manager/index.js";
+import { PermissionMode, Permission } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.service.js";
-import { registerModule, addPermissionKeys, authorize } from "../utils/decorators/index.js";
+import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
+import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 
 /**
  * Module to manager the permissions of commands from a Discord client.
@@ -14,6 +15,8 @@ import { pino } from "pino";
  */
 @registerModule()
 export class PermissionManagerModule extends ModuleBase {
+  private readonly BadKeyErrorMessages = "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
+
   @addPermissionKeys()
   public static permissionKeys = {
     list: "PermissionManager.list",
@@ -93,63 +96,193 @@ export class PermissionManagerModule extends ModuleBase {
   ];
 
   protected commandResolverKeys = {
-    "permissions.list": this.listPermissions.bind(this),
-    "permissions.add_role": this.addRoles.bind(this),
-    "permissions.remove_role": this.removeRoles.bind(this),
+    "permissions.add_role": this.addRole.bind(this),
+    "permissions.remove_role": this.removeRole.bind(this),
     "permissions.set_config": this.config.bind(this),
-    "permissions.reset": this.reset.bind(this)
+    "permissions.reset": this.reset.bind(this),
+    "permissions.list": this.listPermissions.bind(this)
   };
 
   constructor(
-    permissionManagerService: PermissionManagerService,
+    public service: PermissionManagerService,
     @createLogger(PermissionManagerModule.name) logger: pino.Logger
   ) {
-    super(permissionManagerService, logger);
+    super(service, logger);
   }
 
   protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const f = await super.commandResolver(interaction, false);
+    try {
+      await super.commandResolver(interaction);
+    } catch (error) {
+      if (error instanceof BadAuthorizationKeyError) {
+        this.logger.debug("Bad authorization key was given. Exiting.");
+        if (interaction.deferred) {
+          await interaction.editReply({ content: this.BadKeyErrorMessages });
+        } else if (!interaction.replied) {
+          await interaction.reply({ content: this.BadKeyErrorMessages, ephemeral: true });
+        }
+      }
 
-    const key = interaction.options.getString("key");
-    const role = interaction.options.getRole("role");
-
-    if (f instanceof Function) {
-      return f(interaction, key, role);
-    } else {
-      return f;
+      throw error;
     }
   }
 
-  @authorize(PermissionManagerModule.permissionKeys.list)
-  private listPermissions(interaction: ChatInputCommandInteraction, key?: string): Promise<InteractionResponse> {
-    this.logger.debug("Requested listed permissions.");
-    return this.permissionManagerService.listPermissions(interaction, key);
-  }
-
+  /**
+   * Adds a role to a permission.
+   * @param interaction The interaction the command was invoked with.
+   */
   @authorize(PermissionManagerModule.permissionKeys.addRole)
-  private addRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
-    this.logger.debug("Requested add role.");
-    return this.permissionManagerService.addRole(interaction, key, role);
+  @deferReply(true)
+  public async addRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    this.logger.debug(`Add role command invoked for guild ${interaction.guildId}.`);
+
+    const key = interaction.options.getString("key", true);
+    const role = interaction.options.getRole("role", true);
+
+    const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+
+    if (permission.roles.includes(role.id)) {
+      await interaction.editReply({ content: `Role is already there. Will not add again.` });
+    }
+
+    permission.roles.push(role.id);
+    await this.service.setPermission(interaction.guildId, key, permission);
+
+    this.logger.debug("Role added successfully.");
+
+    await interaction.editReply({ content: `Role added to key ${key}` });
   }
 
+  /**
+   * Removes a role from a permission.
+   * @param interaction The interaction the command was invoked with.
+   */
   @authorize(PermissionManagerModule.permissionKeys.removeRole)
-  private removeRoles(interaction: ChatInputCommandInteraction, key: string, role: Role): Promise<InteractionResponse> {
-    this.logger.debug("Requested remove role.");
-    return this.permissionManagerService.removeRole(interaction, key, role);
+  @deferReply(true)
+  public async removeRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    this.logger.debug(`Remove role command invoked for guild ${interaction.guildId}.`);
+
+    const key = interaction.options.getString("key", true);
+    const role = interaction.options.getRole("role", true);
+
+    const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+
+    const index = permission.roles.findIndex((r) => r === role.id);
+    if (index < 0) {
+      await interaction.editReply({ content: `Cannot find role ${role.name} in the permission list ${key}` });
+    }
+
+    permission.roles.splice(index, 1);
+    await this.service.setPermission(interaction.guildId, key, permission);
+
+    this.logger.debug("Role removed successfully.");
+
+    await interaction.editReply({ content: `Role removed for key ${key}` });
   }
 
+
+  /**
+   * Configures a permission.
+   * @param interaction The interaction the command was invoked with.
+   */
   @authorize(PermissionManagerModule.permissionKeys.config)
-  private config(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
-    this.logger.debug("Requested config.");
-    return this.permissionManagerService.config(interaction, key);
+  @deferReply(true)
+  public async config(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    this.logger.debug(`Config invoked for guild ${interaction.guildId}.`);
+
+    const key = interaction.options.getString("key", true);
+    const mode: number = interaction.options.getInteger("mode");
+    const black_list: boolean = interaction.options.getBoolean("black_list");
+
+    const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+
+
+    if (mode != null) {
+      permission.mode = mode;
+    }
+
+    if (black_list != null) {
+      permission.blackList = black_list;
+    }
+
+    await this.service.setPermission(interaction.guildId, key, permission);
+
+    this.logger.debug("Permission settings changed and saved.");
+
+    await interaction.editReply({ content: "Configuration set." });
   }
 
+  /**
+   * Resets all permission options and roles set.
+   * @param interaction The interaction the command was invoked with.
+   */
   @authorize(PermissionManagerModule.permissionKeys.reset)
-  private reset(interaction: ChatInputCommandInteraction, key: string): Promise<InteractionResponse> {
-    this.logger.debug("Requested reset.");
-    return this.permissionManagerService.reset(interaction, key);
+  @deferReply(true)
+  public async reset(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    this.logger.debug(`Reset invoked for guild ${interaction.guildId}.`);
+
+    const key = interaction.options.getString("key", true);
+    await this.service.setPermission(interaction.guildId, key, new Permission());
+
+    this.logger.debug("Permissions were reset.");
+    await interaction.editReply({ content: `Permission ${key} was successfully reset.` });
   }
 
+  /**
+   * List all permissions keys.
+   * If key is set then it gives a detailed view of that permission settings.
+   * @param interaction The interaction the command was invoked with.
+   */
+  @authorize(PermissionManagerModule.permissionKeys.list)
+  @deferReply(true)
+  public async listPermissions(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+    this.logger.debug(`Permission key list requested by guild ${interaction.guildId}.`);
+    const key = interaction.options.getString("key");
+
+    if (key) {
+      this.logger.debug(`Detailed request information for key ${key}.`);
+
+      const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+      this.logger.debug("Permissions found returning parsed object.");
+
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder({
+            title: `Settings for Permission ${key}`,
+            fields: [
+              {
+                name: "Mode",
+                value: `\`\`\`${permission.modeEnum}\`\`\``
+              },
+              {
+                name: "Is Blacklist",
+                value: `\`\`\`${String(permission.blackList)}\`\`\``
+              },
+              {
+                name: "Roles",
+                value: `\`\`\`${await permission.formatRoles(interaction.guild)}\`\`\``
+              }
+            ]
+          }).setColor("Random")
+        ]
+      });
+    } else {
+      this.logger.debug("Key not specified. Returning all available keys.");
+
+      await interaction.editReply({
+        embeds: [ new EmbedBuilder({
+          title: "List of PermissionKeys",
+          description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``
+        }).setColor("Random") ]
+      });
+    }
+  }
+
+  /**
+   * Internal method used to help with creating options.
+   * @param boolOverride
+   * @private
+   */
   private static commandKeyHelperBuilder(boolOverride = true): CommandOption {
     return new CommandOption({
       name: "key",
