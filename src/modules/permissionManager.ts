@@ -23,7 +23,7 @@ export class PermissionManagerModule extends ModuleBase {
     addRole: "PermissionManager.addRole",
     removeRole: "PermissionManager.removeRole",
     config: "PermissionManager.config",
-    reset: "PermissionManager.reset"
+    reset: "PermissionManager.reset",
   };
 
   public moduleName = "PermissionManager";
@@ -35,64 +35,64 @@ export class PermissionManagerModule extends ModuleBase {
         List: new Command({
           name: "list",
           description: "Lists out all permissions.",
-          options: [ PermissionManagerModule.commandKeyHelperBuilder(false) ]
+          options: [ this.commandKeyHelperBuilder(false) ],
         }),
         AddRole: new Command({
           name: "add_role",
           description: "Adds a role to a permission setting.",
           options: [
-            PermissionManagerModule.commandKeyHelperBuilder(true),
+            this.commandKeyHelperBuilder(true),
             new CommandOption({
               name: "role",
               description: "Role to be added.",
               required: true,
-              type: ApplicationCommandOptionType.Role
-            })
-          ]
+              type: ApplicationCommandOptionType.Role,
+            }),
+          ],
         }),
         RemoveRole: new Command({
           name: "remove_role",
           description: "Removes a role to a permission setting.",
           options: [
-            PermissionManagerModule.commandKeyHelperBuilder(true),
+            this.commandKeyHelperBuilder(true),
             new CommandOption({
               name: "role",
               description: "Role to be added.",
               required: true,
-              type: ApplicationCommandOptionType.Role
-            })
-          ]
+              type: ApplicationCommandOptionType.Role,
+            }),
+          ],
         }),
         Config: new Command({
           name: "set_config",
           description: "Configures a permission.",
           options: [
-            PermissionManagerModule.commandKeyHelperBuilder(true),
+            this.commandKeyHelperBuilder(true),
             new CommandOption({
               name: "mode",
               description: "Sets the search mode for the command. Any: has any. Strict: has all.",
               required: true,
               choices: [
                 { name: "any", value: PermissionMode.ANY },
-                { name: "strict", value: PermissionMode.STRICT }
+                { name: "strict", value: PermissionMode.STRICT },
               ],
-              type: ApplicationCommandOptionType.Integer
+              type: ApplicationCommandOptionType.Integer,
             }),
             new CommandOption({
               name: "black_list",
               description: "Reverses the final result. I.e. If list is empty, no one can use the command.",
-              type: ApplicationCommandOptionType.String
-            })
-          ]
+              type: ApplicationCommandOptionType.String,
+            }),
+          ],
         }),
         Reset: new Command({
           name: "reset",
           description: "Resets a permission to the default parameters.",
-          options: [ PermissionManagerModule.commandKeyHelperBuilder(true) ]
-        })
+          options: [ this.commandKeyHelperBuilder(true) ],
+        }),
       },
-      execute: this.commandResolver.bind(this)
-    })
+      execute: this.commandResolver.bind(this),
+    }),
   ];
 
   protected commandResolverKeys = {
@@ -100,12 +100,12 @@ export class PermissionManagerModule extends ModuleBase {
     "permissions.remove_role": this.removeRole.bind(this),
     "permissions.set_config": this.config.bind(this),
     "permissions.reset": this.reset.bind(this),
-    "permissions.list": this.listPermissions.bind(this)
+    "permissions.list": this.listPermissions.bind(this),
   };
 
   constructor(
-    public service: PermissionManagerService,
-    @createLogger(PermissionManagerModule.name) logger: pino.Logger
+    private service: PermissionManagerService,
+    @createLogger(PermissionManagerModule.name) logger: pino.Logger,
   ) {
     super(service, logger);
   }
@@ -180,7 +180,6 @@ export class PermissionManagerModule extends ModuleBase {
     await interaction.editReply({ content: `Role removed for key ${key}` });
   }
 
-
   /**
    * Configures a permission.
    * @param interaction The interaction the command was invoked with.
@@ -192,19 +191,11 @@ export class PermissionManagerModule extends ModuleBase {
 
     const key = interaction.options.getString("key", true);
     const mode: number = interaction.options.getInteger("mode");
-    const black_list: boolean = interaction.options.getBoolean("black_list");
+    const blackList: boolean = interaction.options.getBoolean("black_list");
 
     const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
 
-
-    if (mode != null) {
-      permission.mode = mode;
-    }
-
-    if (black_list != null) {
-      permission.blackList = black_list;
-    }
-
+    permission.merge({ mode, blackList });
     await this.service.setPermission(interaction.guildId, key, permission);
 
     this.logger.debug("Permission settings changed and saved.");
@@ -252,19 +243,19 @@ export class PermissionManagerModule extends ModuleBase {
             fields: [
               {
                 name: "Mode",
-                value: `\`\`\`${permission.modeEnum}\`\`\``
+                value: `\`\`\`${permission.modeEnum}\`\`\``,
               },
               {
                 name: "Is Blacklist",
-                value: `\`\`\`${String(permission.blackList)}\`\`\``
+                value: `\`\`\`${String(permission.blackList)}\`\`\``,
               },
               {
                 name: "Roles",
-                value: `\`\`\`${await permission.formatRoles(interaction.guild)}\`\`\``
-              }
-            ]
-          }).setColor("Random")
-        ]
+                value: `\`\`\`${await permission.formatRoles(interaction.guild)}\`\`\``,
+              },
+            ],
+          }).setColor("Random"),
+        ],
       });
     } else {
       this.logger.debug("Key not specified. Returning all available keys.");
@@ -272,8 +263,8 @@ export class PermissionManagerModule extends ModuleBase {
       await interaction.editReply({
         embeds: [ new EmbedBuilder({
           title: "List of PermissionKeys",
-          description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``
-        }).setColor("Random") ]
+          description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
+        }).setColor("Random") ],
       });
     }
   }
@@ -283,12 +274,12 @@ export class PermissionManagerModule extends ModuleBase {
    * @param boolOverride
    * @private
    */
-  private static commandKeyHelperBuilder(boolOverride = true): CommandOption {
+  private commandKeyHelperBuilder(boolOverride = true): CommandOption {
     return new CommandOption({
       name: "key",
       description: "Command permission Key.",
       required: boolOverride,
-      type: ApplicationCommandOptionType.String
+      type: ApplicationCommandOptionType.String,
     });
   }
 }
