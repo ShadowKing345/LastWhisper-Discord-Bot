@@ -3,12 +3,13 @@ import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { ModuleBase } from "../utils/models/index.js";
-import { BuffManagerService } from "../services/buffManager.js";
+import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule, authorize, addPermissionKeys } from "../utils/decorators/index.js";
+import { registerModule, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { DateTime } from "luxon";
+import { Buff, WeekDTO } from "../models/buff_manager/index.js";
 
 /**
  * Module designed to deal with requests about buffs.
@@ -78,12 +79,12 @@ export class BuffManagerModule extends ModuleBase {
   ];
 
   protected commandResolverKeys = {
-    "buff_manager.buffs": this.postBuff.bind(this),
-    "buff_manager.weeks": this.postWeek.bind(this),
+    "buff_manager.buffs": this.postBuffCommand.bind(this),
+    "buff_manager.weeks": this.postWeekCommand.bind(this),
   };
 
   constructor(
-    private buffManagerService: BuffManagerService,
+    private service: BuffManagerService,
     @createLogger(BuffManagerModule.name) logger: pino.Logger,
     permissionManagerService: PermissionManagerService,
   ) {
@@ -97,7 +98,8 @@ export class BuffManagerModule extends ModuleBase {
    * @private
    */
   @authorize(BuffManagerModule.permissionKeys.buffs)
-  private postBuff(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+  @deferReply()
+  private async postBuffCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const tomorrow = interaction.options.getBoolean("tomorrow");
     const dateString = interaction.options.getString("date");
 
@@ -109,7 +111,35 @@ export class BuffManagerModule extends ModuleBase {
       date = DateTime.fromISO(dateString);
     }
 
-    return this.buffManagerService.postBuff(interaction, date);
+    this.logger.debug(`Command invoked for buffs.\nPosting buff message for the date ${date.toISO()}.`);
+    let buff: Buff;
+    try {
+      buff = await this.service.getBuffByDate(interaction.guildId, date);
+    } catch (error) {
+      if (!(error instanceof BuffManagerTryGetError)) {
+        throw error;
+      }
+
+      switch (error.reason) {
+        case BuffManagerTryGetErrorReasons.UNKNOWN:
+          throw error;
+        case BuffManagerTryGetErrorReasons.WEEKS:
+          await interaction.editReply({ content: "Sorry the are no weeks setup in your guild." });
+          return;
+        case BuffManagerTryGetErrorReasons.BUFFS:
+          await interaction.editReply({ content: "Sorry the are no buffs setup in your guild." });
+          return;
+      }
+    }
+
+    if (!buff) {
+      this.logger.debug(`Buff did not exit.`);
+      await interaction.editReply({
+        content: `Sorry, The buff for the date ${date.toISO()} does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
+      });
+    }
+
+    await interaction.editReply({ embeds: [ this.service.createBuffEmbed("The Buff Shall Be:", buff, date) ] });
   }
 
   /**
@@ -119,7 +149,8 @@ export class BuffManagerModule extends ModuleBase {
    * @private
    */
   @authorize(BuffManagerModule.permissionKeys.weeks)
-  private postWeek(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
+  @deferReply()
+  private async postWeekCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const nextWeek = interaction.options.getBoolean("next_week");
     const dateString = interaction.options.getString("date");
 
@@ -131,10 +162,32 @@ export class BuffManagerModule extends ModuleBase {
       date = DateTime.fromISO(dateString);
     }
 
-    return this.buffManagerService.postWeek(interaction, date);
+    this.logger.debug(`Command invoked for weeks.\nPosting week message for ${date.toISO()}.`);
+
+    let week: WeekDTO;
+    try {
+      week = await this.service.getWeekByDate(interaction.guildId, date);
+    } catch (error) {
+      if (!(error instanceof BuffManagerTryGetError)) {
+        throw error;
+      }
+
+      switch (error.reason) {
+        case BuffManagerTryGetErrorReasons.UNKNOWN:
+          throw error;
+        case BuffManagerTryGetErrorReasons.WEEKS:
+          await interaction.editReply({ content: "Sorry the are no weeks setup in your guild." });
+          return;
+        case BuffManagerTryGetErrorReasons.BUFFS:
+          await interaction.editReply({ content: "Sorry the are no buffs setup in your guild." });
+          return;
+      }
+    }
+
+    await interaction.editReply({ embeds: [ this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date) ] });
   }
 
   private postDailyMessage(client: Client): Promise<void> {
-    return this.buffManagerService.postDailyMessage(client);
+    return this.service.postDailyMessage(client);
   }
 }

@@ -1,4 +1,4 @@
-import { CommandInteraction, InteractionResponse, EmbedBuilder, Channel, ChannelType } from "discord.js";
+import { EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
@@ -7,8 +7,9 @@ import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.js";
-import { Buff, BuffManagerConfig, MessageSettings, Week } from "../models/buff_manager/index.js";
+import { Buff, BuffManagerConfig, MessageSettings, Week, WeekDTO } from "../models/buff_manager/index.js";
 import { Service } from "../utils/objects/service.js";
+import { ServiceError } from "../utils/errors/index.js";
 
 /**
  * Buff manager service.
@@ -17,58 +18,31 @@ import { Service } from "../utils/objects/service.js";
  */
 @singleton()
 export class BuffManagerService extends Service<BuffManagerConfig> {
-  private readonly daysOfWeek: string[] = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-
   constructor(repository: BuffManagerRepository, @createLogger(BuffManagerService.name) private logger: pino.Logger) {
     super(repository);
   }
 
-  //region Commands
-
   /**
-   * Creates an interaction response with the buffs for the day requested.
-   * @param interaction The interaction from Discord.
-   * @param date The date to get the buff information.
+   * Returns the Buff by the date.
+   * @param guildId Guild ID to ge the configuration from.
+   * @param date The date to get the buff from.
    */
-  public async postBuff(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void> {
-    const config = await this.tryGetConfig(interaction);
-    if (!config) return;
-
-    this.logger.debug(`Command invoked for buffs.\nPosting buff message for the date ${date.toISO()}.`);
+  public async getBuffByDate(guildId: string | null, date: DateTime): Promise<Buff | null> {
+    const config = await this.tryGetConfig(guildId);
 
     const week = config.getWeekOfYear(date);
-    const buff = config.getBuff(week.getBuffId(date));
-
-    if (!buff) {
-      this.logger.debug(`Buff did not exit.`);
-      return interaction.reply({
-        content: `Sorry, The buff for the date ${date.toISO()} does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
-        ephemeral: true,
-      });
-    }
-
-    return interaction.reply({ embeds: [this.createBuffEmbed("The Buff Shall Be:", buff, date)] });
+    return config.getBuff(week.getBuffId(date));
   }
 
   /**
-   * Creates an interaction response with the week's buffs information.
-   * @param interaction The interaction from Discord.
-   * @param date The date to get the buff information.
+   * Returns the WeekDTO by the date.
+   * @see WeekDTO
+   * @param guildId Guild ID to ge the configuration from.
+   * @param date The date to get the buff from.
    */
-  public async postWeek(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void> {
-    const config = await this.tryGetConfig(interaction);
-    if (!config) return;
-
-    this.logger.debug(`Command invoked for weeks.\nPosting week message for ${date.toISO()}.`);
-    return interaction.reply({ embeds: [this.createWeekEmbed("The Buffs For The Week Shall Be:", config, date)] });
+  public async getWeekByDate(guildId: string | null, date: DateTime): Promise<WeekDTO | null> {
+    const config = await this.tryGetConfig(guildId);
+    return WeekDTO.map(config.getWeekOfYear(date), config);
   }
 
   /**
@@ -112,7 +86,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
 
         if (!isNaN(messageSettings.dow) && Number(messageSettings.dow) === now.weekday) {
           this.logger.debug(`Posting week message.`);
-          embeds.push(this.createWeekEmbed(messageSettings.weekMessage, config, now, week));
+          embeds.push(this.createWeekEmbed(messageSettings.weekMessage, WeekDTO.map(week, config), now));
         }
 
         await channel.send({ embeds });
@@ -121,8 +95,6 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
       }
     }
   }
-
-  //endregion
 
   /**
    * Creates a Discord embed for a Buff object.
@@ -142,17 +114,12 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
 
   /**
    * Creates a Discord embed for a Week object.
+   * @see WeekDTO
    * @param title The title of the embed.
-   * @param config The configuration object to get the Buffs and Week data.
+   * @param week A WeekDTO object ot be used.
    * @param date The date context for the week. Used to get the week and fill in footer data.
-   * @param week An optional week object to override the default find week behavior.
    */
-  public createWeekEmbed(
-    title: string,
-    config: BuffManagerConfig,
-    date: DateTime,
-    week: Week = config.getWeekOfYear(date),
-  ): EmbedBuilder {
+  public createWeekEmbed(title: string, week: WeekDTO, date: DateTime): EmbedBuilder {
     this.logger.debug(`Creating Week Embed.`);
 
     if (!week) {
@@ -162,46 +129,50 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     return new EmbedBuilder({
       title: title,
       description: week.title,
-      fields: Array(...week.days).map((buffId, index) => {
-        const dow: string = this.daysOfWeek[index];
-        const day: Buff = config.getBuff(buffId);
-
-        return { name: dow, value: day?.text ?? "No buff found.", inline: true };
-      }),
+      fields: Array(...week.days).map(([ day, buff ]) => ({
+        name: day,
+        value: buff?.text ?? "No buff found.",
+        inline: true,
+      })),
       footer: { text: `Week ${date.get("weekNumber")}.` },
     }).setColor("Random");
   }
 
   /**
    * Tries to get the configuration object. If none can be found the discord interaction is responded to and null is returned instead.
-   * @param interaction The Discord interaction.
+   * @param guildId The guild ID to get the configs from.
    */
-  public async tryGetConfig(interaction: CommandInteraction): Promise<BuffManagerConfig | null> {
-    const guildId = interaction.guildId;
-    this.logger.debug(`Attempting to acquire configuration for guild guildId.`);
+  public async tryGetConfig(guildId: string | null): Promise<BuffManagerConfig> {
     const config: BuffManagerConfig = await this.getConfig(guildId);
 
-    // "Throws" if the number of buffs are less than 1.
+    // Throws if the number of buffs are less than 1.
     if (config.buffs?.length < 1) {
       this.logger.debug(`No buffs were set in config.`);
-      await interaction.reply({
-        content: "Sorry, there are not buffs set.",
-        ephemeral: true,
-      });
-      return null;
+      throw new BuffManagerTryGetError("No buffs were set", BuffManagerTryGetErrorReasons.BUFFS);
     }
 
-    // "Throws" if the number of filtered weeks are less than 1.
+    // Throws if the number of filtered weeks are less than 1.
     if (config.getFilteredWeeks?.length < 1) {
       this.logger.debug(`No weeks were set in config.`);
-      await interaction.reply({
-        content: "Sorry, there are not enabled weeks set.",
-        ephemeral: true,
-      });
-      return null;
+      throw new BuffManagerTryGetError("No weeks were set", BuffManagerTryGetErrorReasons.WEEKS);
     }
 
     this.logger.debug(`Returning results.`);
     return config;
   }
+}
+
+/**
+ * Error thrown when the try get method fails error occurs.
+ */
+export class BuffManagerTryGetError extends ServiceError {
+  constructor(message: string, public reason: BuffManagerTryGetErrorReasons) {
+    super(message);
+  }
+}
+
+export enum BuffManagerTryGetErrorReasons {
+  UNKNOWN,
+  WEEKS,
+  BUFFS,
 }
