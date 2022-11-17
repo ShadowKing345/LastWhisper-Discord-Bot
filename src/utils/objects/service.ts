@@ -1,5 +1,6 @@
 import { RepositoryBase, IEntity } from "./repositoryBase.js";
 import { MergeObjectBase } from "./mergeObjectBase.js";
+import { ServiceError } from "../errors/index.js";
 
 export abstract class Service<T extends MergeObjectBase<T> & IEntity<unknown>> {
   protected constructor(protected repository: RepositoryBase<T>) {}
@@ -11,7 +12,7 @@ export abstract class Service<T extends MergeObjectBase<T> & IEntity<unknown>> {
    */
   protected async getConfig(id: string): Promise<T> {
     if (!id) {
-      throw new Error("Guild ID cannot be null.");
+      throw new ServiceError("Guild ID cannot be null.");
     }
 
     const result = await this.repository.findOne({ guildId: id } as T);
