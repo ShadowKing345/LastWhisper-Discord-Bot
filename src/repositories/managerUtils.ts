@@ -4,6 +4,10 @@ import { DatabaseConfigurationService } from "../utils/config/databaseConfigurat
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { ManagerUtilsConfig } from "../models/managerUtils.js";
 
+/**
+ * Repository for ManagerUtilsConfig
+ * @see ManagerUtilsConfig
+ */
 @singleton()
 export class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {
   protected readonly collectionName: string = "manager_utils";

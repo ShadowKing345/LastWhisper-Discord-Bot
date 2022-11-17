@@ -4,6 +4,10 @@ import { DatabaseConfigurationService } from "../utils/config/databaseConfigurat
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { RoleManagerConfig } from "../models/roleManager.js";
 
+/**
+ * Repository for RoleManagerConfig
+ * @see RoleManagerConfig
+ */
 @singleton()
 export class RoleManagerRepository extends RepositoryBase<RoleManagerConfig> {
   protected readonly collectionName: string = "role_manager";

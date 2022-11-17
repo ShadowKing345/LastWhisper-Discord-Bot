@@ -4,6 +4,10 @@ import { DatabaseConfigurationService } from "../utils/config/databaseConfigurat
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { EventManagerConfig } from "../models/event_manager/index.js";
 
+/**
+ * Repository for EventManagerConfig
+ * @see EventManagerConfig
+ */
 @singleton()
 export class EventManagerRepository extends RepositoryBase<EventManagerConfig> {
   protected readonly collectionName: string = "event_manager";

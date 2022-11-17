@@ -4,6 +4,10 @@ import { DatabaseConfigurationService } from "../utils/config/databaseConfigurat
 import { RepositoryBase } from "../utils/objects/repositoryBase.js";
 import { PermissionManagerConfig } from "../models/permission_manager/index.js";
 
+/**
+ * Repository for PermissionManagerConfig
+ * @see PermissionManagerConfig
+ */
 @singleton()
 export class PermissionManagerRepository extends RepositoryBase<PermissionManagerConfig> {
   protected readonly collectionName: string = "permission_manager";
