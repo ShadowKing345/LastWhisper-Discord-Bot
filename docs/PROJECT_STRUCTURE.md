@@ -133,10 +133,9 @@ message and the ability to clear channels.
 ## Permission Manager.
 
 As it is not possible to restrict the use of sub commands in a slash command, individual permission management will be
-used.
-They way this manager will handle it is as follows. Given a user, command id, permission configs, the permission manager
-will check if the user has any of the roles assigned to the config. If the user has any then the permission manager will
-return true else false.
+used. They way this manager will handle it is as follows. Given a user, command id, permission configs, the permission
+manager will check if the user has any of the roles assigned to the config. If the user has any then the permission
+manager will return true else false.
 
 The config file will be a simple key value pair collection with the value being a list of role ids.
 

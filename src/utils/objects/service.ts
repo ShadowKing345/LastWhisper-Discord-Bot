@@ -1,7 +1,7 @@
 import { RepositoryBase, IEntity } from "./repositoryBase.js";
-import { MergeableObjectBase } from "./mergeableObjectBase.js";
+import { MergeObjectBase } from "./mergeObjectBase.js";
 
-export abstract class Service<T extends MergeableObjectBase<T> & IEntity<unknown>> {
+export abstract class Service<T extends MergeObjectBase<T> & IEntity<unknown>> {
   protected constructor(protected repository: RepositoryBase<T>) {}
 
   /**

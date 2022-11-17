@@ -7,7 +7,7 @@ import { ModuleBase } from "../objects/moduleBase.js";
  * @param key Names of the permission check key.
  */
 export function authorize<T extends ModuleBase>(
-  key: string
+  key: string,
 ): (target: T, propertyKey: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
   return function (_target: T, _propertyKey: string | symbol, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value as (

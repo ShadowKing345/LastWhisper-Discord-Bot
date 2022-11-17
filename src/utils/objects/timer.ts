@@ -17,7 +17,7 @@ export class Timer {
    */
   public static async waitTillReady(client: DiscordClient, checkAgainTime = 500) {
     while (!client.isReady()) {
-      await new Promise((resolve) => setTimeout(resolve, checkAgainTime));
+      await new Promise(resolve => setTimeout(resolve, checkAgainTime));
     }
   }
 }

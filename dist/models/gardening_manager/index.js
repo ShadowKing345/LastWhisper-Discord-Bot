@@ -1,7 +1,7 @@
-export * from "./gardeningConfig.model.js";
-export * from "./plot.model.js";
-export * from "./reason.enum.js";
-export * from "./reservation.model.js";
-export * from "./slot.model.js";
-export * from "./slotBase.interface.js";
+export * from "./gardeningConfig.js";
+export * from "./plot.js";
+export * from "./reason.js";
+export * from "./reservation.js";
+export * from "./slot.js";
+export * from "./slotBase.js";
 //# sourceMappingURL=index.js.map

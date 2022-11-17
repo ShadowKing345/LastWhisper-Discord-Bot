@@ -6,7 +6,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
 
 export function deferReply(
-  ephemeral = false
+  ephemeral = false,
 ): (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
   return function (_target: object, _propertyKey: string | symbol, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value as (

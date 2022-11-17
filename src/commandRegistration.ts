@@ -67,14 +67,14 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
     let promise: Promise<unknown>;
     if (commandConfigs.unregister) {
       const commands = (await rest.get(route)) as { id: string }[];
-      promise = Promise.all(commands.map((command) => rest.delete(`${route}/${command.id}`)));
+      promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
     } else {
       const commands: (
         | RESTPostAPIChatInputApplicationCommandsJSONBody
         | APIApplicationCommandSubcommandGroupOption
         | APIApplicationCommandSubcommandOption
       )[] = [];
-      app.modules.forEach((module) => {
+      app.modules.forEach(module => {
         for (const command of module.commands) {
           commands.push(command.build().toJSON());
         }

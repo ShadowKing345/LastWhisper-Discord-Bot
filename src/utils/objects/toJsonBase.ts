@@ -1,9 +1,9 @@
-import { MergeableObjectBase } from "./mergeableObjectBase.js";
+import { MergeObjectBase } from "./mergeObjectBase.js";
 
 /**
  * Abstract class that acts as a base for quick JSON serialization and deserialization.
  */
-export abstract class ToJsonBase<T> extends MergeableObjectBase<T> {
+export abstract class ToJsonBase<T> extends MergeObjectBase<T> {
   /**
    * Stringifies the current object into a JSON formatted string.
    * @return JSON string.

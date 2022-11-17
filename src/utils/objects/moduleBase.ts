@@ -1,9 +1,9 @@
 import { Timers } from "./timer.js";
-import { PermissionManagerService } from "../../services/permissionManager.service.js";
+import { PermissionManagerService } from "../../services/permissionManager.js";
 import { EventListeners } from "./eventListener.js";
 import { Commands, Command } from "./command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { CommandResolverError } from "../errors/commandResolverError.js";
+import { CommandResolverError } from "../errors/index.js";
 import { pino } from "pino";
 
 /**
@@ -47,7 +47,7 @@ export abstract class ModuleBase {
       interaction.options.getSubcommandGroup(),
       interaction.options.getSubcommand(),
     ]
-      .filter((item) => item)
+      .filter(item => item)
       .join(".");
     const f = this.commandResolverKeys[command];
 
@@ -69,7 +69,7 @@ export abstract class ModuleBase {
       return false;
     }
 
-    return this.commands.find((c) => c.name === command) != null;
+    return this.commands.find(c => c.name === command) != null;
   }
 
   /**
@@ -81,7 +81,7 @@ export abstract class ModuleBase {
       return undefined;
     }
 
-    return this.commands.find((c) => c.name === command);
+    return this.commands.find(c => c.name === command);
   }
 
   public get handlesCommands(): boolean {
