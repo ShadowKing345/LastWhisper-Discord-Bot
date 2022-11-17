@@ -1,12 +1,12 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { ModuleBase } from "../objects/moduleBase.js";
+import { Module } from "../objects/module.js";
 
 /**
  * Decorator that wraps a function call with a permission check.
  * If the permission manager service is missing the function is called as if nothing happened.
  * @param key Names of the permission check key.
  */
-export function authorize<T extends ModuleBase>(
+export function authorize<T extends Module>(
   key: string,
 ): (target: T, propertyKey: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor {
   return function (_target: T, _propertyKey: string | symbol, descriptor: PropertyDescriptor) {

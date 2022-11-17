@@ -1,5 +1,5 @@
 import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
@@ -10,14 +10,14 @@ import { Timers } from "../utils/objects/timer.js";
 import { EventObj } from "../models/event_manager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
-import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 
 /**
  * Module designed to deal with events. (Not Discord event)
  * @see EventManagerService
  */
-@registerModule()
-export class EventManagerModule extends ModuleBase {
+@module()
+export class EventManagerModule extends Module {
   @addPermissionKeys()
   public static permissionKeys = {
     create: "EventManager.create",

@@ -9,7 +9,7 @@ import { pino } from "pino";
 /**
  * Base class for a module.
  */
-export abstract class ModuleBase {
+export abstract class Module {
   public moduleName = "";
   public commands: Commands = [];
   public eventListeners: EventListeners = [];

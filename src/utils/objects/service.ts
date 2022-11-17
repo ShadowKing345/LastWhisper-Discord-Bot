@@ -1,9 +1,9 @@
-import { RepositoryBase, IEntity } from "./repositoryBase.js";
+import { Repository, IEntity } from "./repository.js";
 import { MergeObjectBase } from "./mergeObjectBase.js";
 import { ServiceError } from "../errors/index.js";
 
 export abstract class Service<T extends MergeObjectBase<T> & IEntity<unknown>> {
-  protected constructor(protected repository: RepositoryBase<T>) {}
+  protected constructor(protected repository: Repository<T>) {}
 
   /**
    * Attempts to find or create a new configuration file.

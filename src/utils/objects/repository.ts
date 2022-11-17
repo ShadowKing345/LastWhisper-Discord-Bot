@@ -17,7 +17,7 @@ export interface IEntity<T> {
  * Base repository object.
  * Manages the majority of basic CRUD repository actions.
  */
-export abstract class RepositoryBase<T extends MergeObjectBase<T> & IEntity<unknown>> {
+export abstract class Repository<T extends MergeObjectBase<T> & IEntity<unknown>> {
   // Name of the collection.
   protected abstract readonly collectionName: string;
   // A private internal collection object.

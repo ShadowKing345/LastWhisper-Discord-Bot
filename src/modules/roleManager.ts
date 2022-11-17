@@ -1,17 +1,17 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule } from "../utils/decorators/index.js";
+import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
-@registerModule()
-export class RoleManagerModule extends ModuleBase {
+@module()
+export class RoleManagerModule extends Module {
   public moduleName = "RoleManager";
   public eventListeners: EventListeners = [new EventListener("ready", async client => this.onReady(client))];
   public commands: Commands = [

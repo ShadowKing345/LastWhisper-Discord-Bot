@@ -6,7 +6,7 @@ import { singleton, injectAll } from "tsyringe";
 import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { ModuleBase, ProjectConfiguration } from "../models/index.js";
+import { Module, ProjectConfiguration } from "../models/index.js";
 import { Timer } from "../objects/timer.js";
 import { ModuleConfiguration } from "../models/moduleConfiguration.js";
 import { CommandResolverError } from "../errors/index.js";
@@ -21,7 +21,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
   private readonly moduleConfiguration: ModuleConfiguration;
   private readonly intervalIds: number[] = [];
 
-  private readonly _modules: ModuleBase[];
+  private readonly _modules: Module[];
 
   private readonly moduleLogger: pino.Logger;
   private readonly interactionLogger: pino.Logger;
@@ -30,7 +30,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
 
   constructor(
     config: ProjectConfiguration,
-    @injectAll(ModuleBase.name) modules: ModuleBase[],
+    @injectAll(Module.name) modules: Module[],
     loggerFactory: LoggerService,
   ) {
     super();
@@ -280,7 +280,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
   /**
    * List of all modules registered.
    */
-  public get modules(): ModuleBase[] {
+  public get modules(): Module[] {
     return this._modules;
   }
 }

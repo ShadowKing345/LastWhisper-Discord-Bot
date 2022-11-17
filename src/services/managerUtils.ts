@@ -11,13 +11,13 @@ import {
   PartialGuildMember,
 } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
 
 import { ManagerUtilsConfig } from "../models/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
 
-@singleton()
+@service()
 export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
   constructor(repository: ManagerUtilsRepository) {
     super(repository);

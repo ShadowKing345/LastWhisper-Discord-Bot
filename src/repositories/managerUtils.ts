@@ -1,15 +1,14 @@
-import { singleton } from "tsyringe";
-
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { ManagerUtilsConfig } from "../models/managerUtils.js";
+import { repository } from "../utils/decorators/index.js";
 
 /**
  * Repository for ManagerUtilsConfig
  * @see ManagerUtilsConfig
  */
-@singleton()
-export class ManagerUtilsRepository extends RepositoryBase<ManagerUtilsConfig> {
+@repository()
+export class ManagerUtilsRepository extends Repository<ManagerUtilsConfig> {
   protected readonly collectionName: string = "manager_utils";
   protected readonly mappingObject = ManagerUtilsConfig;
 

@@ -1,4 +1,4 @@
-import { IEntity } from "../../utils/objects/repositoryBase.js";
+import { IEntity } from "../../utils/objects/repository.js";
 import { Permission } from "./permission.js";
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { deepMerge } from "../../utils/index.js";

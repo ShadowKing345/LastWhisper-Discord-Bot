@@ -1,7 +1,6 @@
 import { EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
@@ -10,13 +9,14 @@ import { BuffManagerRepository } from "../repositories/buffManager.js";
 import { Buff, BuffManagerConfig, MessageSettings, Week, WeekDTO } from "../models/buff_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 import { ServiceError } from "../utils/errors/index.js";
+import { service } from "../utils/decorators/index.js";
 
 /**
  * Buff manager service.
  * This service manages actions related to FF XIV FC buffs.
  * Obviously not within the game as I am very sure that is against TOS.
  */
-@singleton()
+@service()
 export class BuffManagerService extends Service<BuffManagerConfig> {
   constructor(repository: BuffManagerRepository, @createLogger(BuffManagerService.name) private logger: pino.Logger) {
     super(repository);

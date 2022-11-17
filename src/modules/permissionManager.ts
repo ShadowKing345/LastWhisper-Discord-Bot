@@ -5,10 +5,10 @@ import {
   EmbedBuilder,
 } from "discord.js";
 
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { PermissionMode, Permission } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
@@ -18,8 +18,8 @@ import { BadAuthorizationKeyError } from "../utils/errors/index.js";
  * Module to manager the permissions of commands from a Discord client.
  * @see PermissionManagerService
  */
-@registerModule()
-export class PermissionManagerModule extends ModuleBase {
+@module()
+export class PermissionManagerModule extends Module {
   private readonly BadKeyErrorMessages =
     "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
 

@@ -9,7 +9,6 @@ import {
 } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
@@ -17,8 +16,9 @@ import { GardeningManagerRepository } from "../repositories/gardeningManager.js"
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../models/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
 
-@singleton()
+@service()
 export class GardeningManagerService extends Service<GardeningModuleConfig> {
   constructor(
     repository: GardeningManagerRepository,

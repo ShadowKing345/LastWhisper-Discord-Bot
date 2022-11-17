@@ -13,7 +13,6 @@ import {
   Channel,
 } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
@@ -22,8 +21,9 @@ import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../models/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
 
-@singleton()
+@service()
 export class RoleManagerService extends Service<RoleManagerConfig> {
   private collectors: { [key: string]: ReactionCollector } = {};
 

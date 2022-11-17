@@ -2,10 +2,10 @@ import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOpt
 import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
+import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { DateTime } from "luxon";
@@ -15,8 +15,8 @@ import { Buff, WeekDTO } from "../models/buff_manager/index.js";
  * Module designed to deal with requests about buffs.
  * @see BuffManagerService
  */
-@registerModule()
-export class BuffManagerModule extends ModuleBase {
+@module()
+export class BuffManagerModule extends Module {
   @addPermissionKeys()
   public static permissionKeys = {
     buffs: "BuffManager.buffs",

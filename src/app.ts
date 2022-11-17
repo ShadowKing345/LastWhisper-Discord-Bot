@@ -5,7 +5,7 @@ import { DatabaseConfigurationService } from "./utils/config/databaseConfigurati
 import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
 import { createLogger } from "./utils/loggerService.js";
 import { Client } from "./utils/models/client.js";
-import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
+import { Module, ProjectConfiguration } from "./utils/models/index.js";
 
 /**
  * Application class.
@@ -63,7 +63,7 @@ export class App {
   /**
    * Returns all the registered modules from the module class.
    */
-  public get modules(): ModuleBase[] {
+  public get modules(): Module[] {
     return this.moduleConfiguration?.modules ?? [];
   }
 }

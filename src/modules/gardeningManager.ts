@@ -5,18 +5,18 @@ import {
   ApplicationCommandOptionType,
 } from "discord.js";
 import { Client } from "../utils/models/client.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule } from "../utils/decorators/index.js";
+import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { Timers } from "../utils/objects/timer.js";
 
-@registerModule()
-export class GardeningManagerModule extends ModuleBase {
+@module()
+export class GardeningManagerModule extends Module {
   public moduleName = "GardeningModule";
   public commands: Commands = [
     new Command({

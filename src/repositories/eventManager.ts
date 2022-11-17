@@ -1,15 +1,14 @@
-import { singleton } from "tsyringe";
-
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { EventManagerConfig } from "../models/event_manager/index.js";
+import { repository } from "../utils/decorators/index.js";
 
 /**
  * Repository for EventManagerConfig
  * @see EventManagerConfig
  */
-@singleton()
-export class EventManagerRepository extends RepositoryBase<EventManagerConfig> {
+@repository()
+export class EventManagerRepository extends Repository<EventManagerConfig> {
   protected readonly collectionName: string = "event_manager";
   protected readonly mappingObject = EventManagerConfig;
 

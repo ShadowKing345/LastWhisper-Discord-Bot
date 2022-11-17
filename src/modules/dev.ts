@@ -1,5 +1,5 @@
-import { registerModule } from "../utils/decorators/index.js";
-import { ModuleBase } from "../utils/objects/moduleBase.js";
+import { module } from "../utils/decorators/index.js";
+import { Module } from "../utils/objects/module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import {
   CommandInteraction,
@@ -22,8 +22,8 @@ import { pino } from "pino";
 /**
  * Development module used for testing features and random things.
  */
-@registerModule()
-export class DevModule extends ModuleBase {
+@module()
+export class DevModule extends Module {
   public moduleName = "DevModule";
   public commands: Commands = [
     new Command({

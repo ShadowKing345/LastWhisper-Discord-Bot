@@ -1,6 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 
 import { createLogger } from "../utils/loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
@@ -8,12 +7,13 @@ import { PermissionManagerRepository } from "../repositories/permissionManager.j
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
 
 /**
  * Service that manages the permissions of commands throughout the project.
  * The reason for this service is that while you are able to change certain permissions for regular slash commands, subcommands cannot have their permissions changed in the same way.
  */
-@singleton()
+@service()
 export class PermissionManagerService extends Service<PermissionManagerConfig> {
   private static readonly keys: string[] = [];
   private static _keysFormatted: string = null;

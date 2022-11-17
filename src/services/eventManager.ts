@@ -1,6 +1,5 @@
 import { Client, EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
 
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
@@ -10,12 +9,13 @@ import { Service } from "../utils/objects/service.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { WrongChannelError } from "../utils/errors/index.js";
+import { service } from "../utils/decorators/index.js";
 
 /**
  * Event manager service.
  * Handles all things related to real life event, not Discord events.
  */
-@singleton()
+@service()
 export class EventManagerService extends Service<EventManagerConfig> {
   constructor(repository: EventManagerRepository, @createLogger(EventManagerService.name) private logger: pino.Logger) {
     super(repository);

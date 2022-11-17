@@ -5,17 +5,17 @@ import {
   InteractionResponse,
   PartialGuildMember,
 } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule } from "../utils/decorators/index.js";
+import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption, Commands } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
-@registerModule()
-export class ManagerUtilsModule extends ModuleBase {
+@module()
+export class ManagerUtilsModule extends Module {
   public moduleName = "ManagerUtils";
   public commands: Commands = [
     new Command({
