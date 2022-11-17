@@ -7,7 +7,7 @@ import { Repository } from "../objects/repository.js";
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function repository<T extends Repository<any>>(): (target: constructor<T>) => void {
-  return function(target: constructor<T>) {
+  return function (target: constructor<T>) {
     injectable()(target);
     container.registerSingleton<T>(target);
     container.register(Repository.name, { useClass: target });

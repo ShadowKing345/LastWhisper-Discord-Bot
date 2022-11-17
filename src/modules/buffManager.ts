@@ -139,7 +139,7 @@ export class BuffManagerModule extends Module {
       });
     }
 
-    await interaction.editReply({ embeds: [ this.service.createBuffEmbed("The Buff Shall Be:", buff, date) ] });
+    await interaction.editReply({ embeds: [this.service.createBuffEmbed("The Buff Shall Be:", buff, date)] });
   }
 
   /**
@@ -184,7 +184,9 @@ export class BuffManagerModule extends Module {
       }
     }
 
-    await interaction.editReply({ embeds: [ this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date) ] });
+    await interaction.editReply({
+      embeds: [this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)],
+    });
   }
 
   private postDailyMessage(client: Client): Promise<void> {

@@ -129,7 +129,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     return new EmbedBuilder({
       title: title,
       description: week.title,
-      fields: Array(...week.days).map(([ day, buff ]) => ({
+      fields: Array(...week.days).map(([day, buff]) => ({
         name: day,
         value: buff?.text ?? "No buff found.",
         inline: true,

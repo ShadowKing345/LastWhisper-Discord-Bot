@@ -28,11 +28,7 @@ export class ModuleConfigurationService extends ConfigurationClass {
   private readonly eventLogger: pino.Logger;
   private readonly taskLogger: pino.Logger;
 
-  constructor(
-    config: ProjectConfiguration,
-    @injectAll(Module.name) modules: Module[],
-    loggerFactory: LoggerService,
-  ) {
+  constructor(config: ProjectConfiguration, @injectAll(Module.name) modules: Module[], loggerFactory: LoggerService) {
     super();
 
     this.moduleConfiguration = config.moduleConfiguration;

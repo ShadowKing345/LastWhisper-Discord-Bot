@@ -7,7 +7,7 @@ import { Service } from "../objects/service.js";
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function service<T extends Service<any>>(): (target: constructor<T>) => void {
-  return function(target: constructor<T>) {
+  return function (target: constructor<T>) {
     injectable()(target);
     container.registerSingleton<T>(target);
     container.register(Service.name, { useClass: target });
