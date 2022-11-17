@@ -1,12 +1,4 @@
-import {
-  Client,
-  Message,
-  ChatInputCommandInteraction,
-  ApplicationCommandOptionType,
-  PartialMessage,
-  InteractionResponse,
-  EmbedBuilder,
-} from "discord.js";
+import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
 import { ModuleBase } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -32,7 +24,7 @@ export class EventManagerModule extends ModuleBase {
     update: "EventManager.update",
     cancel: "EventManager.cancel",
     test: "EventManager.test",
-    list: "EventManager.list",
+    list: "EventManager.list"
   };
 
   public moduleName = "EventManager";
@@ -48,24 +40,24 @@ export class EventManagerModule extends ModuleBase {
             new CommandOption({
               name: "text",
               description: "The new message you want to use instead. (Will not update the exiting message)",
-              type: ApplicationCommandOptionType.String,
+              type: ApplicationCommandOptionType.String
             }),
             new CommandOption({
               name: "name",
               description: "Name of event.",
-              type: ApplicationCommandOptionType.String,
+              type: ApplicationCommandOptionType.String
             }),
             new CommandOption({
               name: "description",
               description: "Description of event.",
-              type: ApplicationCommandOptionType.String,
+              type: ApplicationCommandOptionType.String
             }),
             new CommandOption({
               name: "time",
               description: "Time of event.",
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
+              type: ApplicationCommandOptionType.String
+            })
+          ]
         }),
         UpdateEvent: new Command({
           name: "update",
@@ -75,29 +67,29 @@ export class EventManagerModule extends ModuleBase {
               name: "index",
               description: "The index for the event, starting at 0.",
               type: ApplicationCommandOptionType.Integer,
-              required: true,
+              required: true
             }),
             new CommandOption({
               name: "text",
               description: "The new message you want to use instead. (Will not update the exiting message)",
-              type: ApplicationCommandOptionType.String,
+              type: ApplicationCommandOptionType.String
             }),
             new CommandOption({
               name: "name",
               description: "Name of event.",
-              type: ApplicationCommandOptionType.String,
+              type: ApplicationCommandOptionType.String
             }),
             new CommandOption({
               name: "description",
               description: "Description of event.",
-              type: ApplicationCommandOptionType.String,
+              type: ApplicationCommandOptionType.String
             }),
             new CommandOption({
               name: "time",
               description: "Time of event.",
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
+              type: ApplicationCommandOptionType.String
+            })
+          ]
         }),
         CancelEvent: new Command({
           name: "cancel",
@@ -107,9 +99,9 @@ export class EventManagerModule extends ModuleBase {
               name: "index",
               description: "The index for the event, starting at 0.",
               type: ApplicationCommandOptionType.Integer,
-              required: true,
-            }),
-          ],
+              required: true
+            })
+          ]
         }),
         TestEvent: new Command({
           name: "test",
@@ -120,9 +112,9 @@ export class EventManagerModule extends ModuleBase {
               name: "text",
               description: "The message you wish to check against.",
               type: ApplicationCommandOptionType.String,
-              required: true,
-            }),
-          ],
+              required: true
+            })
+          ]
         }),
         ListEvent: new Command({
           name: "list",
@@ -131,39 +123,39 @@ export class EventManagerModule extends ModuleBase {
             new CommandOption({
               name: "index",
               description: "The index for the event, starting at 0.",
-              type: ApplicationCommandOptionType.Integer,
-            }),
-          ],
-        }),
+              type: ApplicationCommandOptionType.Integer
+            })
+          ]
+        })
       },
-      execute: this.commandResolver.bind(this),
-    }),
+      execute: this.commandResolver.bind(this)
+    })
   ];
   public eventListeners: EventListeners = [
-    new EventListener("messageCreate", (_, [message]) => this.createEvent(message)),
-    new EventListener("messageUpdate", (_, [old, message]) => this.updateEvent(old, message)),
-    new EventListener("messageDelete", (_, [message]) => this.deleteEvent(message)),
-    new EventListener("ready", client => this.onReady(client)),
+    new EventListener("messageCreate", (_, [ message ]) => this.createEvent(message)),
+    new EventListener("messageUpdate", (_, [ old, message ]) => this.updateEvent(old, message)),
+    new EventListener("messageDelete", (_, [ message ]) => this.deleteEvent(message)),
+    new EventListener("ready", client => this.onReady(client))
   ];
   public timers: Timers = [
     {
       name: `${this.moduleName}#postMessageTask`,
       timeout: 60000,
-      execute: client => this.reminderLoop(client),
-    },
+      execute: client => this.reminderLoop(client)
+    }
   ];
   protected commandResolverKeys = {
     "event_manager.create": this.createEventCommand.bind(this),
     "event_manager.update": this.updateEventCommand.bind(this),
     "event_manager.cancel": this.cancelEventCommand.bind(this),
     "event_manager.test": this.testEventCommand.bind(this),
-    "event_manager.list": this.listEventCommand.bind(this),
+    "event_manager.list": this.listEventCommand.bind(this)
   };
 
   constructor(
     private service: EventManagerService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(EventManagerModule.name) logger: pino.Logger,
+    @createLogger(EventManagerModule.name) logger: pino.Logger
   ) {
     super(permissionManagerService, logger);
   }
@@ -207,14 +199,14 @@ export class EventManagerModule extends ModuleBase {
     const event = await this.service.updateByIndex(
       interaction.guildId,
       index,
-      await this.service.createContent(interaction.guildId, name, description, time),
+      await this.service.createContent(interaction.guildId, name, description, time)
     );
     await interaction.editReply({ content: event ? "Event was successfully updated." : "Event failed to be updated." });
   }
 
   /**
    * Cancels an event with slash commands.
-   * @param interaction The Discord interaction. The
+   * @param interaction The Discord interaction.
    * @private
    */
   @authorize(EventManagerModule.permissionKeys.cancel)
@@ -231,6 +223,11 @@ export class EventManagerModule extends ModuleBase {
     }
   }
 
+  /**
+   * Tests the string to see if it is a valid event and returns the result.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   @authorize(EventManagerModule.permissionKeys.test)
   @deferReply()
   private async testEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
@@ -248,15 +245,20 @@ export class EventManagerModule extends ModuleBase {
                 ? event.dateTime < DateTime.now().toUnixInteger()
                   ? `<t:${event.dateTime}:F>`
                   : "Time is before the present."
-                : "The format for the time was not correct. Use the Hammer time syntax to help.",
+                : "The format for the time was not correct. Use the Hammer time syntax to help."
             },
-            { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") },
-          ],
-        }).setColor(event.isValid ? "Green" : "Red"),
-      ],
+            { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") }
+          ]
+        }).setColor(event.isValid ? "Green" : "Red")
+      ]
     });
   }
 
+  /**
+   * Lists all events currently registered or returns the details of just one event if index is provided.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   @authorize(EventManagerModule.permissionKeys.list)
   @deferReply()
   private async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
@@ -267,9 +269,9 @@ export class EventManagerModule extends ModuleBase {
         embeds: [
           new EmbedBuilder({
             title: "No events were set.",
-            description: "There are currently no active events going on in your guild.",
-          }),
-        ],
+            description: "There are currently no active events going on in your guild."
+          })
+        ]
       });
       return;
     }
@@ -278,20 +280,26 @@ export class EventManagerModule extends ModuleBase {
       event instanceof EventObj
         ? this.service.createEventEmbed(event)
         : new EmbedBuilder({
-            title: "Upcoming Events",
-            fields: event.map((event, index) => ({
-              name: `Index ${index}:`,
-              value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
-              inline: false,
-            })),
-          }).setColor("Random");
+          title: "Upcoming Events",
+          fields: event.map((event, index) => ({
+            name: `Index ${index}:`,
+            value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
+            inline: false
+          }))
+        }).setColor("Random");
 
-    await interaction.editReply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [ embed ] });
   }
 
   // endregion
   // region Events
 
+  /**
+   * Event fired when a message is created.
+   * Will attempt to create an event from the message and react.
+   * @param message The message or partial message to be parsed.
+   * @private
+   */
   private async createEvent(message: Message | PartialMessage): Promise<void> {
     this.logger.debug("On Message Create fired. Creating new event.");
 
@@ -306,7 +314,7 @@ export class EventManagerModule extends ModuleBase {
         message.guildId,
         message.id,
         message.content,
-        message.channelId,
+        message.channelId
       );
       await message.react(event ? "✅" : "❎");
       this.logger.debug("New event created.");
@@ -321,6 +329,13 @@ export class EventManagerModule extends ModuleBase {
     }
   }
 
+  /**
+   * Event fired when a message is updated.
+   * Will attempt to update an existing event with the new data and fire.
+   * @param oldMessage The message or partial old message.
+   * @param newMessage The message or partial new message to be parsed.
+   * @private
+   */
   private async updateEvent(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
     if (oldMessage.partial) await oldMessage.fetch();
     if (newMessage.partial) await newMessage.fetch();
@@ -346,18 +361,34 @@ export class EventManagerModule extends ModuleBase {
     }
   }
 
+  /**
+   * Event fired when a message is deleted.
+   * Will attempt to cancel an existing event with the new data and fire.
+   * @param message
+   * @private
+   */
   private async deleteEvent(message: Message | PartialMessage): Promise<void> {
     if (message.partial) message = await message.fetch();
 
     return this.service.cancel(message.guildId, message.id);
   }
 
+  /**
+   * On ready event.
+   * @param client The Bot client.
+   * @private
+   */
   private onReady(client: Client): Promise<void> {
     return this.service.onReady(client);
   }
 
   // endregion
 
+  /**
+   * Timer loop fired for when an event reminder needs to be called.
+   * @param client
+   * @private
+   */
   private reminderLoop(client: Client): Promise<void> {
     return this.service.reminderLoop(client);
   }
