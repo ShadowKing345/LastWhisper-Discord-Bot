@@ -25,7 +25,7 @@ let App = App_1 = class App {
             await this.databaseService.connect();
             this.moduleConfiguration.configureModules(this.client);
             this.client.once("ready", () => this.logger.info("Bot is up and ready to roll!"));
-            this.client.on("error", (error) => this.logger.error(error.stack));
+            this.client.on("error", error => this.logger.error(error.stack));
             this.logger.info("Done loading. Ready to run.");
         }
         catch (error) {

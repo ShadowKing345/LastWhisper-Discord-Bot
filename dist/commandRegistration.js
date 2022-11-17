@@ -34,11 +34,11 @@ export async function commandRegistration(args) {
         let promise;
         if (commandConfigs.unregister) {
             const commands = (await rest.get(route));
-            promise = Promise.all(commands.map((command) => rest.delete(`${route}/${command.id}`)));
+            promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
         }
         else {
             const commands = [];
-            app.modules.forEach((module) => {
+            app.modules.forEach(module => {
                 for (const command of module.commands) {
                     commands.push(command.build().toJSON());
                 }

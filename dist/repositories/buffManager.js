@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
-import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { BuffManagerConfig } from "../models/buff_manager/index.js";
-let BuffManagerRepository = class BuffManagerRepository extends RepositoryBase {
+import { repository } from "../utils/decorators/index.js";
+let BuffManagerRepository = class BuffManagerRepository extends Repository {
     collectionName = "buff_manager";
     mappingObject = BuffManagerConfig;
     constructor(db) {
@@ -11,7 +11,7 @@ let BuffManagerRepository = class BuffManagerRepository extends RepositoryBase {
     }
 };
 BuffManagerRepository = __decorate([
-    singleton(),
+    repository(),
     __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], BuffManagerRepository);
 export { BuffManagerRepository };

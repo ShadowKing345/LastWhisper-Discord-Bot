@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
-import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { EventManagerConfig } from "../models/event_manager/index.js";
-let EventManagerRepository = class EventManagerRepository extends RepositoryBase {
+import { repository } from "../utils/decorators/index.js";
+let EventManagerRepository = class EventManagerRepository extends Repository {
     collectionName = "event_manager";
     mappingObject = EventManagerConfig;
     constructor(db) {
@@ -11,7 +11,7 @@ let EventManagerRepository = class EventManagerRepository extends RepositoryBase
     }
 };
 EventManagerRepository = __decorate([
-    singleton(),
+    repository(),
     __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], EventManagerRepository);
 export { EventManagerRepository };

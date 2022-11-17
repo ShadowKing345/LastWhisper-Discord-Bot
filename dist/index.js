@@ -17,6 +17,6 @@ program
     .option("-c, --client <string>", "Client ID.")
     .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
     .option("-u, --unregister", "Use to unregister commands instead.")
-    .action((args) => commandRegistration(args));
+    .action(args => commandRegistration(args));
 program.parse();
 //# sourceMappingURL=index.js.map

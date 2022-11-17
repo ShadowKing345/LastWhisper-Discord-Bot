@@ -32,7 +32,7 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
         if (dbConfig.query) {
             const queryArray = Object.entries(dbConfig.query);
             if (queryArray.length > 0) {
-                url += "?" + queryArray.map((value) => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
+                url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
             }
         }
         return url;
@@ -46,7 +46,7 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
             }
             const url = DatabaseConfigurationService_1.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
             this._client = await MongoClient.connect(url);
-            this._client.on("error", (error) => this.logger.error(error.stack));
+            this._client.on("error", error => this.logger.error(error.stack));
             this._db = this._client.db(this.projectConfig.database?.database ?? "");
         }
         catch (error) {

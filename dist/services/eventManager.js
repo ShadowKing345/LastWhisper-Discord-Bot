@@ -2,7 +2,6 @@ var EventManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { EmbedBuilder, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.js";
@@ -11,6 +10,7 @@ import { Service } from "../utils/objects/service.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { WrongChannelError } from "../utils/errors/index.js";
+import { service } from "../utils/decorators/index.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
     logger;
     constructor(repository, logger) {
@@ -54,7 +54,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
     async update(guildId, messageId, content) {
         const config = await this.getConfig(guildId);
-        const oldEvent = config.events.find((event) => event.id === messageId);
+        const oldEvent = config.events.find(event => event.id === messageId);
         if (!oldEvent) {
             throw new Error("Event does not exist.");
         }
@@ -79,7 +79,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
     async cancel(guildId, id) {
         const config = await this.getConfig(guildId);
-        const index = config.events.findIndex((event) => event.id === id);
+        const index = config.events.findIndex(event => event.id === id);
         if (index === -1)
             return;
         config.events.splice(index, 1);
@@ -92,7 +92,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
     async eventExists(guildId, id) {
         const config = await this.getConfig(guildId);
-        return config.events.findIndex((event) => event.id === id) !== -1;
+        return config.events.findIndex(event => event.id === id) !== -1;
     }
     async onReady(client) {
         const promises = [];
@@ -116,7 +116,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         const alteredConfigs = [];
         const configs = await this.repository
             .getAll()
-            .then((configs) => configs.filter((config) => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)));
+            .then(configs => configs.filter(config => config.postingChannelId && config.events.length > 0 && client.guilds.cache.has(config.guildId)));
         for (const config of configs) {
             try {
                 const postingChannel = await client.channels.fetch(config.postingChannelId);
@@ -124,7 +124,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                     this.logger.warn("Either posting channel does not exist or it is not inside of guild. Skipping...");
                     continue;
                 }
-                for (const reminder of config.reminders.filter((trigger) => trigger.timeDelta)) {
+                for (const reminder of config.reminders.filter(trigger => trigger.timeDelta)) {
                     const reminderTimeDelta = reminder.asDuration;
                     for (const event of config.events) {
                         const eventTime = DateTime.fromSeconds(event.dateTime);
@@ -138,7 +138,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                                 "%hourDiff%": reminderTimeDelta.hours.toString(),
                                 "%minuteDiff%": reminderTimeDelta.minutes.toString(),
                             };
-                            await postingChannel.send(reminder.message.replace(/%\w+%/g, (v) => messageValues[v] || v));
+                            await postingChannel.send(reminder.message.replace(/%\w+%/g, v => messageValues[v] || v));
                         }
                     }
                 }
@@ -167,7 +167,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             description: event.description,
             fields: [
                 { name: "Time", value: `Set for: <t:${event.dateTime}:F>\nTime Left: <t:${event.dateTime}:R>` },
-                ...event.additional.map((pair) => ({ name: pair[0], value: pair[1], inline: true })),
+                ...event.additional.map(pair => ({ name: pair[0], value: pair[1], inline: true })),
             ],
         }).setColor("Random");
     }
@@ -175,7 +175,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         return text.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
     }
     parseMessage(id, content, tags, dateTimeFormats, delimiter) {
-        const [l, r] = delimiter.map((c) => this.regexpEscape(c));
+        const [l, r] = delimiter.map(c => this.regexpEscape(c));
         const event = new EventObj({ id });
         const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
         for (const [, k, v] of content.matchAll(regExp)) {
@@ -213,7 +213,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                     event.dateTime = date.toUnixInteger();
                     break;
                 default:
-                    if (!tags.exclusionList.every((e) => e !== key))
+                    if (!tags.exclusionList.every(e => e !== key))
                         continue;
                     event.additional.push([key, value]);
                     break;
@@ -223,7 +223,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
 };
 EventManagerService = EventManagerService_1 = __decorate([
-    singleton(),
+    service(),
     __param(1, createLogger(EventManagerService_1.name)),
     __metadata("design:paramtypes", [EventManagerRepository, Object])
 ], EventManagerService);

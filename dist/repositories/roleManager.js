@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
-import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { RoleManagerConfig } from "../models/roleManager.js";
-let RoleManagerRepository = class RoleManagerRepository extends RepositoryBase {
+import { repository } from "../utils/decorators/index.js";
+let RoleManagerRepository = class RoleManagerRepository extends Repository {
     collectionName = "role_manager";
     mappingObject = RoleManagerConfig;
     constructor(db) {
@@ -11,7 +11,7 @@ let RoleManagerRepository = class RoleManagerRepository extends RepositoryBase {
     }
 };
 RoleManagerRepository = __decorate([
-    singleton(),
+    repository(),
     __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], RoleManagerRepository);
 export { RoleManagerRepository };

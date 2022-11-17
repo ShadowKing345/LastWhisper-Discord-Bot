@@ -1,11 +1,11 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
 import { EventListeners } from "../utils/objects/eventListener.js";
-export declare class ManagerUtilsModule extends ModuleBase {
+export declare class ManagerUtilsModule extends Module {
     private managerUtilsService;
     moduleName: string;
     commands: Commands;

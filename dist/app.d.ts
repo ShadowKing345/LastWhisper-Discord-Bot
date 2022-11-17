@@ -1,7 +1,7 @@
 import { pino } from "pino";
 import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
 import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
-import { ModuleBase, ProjectConfiguration } from "./utils/models/index.js";
+import { Module, ProjectConfiguration } from "./utils/models/index.js";
 export declare class App {
     private appConfig;
     private databaseService;
@@ -12,7 +12,7 @@ export declare class App {
     init(): Promise<void>;
     run(): Promise<string>;
     stop(): Promise<void>;
-    get modules(): ModuleBase[];
+    get modules(): Module[];
 }
 export declare function main(): Promise<void>;
 //# sourceMappingURL=app.d.ts.map

@@ -1,4 +1,4 @@
-import { IEntity } from "../utils/objects/repositoryBase.js";
+import { IEntity } from "../utils/objects/repository.js";
 import { ToJsonBase } from "../utils/objects/toJsonBase.js";
 export declare class RoleManagerConfig extends ToJsonBase<RoleManagerConfig> implements IEntity<string> {
     _id: string;

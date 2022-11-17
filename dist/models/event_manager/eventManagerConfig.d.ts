@@ -1,4 +1,4 @@
-import { IEntity } from "../../utils/objects/repositoryBase.js";
+import { IEntity } from "../../utils/objects/repository.js";
 import { EventObj } from "./eventObj.js";
 import { Reminder } from "./reminderTrigger.js";
 import { Tags } from "./tags.js";

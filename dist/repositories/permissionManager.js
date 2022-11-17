@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
-import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { PermissionManagerConfig } from "../models/permission_manager/index.js";
-let PermissionManagerRepository = class PermissionManagerRepository extends RepositoryBase {
+import { repository } from "../utils/decorators/index.js";
+let PermissionManagerRepository = class PermissionManagerRepository extends Repository {
     collectionName = "permission_manager";
     mappingObject = PermissionManagerConfig;
     constructor(db) {
@@ -11,7 +11,7 @@ let PermissionManagerRepository = class PermissionManagerRepository extends Repo
     }
 };
 PermissionManagerRepository = __decorate([
-    singleton(),
+    repository(),
     __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], PermissionManagerRepository);
 export { PermissionManagerRepository };

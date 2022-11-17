@@ -1,9 +1,9 @@
-import { ModuleBase } from "../utils/objects/moduleBase.js";
+import { Module } from "../utils/objects/module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
-export declare class DevModule extends ModuleBase {
+export declare class DevModule extends Module {
     moduleName: string;
     commands: Commands;
     buttons: {

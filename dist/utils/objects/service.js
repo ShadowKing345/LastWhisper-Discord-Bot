@@ -1,3 +1,4 @@
+import { ServiceError } from "../errors/index.js";
 export class Service {
     repository;
     constructor(repository) {
@@ -5,7 +6,7 @@ export class Service {
     }
     async getConfig(id) {
         if (!id) {
-            throw new Error("Guild ID cannot be null.");
+            throw new ServiceError("Guild ID cannot be null.");
         }
         const result = await this.repository.findOne({ guildId: id });
         if (result)

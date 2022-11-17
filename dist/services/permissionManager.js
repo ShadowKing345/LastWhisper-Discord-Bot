@@ -1,13 +1,13 @@
 var PermissionManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { Permission, PermissionMode } from "../models/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService extends Service {
     logger;
     static keys = [];
@@ -29,7 +29,7 @@ let PermissionManagerService = PermissionManagerService_1 = class PermissionMana
             this.logger.debug("Key did not exist. Exiting out.");
             await interaction.reply({
                 content: "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
-                ephemeral: true
+                ephemeral: true,
             });
             return false;
         }
@@ -134,7 +134,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PermissionManagerService.prototype, "setPermission", null);
 PermissionManagerService = PermissionManagerService_1 = __decorate([
-    singleton(),
+    service(),
     __param(1, createLogger(PermissionManagerService_1.name)),
     __metadata("design:paramtypes", [PermissionManagerRepository, Object])
 ], PermissionManagerService);

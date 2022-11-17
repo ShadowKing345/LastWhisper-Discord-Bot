@@ -1,12 +1,12 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { BuffManagerService } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
-export declare class BuffManagerModule extends ModuleBase {
-    private buffManagerService;
+export declare class BuffManagerModule extends Module {
+    private service;
     static permissionKeys: {
         buffs: string;
         weeks: string;
@@ -18,9 +18,9 @@ export declare class BuffManagerModule extends ModuleBase {
         "buff_manager.buffs": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
         "buff_manager.weeks": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
     };
-    constructor(buffManagerService: BuffManagerService, logger: pino.Logger, permissionManagerService: PermissionManagerService);
-    private postBuff;
-    private postWeek;
+    constructor(service: BuffManagerService, logger: pino.Logger, permissionManagerService: PermissionManagerService);
+    private postBuffCommand;
+    private postWeekCommand;
     private postDailyMessage;
 }
 //# sourceMappingURL=buffManager.d.ts.map

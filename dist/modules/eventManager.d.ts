@@ -1,12 +1,12 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
 import { EventListeners } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
-export declare class EventManagerModule extends ModuleBase {
+export declare class EventManagerModule extends Module {
     private service;
     static permissionKeys: {
         create: string;

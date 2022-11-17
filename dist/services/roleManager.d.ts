@@ -1,12 +1,13 @@
 import { CommandInteraction, MessageReaction, User, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { Client } from "../utils/models/client.js";
+import { RoleManagerConfig } from "../models/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
-export declare class RoleManagerService {
-    private roleManagerConfigRepository;
+import { Service } from "../utils/objects/service.js";
+export declare class RoleManagerService extends Service<RoleManagerConfig> {
     private logger;
     private collectors;
-    constructor(roleManagerConfigRepository: RoleManagerRepository, logger: pino.Logger);
+    constructor(repository: RoleManagerRepository, logger: pino.Logger);
     private static alterMembersRoles;
     private static processMessageReactions;
     private registerReactionCollector;
@@ -15,6 +16,5 @@ export declare class RoleManagerService {
     revokeRole(interaction: CommandInteraction): Promise<InteractionResponse<boolean>>;
     registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse>;
     unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse>;
-    private findOneOrCreate;
 }
 //# sourceMappingURL=roleManager.d.ts.map

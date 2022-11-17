@@ -1,19 +1,28 @@
-import { CommandInteraction, InteractionResponse, EmbedBuilder } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { Client } from "../utils/models/client.js";
 import { BuffManagerRepository } from "../repositories/buffManager.js";
-import { Buff, BuffManagerConfig, Week } from "../models/buff_manager/index.js";
+import { Buff, BuffManagerConfig, WeekDTO } from "../models/buff_manager/index.js";
 import { Service } from "../utils/objects/service.js";
+import { ServiceError } from "../utils/errors/index.js";
 export declare class BuffManagerService extends Service<BuffManagerConfig> {
     private logger;
-    private readonly daysOfWeek;
     constructor(repository: BuffManagerRepository, logger: pino.Logger);
-    postBuff(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void>;
-    postWeek(interaction: CommandInteraction, date: DateTime): Promise<InteractionResponse | void>;
+    getBuffByDate(guildId: string | null, date: DateTime): Promise<Buff | null>;
+    getWeekByDate(guildId: string | null, date: DateTime): Promise<WeekDTO | null>;
     postDailyMessage(client: Client): Promise<void>;
     createBuffEmbed(title: string, buff: Buff, date: DateTime): EmbedBuilder;
-    createWeekEmbed(title: string, config: BuffManagerConfig, date: DateTime, week?: Week): EmbedBuilder;
-    tryGetConfig(interaction: CommandInteraction): Promise<BuffManagerConfig | null>;
+    createWeekEmbed(title: string, week: WeekDTO, date: DateTime): EmbedBuilder;
+    tryGetConfig(guildId: string | null): Promise<BuffManagerConfig>;
+}
+export declare class BuffManagerTryGetError extends ServiceError {
+    reason: BuffManagerTryGetErrorReasons;
+    constructor(message: string, reason: BuffManagerTryGetErrorReasons);
+}
+export declare enum BuffManagerTryGetErrorReasons {
+    UNKNOWN = 0,
+    WEEKS = 1,
+    BUFFS = 2
 }
 //# sourceMappingURL=buffManager.d.ts.map

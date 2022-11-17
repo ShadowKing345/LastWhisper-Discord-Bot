@@ -1,11 +1,11 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
-export declare class RoleManagerModule extends ModuleBase {
+export declare class RoleManagerModule extends Module {
     private roleManagerService;
     moduleName: string;
     eventListeners: EventListeners;

@@ -1,7 +1,7 @@
 var EventManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
@@ -11,15 +11,15 @@ import { EventListener } from "../utils/objects/eventListener.js";
 import { EventObj } from "../models/event_manager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
-import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
-let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends ModuleBase {
+import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends Module {
     service;
     static permissionKeys = {
         create: "EventManager.create",
         update: "EventManager.update",
         cancel: "EventManager.cancel",
         test: "EventManager.test",
-        list: "EventManager.list",
+        list: "EventManager.list"
     };
     moduleName = "EventManager";
     commands = [
@@ -34,24 +34,24 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                         new CommandOption({
                             name: "text",
                             description: "The new message you want to use instead. (Will not update the exiting message)",
-                            type: ApplicationCommandOptionType.String,
+                            type: ApplicationCommandOptionType.String
                         }),
                         new CommandOption({
                             name: "name",
                             description: "Name of event.",
-                            type: ApplicationCommandOptionType.String,
+                            type: ApplicationCommandOptionType.String
                         }),
                         new CommandOption({
                             name: "description",
                             description: "Description of event.",
-                            type: ApplicationCommandOptionType.String,
+                            type: ApplicationCommandOptionType.String
                         }),
                         new CommandOption({
                             name: "time",
                             description: "Time of event.",
-                            type: ApplicationCommandOptionType.String,
-                        }),
-                    ],
+                            type: ApplicationCommandOptionType.String
+                        })
+                    ]
                 }),
                 UpdateEvent: new Command({
                     name: "update",
@@ -61,29 +61,29 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                             name: "index",
                             description: "The index for the event, starting at 0.",
                             type: ApplicationCommandOptionType.Integer,
-                            required: true,
+                            required: true
                         }),
                         new CommandOption({
                             name: "text",
                             description: "The new message you want to use instead. (Will not update the exiting message)",
-                            type: ApplicationCommandOptionType.String,
+                            type: ApplicationCommandOptionType.String
                         }),
                         new CommandOption({
                             name: "name",
                             description: "Name of event.",
-                            type: ApplicationCommandOptionType.String,
+                            type: ApplicationCommandOptionType.String
                         }),
                         new CommandOption({
                             name: "description",
                             description: "Description of event.",
-                            type: ApplicationCommandOptionType.String,
+                            type: ApplicationCommandOptionType.String
                         }),
                         new CommandOption({
                             name: "time",
                             description: "Time of event.",
-                            type: ApplicationCommandOptionType.String,
-                        }),
-                    ],
+                            type: ApplicationCommandOptionType.String
+                        })
+                    ]
                 }),
                 CancelEvent: new Command({
                     name: "cancel",
@@ -93,9 +93,9 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                             name: "index",
                             description: "The index for the event, starting at 0.",
                             type: ApplicationCommandOptionType.Integer,
-                            required: true,
-                        }),
-                    ],
+                            required: true
+                        })
+                    ]
                 }),
                 TestEvent: new Command({
                     name: "test",
@@ -105,9 +105,9 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                             name: "text",
                             description: "The message you wish to check against.",
                             type: ApplicationCommandOptionType.String,
-                            required: true,
-                        }),
-                    ],
+                            required: true
+                        })
+                    ]
                 }),
                 ListEvent: new Command({
                     name: "list",
@@ -116,33 +116,33 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                         new CommandOption({
                             name: "index",
                             description: "The index for the event, starting at 0.",
-                            type: ApplicationCommandOptionType.Integer,
-                        }),
-                    ],
-                }),
+                            type: ApplicationCommandOptionType.Integer
+                        })
+                    ]
+                })
             },
-            execute: this.commandResolver.bind(this),
-        }),
+            execute: this.commandResolver.bind(this)
+        })
     ];
     eventListeners = [
         new EventListener("messageCreate", (_, [message]) => this.createEvent(message)),
         new EventListener("messageUpdate", (_, [old, message]) => this.updateEvent(old, message)),
         new EventListener("messageDelete", (_, [message]) => this.deleteEvent(message)),
-        new EventListener("ready", (client) => this.onReady(client)),
+        new EventListener("ready", client => this.onReady(client))
     ];
     timers = [
         {
             name: `${this.moduleName}#postMessageTask`,
             timeout: 60000,
-            execute: (client) => this.reminderLoop(client),
-        },
+            execute: client => this.reminderLoop(client)
+        }
     ];
     commandResolverKeys = {
         "event_manager.create": this.createEventCommand.bind(this),
         "event_manager.update": this.updateEventCommand.bind(this),
         "event_manager.cancel": this.cancelEventCommand.bind(this),
         "event_manager.test": this.testEventCommand.bind(this),
-        "event_manager.list": this.listEventCommand.bind(this),
+        "event_manager.list": this.listEventCommand.bind(this)
     };
     constructor(service, permissionManagerService, logger) {
         super(permissionManagerService, logger);
@@ -152,7 +152,8 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         const name = interaction.options.getString("name");
         const description = interaction.options.getString("description");
         const time = interaction.options.getString("time");
-        const text = interaction.options.getString("text") ?? (await this.service.createContent(interaction.guildId, name, description, time));
+        const text = interaction.options.getString("text") ??
+            (await this.service.createContent(interaction.guildId, name, description, time));
         const event = await this.service.create(interaction.guildId, null, text);
         await interaction.editReply({ content: event ? "Event was successfully created." : "Event failed to be created." });
     }
@@ -190,12 +191,12 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                                 ? event.dateTime < DateTime.now().toUnixInteger()
                                     ? `<t:${event.dateTime}:F>`
                                     : "Time is before the present."
-                                : "The format for the time was not correct. Use the Hammer time syntax to help.",
+                                : "The format for the time was not correct. Use the Hammer time syntax to help."
                         },
-                        { name: "Additional", value: event.additional.map((pair) => `[${pair[0]}]\n${pair[1]}`).join("\n") },
-                    ],
-                }).setColor(event.isValid ? "Green" : "Red"),
-            ],
+                        { name: "Additional", value: event.additional.map(pair => `[${pair[0]}]\n${pair[1]}`).join("\n") }
+                    ]
+                }).setColor(event.isValid ? "Green" : "Red")
+            ]
         });
     }
     async listEventCommand(interaction) {
@@ -205,9 +206,9 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                 embeds: [
                     new EmbedBuilder({
                         title: "No events were set.",
-                        description: "There are currently no active events going on in your guild.",
-                    }),
-                ],
+                        description: "There are currently no active events going on in your guild."
+                    })
+                ]
             });
             return;
         }
@@ -218,8 +219,8 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                 fields: event.map((event, index) => ({
                     name: `Index ${index}:`,
                     value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
-                    inline: false,
-                })),
+                    inline: false
+                }))
             }).setColor("Random");
         await interaction.editReply({ embeds: [embed] });
     }
@@ -259,7 +260,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         }
         try {
             const event = await this.service.update(oldMessage.guildId, oldMessage.id, newMessage.content);
-            const reaction = newMessage.reactions.cache.find((reaction) => reaction.me);
+            const reaction = newMessage.reactions.cache.find(reaction => reaction.me);
             if (reaction)
                 await reaction.users.remove(oldMessage.client.user?.id);
             await newMessage.react(event ? "✅" : "❎");
@@ -321,7 +322,7 @@ __decorate([
     __metadata("design:type", Object)
 ], EventManagerModule, "permissionKeys", void 0);
 EventManagerModule = EventManagerModule_1 = __decorate([
-    registerModule(),
+    module(),
     __param(2, createLogger(EventManagerModule_1.name)),
     __metadata("design:paramtypes", [EventManagerService,
         PermissionManagerService, Object])

@@ -1,15 +1,15 @@
 var GardeningManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { ApplicationCommandOptionType } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { ApplicationCommandOptionType, } from "discord.js";
+import { Module } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule } from "../utils/decorators/index.js";
+import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends ModuleBase {
+let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends Module {
     gardeningManagerService;
     moduleName = "GardeningModule";
     commands = [
@@ -50,7 +50,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                             description: "The reason you are reserving this spot.",
                             type: ApplicationCommandOptionType.String,
                             required: true,
-                            choices: Object.keys(Reason).map((value) => ({
+                            choices: Object.keys(Reason).map(value => ({
                                 name: value.replace(/(\w)(\w*)/g, (_, g1, g2) => g1 + g2.toLowerCase()),
                                 value: value,
                             })),
@@ -110,7 +110,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
         {
             name: `${this.moduleName}#TickTask`,
             timeout: 60000,
-            execute: (client) => this.tick(client),
+            execute: client => this.tick(client),
         },
     ];
     commandResolverKeys = {
@@ -151,7 +151,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
     }
 };
 GardeningManagerModule = GardeningManagerModule_1 = __decorate([
-    registerModule(),
+    module(),
     __param(2, createLogger(GardeningManagerModule_1.name)),
     __metadata("design:paramtypes", [GardeningManagerService,
         PermissionManagerService, Object])

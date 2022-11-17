@@ -4,7 +4,7 @@ export class Timer {
     execute = null;
     static async waitTillReady(client, checkAgainTime = 500) {
         while (!client.isReady()) {
-            await new Promise((resolve) => setTimeout(resolve, checkAgainTime));
+            await new Promise(resolve => setTimeout(resolve, checkAgainTime));
         }
     }
 }

@@ -1,16 +1,15 @@
 import { __decorate, __metadata } from "tslib";
-import { AuditLogEvent, EmbedBuilder } from "discord.js";
+import { AuditLogEvent, EmbedBuilder, } from "discord.js";
 import { DateTime } from "luxon";
-import { singleton } from "tsyringe";
-import { ManagerUtilsConfig } from "../models/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
-let ManagerUtilsService = class ManagerUtilsService {
-    managerUtilsConfigRepository;
-    constructor(managerUtilsConfigRepository) {
-        this.managerUtilsConfigRepository = managerUtilsConfigRepository;
+import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
+let ManagerUtilsService = class ManagerUtilsService extends Service {
+    constructor(repository) {
+        super(repository);
     }
     async getLoggingChannel(guild) {
-        const config = await this.findOneOrCreate(guild.id);
+        const config = await this.getConfig(guild.id);
         if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
             return (await guild.channels.fetch(config.loggingChannel));
         }
@@ -34,7 +33,7 @@ let ManagerUtilsService = class ManagerUtilsService {
             value: DateTime.fromJSDate(member.joinedAt).toFormat("HH:mm:ss DD/MM/YYYY"),
         }, { name: "Nickname was:", value: member.nickname ?? "None" }, {
             name: "Roles:",
-            value: member.roles.cache.map((role) => role.toString()).join(" "),
+            value: member.roles.cache.map(role => role.toString()).join(" "),
         })
             .setThumbnail(member.user.displayAvatarURL());
         if (kickedData && kickedData.target.id === member.id) {
@@ -75,21 +74,8 @@ let ManagerUtilsService = class ManagerUtilsService {
             await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
         }
     }
-    async findOneOrCreate(id) {
-        if (!id) {
-            throw new Error("Guild ID cannot be null.");
-        }
-        let result = await this.managerUtilsConfigRepository.findOne({
-            guildId: id,
-        });
-        if (result)
-            return result;
-        result = new ManagerUtilsConfig();
-        result.guildId = id;
-        return await this.managerUtilsConfigRepository.save(result);
-    }
     async clearChannelMessages(interaction) {
-        const config = await this.findOneOrCreate(interaction.guildId);
+        const config = await this.getConfig(interaction.guildId);
         if (config.clearChannelBlacklist.includes(interaction.channelId)) {
             return interaction.reply({
                 content: "Wo hold it. No! Sorry this channel was blacklisted from the clear command to prevent accidental deletion.",
@@ -116,7 +102,7 @@ let ManagerUtilsService = class ManagerUtilsService {
     }
 };
 ManagerUtilsService = __decorate([
-    singleton(),
+    service(),
     __metadata("design:paramtypes", [ManagerUtilsRepository])
 ], ManagerUtilsService);
 export { ManagerUtilsService };

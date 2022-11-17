@@ -1,14 +1,14 @@
 var ManagerUtilsModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule } from "../utils/decorators/index.js";
+import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
-let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends ModuleBase {
+let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends Module {
     managerUtilsService;
     moduleName = "ManagerUtils";
     commands = [
@@ -27,7 +27,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
                     ],
                 }),
             },
-            execute: (interaction) => this.commandResolver(interaction),
+            execute: interaction => this.commandResolver(interaction),
         }),
     ];
     eventListeners = [
@@ -52,7 +52,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
     }
 };
 ManagerUtilsModule = ManagerUtilsModule_1 = __decorate([
-    registerModule(),
+    module(),
     __param(2, createLogger(ManagerUtilsModule_1.name)),
     __metadata("design:paramtypes", [ManagerUtilsService,
         PermissionManagerService, Object])

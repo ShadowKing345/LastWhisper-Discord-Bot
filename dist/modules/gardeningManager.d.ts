@@ -1,12 +1,12 @@
 import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../models/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
 import { Timers } from "../utils/objects/timer.js";
-export declare class GardeningManagerModule extends ModuleBase {
+export declare class GardeningManagerModule extends Module {
     private gardeningManagerService;
     moduleName: string;
     commands: Commands;

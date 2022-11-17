@@ -1,18 +1,18 @@
 var GardeningManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { singleton } from "tsyringe";
 import { createLogger } from "../utils/loggerService.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
-import { GardeningModuleConfig, Reservation, Slot } from "../models/gardening_manager/index.js";
+import { Reservation, Slot } from "../models/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
-let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService {
-    gardeningConfigRepository;
+import { Service } from "../utils/objects/service.js";
+import { service } from "../utils/decorators/index.js";
+let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService extends Service {
     logger;
-    constructor(gardeningConfigRepository, logger) {
-        this.gardeningConfigRepository = gardeningConfigRepository;
+    constructor(repository, logger) {
+        super(repository);
         this.logger = logger;
     }
     static async validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist = true) {
@@ -71,7 +71,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         return result;
     }
     async register(interaction, player, plant, duration, reason, plotNum, slotNum) {
-        const config = await this.findOneOrCreate(interaction.guildId);
+        const config = await this.getConfig(interaction.guildId);
         if (!(player && plant && duration != null && reason && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
@@ -87,7 +87,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         else {
             slot.next.push(new Reservation(player, plant, duration, reason));
         }
-        await this.gardeningConfigRepository.save(config);
+        await this.repository.save(config);
         await interaction.reply({ content: "Reservation has been created." });
         await this.postChannelMessage(interaction.client, config, {
             title: "Gardening Plot Has Been Reserved!",
@@ -119,7 +119,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         });
     }
     async cancel(interaction, player, plant, plotNum, slotNum) {
-        const config = await this.findOneOrCreate(interaction.guildId);
+        const config = await this.getConfig(interaction.guildId);
         if (!(player && plant && plotNum != null && slotNum != null)) {
             throw new InvalidArgumentError("One or more of the provided arguments were invalid.");
         }
@@ -143,19 +143,19 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
             plot.slots[plotNum] = slot;
         }
         else {
-            const next = slot.next.find((reservation) => reservation.player === player && reservation.plant === plant);
+            const next = slot.next.find(reservation => reservation.player === player && reservation.plant === plant);
             if (!next)
                 return interaction.reply({
                     content: "There is no reservation currently registered to you.",
                     ephemeral: true,
                 });
-            slot.next = slot.next.filter((res) => res !== next);
+            slot.next = slot.next.filter(res => res !== next);
         }
-        await this.gardeningConfigRepository.save(config);
+        await this.repository.save(config);
         return interaction.reply("Reservation has been canceled.");
     }
     async list(interaction, plotNum, slotNum) {
-        const config = await this.findOneOrCreate(interaction.guildId);
+        const config = await this.getConfig(interaction.guildId);
         const showDetailed = interaction.options.getBoolean("detailed") ?? false;
         if (config.plots.length === 0) {
             return interaction.reply({
@@ -203,7 +203,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
     }
     async tick(client) {
         const now = DateTime.now().toUnixInteger();
-        const configs = await this.gardeningConfigRepository.getAll();
+        const configs = await this.repository.getAll();
         const altered = [];
         for (const config of configs) {
             if (!client.guilds.cache.has(config.guildId))
@@ -225,7 +225,7 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
             }
         }
         for (const config of altered) {
-            this.gardeningConfigRepository.save(config).catch((err) => this.logger.error(err));
+            this.repository.save(config).catch(err => this.logger.error(err));
             await this.postChannelMessage(client, config, {});
         }
     }
@@ -249,20 +249,9 @@ let GardeningManagerService = GardeningManagerService_1 = class GardeningManager
         });
         await channel.send({ embeds: [embed] });
     }
-    async findOneOrCreate(id) {
-        if (!id) {
-            throw new Error("Guild ID cannot be null.");
-        }
-        let result = await this.gardeningConfigRepository.findOne({ guildId: id });
-        if (result)
-            return result;
-        result = new GardeningModuleConfig();
-        result.guildId = id;
-        return await this.gardeningConfigRepository.save(result);
-    }
 };
 GardeningManagerService = GardeningManagerService_1 = __decorate([
-    singleton(),
+    service(),
     __param(1, createLogger(GardeningManagerService_1.name)),
     __metadata("design:paramtypes", [GardeningManagerRepository, Object])
 ], GardeningManagerService);

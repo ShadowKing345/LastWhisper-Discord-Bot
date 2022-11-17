@@ -1,15 +1,15 @@
 var PermissionManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder, } from "discord.js";
+import { Module } from "../utils/models/index.js";
 import { PermissionMode, Permission } from "../models/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
-let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends ModuleBase {
+let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends Module {
     service;
     BadKeyErrorMessages = "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
     static permissionKeys = {
@@ -17,7 +17,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         addRole: "PermissionManager.addRole",
         removeRole: "PermissionManager.removeRole",
         config: "PermissionManager.config",
-        reset: "PermissionManager.reset"
+        reset: "PermissionManager.reset",
     };
     moduleName = "PermissionManager";
     commands = [
@@ -28,71 +28,71 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                 List: new Command({
                     name: "list",
                     description: "Lists out all permissions.",
-                    options: [PermissionManagerModule_1.commandKeyHelperBuilder(false)]
+                    options: [this.commandKeyHelperBuilder(false)],
                 }),
                 AddRole: new Command({
                     name: "add_role",
                     description: "Adds a role to a permission setting.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
+                        this.commandKeyHelperBuilder(true),
                         new CommandOption({
                             name: "role",
                             description: "Role to be added.",
                             required: true,
-                            type: ApplicationCommandOptionType.Role
-                        })
-                    ]
+                            type: ApplicationCommandOptionType.Role,
+                        }),
+                    ],
                 }),
                 RemoveRole: new Command({
                     name: "remove_role",
                     description: "Removes a role to a permission setting.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
+                        this.commandKeyHelperBuilder(true),
                         new CommandOption({
                             name: "role",
                             description: "Role to be added.",
                             required: true,
-                            type: ApplicationCommandOptionType.Role
-                        })
-                    ]
+                            type: ApplicationCommandOptionType.Role,
+                        }),
+                    ],
                 }),
                 Config: new Command({
                     name: "set_config",
                     description: "Configures a permission.",
                     options: [
-                        PermissionManagerModule_1.commandKeyHelperBuilder(true),
+                        this.commandKeyHelperBuilder(true),
                         new CommandOption({
                             name: "mode",
                             description: "Sets the search mode for the command. Any: has any. Strict: has all.",
                             required: true,
                             choices: [
                                 { name: "any", value: PermissionMode.ANY },
-                                { name: "strict", value: PermissionMode.STRICT }
+                                { name: "strict", value: PermissionMode.STRICT },
                             ],
-                            type: ApplicationCommandOptionType.Integer
+                            type: ApplicationCommandOptionType.Integer,
                         }),
                         new CommandOption({
                             name: "black_list",
                             description: "Reverses the final result. I.e. If list is empty, no one can use the command.",
-                            type: ApplicationCommandOptionType.String
-                        })
-                    ]
+                            type: ApplicationCommandOptionType.String,
+                        }),
+                    ],
                 }),
                 Reset: new Command({
                     name: "reset",
                     description: "Resets a permission to the default parameters.",
-                    options: [PermissionManagerModule_1.commandKeyHelperBuilder(true)]
-                })
+                    options: [this.commandKeyHelperBuilder(true)],
+                }),
             },
-            execute: this.commandResolver.bind(this)
-        })
+            execute: this.commandResolver.bind(this),
+        }),
     ];
     commandResolverKeys = {
         "permissions.add_role": this.addRole.bind(this),
         "permissions.remove_role": this.removeRole.bind(this),
         "permissions.set_config": this.config.bind(this),
         "permissions.reset": this.reset.bind(this),
-        "permissions.list": this.listPermissions.bind(this)
+        "permissions.list": this.listPermissions.bind(this),
     };
     constructor(service, logger) {
         super(service, logger);
@@ -119,7 +119,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         this.logger.debug(`Add role command invoked for guild ${interaction.guildId}.`);
         const key = interaction.options.getString("key", true);
         const role = interaction.options.getRole("role", true);
-        const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+        const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
         if (permission.roles.includes(role.id)) {
             await interaction.editReply({ content: `Role is already there. Will not add again.` });
         }
@@ -132,8 +132,8 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         this.logger.debug(`Remove role command invoked for guild ${interaction.guildId}.`);
         const key = interaction.options.getString("key", true);
         const role = interaction.options.getRole("role", true);
-        const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
-        const index = permission.roles.findIndex((r) => r === role.id);
+        const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
+        const index = permission.roles.findIndex(r => r === role.id);
         if (index < 0) {
             await interaction.editReply({ content: `Cannot find role ${role.name} in the permission list ${key}` });
         }
@@ -146,14 +146,9 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         this.logger.debug(`Config invoked for guild ${interaction.guildId}.`);
         const key = interaction.options.getString("key", true);
         const mode = interaction.options.getInteger("mode");
-        const black_list = interaction.options.getBoolean("black_list");
-        const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
-        if (mode != null) {
-            permission.mode = mode;
-        }
-        if (black_list != null) {
-            permission.blackList = black_list;
-        }
+        const blackList = interaction.options.getBoolean("black_list");
+        const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
+        permission.merge({ mode, blackList });
         await this.service.setPermission(interaction.guildId, key, permission);
         this.logger.debug("Permission settings changed and saved.");
         await interaction.editReply({ content: "Configuration set." });
@@ -170,7 +165,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         const key = interaction.options.getString("key");
         if (key) {
             this.logger.debug(`Detailed request information for key ${key}.`);
-            const permission = await this.service.getPermission(interaction.guildId, key) ?? new Permission();
+            const permission = (await this.service.getPermission(interaction.guildId, key)) ?? new Permission();
             this.logger.debug("Permissions found returning parsed object.");
             await interaction.editReply({
                 embeds: [
@@ -179,37 +174,39 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                         fields: [
                             {
                                 name: "Mode",
-                                value: `\`\`\`${permission.modeEnum}\`\`\``
+                                value: `\`\`\`${permission.modeEnum}\`\`\``,
                             },
                             {
                                 name: "Is Blacklist",
-                                value: `\`\`\`${String(permission.blackList)}\`\`\``
+                                value: `\`\`\`${String(permission.blackList)}\`\`\``,
                             },
                             {
                                 name: "Roles",
-                                value: `\`\`\`${await permission.formatRoles(interaction.guild)}\`\`\``
-                            }
-                        ]
-                    }).setColor("Random")
-                ]
+                                value: `\`\`\`${await permission.formatRoles(interaction.guild)}\`\`\``,
+                            },
+                        ],
+                    }).setColor("Random"),
+                ],
             });
         }
         else {
             this.logger.debug("Key not specified. Returning all available keys.");
             await interaction.editReply({
-                embeds: [new EmbedBuilder({
+                embeds: [
+                    new EmbedBuilder({
                         title: "List of PermissionKeys",
-                        description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``
-                    }).setColor("Random")]
+                        description: `\`\`\`\n${PermissionManagerService.keysFormatted}\n\`\`\``,
+                    }).setColor("Random"),
+                ],
             });
         }
     }
-    static commandKeyHelperBuilder(boolOverride = true) {
+    commandKeyHelperBuilder(boolOverride = true) {
         return new CommandOption({
             name: "key",
             description: "Command permission Key.",
             required: boolOverride,
-            type: ApplicationCommandOptionType.String
+            type: ApplicationCommandOptionType.String,
         });
     }
 };
@@ -253,7 +250,7 @@ __decorate([
     __metadata("design:type", Object)
 ], PermissionManagerModule, "permissionKeys", void 0);
 PermissionManagerModule = PermissionManagerModule_1 = __decorate([
-    registerModule(),
+    module(),
     __param(1, createLogger(PermissionManagerModule_1.name)),
     __metadata("design:paramtypes", [PermissionManagerService, Object])
 ], PermissionManagerModule);

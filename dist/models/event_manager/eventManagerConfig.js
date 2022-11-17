@@ -39,10 +39,10 @@ export class EventManagerConfig extends ToJsonBase {
             this.dateTimeFormat = obj.dateTimeFormat;
         }
         if (obj.events) {
-            this.events = obj.events.map((event) => deepMerge(new EventObj(), event));
+            this.events = obj.events.map(event => deepMerge(new EventObj(), event));
         }
         if (obj.reminders) {
-            this.reminders = obj.reminders.map((reminder) => deepMerge(new Reminder(), reminder));
+            this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder));
         }
         return this;
     }

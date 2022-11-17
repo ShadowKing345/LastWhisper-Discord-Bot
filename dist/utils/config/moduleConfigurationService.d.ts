@@ -1,7 +1,7 @@
 import { ConfigurationClass } from "../configurationClass.js";
 import { LoggerService } from "../loggerService.js";
 import { Client } from "../models/client.js";
-import { ModuleBase, ProjectConfiguration } from "../models/index.js";
+import { Module, ProjectConfiguration } from "../models/index.js";
 export declare class ModuleConfigurationService extends ConfigurationClass {
     private readonly moduleConfiguration;
     private readonly intervalIds;
@@ -10,12 +10,12 @@ export declare class ModuleConfigurationService extends ConfigurationClass {
     private readonly interactionLogger;
     private readonly eventLogger;
     private readonly taskLogger;
-    constructor(config: ProjectConfiguration, modules: ModuleBase[], loggerFactory: LoggerService);
+    constructor(config: ProjectConfiguration, modules: Module[], loggerFactory: LoggerService);
     private interactionEvent;
     private runEvent;
     private runTimer;
     configureModules(client: Client): void;
     cleanup(): void;
-    get modules(): ModuleBase[];
+    get modules(): Module[];
 }
 //# sourceMappingURL=moduleConfigurationService.d.ts.map

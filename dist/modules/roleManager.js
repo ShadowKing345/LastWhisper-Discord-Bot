@@ -1,14 +1,14 @@
 var RoleManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { createLogger } from "../utils/loggerService.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { registerModule } from "../utils/decorators/index.js";
+import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { EventListener } from "../utils/objects/eventListener.js";
-let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends ModuleBase {
+let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Module {
     roleManagerService;
     moduleName = "RoleManager";
     eventListeners = [new EventListener("ready", async (client) => this.onReady(client))];
@@ -44,7 +44,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                     ],
                 }),
             },
-            execute: (interaction) => this.commandResolver(interaction),
+            execute: interaction => this.commandResolver(interaction),
         }),
     ];
     commandResolverKeys = {
@@ -70,7 +70,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
     }
 };
 RoleManagerModule = RoleManagerModule_1 = __decorate([
-    registerModule(),
+    module(),
     __param(1, createLogger(RoleManagerModule_1.name)),
     __metadata("design:paramtypes", [RoleManagerService, Object, PermissionManagerService])
 ], RoleManagerModule);

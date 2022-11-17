@@ -25,7 +25,7 @@ export function toJson(t, str) {
     return Object.assign(t, JSON.parse(str));
 }
 export function deepMerge(target, ...sources) {
-    sources = sources.filter((source) => source != null);
+    sources = sources.filter(source => source != null);
     if (sources.length <= 0)
         return target;
     if (target instanceof MergeObjectBase) {
@@ -69,9 +69,7 @@ export function flattenObject(obj) {
 }
 export function unFlattenObject(obj) {
     const result = {};
-    Object.keys(obj).forEach((key) => key
-        .split(".")
-        .reduce((r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []), result));
+    Object.keys(obj).forEach(key => key.split(".").reduce((r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []), result));
     console.log(result);
     return result;
 }

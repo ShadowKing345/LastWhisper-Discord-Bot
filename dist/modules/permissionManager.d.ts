@@ -1,10 +1,10 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { ModuleBase } from "../utils/models/index.js";
+import { Module } from "../utils/models/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";
-export declare class PermissionManagerModule extends ModuleBase {
-    service: PermissionManagerService;
+export declare class PermissionManagerModule extends Module {
+    private service;
     private readonly BadKeyErrorMessages;
     static permissionKeys: {
         list: string;
@@ -29,6 +29,6 @@ export declare class PermissionManagerModule extends ModuleBase {
     config(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;
     reset(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;
     listPermissions(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;
-    private static commandKeyHelperBuilder;
+    private commandKeyHelperBuilder;
 }
 //# sourceMappingURL=permissionManager.d.ts.map

@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
-import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { ManagerUtilsConfig } from "../models/managerUtils.js";
-let ManagerUtilsRepository = class ManagerUtilsRepository extends RepositoryBase {
+import { repository } from "../utils/decorators/index.js";
+let ManagerUtilsRepository = class ManagerUtilsRepository extends Repository {
     collectionName = "manager_utils";
     mappingObject = ManagerUtilsConfig;
     constructor(db) {
@@ -11,7 +11,7 @@ let ManagerUtilsRepository = class ManagerUtilsRepository extends RepositoryBase
     }
 };
 ManagerUtilsRepository = __decorate([
-    singleton(),
+    repository(),
     __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], ManagerUtilsRepository);
 export { ManagerUtilsRepository };

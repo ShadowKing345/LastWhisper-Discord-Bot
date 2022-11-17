@@ -34,7 +34,7 @@ export class Command extends ToJsonBase {
         }
         if (obj.options) {
             this.options = obj.options;
-            this.options = (this.options ?? []).map((option) => deepMerge(new CommandOption(), option));
+            this.options = (this.options ?? []).map(option => deepMerge(new CommandOption(), option));
         }
         return this;
     }
@@ -46,10 +46,10 @@ export class Command extends ToJsonBase {
                     continue;
                 }
                 if (Object.values(subcommand.subcommands ?? []).length > 0 && builder instanceof SlashCommandBuilder) {
-                    builder.addSubcommandGroup((subcommandGroupBuilder) => subcommand.build(subcommandGroupBuilder));
+                    builder.addSubcommandGroup(subcommandGroupBuilder => subcommand.build(subcommandGroupBuilder));
                 }
                 else if (!(builder instanceof SlashCommandSubcommandBuilder)) {
-                    builder.addSubcommand((subcommandBuilder) => subcommand.build(subcommandBuilder));
+                    builder.addSubcommand(subcommandBuilder => subcommand.build(subcommandBuilder));
                 }
             }
         }

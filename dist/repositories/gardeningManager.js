@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
-import { singleton } from "tsyringe";
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { RepositoryBase } from "../utils/objects/repositoryBase.js";
+import { Repository } from "../utils/objects/repository.js";
 import { GardeningModuleConfig } from "../models/gardening_manager/index.js";
-let GardeningManagerRepository = class GardeningManagerRepository extends RepositoryBase {
+import { repository } from "../utils/decorators/index.js";
+let GardeningManagerRepository = class GardeningManagerRepository extends Repository {
     collectionName = "gardening_manager";
     mappingObject = GardeningModuleConfig;
     constructor(db) {
@@ -11,7 +11,7 @@ let GardeningManagerRepository = class GardeningManagerRepository extends Reposi
     }
 };
 GardeningManagerRepository = __decorate([
-    singleton(),
+    repository(),
     __metadata("design:paramtypes", [DatabaseConfigurationService])
 ], GardeningManagerRepository);
 export { GardeningManagerRepository };

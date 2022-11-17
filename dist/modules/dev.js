@@ -1,24 +1,24 @@
 var DevModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { registerModule } from "../utils/decorators/index.js";
-import { ModuleBase } from "../utils/objects/moduleBase.js";
+import { module } from "../utils/decorators/index.js";
+import { Module } from "../utils/objects/module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
+import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, } from "discord.js";
 import { Command } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-let DevModule = DevModule_1 = class DevModule extends ModuleBase {
+let DevModule = DevModule_1 = class DevModule extends Module {
     moduleName = "DevModule";
     commands = [
         new Command({
             name: "test_inputs",
             description: "Testing command.",
-            execute: (interaction) => this.testInteractionTypes(interaction),
+            execute: interaction => this.testInteractionTypes(interaction),
         }),
         new Command({
             name: "test_modal",
             description: "Testing command.",
-            execute: (interaction) => this.testModal(interaction),
+            execute: interaction => this.testModal(interaction),
         }),
     ];
     buttons = {
@@ -70,7 +70,7 @@ let DevModule = DevModule_1 = class DevModule extends ModuleBase {
     }
 };
 DevModule = DevModule_1 = __decorate([
-    registerModule(),
+    module(),
     __param(1, createLogger(DevModule_1.name)),
     __metadata("design:paramtypes", [PermissionManagerService, Object])
 ], DevModule);
