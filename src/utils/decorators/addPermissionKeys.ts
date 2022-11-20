@@ -1,5 +1,5 @@
 import { flattenObject } from "../index.js";
-import { PermissionManagerService } from "../../services/permissionManager.service.js";
+import { PermissionManagerService } from "../../services/permissionManager.js";
 
 /**
  * Adds an object of values into the permission service keys list.
@@ -8,9 +8,7 @@ import { PermissionManagerService } from "../../services/permissionManager.servi
  */
 export function addPermissionKeys() {
   return function (target: object, propertyKey: string) {
-    for (const value of Object.values(
-      flattenObject(target[propertyKey] as object)
-    )) {
+    for (const value of Object.values(flattenObject(target[propertyKey] as object))) {
       PermissionManagerService.addPermissionKey(value as string);
     }
   };

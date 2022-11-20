@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../loggerService.js";
-import { ProjectConfiguration, DatabaseConfiguration, } from "../models/index.js";
+import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js";
 import { ConfigurationClass } from "../configurationClass.js";
 let DatabaseConfigurationService = DatabaseConfigurationService_1 = class DatabaseConfigurationService extends ConfigurationClass {
     projectConfig;
@@ -32,11 +32,7 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
         if (dbConfig.query) {
             const queryArray = Object.entries(dbConfig.query);
             if (queryArray.length > 0) {
-                url +=
-                    "?" +
-                        queryArray
-                            .map((value) => `${value[0]}=${encodeURIComponent(value[1].toString())}`)
-                            .join("&");
+                url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
             }
         }
         return url;
@@ -50,7 +46,7 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
             }
             const url = DatabaseConfigurationService_1.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
             this._client = await MongoClient.connect(url);
-            this._client.on("error", (error) => this.logger.error(error.stack));
+            this._client.on("error", error => this.logger.error(error.stack));
             this._db = this._client.db(this.projectConfig.database?.database ?? "");
         }
         catch (error) {

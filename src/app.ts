@@ -1,11 +1,11 @@
-import { pino } from 'pino';
-import { container, singleton } from 'tsyringe';
+import { pino } from "pino";
+import { singleton, container } from "tsyringe";
 
-import { DatabaseConfigurationService } from './utils/config/databaseConfigurationService.js';
-import { ModuleConfigurationService } from './utils/config/moduleConfigurationService.js';
-import { createLogger } from './utils/loggerService.js';
-import { Client } from './utils/models/client.js';
-import { ModuleBase, ProjectConfiguration } from './utils/models/index.js';
+import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
+import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
+import { createLogger } from "./utils/loggerService.js";
+import { Client } from "./utils/models/client.js";
+import { Module, ProjectConfiguration } from "./utils/models/index.js";
 
 /**
  * Application class.
@@ -32,16 +32,12 @@ export class App {
       await this.databaseService.connect();
       this.moduleConfiguration.configureModules(this.client);
 
-      this.client.once('ready', () =>
-        this.logger.info('Bot is up and ready to roll!'),
-      );
-      this.client.on('error', (error) => this.logger.error(error.stack));
+      this.client.once("ready", () => this.logger.info("Bot is up and ready to roll!"));
+      this.client.on("error", error => this.logger.error(error.stack));
 
-      this.logger.info('Done loading. Ready to run.');
+      this.logger.info("Done loading. Ready to run.");
     } catch (error) {
-      this.logger.error(
-        'An unexpected error has resulted in the application failing to start.',
-      );
+      this.logger.error("An unexpected error has resulted in the application failing to start.");
       this.logger.error(error instanceof Error ? error.stack : error);
     }
   }
@@ -57,17 +53,17 @@ export class App {
    * Stops everything and cleans up.
    */
   public async stop(): Promise<void> {
-    this.logger.info('Stopping application.');
+    this.logger.info("Stopping application.");
     this.moduleConfiguration.cleanup();
     this.client.destroy();
     await this.databaseService.disconnect();
-    this.logger.info('Done. Have a nice day!');
+    this.logger.info("Done. Have a nice day!");
   }
 
   /**
    * Returns all the registered modules from the module class.
    */
-  public get modules(): ModuleBase[] {
+  public get modules(): Module[] {
     return this.moduleConfiguration?.modules ?? [];
   }
 }
@@ -78,13 +74,13 @@ export class App {
  */
 export async function main() {
   process.setMaxListeners(30);
-  console.log('Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.');
+  console.log(
+    "Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.",
+  );
 
   let app: App;
-
   try {
     app = container.resolve(App);
-
     await app.init();
 
     // process.on("SIGTERM", () => app.stop())
@@ -94,5 +90,6 @@ export async function main() {
     await app.run();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
+    await app.stop();
   }
 }

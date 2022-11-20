@@ -3,10 +3,7 @@ import { container } from "tsyringe";
 
 import { App } from "./app.js";
 import { LoggerService } from "./utils/loggerService.js";
-import {
-  ProjectConfiguration,
-  CommandRegistrationConfiguration,
-} from "./utils/models/index.js";
+import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
 import {
   Routes,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -35,19 +32,13 @@ type CommandRegistrationArgs = {
  * Command that attempted to register the slash command to the bot.
  * @param args Arguments for command registration.
  */
-export async function commandRegistration(
-  args: CommandRegistrationArgs
-): Promise<void> {
+export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
   const app = container.resolve(App);
-  const logger = container
-    .resolve(LoggerService)
-    .buildLogger("CommandRegistration");
+  const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
   logger.info("Welcome again to command registration or un-registration.");
 
-  const appConfigs: ProjectConfiguration =
-    container.resolve(ProjectConfiguration);
-  const commandConfigs: CommandRegistrationConfiguration | undefined =
-    appConfigs.commandRegistration;
+  const appConfigs: ProjectConfiguration = container.resolve(ProjectConfiguration);
+  const commandConfigs: CommandRegistrationConfiguration | undefined = appConfigs.commandRegistration;
 
   if (!commandConfigs) {
     throw new Error("Command configurations were not set.");
@@ -63,19 +54,12 @@ export async function commandRegistration(
 
   const rest = new REST({ version: "10" }).setToken(appConfigs.token);
 
-  const isRegistering = commandConfigs.unregister
-    ? "unregistering"
-    : "registering";
-  const isGlobal = commandConfigs.registerForGuild
-    ? `guild ${commandConfigs.guildId}`
-    : "everyone";
+  const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
+  const isGlobal = commandConfigs.registerForGuild ? `guild ${commandConfigs.guildId}` : "everyone";
 
   try {
     const route: RouteLike = commandConfigs.registerForGuild
-      ? Routes.applicationGuildCommands(
-          commandConfigs.clientId,
-          commandConfigs.guildId
-        )
+      ? Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId)
       : Routes.applicationCommands(commandConfigs.clientId);
 
     logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
@@ -83,16 +67,14 @@ export async function commandRegistration(
     let promise: Promise<unknown>;
     if (commandConfigs.unregister) {
       const commands = (await rest.get(route)) as { id: string }[];
-      promise = Promise.all(
-        commands.map((command) => rest.delete(`${route}/${command.id}`))
-      );
+      promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
     } else {
       const commands: (
         | RESTPostAPIChatInputApplicationCommandsJSONBody
         | APIApplicationCommandSubcommandGroupOption
         | APIApplicationCommandSubcommandOption
       )[] = [];
-      app.modules.forEach((module) => {
+      app.modules.forEach(module => {
         for (const command of module.commands) {
           commands.push(command.build().toJSON());
         }

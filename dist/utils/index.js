@@ -1,19 +1,22 @@
 import { TextChannel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
-import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
+import { MergeObjectBase } from "./objects/mergeObjectBase.js";
 export async function fetchMessages(client, channelId, messageIds) {
-    const result = [];
-    if (!client.channels.cache.has(channelId))
-        return result;
+    const promises = [];
     const channel = await client.channels.fetch(channelId);
-    if (!channel || !(channel instanceof TextChannel))
-        return result;
+    if (!(channel && channel instanceof TextChannel))
+        return [];
     for (const id of messageIds) {
-        const message = await channel.messages.fetch(id);
-        if (message)
-            result.push(message);
+        promises.push(channel.messages.fetch(id));
     }
-    return result;
+    const allSettled = await Promise.allSettled(promises);
+    const results = [];
+    for (const result of allSettled) {
+        if (result.status === "fulfilled") {
+            results.push(result.value);
+        }
+    }
+    return results;
 }
 export function toJson(t, str) {
     if (t instanceof ToJsonBase) {
@@ -22,10 +25,10 @@ export function toJson(t, str) {
     return Object.assign(t, JSON.parse(str));
 }
 export function deepMerge(target, ...sources) {
-    sources = sources.filter((source) => source != null);
+    sources = sources.filter(source => source != null);
     if (sources.length <= 0)
         return target;
-    if (target instanceof MergeableObjectBase) {
+    if (target instanceof MergeObjectBase) {
         for (const source of sources) {
             target.merge(source);
         }
@@ -62,16 +65,12 @@ export function flattenObject(obj) {
         }
         result.set(k, v);
     }
-    return Object.assign({}, ...result.entries());
+    return Object.fromEntries(result);
 }
 export function unFlattenObject(obj) {
     const result = {};
-    for (const [key, value] of Object.entries(obj)) {
-        key
-            .split(".")
-            .reduce((prev, current, index, { length }) => (prev[current] ||
-            Object.assign(prev[current], length - 1 === index ? value : {})), result);
-    }
+    Object.keys(obj).forEach(key => key.split(".").reduce((r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []), result));
+    console.log(result);
     return result;
 }
 //# sourceMappingURL=index.js.map

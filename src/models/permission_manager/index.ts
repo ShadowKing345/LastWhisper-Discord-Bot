@@ -1,2 +1,2 @@
-export * from "./permission.model.js";
-export * from "./permissionManagerConfig.model.js";
+export * from "./permission.js";
+export * from "./permissionManagerConfig.js";

@@ -1,6 +1,8 @@
-export * from "./buff.model.js";
-export * from "./buffManagerConfig.model.js";
-export * from "./days.model.js";
-export * from "./messageSettings.model.js";
-export * from "./week.model.js";
+export * from "./buff.js";
+export * from "./buffManagerConfig.js";
+export * from "./days.js";
+export * from "./messageSettings.js";
+export * from "./week.js";
+export * from "./weekDTO.js";
+export * from "./weekDays.js";
 //# sourceMappingURL=index.d.ts.map

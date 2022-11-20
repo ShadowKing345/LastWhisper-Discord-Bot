@@ -1,24 +1,34 @@
-import { Client, Message, Snowflake, TextChannel } from "discord.js";
+import { Client, Message, Snowflake, TextChannel, Channel } from "discord.js";
 import { ToJsonBase } from "./objects/toJsonBase.js";
-import { MergeableObjectBase } from "./objects/mergeableObjectBase.js";
+import { MergeObjectBase } from "./objects/mergeObjectBase.js";
 
-export async function fetchMessages(
-  client: Client,
-  channelId: Snowflake,
-  messageIds: Snowflake[]
-): Promise<Message[]> {
-  const result: Message[] = [];
+/**
+ * Fetches the messages from a channel.
+ * Returns all the fetched messages.
+ * @param client The discord client.
+ * @param channelId The channel ID to look for.
+ * @param messageIds A collection of messages by their IDs to fetch.
+ */
+export async function fetchMessages(client: Client, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
+  const promises: Promise<Message>[] = [];
 
-  if (!client.channels.cache.has(channelId)) return result;
-  const channel = await client.channels.fetch(channelId);
-  if (!channel || !(channel instanceof TextChannel)) return result;
+  const channel: Channel = await client.channels.fetch(channelId);
+  if (!(channel && channel instanceof TextChannel)) return [];
 
   for (const id of messageIds) {
-    const message: Message = await channel.messages.fetch(id);
-    if (message) result.push(message);
+    promises.push(channel.messages.fetch(id));
   }
 
-  return result;
+  const allSettled = await Promise.allSettled(promises);
+  const results: Message[] = [];
+
+  for (const result of allSettled) {
+    if (result.status === "fulfilled") {
+      results.push(result.value);
+    }
+  }
+
+  return results;
 }
 
 /**
@@ -45,11 +55,11 @@ export function toJson<T>(t: T, str: string): T {
  * @return The newly created object.
  */
 export function deepMerge<T, O>(target: T, ...sources: O[]): T {
-  sources = sources.filter((source) => source != null);
+  sources = sources.filter(source => source != null);
 
   if (sources.length <= 0) return target;
 
-  if (target instanceof MergeableObjectBase) {
+  if (target instanceof MergeObjectBase) {
     for (const source of sources) {
       target.merge(source);
     }
@@ -96,30 +106,22 @@ export function flattenObject(obj: object): object {
     result.set(k, v);
   }
 
-  return Object.assign({}, ...result.entries()) as object;
+  return Object.fromEntries(result);
 }
 
 /**
  * Does the opposite of flattenObject
- *
  * @see flattenObject
  */
 export function unFlattenObject(obj: object): object {
   const result = {};
-
-  for (const [key, value] of Object.entries(obj)) {
-    key
-      .split(".")
-      .reduce(
-        (prev, current, index, { length }) =>
-          (prev[current] ||
-            Object.assign(
-              prev[current],
-              length - 1 === index ? value : {}
-            )) as object,
-        result
-      );
-  }
-
+  Object.keys(obj).forEach(key =>
+    key.split(".").reduce(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
+      (r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []),
+      result,
+    ),
+  );
+  console.log(result);
   return result;
 }

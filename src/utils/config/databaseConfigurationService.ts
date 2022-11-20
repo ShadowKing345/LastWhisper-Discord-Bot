@@ -3,10 +3,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { createLogger } from "../loggerService.js";
-import {
-  ProjectConfiguration,
-  DatabaseConfiguration,
-} from "../models/index.js";
+import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js";
 import { ConfigurationClass } from "../configurationClass.js";
 
 /**
@@ -20,7 +17,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
 
   constructor(
     private projectConfig: ProjectConfiguration,
-    @createLogger(DatabaseConfigurationService.name) private logger: pino.Logger
+    @createLogger(DatabaseConfigurationService.name) private logger: pino.Logger,
   ) {
     super();
   }
@@ -36,9 +33,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
     }
 
     let url = `mongodb${dbConfig?.useDns && "+srv"}://`;
-    url += `${encodeURIComponent(dbConfig.username ?? "")}:${encodeURIComponent(
-      dbConfig.password ?? ""
-    )}`;
+    url += `${encodeURIComponent(dbConfig.username ?? "")}:${encodeURIComponent(dbConfig.password ?? "")}`;
     url += `@${dbConfig.host}`;
     if (dbConfig.port) {
       url += `:${dbConfig.port}`;
@@ -49,14 +44,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
     if (dbConfig.query) {
       const queryArray = Object.entries(dbConfig.query);
       if (queryArray.length > 0) {
-        url +=
-          "?" +
-          queryArray
-            .map(
-              (value) =>
-                `${value[0]}=${encodeURIComponent(value[1].toString())}`
-            )
-            .join("&");
+        url += "?" + queryArray.map(value => `${value[0]}=${encodeURIComponent(value[1].toString())}`).join("&");
       }
     }
     return url;
@@ -69,18 +57,14 @@ export class DatabaseConfigurationService extends ConfigurationClass {
     try {
       this.logger.info(`Connecting to Database`);
       if (this.isConnected) {
-        this.logger.error(
-          "Connection already active. Please disconnect first before attempting to connect."
-        );
+        this.logger.error("Connection already active. Please disconnect first before attempting to connect.");
         return;
       }
 
-      const url = DatabaseConfigurationService.parseUrl(
-        this.projectConfig.database ?? new DatabaseConfiguration()
-      );
+      const url = DatabaseConfigurationService.parseUrl(this.projectConfig.database ?? new DatabaseConfiguration());
 
       this._client = await MongoClient.connect(url);
-      this._client.on("error", (error) => this.logger.error(error.stack));
+      this._client.on("error", error => this.logger.error(error.stack));
 
       this._db = this._client.db(this.projectConfig.database?.database ?? "");
     } catch (error) {

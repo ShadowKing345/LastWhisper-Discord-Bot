@@ -5,20 +5,20 @@ The Discord bot for the Final Fantasy XIV Last Whisper free company Discord serv
 ## Table of contents
 
 - [Getting Started](#getting-started)
-    - [Yarn](#yarn)
-    - [NPM](#npm)
-    - [Docker](#docker)
+  - [Yarn](#yarn)
+  - [NPM](#npm)
+  - [Docker](#docker)
 - [Configuration](#configuration)
 - [Commands Setup](#command-setup)
-    - [Guild Specific Command Setup](#guild-specific-command-setup)
+  - [Guild Specific Command Setup](#guild-specific-command-setup)
 - [Advanced Configuration](#advanced-configuration)
-    - [Environment Variables](#environment-variables)
-    - [Logger](#logger)
-    - [Command Arguments](#command-arguments)
+  - [Environment Variables](#environment-variables)
+  - [Logger](#logger)
+  - [Command Arguments](#command-arguments)
 - [Development](#development)
-    - [Additional Configuration](#additional-configuration-file)
-    - [Project Setup](#project-setup)
-    - [Pull Requests](#pull-requests)
+  - [Additional Configuration](#additional-configuration-file)
+  - [Project Setup](#project-setup)
+  - [Pull Requests](#pull-requests)
 - [Special Thanks](#special-thanks)
 
 ## Features of the Discord bot
@@ -54,9 +54,8 @@ Once all the packages are installed simply run the start script.
 yarn run start
 ```
 
-The bot will begin setting up internal variables and start running.
-_Note: Assuming you have not configured the bot it will defiantly fail and throw errors._
-However, this is done to just confirm that the environment is set up correctly.
+The bot will begin setting up internal variables and start running. _Note: Assuming you have not configured the bot it
+will defiantly fail and throw errors._ However, this is done to just confirm that the environment is set up correctly.
 
 ### NPM
 
@@ -69,12 +68,10 @@ npm run start
 
 ### Docker
 
-For a more simplified and straight forward installation a [`docker-compose.yml`](docker-compose.yml)
-and [`Dockerfile`](Dockerfile) can be found in the root
-of the project.
-The docker configuration is a minimal setup with as few commands as possible.
-For additional features such as volumes in case of storing logs, you can
-use [docker volumes](https://docs.docker.com/storage/volumes/).
+For a more simplified and straight forward installation a [`docker-compose.yml`](docker-compose.yml) and
+[`Dockerfile`](Dockerfile) can be found in the root of the project. The docker configuration is a minimal setup with as
+few commands as possible. For additional features such as volumes in case of storing logs, you can use
+[docker volumes](https://docs.docker.com/storage/volumes/).
 
 ## Configuration
 
@@ -83,9 +80,9 @@ project application configuration files are stored under the `config` directory 
 of configuration a token and MongoDB database url. (It feels redundant to call say database twice)
 
 The token can be acquired by going to [Discord Developer Applications](https://discord.com/developers/applications) and
-creating a new application getting the token from there.
-_See: [Discord.js guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) for a
-more detailed guide_
+creating a new application getting the token from there. _See:
+[Discord.js guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) for a more
+detailed guide_
 
 The MongoDB can be acquired with a local database instance or using the database cloud services provided by MongoDB or
 other cloud hosting services. Sadly I am not confident enough to provide a definitive guide to getting this url.
@@ -112,10 +109,9 @@ this is the case._
 mkdir config
 ```
 
-_Note: A schema file is also provided to help with configuration of the bot. It can be found
-under [`docs/schema.json`](docs/schema.json).
-Presuming the text editor you are using can handle JSON schemas. Additionally, if you are having issues seeing the
-schema try use `../docs/schema.json` instead._
+_Note: A schema file is also provided to help with configuration of the bot. It can be found under
+[`docs/schema.json`](docs/schema.json). Presuming the text editor you are using can handle JSON schemas. Additionally,
+if you are having issues seeing the schema try use `../docs/schema.json` instead._
 
 ## Command Setup
 
@@ -151,8 +147,7 @@ all the commands.
 ### Guild Specific Command Setup
 
 If you don't want to have the global commands or wish to have them instantly available, you can set up the slash
-commands for a specific guild. You will need the guild ID for the guild you wish to
-add the slash commands for.
+commands for a specific guild. You will need the guild ID for the guild you wish to add the slash commands for.
 
 In the application configuration inside commandRegistration add the following.
 
@@ -179,22 +174,20 @@ Things to note:
 
 ### Environment Variables
 
-There are special environment variables that can be set to change how the application handles certain tasks.
-For example the `CONFIG_PATH` variable sets the file path for the `ProjectConfiguration.json` file. \*Note: It's the
-file
-path and not the folder path.
+There are special environment variables that can be set to change how the application handles certain tasks. For example
+the `CONFIG_PATH` variable sets the file path for the `ProjectConfiguration.json` file. \*Note: It's the file path and
+not the folder path.
 
 ### Logger
 
-I recommend reading the page on transports found (
-here)[https://github.com/pinojs/pino/blob/master/docs/transports.md] as a majority of the important information can be
-found there.
+I recommend reading the page on transports found ( here)[https://github.com/pinojs/pino/blob/master/docs/transports.md]
+as a majority of the important information can be found there.
 
 ### Command arguments
 
-Instead of using the configuration file you can simply pass the configuration you want to the command as arguments.
-Use `--help` to get a list of additional argument and what they mean.
-_Note: Not all configuration options have a command argument._
+Instead of using the configuration file you can simply pass the configuration you want to the command as arguments. Use
+`--help` to get a list of additional argument and what they mean. _Note: Not all configuration options have a command
+argument._
 
 ## Development
 
@@ -203,9 +196,9 @@ note.
 
 ### Additional Configuration File
 
-The `ProjectConfiguration.json` has a sister file which can be used when developing the
-project. `ProjectConfiguration.dev.json` is a special file that will overwrite all options found in the regular
-configuration file.
+The `ProjectConfiguration.json` has a sister file which can be used when developing the project.
+`ProjectConfiguration.dev.json` is a special file that will overwrite all options found in the regular configuration
+file.
 
 ### Project setup
 

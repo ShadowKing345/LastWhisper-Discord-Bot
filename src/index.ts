@@ -21,10 +21,7 @@ generateConfigObject();
 
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
 
-program
-  .command("deploy", { isDefault: true })
-  .description("Runs to bot.")
-  .action(main);
+program.command("deploy", { isDefault: true }).description("Runs to bot.").action(main);
 
 program
   .command("register-commands")
@@ -33,9 +30,9 @@ program
   .option("-c, --client <string>", "Client ID.")
   .option(
     "-g, --guild <string>",
-    "Guild ID to register commands for. If this is set configuration file options will be ignored."
+    "Guild ID to register commands for. If this is set configuration file options will be ignored.",
   )
   .option("-u, --unregister", "Use to unregister commands instead.")
-  .action((args) => commandRegistration(args as unknown));
+  .action(args => commandRegistration(args as unknown));
 
 program.parse();
