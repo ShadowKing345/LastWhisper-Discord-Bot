@@ -144,7 +144,9 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                     return;
             }
         }
-        await interaction.editReply({ embeds: [this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)] });
+        await interaction.editReply({
+            embeds: [this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)],
+        });
     }
     postDailyMessage(client) {
         return this.service.postDailyMessage(client);
