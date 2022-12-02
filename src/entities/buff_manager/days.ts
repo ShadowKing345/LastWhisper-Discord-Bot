@@ -1,14 +1,41 @@
+import { Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { Buff } from "./buff.js";
+
 /**
  * Representation of one week's worth of buffs.
  */
+@Entity()
 export class Days {
-  public monday: string = null;
-  public tuesday: string = null;
-  public wednesday: string = null;
-  public thursday: string = null;
-  public friday: string = null;
-  public saturday: string = null;
-  public sunday: string = null;
+  @PrimaryGeneratedColumn()
+  public id: string;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "monday_id"})
+  public monday: Buff;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "tuesday_id"})
+  public tuesday: Buff;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "wednesday_id"})
+  public wednesday: Buff;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "thursday_id"})
+  public thursday: Buff;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "friday_id"})
+  public friday: Buff;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "saturday_id"})
+  public saturday: Buff;
+
+  @OneToOne(() => Buff)
+  @JoinColumn({name: "sunday_id"})
+  public sunday: Buff;
 
   private current = 0;
 

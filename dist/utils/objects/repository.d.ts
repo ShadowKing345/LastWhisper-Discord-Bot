@@ -8,7 +8,6 @@ export interface IEntity<T> {
 export declare abstract class Repository<T extends MergeObjectBase<T> & IEntity<unknown>> {
     protected db: DatabaseConfigurationService;
     protected abstract readonly collectionName: string;
-    private _collection;
     protected abstract readonly mappingObject: {
         new (): T;
     };

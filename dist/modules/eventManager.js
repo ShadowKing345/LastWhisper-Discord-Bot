@@ -1,6 +1,6 @@
 var EventManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder, } from "discord.js";
+import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { Module } from "../utils/models/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -8,7 +8,7 @@ import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
-import { EventObj } from "../models/event_manager/index.js";
+import { EventObj } from "../entities/event_manager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";

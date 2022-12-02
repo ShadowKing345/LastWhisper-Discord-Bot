@@ -1,6 +1,6 @@
 var RoleManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { TextChannel, } from "discord.js";
+import { TextChannel } from "discord.js";
 import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { Timer } from "../utils/objects/timer.js";

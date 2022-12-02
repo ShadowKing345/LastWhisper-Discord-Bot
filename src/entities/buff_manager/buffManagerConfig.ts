@@ -5,16 +5,30 @@ import { IEntity } from "../../utils/objects/repository.js";
 import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { deepMerge } from "../../utils/index.js";
 import { DateTime } from "luxon";
+import { PrimaryGeneratedColumn, Column, OneToMany, Entity, OneToOne, JoinColumn } from "typeorm";
 
 /**
  * Buff Manager Configuration Object.
  */
+@Entity()
 export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements IEntity<string> {
   public _id: string;
+
+  @PrimaryGeneratedColumn()
+  public id: string;
+
+  @Column()
   public guildId: string = null;
+
+  @OneToOne(() => MessageSettings, settings => settings.guildConfig, {cascade: true, orphanedRowAction:"delete"})
+  @JoinColumn({name:"message_settings_id"})
   public messageSettings: MessageSettings = new MessageSettings();
-  public buffs: Buff[] = [];
-  public weeks: Week[] = [];
+
+  @OneToMany(() => Buff, buff => buff.guildConfig, {cascade: true, orphanedRowAction:"delete"})
+  public buffs: Buff[];
+
+  @OneToMany(() => Week, week => week.guildConfig, {cascade: true, orphanedRowAction: "delete"})
+  public weeks: Week[];
 
   /**
    * Returns the week object for a given date of the year.

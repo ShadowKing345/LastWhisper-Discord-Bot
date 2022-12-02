@@ -1,7 +1,7 @@
 import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "../utils/models/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
-import { Reason } from "../models/gardening_manager/index.js";
+import { Reason } from "../entities/gardening_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { pino } from "pino";

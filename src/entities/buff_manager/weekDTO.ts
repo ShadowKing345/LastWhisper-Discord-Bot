@@ -14,14 +14,15 @@ export class WeekDTO {
   /**
    * Maps a week object into a WeekDTO one.
    * @param week Week object to be converted.
-   * @param config Config file to get the buffs from.
+   * @param _ Config file to get the buffs from.
    */
-  public static map(week: Week, config: BuffManagerConfig): WeekDTO {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static map(week: Week, _: BuffManagerConfig): WeekDTO {
     const result = new WeekDTO();
     result.isEnabled = week.isEnabled;
     result.title = week.title;
 
-    Array(...week.days).forEach((buffId, index) => result.days.set(DaysOfWeek[index], config.getBuff(buffId)));
+    Array(...week.days).forEach((buffId, index) => result.days.set(DaysOfWeek[index], buffId));
 
     return result;
   }

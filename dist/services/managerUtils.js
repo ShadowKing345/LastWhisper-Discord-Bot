@@ -1,5 +1,5 @@
 import { __decorate, __metadata } from "tslib";
-import { AuditLogEvent, EmbedBuilder, } from "discord.js";
+import { AuditLogEvent, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "../utils/objects/service.js";

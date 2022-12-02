@@ -3,7 +3,6 @@ import { deepMerge } from "../index.js";
 import { DatabaseError } from "../errors/index.js";
 export class Repository {
     db;
-    _collection = null;
     constructor(db) {
         this.db = db;
     }
@@ -48,7 +47,7 @@ export class Repository {
         if (!this.db.isConnected) {
             throw new DatabaseError("Unable to get collection. Are you sure the database is connected?");
         }
-        return (this._collection ??= this.db.db?.collection(this.collectionName));
+        return null;
     }
 }
 //# sourceMappingURL=repository.js.map

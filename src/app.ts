@@ -87,7 +87,8 @@ export async function main() {
     //     .on("SIGINT", () => app.stop())
     //     .on("uncaughtException", () => app.stop());
 
-    await app.run();
+    // await app.run();
+    await app.stop();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
     await app.stop();

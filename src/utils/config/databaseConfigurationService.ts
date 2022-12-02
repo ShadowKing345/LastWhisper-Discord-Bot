@@ -5,7 +5,7 @@ import { createLogger } from "../loggerService.js";
 import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js";
 import { ConfigurationClass } from "../configurationClass.js";
 import { DataSource } from "typeorm";
-import { Buff } from "../../entities/buff_manager/index.js";
+import { BuffManagerEntities } from "../../entities/buff_manager/index.js";
 
 /**
  * Database Configuration Service file.
@@ -47,7 +47,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
         database: databaseConfigs.database,
         synchronize: databaseConfigs.sync,
         logging: databaseConfigs.logging,
-        entities: [Buff]
+        entities: [...Object.values(BuffManagerEntities)]
       });
 
       await this._dataSource.initialize();

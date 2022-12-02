@@ -1,5 +1,5 @@
 import { GuildBan, GuildMember, InteractionResponse, ChatInputCommandInteraction, PartialGuildMember } from "discord.js";
-import { ManagerUtilsConfig } from "../models/managerUtils.js";
+import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "../utils/objects/service.js";
 export declare class ManagerUtilsService extends Service<ManagerUtilsConfig> {

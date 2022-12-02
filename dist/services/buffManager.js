@@ -6,7 +6,7 @@ import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.js";
-import { WeekDTO } from "../models/buff_manager/index.js";
+import { WeekDTO } from "../entities/buff_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";

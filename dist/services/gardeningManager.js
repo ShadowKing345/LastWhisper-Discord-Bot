@@ -1,11 +1,11 @@
 var GardeningManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { EmbedBuilder, } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { createLogger } from "../utils/loggerService.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
-import { Reservation, Slot } from "../models/gardening_manager/index.js";
+import { Reservation, Slot } from "../entities/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "../utils/objects/service.js";
 import { service } from "../utils/decorators/index.js";

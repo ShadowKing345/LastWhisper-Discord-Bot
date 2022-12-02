@@ -2,7 +2,7 @@ import { CommandInteraction, InteractionResponse, ChatInputCommandInteraction, A
 import { pino } from "pino";
 import { Client } from "../utils/models/client.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
-import { GardeningModuleConfig, Plot, Reason, Slot } from "../models/gardening_manager/index.js";
+import { GardeningModuleConfig, Plot, Reason, Slot } from "../entities/gardening_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 export declare class GardeningManagerService extends Service<GardeningModuleConfig> {
     private logger;
