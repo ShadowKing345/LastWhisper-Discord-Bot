@@ -1,18 +1,7 @@
-import {
-  Guild,
-  GuildBan,
-  GuildMember,
-  TextChannel,
-  User,
-  InteractionResponse,
-  ChatInputCommandInteraction,
-  AuditLogEvent,
-  EmbedBuilder,
-  PartialGuildMember,
-} from "discord.js";
+import { Guild, GuildBan, GuildMember, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, AuditLogEvent, EmbedBuilder, PartialGuildMember } from "discord.js";
 import { DateTime } from "luxon";
 
-import { ManagerUtilsConfig } from "../models/managerUtils.js";
+import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "../utils/objects/service.js";
 import { service } from "../utils/decorators/index.js";

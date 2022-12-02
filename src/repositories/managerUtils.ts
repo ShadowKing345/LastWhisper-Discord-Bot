@@ -1,6 +1,6 @@
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { Repository } from "../utils/objects/repository.js";
-import { ManagerUtilsConfig } from "../models/managerUtils.js";
+import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { repository } from "../utils/decorators/index.js";
 
 /**

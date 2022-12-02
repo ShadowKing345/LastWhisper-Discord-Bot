@@ -32,9 +32,11 @@
     "inquirer": "^8.2.2",
     "luxon": "^2.3.2",
     "mongodb": "^4.11.0",
+    "pg": "^8.8.0",
     "pino": "^8.0.0",
     "reflect-metadata": "^0.1.13",
     "tsyringe": "^4.6.0",
+    "typeorm": "^0.3.10",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

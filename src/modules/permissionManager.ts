@@ -1,12 +1,7 @@
-import {
-  ChatInputCommandInteraction,
-  InteractionResponse,
-  ApplicationCommandOptionType,
-  EmbedBuilder,
-} from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 
 import { Module } from "../utils/models/index.js";
-import { PermissionMode, Permission } from "../models/permission_manager/index.js";
+import { PermissionMode, Permission } from "../entities/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";

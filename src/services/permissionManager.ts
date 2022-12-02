@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
 import { createLogger } from "../utils/loggerService.js";
-import { Permission, PermissionManagerConfig, PermissionMode } from "../models/permission_manager/index.js";
+import { Permission, PermissionManagerConfig, PermissionMode } from "../entities/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";

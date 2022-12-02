@@ -1,6 +1,6 @@
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { Repository } from "../utils/objects/repository.js";
-import { RoleManagerConfig } from "../models/roleManager.js";
+import { RoleManagerConfig } from "../entities/roleManager.js";
 import { repository } from "../utils/decorators/index.js";
 
 /**

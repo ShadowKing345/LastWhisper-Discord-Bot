@@ -12,30 +12,13 @@
       "type": "string",
       "description": "URL Builder, Password for the database. Please note that url encoding is done automatically."
     },
-    "host": {
-      "type": "string",
-      "description": "URL Builder, Host name."
-    },
     "port": {
-      "type": "string",
+      "type": "number",
       "description": "URL Builder, Default port."
     },
     "database": {
       "type": "string",
       "description": "URL Builder, Name of database to use."
-    },
-    "query": {
-      "type": "object",
-      "additionalProperties": true,
-      "description": "URL Builder, Additional query parameters to be passed into the query."
-    },
-    "url": {
-      "type": "string",
-      "description": "The full url to be used rather then broken down parts. If used all other settings will be ignored."
-    },
-    "useDns": {
-      "type": "boolean",
-      "description": "URL Builder, Boolean flag to use MongoDB dns url."
     }
   }
 }

@@ -20,8 +20,6 @@ export interface IEntity<T> {
 export abstract class Repository<T extends MergeObjectBase<T> & IEntity<unknown>> {
   // Name of the collection.
   protected abstract readonly collectionName: string;
-  // A private internal collection object.
-  private _collection: Collection<T> = null;
   // A class to create a new object.
   protected abstract readonly mappingObject: { new (): T };
 
@@ -121,6 +119,6 @@ export abstract class Repository<T extends MergeObjectBase<T> & IEntity<unknown>
       throw new DatabaseError("Unable to get collection. Are you sure the database is connected?");
     }
 
-    return (this._collection ??= this.db.db?.collection<T>(this.collectionName));
+    return null;
   }
 }

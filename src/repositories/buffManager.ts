@@ -1,6 +1,6 @@
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
 import { Repository } from "../utils/objects/repository.js";
-import { BuffManagerConfig } from "../models/buff_manager/index.js";
+import { BuffManagerConfig } from "../entities/buff_manager/index.js";
 import { repository } from "../utils/decorators/index.js";
 
 /**

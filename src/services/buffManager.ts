@@ -6,7 +6,7 @@ import { createLogger } from "../utils/loggerService.js";
 import { Client } from "../utils/models/client.js";
 import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.js";
-import { Buff, BuffManagerConfig, MessageSettings, Week, WeekDTO } from "../models/buff_manager/index.js";
+import { Buff, BuffManagerConfig, MessageSettings, Week, WeekDTO } from "../entities/buff_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";

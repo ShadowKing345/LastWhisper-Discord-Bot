@@ -9,7 +9,7 @@ import { module, authorize, addPermissionKeys, deferReply } from "../utils/decor
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { DateTime } from "luxon";
-import { Buff, WeekDTO } from "../models/buff_manager/index.js";
+import { Buff, WeekDTO } from "../entities/buff_manager/index.js";
 
 /**
  * Module designed to deal with requests about buffs.
