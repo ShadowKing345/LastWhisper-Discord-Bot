@@ -10,6 +10,10 @@ import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
+/**
+ * Module for managing the roles of a Guild.
+ * This module provides a simple apply for role scenario where users are give a role based on context.
+ */
 @module()
 export class RoleManagerModule extends Module {
   public moduleName = "RoleManager";
@@ -64,18 +68,38 @@ export class RoleManagerModule extends Module {
     super(permissionManagerService, logger);
   }
 
+  /**
+   * On ready event to set up reaction listeners.
+   * @param client The Discord Client.
+   * @private
+   */
   private onReady(client: Client): Promise<void> {
     return this.roleManagerService.onReady(client);
   }
 
+  /**
+   * Removes authorized role from all users. Effectively resetting permissions.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   private revokeRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     return this.roleManagerService.revokeRole(interaction);
   }
 
+  /**
+   * Registers a message to be listened to.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   private registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     return this.roleManagerService.registerMessage(interaction);
   }
 
+  /**
+   * Unregisters a message that is being listened to.
+   * @param interaction The Discord interaction.
+   * @private
+   */
   private unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
     return this.roleManagerService.unregisterMessage(interaction);
   }

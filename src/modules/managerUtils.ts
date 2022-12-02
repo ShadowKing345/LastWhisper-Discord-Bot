@@ -1,10 +1,4 @@
-import {
-  GuildBan,
-  GuildMember,
-  ChatInputCommandInteraction,
-  InteractionResponse,
-  PartialGuildMember,
-} from "discord.js";
+import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
 import { Module } from "../utils/models/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -14,6 +8,9 @@ import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 
+/**
+ * Module that provides utilities for the managers..
+ */
 @module()
 export class ManagerUtilsModule extends Module {
   public moduleName = "ManagerUtils";
@@ -53,14 +50,30 @@ export class ManagerUtilsModule extends Module {
     super(permissionManagerService, logger);
   }
 
+  /**
+   * Event that posts a message to a given channel if a user leaves the guild for any reason.
+   * @param member Guild member that has left.
+   * @private
+   */
   private onMemberRemoved(member: GuildMember | PartialGuildMember): Promise<void> {
     return this.managerUtilsService.onMemberRemoved(member);
   }
 
+  /**
+   * Event that posts a message when the user is banned from the guild.
+   * @see onMemberRemoved
+   * @param ban The guild ban object.
+   * @private
+   */
   private onMemberBanned(ban: GuildBan): Promise<void> {
     return this.managerUtilsService.onMemberBanned(ban);
   }
 
+  /**
+   * Command that attempts to clear a channel of messages.
+   * @param interaction
+   * @private
+   */
   private clear(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     return this.managerUtilsService.clearChannelMessages(interaction);
   }
