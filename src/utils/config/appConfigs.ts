@@ -1,6 +1,6 @@
 import fs from "fs";
 
-import { ProjectConfiguration } from "../models/index.js";
+import { ProjectConfiguration } from "../objects/index.js";
 import { toJson } from "../index.js";
 import { container as defaultContainer, DependencyContainer } from "tsyringe";
 

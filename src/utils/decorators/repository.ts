@@ -1,6 +1,6 @@
 import { constructor } from "tsyringe/dist/typings/types/index.js";
 import { injectable, container } from "tsyringe";
-import { Repository } from "../objects/repository.js";
+import { Repository } from "../../repositories/repository.js";
 
 /**
  * Decorator that registers a repository base class as a singleton of its own type and of token ModuleBase.name.

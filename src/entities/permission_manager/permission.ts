@@ -1,10 +1,10 @@
 import { Guild } from "discord.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
+import { BaseEntity } from "typeorm";
 
 /**
  * Representation of a permission.
  */
-export class Permission extends ToJsonBase<Permission> {
+export class Permission extends BaseEntity {
   public roles: string[] = [];
   public mode: PermissionMode = PermissionMode.ANY;
   public blackList?: boolean = false;

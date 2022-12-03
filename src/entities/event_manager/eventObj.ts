@@ -1,22 +1,33 @@
 /**
  * Event object.
  */
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { DateTime } from "luxon";
+import { BaseEntity, Relation, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { EventManagerConfig } from "./eventManagerConfig.js";
 
-export class EventObj extends ToJsonBase<EventObj> {
-  public id: string = null;
+@Entity()
+export class EventObj extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
+
+  @Column()
   public name: string = null;
+
+  @Column()
   public description: string = null;
+
+  @Column()
   public dateTime: number = null;
+
+  @Column("text", {array: true})
   public additional: [string, string][] = [];
 
-  constructor(data: Partial<EventObj> = null) {
-    super();
+  @ManyToOne(() => EventManagerConfig, config => config.events)
+  @JoinColumn({name:"config_id"})
+  public guildConfig: Relation<EventManagerConfig>;
 
-    if (data) {
-      this.merge(data);
-    }
+  constructor() {
+    super();
   }
 
   /**

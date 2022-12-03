@@ -6,7 +6,7 @@ import { Buff } from "./buff.js";
  */
 @Entity()
 export class Days {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   public id: string;
 
   @OneToOne(() => Buff)

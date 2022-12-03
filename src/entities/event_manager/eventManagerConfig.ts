@@ -1,65 +1,68 @@
-import { IEntity } from "../../utils/objects/repository.js";
 import { EventObj } from "./eventObj.js";
-import { Reminder } from "./reminderTrigger.js";
+import { Reminder } from "./reminder.js";
 import { Tags } from "./tags.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-import { deepMerge } from "../../utils/index.js";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
+import { GuildConfigBase } from "../guildConfigBase.js";
 
 /**
  * Event manager configuration object.
  */
-export class EventManagerConfig extends ToJsonBase<EventManagerConfig> implements IEntity<string> {
-  public _id: string;
-  public guildId: string = null;
-  public listenerChannelId: string | null = null;
-  public postingChannelId: string | null = null;
-  public delimiterCharacters: [string, string] = ["[", "]"];
+@Entity()
+export class EventManagerConfig extends GuildConfigBase {
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
+
+  @Column({ nullable: true })
+  public listenerChannelId: string = null;
+
+  @Column({ nullable: true })
+  public postingChannelId: string = null;
+
+  @Column("character", { array: true })
+  public delimiterCharacters: [ string, string ] = [ "[", "]" ];
+
+  @OneToOne(() => Tags, tag => tag.guildConfig, { cascade: true, orphanedRowAction: "delete", onDelete: "CASCADE" })
   public tags: Tags = new Tags();
+
+  @Column("text", { array: true })
   public dateTimeFormat: string[] = [];
-  public events: EventObj[] = [];
-  public reminders: Reminder[] = [];
+
+  @OneToMany(() => EventObj, obj => obj.guildConfig, {
+    cascade: true,
+    orphanedRowAction: "delete",
+    onDelete: "CASCADE",
+  })
+  public events: EventObj[];
+
+  @OneToMany(() => Reminder, obj => obj.guildConfig, {
+    cascade: true,
+    orphanedRowAction: "delete",
+    onDelete: "CASCADE",
+  })
+  public reminders: Reminder[];
 
   public getEventByIndex(index: number): EventObj {
     return this.events[index % this.events.length];
   }
 
-  public merge(obj: Partial<EventManagerConfig>): EventManagerConfig {
-    if (obj._id) {
-      this._id = obj._id;
+  @AfterLoad()
+  @AfterInsert()
+  @AfterUpdate()
+  public nullChecks(): void {
+    if (!this.delimiterCharacters) {
+      this.delimiterCharacters = [ "[", "]" ];
     }
 
-    if (obj.guildId) {
-      this.guildId = obj.guildId;
+    if (!this.dateTimeFormat) {
+      this.dateTimeFormat = [];
     }
 
-    if (obj.listenerChannelId) {
-      this.listenerChannelId = obj.listenerChannelId;
+    if (!this.events) {
+      this.events = [];
     }
 
-    if (obj.postingChannelId) {
-      this.postingChannelId = obj.postingChannelId;
+    if (!this.reminders) {
+      this.reminders = [];
     }
-
-    if (obj.delimiterCharacters) {
-      this.delimiterCharacters = obj.delimiterCharacters;
-    }
-
-    if (obj.tags) {
-      this.tags = deepMerge(this.tags ?? new Tags(), obj.tags);
-    }
-
-    if (obj.dateTimeFormat) {
-      this.dateTimeFormat = obj.dateTimeFormat;
-    }
-
-    if (obj.events) {
-      this.events = obj.events.map(event => deepMerge(new EventObj(), event));
-    }
-
-    if (obj.reminders) {
-      this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder));
-    }
-
-    return this;
   }
 }

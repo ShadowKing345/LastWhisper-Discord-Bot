@@ -1,9 +1,9 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
-import { Module } from "../utils/models/index.js";
-import { createLogger } from "../utils/loggerService.js";
-import { Client } from "../utils/models/client.js";
+import { Module } from "../utils/objects/index.js";
+import { createLogger } from "../services/loggerService.js";
+import { Client } from "../utils/objects/client.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";

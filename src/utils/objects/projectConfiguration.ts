@@ -1,6 +1,5 @@
 import { CommandRegistrationConfiguration } from "./commandRegistrationConfiguration.js";
 import { DatabaseConfiguration } from "./databaseConfiguration.js";
-import { ToJsonBase } from "../objects/toJsonBase.js";
 import { deepMerge } from "../index.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
@@ -8,7 +7,7 @@ import { ModuleConfiguration } from "./moduleConfiguration.js";
 /**
  * Default configuration object for the application.
  */
-export class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
+export class ProjectConfiguration {
   // Discord application token.
   public token: string = null;
   // Database settings.

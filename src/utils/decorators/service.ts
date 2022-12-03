@@ -1,6 +1,6 @@
 import { constructor } from "tsyringe/dist/typings/types/index.js";
 import { injectable, container } from "tsyringe";
-import { Service } from "../objects/service.js";
+import { Service } from "../../services/service.js";
 
 /**
  * Decorator that registers a service base class as a singleton of its own type and of token ModuleBase.name.

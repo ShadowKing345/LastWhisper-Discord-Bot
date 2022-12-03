@@ -1,16 +1,15 @@
 import { Days } from "./days.js";
-import { MergeObjectBase } from "../../utils/objects/mergeObjectBase.js";
 import { deepMerge } from "../../utils/index.js";
 import { DateTime } from "luxon";
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne, Relation } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne, Relation, BaseEntity } from "typeorm";
 import { BuffManagerConfig } from "./buffManagerConfig.js";
 
 /**
  * Information about a week.
  */
 @Entity()
-export class Week extends MergeObjectBase<Week> {
-  @PrimaryGeneratedColumn()
+export class Week extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
   public id: string;
 
   @Column({

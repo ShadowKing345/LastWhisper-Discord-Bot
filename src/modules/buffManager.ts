@@ -1,8 +1,8 @@
 import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
 import { pino } from "pino";
-import { createLogger } from "../utils/loggerService.js";
-import { Client } from "../utils/models/client.js";
-import { Module } from "../utils/models/index.js";
+import { createLogger } from "../services/loggerService.js";
+import { Client } from "../utils/objects/client.js";
+import { Module } from "../utils/objects/index.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";

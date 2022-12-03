@@ -1,5 +1,5 @@
 import { module } from "../utils/decorators/index.js";
-import { Module } from "../utils/objects/module.js";
+import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import {
   CommandInteraction,
@@ -16,7 +16,7 @@ import {
   ButtonInteraction,
 } from "discord.js";
 import { Commands, Command } from "../utils/objects/command.js";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 
 /**

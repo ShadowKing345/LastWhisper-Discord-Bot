@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { Module } from "../objects/module.js";
+import { Module } from "../../modules/module.js";
 
 /**
  * Decorator that wraps a function call with a permission check.
@@ -20,6 +20,11 @@ export function authorize<T extends Module>(
         (this as T).permissionManagerService &&
         !(await (this as T).permissionManagerService.isAuthorized(interaction, key))
       ) {
+        if (interaction.deferred){
+          await interaction.editReply({content: "Sorry you do not have the permissions to use this command."});
+          return;
+        }
+
         return interaction.isRepliable()
           ? interaction.reply({
               content: "Sorry you do not have the permissions to use this command.",

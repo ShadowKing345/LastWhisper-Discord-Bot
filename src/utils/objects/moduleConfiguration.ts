@@ -1,9 +1,7 @@
-import { ToJsonBase } from "../objects/toJsonBase.js";
-
 /**
  * Configuration object for the module configuration service.
  */
-export class ModuleConfiguration extends ToJsonBase<ModuleConfiguration> {
+export class ModuleConfiguration {
   // Disables all commands.
   public enableCommands?: boolean = true;
   // Disables all event listeners.

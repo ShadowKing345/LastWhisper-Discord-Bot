@@ -2,12 +2,12 @@ import { EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 
-import { createLogger } from "../utils/loggerService.js";
-import { Client } from "../utils/models/client.js";
+import { createLogger } from "./loggerService.js";
+import { Client } from "../utils/objects/client.js";
 import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.js";
 import { Buff, BuffManagerConfig, MessageSettings, Week, WeekDTO } from "../entities/buff_manager/index.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 
@@ -19,7 +19,7 @@ import { service } from "../utils/decorators/index.js";
 @service()
 export class BuffManagerService extends Service<BuffManagerConfig> {
   constructor(repository: BuffManagerRepository, @createLogger(BuffManagerService.name) private logger: pino.Logger) {
-    super(repository);
+    super(repository, BuffManagerConfig);
   }
 
   /**
@@ -146,7 +146,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     const config: BuffManagerConfig = await this.getConfig(guildId);
 
     // Throws if the number of buffs are less than 1.
-    if (config.buffs?.length < 1) {
+    if ((config.buffs ?? []).length < 1) {
       this.logger.debug(`No buffs were set in config.`);
       throw new BuffManagerTryGetError("No buffs were set", BuffManagerTryGetErrorReasons.BUFFS);
     }

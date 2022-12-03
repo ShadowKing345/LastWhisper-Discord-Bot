@@ -1,5 +1,5 @@
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { Repository } from "../utils/objects/repository.js";
+import { Repository } from "./repository.js";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { repository } from "../utils/decorators/index.js";
 
@@ -9,10 +9,7 @@ import { repository } from "../utils/decorators/index.js";
  */
 @repository()
 export class ManagerUtilsRepository extends Repository<ManagerUtilsConfig> {
-  protected readonly collectionName: string = "manager_utils";
-  protected readonly mappingObject = ManagerUtilsConfig;
-
   constructor(db: DatabaseConfigurationService) {
-    super(db);
+    super(db, ManagerUtilsConfig);
   }
 }

@@ -1,11 +1,10 @@
-import { IEntity } from "../utils/objects/repository.js";
-import { ToJsonBase } from "../utils/objects/toJsonBase.js";
+import { BaseEntity } from "typeorm";
 
 /**
  * Manager utils configuration object.
  */
-export class ManagerUtilsConfig extends ToJsonBase<ManagerUtilsConfig> implements IEntity<string> {
-  public _id: string;
+export class ManagerUtilsConfig extends BaseEntity {
+  public id: string;
   public guildId: string = null;
   public loggingChannel: string = null;
   public clearChannelBlacklist: string[] = [];

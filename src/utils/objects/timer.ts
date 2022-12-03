@@ -1,5 +1,5 @@
 import { Client as DiscordClient } from "discord.js";
-import { Client } from "../models/client.js";
+import { Client } from "./client.js";
 
 /**
  * A representation of a timer for a module.

@@ -1,9 +1,9 @@
-import { Timers } from "./timer.js";
-import { PermissionManagerService } from "../../services/permissionManager.js";
-import { EventListeners } from "./eventListener.js";
-import { Commands, Command } from "./command.js";
+import { Timers } from "../utils/objects/timer.js";
+import { PermissionManagerService } from "../services/permissionManager.js";
+import { EventListeners } from "../utils/objects/eventListener.js";
+import { Commands, Command } from "../utils/objects/command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { CommandResolverError } from "../errors/index.js";
+import { CommandResolverError } from "../utils/errors/index.js";
 import { pino } from "pino";
 
 /**

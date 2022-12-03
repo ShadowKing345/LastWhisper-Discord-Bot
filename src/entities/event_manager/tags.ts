@@ -1,11 +1,29 @@
 /**
  * Tag names for the event message parser.
  */
-export class Tags {
+import { Relation, Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm";
+import { EventManagerConfig } from "./eventManagerConfig.js";
+
+@Entity()
+export class Tags extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
+
+  @Column({ nullable: true })
   public announcement: string = null;
+
+  @Column({ nullable: true })
   public description: string = null;
+
+  @Column({ nullable: true })
   public dateTime: string = null;
+
+  @Column("character", { array: true })
   public exclusionList: string[] = [];
+
+  @OneToOne(() => EventManagerConfig, config => config.tags)
+  @JoinColumn({name:"config_id"})
+  public guildConfig: Relation<EventManagerConfig>;
 
   constructor(
     announcement = "Event Announcement",
@@ -13,6 +31,8 @@ export class Tags {
     dateTime = "Time",
     exclusionList: string[] = [],
   ) {
+    super();
+
     this.announcement = announcement;
     this.description = description;
     this.dateTime = dateTime;

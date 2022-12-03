@@ -1,11 +1,10 @@
-import { IEntity } from "../utils/objects/repository.js";
-import { ToJsonBase } from "../utils/objects/toJsonBase.js";
+import { BaseEntity } from "typeorm";
 
 /**
  * Role manager configuration object.
  */
-export class RoleManagerConfig extends ToJsonBase<RoleManagerConfig> implements IEntity<string> {
-  public _id: string;
+export class RoleManagerConfig extends BaseEntity {
+  public id: string;
   public guildId: string = null;
   public acceptedRoleId: string = null;
   public reactionMessageIds: string[] = [];

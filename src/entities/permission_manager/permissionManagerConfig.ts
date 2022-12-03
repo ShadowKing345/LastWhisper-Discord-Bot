@@ -1,19 +1,18 @@
-import { IEntity } from "../../utils/objects/repository.js";
 import { Permission } from "./permission.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { deepMerge } from "../../utils/index.js";
+import { BaseEntity } from "typeorm";
 
 /**
  * Permission manager configuration object.
  */
-export class PermissionManagerConfig extends ToJsonBase<PermissionManagerConfig> implements IEntity<string> {
-  public _id: string;
+export class PermissionManagerConfig extends BaseEntity {
+  public id: string;
   public guildId: string = null;
   public permissions: { [key: string]: Permission } = {};
 
   public merge(obj: Partial<PermissionManagerConfig>): PermissionManagerConfig {
-    if (obj._id) {
-      this._id = obj._id;
+    if (obj.id) {
+      this.id = obj.id;
     }
 
     if (obj.guildId) {

@@ -6,8 +6,8 @@ import { BuffManagerConfig } from "./buffManagerConfig.js";
  */
 @Entity()
 export class Buff {
-  @PrimaryGeneratedColumn()
-  public id: string = null;
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
 
   @Column()
   public text: string = null;

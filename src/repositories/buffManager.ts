@@ -1,5 +1,5 @@
 import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { Repository } from "../utils/objects/repository.js";
+import { Repository } from "./repository.js";
 import { BuffManagerConfig } from "../entities/buff_manager/index.js";
 import { repository } from "../utils/decorators/index.js";
 
@@ -9,10 +9,7 @@ import { repository } from "../utils/decorators/index.js";
  */
 @repository()
 export class BuffManagerRepository extends Repository<BuffManagerConfig> {
-  protected readonly collectionName: string = "buff_manager";
-  protected readonly mappingObject = BuffManagerConfig;
-
   constructor(db: DatabaseConfigurationService) {
-    super(db);
+    super(db, BuffManagerConfig);
   }
 }

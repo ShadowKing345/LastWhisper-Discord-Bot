@@ -6,28 +6,25 @@ import { BuffManagerConfig } from "./buffManagerConfig.js";
  */
 @Entity()
 export class MessageSettings {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   public id: string;
 
-  @Column()
+  @Column({ nullable: true })
   public channelId: string = null;
 
-  @Column()
+  @Column({ nullable: true })
   public hour: string = null;
 
-  @Column({
-    type:"int",
-    nullable: true
-  })
+  @Column({ type: "int", nullable: true })
   public dow: number = null;
 
-  @Column()
+  @Column({ nullable: true })
   public buffMessage: string = null;
 
-  @Column()
+  @Column({ nullable: true })
   public weekMessage: string = null;
 
   @OneToOne(() => BuffManagerConfig, config => config.messageSettings)
-  @JoinColumn({name: "config_id"})
+  @JoinColumn({ name: "config_id" })
   public guildConfig: Relation<BuffManagerConfig>;
 }

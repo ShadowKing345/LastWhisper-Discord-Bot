@@ -2,8 +2,8 @@ import { REST, RouteLike } from "@discordjs/rest";
 import { container } from "tsyringe";
 
 import { App } from "./app.js";
-import { LoggerService } from "./utils/loggerService.js";
-import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/models/index.js";
+import { LoggerService } from "./services/loggerService.js";
+import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/objects/index.js";
 import {
   Routes,
   RESTPostAPIChatInputApplicationCommandsJSONBody,

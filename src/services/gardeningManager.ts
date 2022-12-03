@@ -2,12 +2,12 @@ import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, Interaction
 import { DateTime } from "luxon";
 import { pino } from "pino";
 
-import { createLogger } from "../utils/loggerService.js";
-import { Client } from "../utils/models/client.js";
+import { createLogger } from "./loggerService.js";
+import { Client } from "../utils/objects/client.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entities/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 
 @service()
@@ -16,7 +16,7 @@ export class GardeningManagerService extends Service<GardeningModuleConfig> {
     repository: GardeningManagerRepository,
     @createLogger(GardeningManagerService.name) private logger: pino.Logger,
   ) {
-    super(repository);
+    super(repository, GardeningModuleConfig);
   }
 
   protected static async validatePlotAndSlot(

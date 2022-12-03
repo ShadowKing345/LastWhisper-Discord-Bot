@@ -1,9 +1,9 @@
 import { pino } from "pino";
 import { singleton, injectWithTransform } from "tsyringe";
 
-import { ProjectConfiguration } from "./models/index.js";
+import { ProjectConfiguration } from "../utils/objects/index.js";
 import { Transform } from "tsyringe/dist/typings/types/index.js";
-import { LOGGING_LEVELS, LoggerConfigs } from "./models/loggerConfigs.js";
+import { LOGGING_LEVELS, LoggerConfigs } from "../utils/objects/loggerConfigs.js";
 
 /**
  * Service used to handle logging calls.

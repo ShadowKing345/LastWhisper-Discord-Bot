@@ -1,14 +1,5 @@
-import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  SlashCommandSubcommandBuilder,
-  SlashCommandSubcommandGroupBuilder,
-  ChatInputCommandInteraction,
-  ApplicationCommandOptionType as OptionType,
-  APIApplicationCommandOptionChoice,
-  ApplicationCommandOptionBase,
-  SlashCommandStringOption,
-} from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
 import { deepMerge } from "../index.js";
 
 type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
@@ -16,7 +7,7 @@ type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | S
 /**
  * Class representation of a collection of permission keys.
  */
-export class Command extends ToJsonBase<Command> {
+export class Command {
   public name: string = null;
   public description: string = null;
 
@@ -26,7 +17,6 @@ export class Command extends ToJsonBase<Command> {
   public options: CommandOptions = [];
 
   public constructor(data: Partial<Command> = null) {
-    super();
     if (data) {
       this.merge(data);
     }
@@ -94,7 +84,7 @@ export class Command extends ToJsonBase<Command> {
   }
 }
 
-export class CommandOption extends ToJsonBase<CommandOption> {
+export class CommandOption {
   public name: string = null;
   public description: string = null;
   public type: OptionType = null;
@@ -103,8 +93,6 @@ export class CommandOption extends ToJsonBase<CommandOption> {
   public choices: APIApplicationCommandOptionChoice<unknown>[] = [];
 
   public constructor(data: Partial<CommandOption> = null) {
-    super();
-
     if (data) {
       this.merge(data);
     }

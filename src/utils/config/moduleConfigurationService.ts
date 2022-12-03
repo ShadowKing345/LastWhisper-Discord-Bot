@@ -3,12 +3,12 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 
-import { ConfigurationClass } from "../configurationClass.js";
-import { LoggerService } from "../loggerService.js";
-import { Client } from "../models/client.js";
-import { Module, ProjectConfiguration } from "../models/index.js";
+import { ConfigurationClass } from "./configurationClass.js";
+import { LoggerService } from "../../services/loggerService.js";
+import { Client } from "../objects/client.js";
+import { Module, ProjectConfiguration } from "../objects/index.js";
 import { Timer } from "../objects/timer.js";
-import { ModuleConfiguration } from "../models/moduleConfiguration.js";
+import { ModuleConfiguration } from "../objects/moduleConfiguration.js";
 import { CommandResolverError } from "../errors/index.js";
 import { Command } from "../objects/command.js";
 import { EventListeners } from "../objects/eventListener.js";

@@ -1,6 +1,6 @@
 import { ClientEvents } from "discord.js";
 
-import { Client } from "../models/client.js";
+import { Client } from "./client.js";
 
 /**
  * A representation of an event listener for a module.

@@ -1,11 +1,12 @@
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../loggerService.js";
-import { ProjectConfiguration, DatabaseConfiguration } from "../models/index.js";
-import { ConfigurationClass } from "../configurationClass.js";
+import { createLogger } from "../../services/loggerService.js";
+import { ProjectConfiguration, DatabaseConfiguration } from "../objects/index.js";
+import { ConfigurationClass } from "./configurationClass.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../../entities/buff_manager/index.js";
+import { EventManagerEntities } from "../../entities/event_manager/index.js";
 
 /**
  * Database Configuration Service file.
@@ -28,7 +29,7 @@ export class DatabaseConfigurationService extends ConfigurationClass {
   public async connect(): Promise<void> {
     const databaseConfigs: DatabaseConfiguration = this.projectConfig.database;
 
-    if (!databaseConfigs){
+    if (!databaseConfigs) {
       throw new Error("Database configuration is null.");
     }
 
@@ -39,16 +40,21 @@ export class DatabaseConfigurationService extends ConfigurationClass {
         return;
       }
 
-      this._dataSource = new DataSource({
-        type: "postgres",
-        username: databaseConfigs.username,
-        password: databaseConfigs.password,
-        port: Number(databaseConfigs.port),
-        database: databaseConfigs.database,
-        synchronize: databaseConfigs.sync,
-        logging: databaseConfigs.logging,
-        entities: [...Object.values(BuffManagerEntities)]
-      });
+      if (!this._dataSource) {
+        this._dataSource = new DataSource({
+          type: "postgres",
+          username: databaseConfigs.username,
+          password: databaseConfigs.password,
+          port: Number(databaseConfigs.port),
+          database: databaseConfigs.database,
+          synchronize: databaseConfigs.sync,
+          logging: databaseConfigs.logging,
+          entities: [
+            ...Object.values(BuffManagerEntities),
+            ...Object.values(EventManagerEntities),
+          ],
+        });
+      }
 
       await this._dataSource.initialize();
     } catch (error) {
@@ -72,10 +78,6 @@ export class DatabaseConfigurationService extends ConfigurationClass {
    * Assuming that fails or there is no client will return null instead.
    */
   public get dataSource(): DataSource {
-    if (this._dataSource) {
-      return this._dataSource;
-    }
-
     return this._dataSource;
   }
 
@@ -83,6 +85,6 @@ export class DatabaseConfigurationService extends ConfigurationClass {
    * Returns if the database is connected to or not.
    */
   public get isConnected(): boolean {
-    return this._dataSource != null;
+    return this._dataSource?.isInitialized;
   }
 }

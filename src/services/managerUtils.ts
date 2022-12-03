@@ -3,13 +3,13 @@ import { DateTime } from "luxon";
 
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 
 @service()
 export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
   constructor(repository: ManagerUtilsRepository) {
-    super(repository);
+    super(repository, ManagerUtilsConfig);
   }
 
   private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
