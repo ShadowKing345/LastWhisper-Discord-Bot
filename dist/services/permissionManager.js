@@ -1,12 +1,12 @@
 var PermissionManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "./loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../entities/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService extends Service {
     logger;

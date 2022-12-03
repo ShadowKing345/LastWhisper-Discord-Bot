@@ -1,4 +1,4 @@
-import { Module } from "../utils/objects/module.js";
+import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Commands } from "../utils/objects/command.js";

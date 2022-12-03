@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 import { Permission, PermissionManagerConfig } from "../entities/permission_manager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 export declare class PermissionManagerService extends Service<PermissionManagerConfig> {
     private logger;
     private static readonly keys;

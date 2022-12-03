@@ -1,11 +1,11 @@
 var DevModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { module } from "../utils/decorators/index.js";
-import { Module } from "../utils/objects/module.js";
+import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, } from "discord.js";
 import { Command } from "../utils/objects/command.js";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 let DevModule = DevModule_1 = class DevModule extends Module {
     moduleName = "DevModule";

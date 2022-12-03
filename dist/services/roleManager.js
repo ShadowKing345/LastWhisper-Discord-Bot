@@ -2,12 +2,12 @@ var RoleManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { TextChannel } from "discord.js";
 import { pino } from "pino";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "./loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends Service {
     logger;

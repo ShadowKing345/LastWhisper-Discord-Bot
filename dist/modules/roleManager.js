@@ -1,8 +1,8 @@
 var RoleManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
-import { Module } from "../utils/models/index.js";
-import { createLogger } from "../utils/loggerService.js";
+import { Module } from "../utils/objects/index.js";
+import { createLogger } from "../services/loggerService.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";

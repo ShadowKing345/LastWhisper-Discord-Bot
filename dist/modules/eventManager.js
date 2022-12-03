@@ -1,11 +1,11 @@
 var EventManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
-import { Module } from "../utils/models/index.js";
+import { Module } from "../utils/objects/index.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
 import { EventObj } from "../entities/event_manager/index.js";

@@ -1,5 +1,5 @@
 import { Client as DiscordClient } from "discord.js";
-import { Client } from "../models/client.js";
+import { Client } from "./client.js";
 export declare class Timer {
     name: string;
     timeout: number;

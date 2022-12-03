@@ -1,7 +1,7 @@
 import { pino } from "pino";
-import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
-import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
-import { Module, ProjectConfiguration } from "./utils/models/index.js";
+import { DatabaseConfigurationService } from "./config/databaseConfigurationService.js";
+import { ModuleConfigurationService } from "./config/moduleConfigurationService.js";
+import { Module, ProjectConfiguration } from "./utils/objects/index.js";
 export declare class App {
     private appConfig;
     private databaseService;

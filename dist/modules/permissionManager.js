@@ -1,12 +1,12 @@
 var PermissionManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
-import { Module } from "../utils/models/index.js";
+import { Module } from "../utils/objects/index.js";
 import { PermissionMode, Permission } from "../entities/permission_manager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends Module {

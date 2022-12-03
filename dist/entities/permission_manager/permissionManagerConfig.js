@@ -1,20 +1,25 @@
-import { deepMerge } from "../../utils/index.js";
-import { BaseEntity } from "typeorm";
-export class PermissionManagerConfig extends BaseEntity {
+import { __decorate, __metadata } from "tslib";
+import { Permission } from "./permission.js";
+import { Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { GuildConfigBase } from "../guildConfigBase.js";
+let PermissionManagerConfig = class PermissionManagerConfig extends GuildConfigBase {
     id;
-    guildId = null;
-    permissions = {};
-    merge(obj) {
-        if (obj.id) {
-            this.id = obj.id;
-        }
-        if (obj.guildId) {
-            this.guildId = obj.guildId;
-        }
-        if (obj.permissions) {
-            this.permissions = deepMerge(this.permissions ?? {}, obj.permissions);
-        }
-        return this;
-    }
-}
+    permissions;
+};
+__decorate([
+    PrimaryGeneratedColumn("uuid"),
+    __metadata("design:type", String)
+], PermissionManagerConfig.prototype, "id", void 0);
+__decorate([
+    OneToMany(() => Permission, permission => permission.guildConfig, {
+        cascade: true,
+        orphanedRowAction: "delete",
+        onDelete: "CASCADE",
+    }),
+    __metadata("design:type", Array)
+], PermissionManagerConfig.prototype, "permissions", void 0);
+PermissionManagerConfig = __decorate([
+    Entity()
+], PermissionManagerConfig);
+export { PermissionManagerConfig };
 //# sourceMappingURL=permissionManagerConfig.js.map

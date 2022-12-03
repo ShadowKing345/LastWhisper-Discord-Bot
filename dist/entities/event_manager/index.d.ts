@@ -6,5 +6,5 @@ export * from "./eventManagerConfig.js";
 export * from "./eventObj.js";
 export * from "./reminder.js";
 export * from "./tags.js";
-export declare const EventManagerEntities: (typeof EventObj | typeof EventManagerConfig | typeof Tags | typeof Reminder)[];
+export declare const EventManagerEntities: (typeof EventObj | typeof EventManagerConfig | typeof Reminder | typeof Tags)[];
 //# sourceMappingURL=index.d.ts.map

@@ -3,11 +3,11 @@ import { __decorate, __metadata, __param } from "tslib";
 import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "./loggerService.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Reservation, Slot } from "../entities/gardening_manager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService extends Service {
     logger;

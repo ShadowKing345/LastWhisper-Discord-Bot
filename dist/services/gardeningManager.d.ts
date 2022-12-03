@@ -1,9 +1,9 @@
 import { CommandInteraction, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { pino } from "pino";
-import { Client } from "../utils/models/client.js";
+import { Client } from "../utils/objects/client.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Slot } from "../entities/gardening_manager/index.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 export declare class GardeningManagerService extends Service<GardeningModuleConfig> {
     private logger;
     constructor(repository: GardeningManagerRepository, logger: pino.Logger);

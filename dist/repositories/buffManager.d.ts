@@ -1,5 +1,5 @@
-import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { Repository } from "../utils/objects/repository.js";
+import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { Repository } from "./repository.js";
 import { BuffManagerConfig } from "../entities/buff_manager/index.js";
 export declare class BuffManagerRepository extends Repository<BuffManagerConfig> {
     constructor(db: DatabaseConfigurationService);

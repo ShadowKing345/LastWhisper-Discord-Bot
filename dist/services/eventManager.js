@@ -6,10 +6,11 @@ import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.js";
 import { EventManagerConfig, EventObj } from "../entities/event_manager/index.js";
-import { Service } from "../utils/objects/service.js";
-import { createLogger } from "../utils/loggerService.js";
+import { Service } from "./service.js";
+import { createLogger } from "./loggerService.js";
 import { pino } from "pino";
 import { service } from "../utils/decorators/index.js";
+import { WrongChannelError } from "../utils/errors/index.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
     logger;
     constructor(repository, logger) {
@@ -38,15 +39,17 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         }
         return result;
     }
-    async create(guildId, _id, _content, _channelId) {
+    async create(guildId, id, content, channelId) {
         const config = await this.getConfig(guildId);
-        const event = new EventObj();
-        event.guildConfig = config;
-        event.name = "Test";
-        event.description = "Fishing today";
-        event.dateTime = DateTime.now().plus({ day: 30 }).toUnixInteger();
-        event.additional = [["Hello", "World"]];
-        await this.repository.db.dataSource.getRepository(EventObj).save(event);
+        if (channelId && config.listenerChannelId !== channelId) {
+            throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
+        }
+        const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        if (!event.isValid) {
+            return null;
+        }
+        config.events.push(event);
+        await this.repository.save(config);
         return event;
     }
     async update(guildId, messageId, content) {

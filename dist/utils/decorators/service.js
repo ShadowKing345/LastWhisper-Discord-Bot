@@ -1,5 +1,5 @@
 import { injectable, container } from "tsyringe";
-import { Service } from "../objects/service.js";
+import { Service } from "../../services/service.js";
 export function service() {
     return function (target) {
         injectable()(target);

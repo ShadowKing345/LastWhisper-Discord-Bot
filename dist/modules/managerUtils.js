@@ -1,11 +1,11 @@
 var ManagerUtilsModule_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { Module } from "../utils/models/index.js";
+import { Module } from "../utils/objects/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends Module {

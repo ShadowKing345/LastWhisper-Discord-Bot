@@ -5,7 +5,7 @@ import { program } from "commander";
 import { userInfo } from "os";
 import { main } from "./app.js";
 import { commandRegistration } from "./commandRegistration.js";
-import { generateConfigObject } from "./utils/config/appConfigs.js";
+import { generateConfigObject } from "./config/appConfigs.js";
 console.log(`Welcome ${userInfo().username}.`);
 generateConfigObject();
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");

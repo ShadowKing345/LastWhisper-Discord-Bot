@@ -1,6 +1,6 @@
 import { __decorate, __metadata } from "tslib";
-import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
-import { Repository } from "../utils/objects/repository.js";
+import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { Repository } from "./repository.js";
 import { PermissionManagerConfig } from "../entities/permission_manager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let PermissionManagerRepository = class PermissionManagerRepository extends Repository {

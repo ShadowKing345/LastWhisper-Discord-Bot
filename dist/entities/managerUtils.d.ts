@@ -1,7 +1,6 @@
-import { BaseEntity } from "typeorm";
-export declare class ManagerUtilsConfig extends BaseEntity {
+import { GuildConfigBase } from "./guildConfigBase.js";
+export declare class ManagerUtilsConfig extends GuildConfigBase {
     id: string;
-    guildId: string;
     loggingChannel: string;
     clearChannelBlacklist: string[];
 }

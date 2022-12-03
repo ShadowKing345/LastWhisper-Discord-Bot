@@ -3,11 +3,11 @@ import { __decorate, __metadata, __param } from "tslib";
 import { EmbedBuilder, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
-import { createLogger } from "../utils/loggerService.js";
+import { createLogger } from "./loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { BuffManagerRepository } from "../repositories/buffManager.js";
 import { BuffManagerConfig, WeekDTO } from "../entities/buff_manager/index.js";
-import { Service } from "../utils/objects/service.js";
+import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {

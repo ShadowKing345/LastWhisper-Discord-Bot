@@ -1,8 +1,18 @@
-import { BaseEntity } from "typeorm";
-export class Permission extends BaseEntity {
+import { __decorate, __metadata } from "tslib";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { PermissionManagerConfig } from "./permissionManagerConfig.js";
+export var PermissionMode;
+(function (PermissionMode) {
+    PermissionMode[PermissionMode["ANY"] = 0] = "ANY";
+    PermissionMode[PermissionMode["STRICT"] = 1] = "STRICT";
+})(PermissionMode || (PermissionMode = {}));
+let Permission = class Permission extends BaseEntity {
+    id;
+    key;
     roles = [];
-    mode = PermissionMode.ANY;
+    mode;
     blackList = false;
+    guildConfig;
     get modeEnum() {
         return PermissionMode[this.mode];
     }
@@ -26,10 +36,34 @@ export class Permission extends BaseEntity {
         }
         return this;
     }
-}
-export var PermissionMode;
-(function (PermissionMode) {
-    PermissionMode[PermissionMode["ANY"] = 0] = "ANY";
-    PermissionMode[PermissionMode["STRICT"] = 1] = "STRICT";
-})(PermissionMode || (PermissionMode = {}));
+};
+__decorate([
+    PrimaryGeneratedColumn("uuid"),
+    __metadata("design:type", String)
+], Permission.prototype, "id", void 0);
+__decorate([
+    Column(),
+    __metadata("design:type", String)
+], Permission.prototype, "key", void 0);
+__decorate([
+    Column("text", { array: true }),
+    __metadata("design:type", Array)
+], Permission.prototype, "roles", void 0);
+__decorate([
+    Column({ type: "enum", enum: PermissionMode, default: PermissionMode.ANY }),
+    __metadata("design:type", Number)
+], Permission.prototype, "mode", void 0);
+__decorate([
+    Column({ type: "boolean" }),
+    __metadata("design:type", Boolean)
+], Permission.prototype, "blackList", void 0);
+__decorate([
+    ManyToOne(() => PermissionManagerConfig, config => config.permissions),
+    JoinColumn({ name: "config_id" }),
+    __metadata("design:type", Object)
+], Permission.prototype, "guildConfig", void 0);
+Permission = __decorate([
+    Entity()
+], Permission);
+export { Permission };
 //# sourceMappingURL=permission.js.map

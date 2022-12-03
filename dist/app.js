@@ -2,11 +2,11 @@ var App_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
 import { singleton, container } from "tsyringe";
-import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
-import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
-import { createLogger } from "./utils/loggerService.js";
-import { Client } from "./utils/models/client.js";
-import { ProjectConfiguration } from "./utils/models/index.js";
+import { DatabaseConfigurationService } from "./config/databaseConfigurationService.js";
+import { ModuleConfigurationService } from "./config/moduleConfigurationService.js";
+import { createLogger } from "./services/loggerService.js";
+import { Client } from "./utils/objects/client.js";
+import { ProjectConfiguration } from "./utils/objects/index.js";
 let App = App_1 = class App {
     appConfig;
     databaseService;

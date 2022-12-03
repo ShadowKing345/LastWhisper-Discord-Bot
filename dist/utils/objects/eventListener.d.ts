@@ -1,5 +1,5 @@
 import { ClientEvents } from "discord.js";
-import { Client } from "../models/client.js";
+import { Client } from "./client.js";
 export declare class EventListener<T extends keyof ClientEvents> {
     event: T;
     execute: (client: Client, args: ClientEvents[T]) => Promise<void>;

@@ -1,7 +1,6 @@
-import { BaseEntity } from "typeorm";
-export declare class RoleManagerConfig extends BaseEntity {
+import { GuildConfigBase } from "./guildConfigBase.js";
+export declare class RoleManagerConfig extends GuildConfigBase {
     id: string;
-    guildId: string;
     acceptedRoleId: string;
     reactionMessageIds: string[];
     reactionListeningChannel: string;

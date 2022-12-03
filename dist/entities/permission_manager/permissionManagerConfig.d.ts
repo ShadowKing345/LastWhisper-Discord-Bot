@@ -1,11 +1,7 @@
 import { Permission } from "./permission.js";
-import { BaseEntity } from "typeorm";
-export declare class PermissionManagerConfig extends BaseEntity {
+import { GuildConfigBase } from "../guildConfigBase.js";
+export declare class PermissionManagerConfig extends GuildConfigBase {
     id: string;
-    guildId: string;
-    permissions: {
-        [key: string]: Permission;
-    };
-    merge(obj: Partial<PermissionManagerConfig>): PermissionManagerConfig;
+    permissions: Permission[];
 }
 //# sourceMappingURL=permissionManagerConfig.d.ts.map
