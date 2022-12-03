@@ -1,11 +1,18 @@
-import { BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { GuildConfigBase } from "./guildConfigBase.js";
 
 /**
  * Manager utils configuration object.
  */
-export class ManagerUtilsConfig extends BaseEntity {
+@Entity()
+export class ManagerUtilsConfig extends GuildConfigBase {
+
+  @PrimaryGeneratedColumn("uuid")
   public id: string;
-  public guildId: string = null;
+
+  @Column({ nullable: true })
   public loggingChannel: string = null;
-  public clearChannelBlacklist: string[] = [];
+
+  @Column("text", { array: true })
+  public clearChannelBlacklist: string[];
 }

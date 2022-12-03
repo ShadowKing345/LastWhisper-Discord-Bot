@@ -1,12 +1,20 @@
-import { BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { GuildConfigBase } from "./guildConfigBase.js";
 
 /**
  * Role manager configuration object.
  */
-export class RoleManagerConfig extends BaseEntity {
+@Entity()
+export class RoleManagerConfig extends GuildConfigBase {
+  @PrimaryGeneratedColumn("uuid")
   public id: string;
-  public guildId: string = null;
+
+  @Column({ nullable: true })
   public acceptedRoleId: string = null;
-  public reactionMessageIds: string[] = [];
+
+  @Column("text", { array: true })
+  public reactionMessageIds: string[];
+
+  @Column({ nullable: true })
   public reactionListeningChannel: string = null;
 }

@@ -1,13 +1,36 @@
 import { Guild } from "discord.js";
-import { BaseEntity } from "typeorm";
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Relation } from "typeorm";
+import { PermissionManagerConfig } from "./permissionManagerConfig.js";
+
+// Modes for how permissions are handled.
+export enum PermissionMode {
+  ANY,
+  STRICT,
+}
 
 /**
  * Representation of a permission.
  */
+@Entity()
 export class Permission extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid")
+  public id: string;
+
+  @Column()
+  public key: string;
+
+  @Column("text", { array: true })
   public roles: string[] = [];
-  public mode: PermissionMode = PermissionMode.ANY;
+
+  @Column({ type: "enum", enum: PermissionMode, default: PermissionMode.ANY })
+  public mode: PermissionMode;
+
+  @Column({ type: "boolean" })
   public blackList?: boolean = false;
+
+  @ManyToOne(() => PermissionManagerConfig, config => config.permissions)
+  @JoinColumn({ name: "config_id" })
+  public guildConfig: Relation<PermissionManagerConfig>;
 
   /**
    * Returns the enum name of the current enum.
@@ -49,10 +72,4 @@ export class Permission extends BaseEntity {
 
     return this;
   }
-}
-
-// Modes for how permissions are handled.
-export enum PermissionMode {
-  ANY,
-  STRICT,
 }
