@@ -4,4 +4,4 @@ import { Permission } from "./permission.js";
 export * from "./permission.js";
 export * from "./permissionManagerConfig.js";
 
-export const PermissionManagerEntities = [ PermissionManagerConfig, Permission ];
+export const PermissionManagerEntities = [PermissionManagerConfig, Permission];

@@ -24,6 +24,6 @@ export class Plot extends BaseEntity {
   public slots: Slot[];
 
   @ManyToOne(() => GardeningModuleConfig, config => config.plots)
-  @JoinColumn({name: "config_id"})
+  @JoinColumn({ name: "config_id" })
   public guildConfig: Relation<GardeningModuleConfig>;
 }

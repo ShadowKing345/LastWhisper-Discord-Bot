@@ -1,5 +1,13 @@
-import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
-import { Module } from "../utils/objects/index.js";
+import {
+  Client,
+  Message,
+  ChatInputCommandInteraction,
+  ApplicationCommandOptionType,
+  PartialMessage,
+  InteractionResponse,
+  EmbedBuilder,
+} from "discord.js";
+import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
@@ -132,9 +140,9 @@ export class EventManagerModule extends Module {
     }),
   ];
   public eventListeners: EventListeners = [
-    new EventListener("messageCreate", (_, [ message ]) => this.createEvent(message)),
-    new EventListener("messageUpdate", (_, [ old, message ]) => this.updateEvent(old, message)),
-    new EventListener("messageDelete", (_, [ message ]) => this.deleteEvent(message)),
+    new EventListener("messageCreate", (_, [message]) => this.createEvent(message)),
+    new EventListener("messageUpdate", (_, [old, message]) => this.updateEvent(old, message)),
+    new EventListener("messageDelete", (_, [message]) => this.deleteEvent(message)),
     new EventListener("ready", client => this.onReady(client)),
   ];
   public timers: Timers = [
@@ -174,7 +182,8 @@ export class EventManagerModule extends Module {
     const description = interaction.options.getString("description");
     const time = interaction.options.getString("time");
 
-    const text = interaction.options.getString("text") ??
+    const text =
+      interaction.options.getString("text") ??
       (await this.service.createContent(interaction.guildId, name, description, time));
 
     const event = await this.service.create(interaction.guildId, null, text);
@@ -279,15 +288,15 @@ export class EventManagerModule extends Module {
       event instanceof EventObj
         ? this.service.createEventEmbed(event)
         : new EmbedBuilder({
-          title: "Upcoming Events",
-          fields: event.map((event, index) => ({
-            name: `Index ${index}:`,
-            value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
-            inline: false,
-          })),
-        }).setColor("Random");
+            title: "Upcoming Events",
+            fields: event.map((event, index) => ({
+              name: `Index ${index}:`,
+              value: `${event.name}\n**Begins: <t:${event.dateTime}:R>**`,
+              inline: false,
+            })),
+          }).setColor("Random");
 
-    await interaction.editReply({ embeds: [ embed ] });
+    await interaction.editReply({ embeds: [embed] });
   }
 
   // endregion

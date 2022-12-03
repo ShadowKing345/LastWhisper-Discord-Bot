@@ -19,11 +19,11 @@ export class EventObj extends BaseEntity {
   @Column()
   public dateTime: number = null;
 
-  @Column("text", {array: true})
+  @Column("text", { array: true })
   public additional: [string, string][] = [];
 
   @ManyToOne(() => EventManagerConfig, config => config.events)
-  @JoinColumn({name:"config_id"})
+  @JoinColumn({ name: "config_id" })
   public guildConfig: Relation<EventManagerConfig>;
 
   constructor() {

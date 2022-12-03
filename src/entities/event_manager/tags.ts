@@ -22,7 +22,7 @@ export class Tags extends BaseEntity {
   public exclusionList: string[] = [];
 
   @OneToOne(() => EventManagerConfig, config => config.tags)
-  @JoinColumn({name:"config_id"})
+  @JoinColumn({ name: "config_id" })
   public guildConfig: Relation<EventManagerConfig>;
 
   constructor(

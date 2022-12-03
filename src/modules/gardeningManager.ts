@@ -1,4 +1,9 @@
-import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
+import {
+  CommandInteraction,
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  ApplicationCommandOptionType,
+} from "discord.js";
 import { Client } from "../utils/objects/client.js";
 import { Module } from "../utils/objects/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";

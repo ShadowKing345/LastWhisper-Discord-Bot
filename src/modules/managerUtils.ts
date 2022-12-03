@@ -1,4 +1,10 @@
-import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
+import {
+  GuildBan,
+  GuildMember,
+  ChatInputCommandInteraction,
+  InteractionResponse,
+  PartialGuildMember,
+} from "discord.js";
 import { Module } from "../utils/objects/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";

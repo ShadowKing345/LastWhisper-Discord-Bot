@@ -13,20 +13,20 @@ export class Week extends BaseEntity {
   public id: string;
 
   @Column({
-    type: "boolean"
+    type: "boolean",
   })
   public isEnabled = false;
 
   @Column()
   public title: string = null;
 
-  @OneToOne(() => Days, {cascade: true, orphanedRowAction: "delete"})
-  @JoinColumn({name: "days_id"})
+  @OneToOne(() => Days, { cascade: true, orphanedRowAction: "delete" })
+  @JoinColumn({ name: "days_id" })
   public days: Days;
 
   @ManyToOne(() => BuffManagerConfig, config => config.weeks)
-  @JoinColumn({name: "config_id"})
-  public guildConfig: Relation<BuffManagerConfig>
+  @JoinColumn({ name: "config_id" })
+  public guildConfig: Relation<BuffManagerConfig>;
 
   /**
    * Returns the buff ID for a given day of the week,

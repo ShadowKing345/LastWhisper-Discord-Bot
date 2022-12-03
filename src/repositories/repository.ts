@@ -10,8 +10,7 @@ import { GuildConfigBase } from "../entities/guildConfigBase.js";
 export abstract class Repository<T extends GuildConfigBase> {
   private repo: Repo<T>;
 
-  protected constructor(protected db: DatabaseConfigurationService, private entityTarget: EntityTarget<T>) {
-  }
+  protected constructor(protected db: DatabaseConfigurationService, private entityTarget: EntityTarget<T>) {}
 
   /**
    * Saves a new database record.
@@ -33,7 +32,7 @@ export abstract class Repository<T extends GuildConfigBase> {
   public async findOne(filter: FindOneOptions<T>): Promise<T> {
     this.isConnected();
 
-    return this.repo.findOne(filter)
+    return this.repo.findOne(filter);
   }
 
   /**
@@ -72,11 +71,11 @@ export abstract class Repository<T extends GuildConfigBase> {
    * @private
    */
   private isConnected(): void {
-    if (!this.db.isConnected){
+    if (!this.db.isConnected) {
       throw new RepositoryError("No valid connection to the database.");
     }
 
-    if (this.repo == null){
+    if (this.repo == null) {
       this.repo = this.db.dataSource.getRepository<T>(this.entityTarget);
     }
   }

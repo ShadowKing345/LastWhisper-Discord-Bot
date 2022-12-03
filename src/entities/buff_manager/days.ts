@@ -10,31 +10,31 @@ export class Days {
   public id: string;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "monday_id"})
+  @JoinColumn({ name: "monday_id" })
   public monday: Buff;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "tuesday_id"})
+  @JoinColumn({ name: "tuesday_id" })
   public tuesday: Buff;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "wednesday_id"})
+  @JoinColumn({ name: "wednesday_id" })
   public wednesday: Buff;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "thursday_id"})
+  @JoinColumn({ name: "thursday_id" })
   public thursday: Buff;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "friday_id"})
+  @JoinColumn({ name: "friday_id" })
   public friday: Buff;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "saturday_id"})
+  @JoinColumn({ name: "saturday_id" })
   public saturday: Buff;
 
   @OneToOne(() => Buff)
-  @JoinColumn({name: "sunday_id"})
+  @JoinColumn({ name: "sunday_id" })
   public sunday: Buff;
 
   private current = 0;

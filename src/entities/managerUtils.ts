@@ -6,7 +6,6 @@ import { GuildConfigBase } from "./guildConfigBase.js";
  */
 @Entity()
 export class ManagerUtilsConfig extends GuildConfigBase {
-
   @PrimaryGeneratedColumn("uuid")
   public id: string;
 

@@ -1,7 +1,16 @@
 import { EventObj } from "./eventObj.js";
 import { Reminder } from "./reminder.js";
 import { Tags } from "./tags.js";
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  OneToMany,
+  AfterLoad,
+  AfterInsert,
+  AfterUpdate,
+} from "typeorm";
 import { GuildConfigBase } from "../guildConfigBase.js";
 
 /**
@@ -19,7 +28,7 @@ export class EventManagerConfig extends GuildConfigBase {
   public postingChannelId: string = null;
 
   @Column("character", { array: true })
-  public delimiterCharacters: [ string, string ] = [ "[", "]" ];
+  public delimiterCharacters: [string, string] = ["[", "]"];
 
   @OneToOne(() => Tags, tag => tag.guildConfig, { cascade: true, orphanedRowAction: "delete", onDelete: "CASCADE" })
   public tags: Tags = new Tags();
@@ -50,7 +59,7 @@ export class EventManagerConfig extends GuildConfigBase {
   @AfterUpdate()
   public nullChecks(): void {
     if (!this.delimiterCharacters) {
-      this.delimiterCharacters = [ "[", "]" ];
+      this.delimiterCharacters = ["[", "]"];
     }
 
     if (!this.dateTimeFormat) {

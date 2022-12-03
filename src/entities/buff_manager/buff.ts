@@ -16,6 +16,6 @@ export class Buff {
   public imageUrl: string = null;
 
   @ManyToOne(() => BuffManagerConfig, config => config.buffs)
-  @JoinTable({name: "guild_config_id"})
+  @JoinTable({ name: "guild_config_id" })
   public guildConfig: Relation<BuffManagerConfig>;
 }

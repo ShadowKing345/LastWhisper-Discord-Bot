@@ -2,7 +2,17 @@ import { Buff } from "./buff.js";
 import { MessageSettings } from "./messageSettings.js";
 import { Week } from "./week.js";
 import { DateTime } from "luxon";
-import { PrimaryGeneratedColumn, Column, OneToMany, Entity, OneToOne, BaseEntity, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  Entity,
+  OneToOne,
+  BaseEntity,
+  AfterLoad,
+  AfterInsert,
+  AfterUpdate,
+} from "typeorm";
 
 /**
  * Buff Manager Configuration Object.

@@ -9,4 +9,4 @@ export * from "./reservation.js";
 export * from "./slot.js";
 export * from "./slotBase.js";
 
-export const GardeningManagerEntities = [ GardeningModuleConfig, Plot, Slot ];
+export const GardeningManagerEntities = [GardeningModuleConfig, Plot, Slot];

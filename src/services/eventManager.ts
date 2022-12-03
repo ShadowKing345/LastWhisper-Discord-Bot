@@ -60,16 +60,16 @@ export class EventManagerService extends Service<EventManagerConfig> {
     name: string,
     description: string,
     time: string,
-    additional: [ string, string ][] = [],
+    additional: [string, string][] = [],
   ): Promise<string> {
     const config = await this.getConfig(guildId);
-    const [ l, r ] = config.delimiterCharacters;
+    const [l, r] = config.delimiterCharacters;
 
     let result = l + config.tags.announcement + r + name + "\n";
     result += `${l}${config.tags.description}${r}\n${description}\n`;
     result += `${l}${config.tags.dateTime}${r}\n${time}\n`;
 
-    for (const [ k, v ] of additional) {
+    for (const [k, v] of additional) {
       result += `${l}${k}${r}\n${v}\n`;
     }
 
@@ -249,7 +249,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
           const reminderTimeDelta = reminder.asDuration;
           for (const event of config.events) {
             const eventTime = DateTime.fromSeconds(event.dateTime);
-            if (eventTime.diff(now, [ "days" ]).days > 1) continue;
+            if (eventTime.diff(now, ["days"]).days > 1) continue;
 
             const difference = eventTime.minus(reminderTimeDelta);
             if (difference.hour === now.hour && difference.minute === now.minute) {
@@ -325,14 +325,14 @@ export class EventManagerService extends Service<EventManagerConfig> {
     content: string,
     tags: Tags,
     dateTimeFormats: string[],
-    delimiter: [ string, string ],
+    delimiter: [string, string],
   ): EventObj {
-    const [ l, r ] = delimiter.map(c => this.regexpEscape(c));
+    const [l, r] = delimiter.map(c => this.regexpEscape(c));
     const event = new EventObj();
     event.id = id;
     const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
 
-    for (const [ , k, v ] of content.matchAll(regExp)) {
+    for (const [, k, v] of content.matchAll(regExp)) {
       if (!k || !v) continue;
       const key = k.trim(),
         value = v.trim();
@@ -372,7 +372,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
 
         default:
           if (!tags.exclusionList.every(e => e !== key)) continue;
-          event.additional.push([ key, value ]);
+          event.additional.push([key, value]);
           break;
       }
     }

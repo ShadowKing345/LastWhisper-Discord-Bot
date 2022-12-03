@@ -3,7 +3,7 @@ import { ServiceError } from "../utils/errors/index.js";
 import { GuildConfigBase } from "../entities/guildConfigBase.js";
 
 export abstract class Service<T extends GuildConfigBase> {
-  protected constructor(protected repository: Repository<T>, private entity: {new(): T}) { }
+  protected constructor(protected repository: Repository<T>, private entity: { new (): T }) {}
 
   /**
    * Attempts to find or create a new configuration file.
@@ -15,7 +15,7 @@ export abstract class Service<T extends GuildConfigBase> {
       throw new ServiceError("Guild ID cannot be null.");
     }
 
-    const result = await this.repository.findOne({where: {guildId: guildId} as never});
+    const result = await this.repository.findOne({ where: { guildId: guildId } as never });
     if (result) return result;
 
     const config = new this.entity();

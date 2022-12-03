@@ -17,7 +17,7 @@ export class Reminder extends BaseEntity {
   public timeDelta: string = null;
 
   @ManyToOne(() => EventManagerConfig, config => config.reminders)
-  @JoinColumn({name:"config_id"})
+  @JoinColumn({ name: "config_id" })
   public guildConfig: Relation<EventManagerConfig>;
 
   constructor() {

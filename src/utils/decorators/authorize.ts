@@ -20,8 +20,8 @@ export function authorize<T extends Module>(
         (this as T).permissionManagerService &&
         !(await (this as T).permissionManagerService.isAuthorized(interaction, key))
       ) {
-        if (interaction.deferred){
-          await interaction.editReply({content: "Sorry you do not have the permissions to use this command."});
+        if (interaction.deferred) {
+          await interaction.editReply({ content: "Sorry you do not have the permissions to use this command." });
           return;
         }
 

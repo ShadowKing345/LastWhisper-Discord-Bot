@@ -7,7 +7,6 @@ import { GuildConfigBase } from "../guildConfigBase.js";
  */
 @Entity()
 export class GardeningModuleConfig extends GuildConfigBase {
-
   @PrimaryGeneratedColumn("uuid")
   public id: string;
 
@@ -18,6 +17,6 @@ export class GardeningModuleConfig extends GuildConfigBase {
   })
   public plots: Plot[];
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   public messagePostingChannelId: string = null;
 }
