@@ -44,7 +44,7 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
    * Returns a collection of filtered weeks based if they are enabled.
    */
   public get getFilteredWeeks(): Week[] {
-    return this.weeks.filter(week => week.isEnabled);
+    return this.weeks?.filter(week => week.isEnabled) ?? [];
   }
 
   /**
@@ -52,7 +52,7 @@ export class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements 
    * @param buffId The ID of the buff to be returned.
    */
   public getBuff(buffId: string): Buff | null {
-    return this.buffs.find(buff => buff.id === buffId);
+    return this.buffs?.find(buff => buff.id === buffId);
   }
 
   public merge(obj: BuffManagerConfig): BuffManagerConfig {
