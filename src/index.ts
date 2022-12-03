@@ -7,7 +7,7 @@ import { userInfo } from "os";
 
 import { main } from "./app.js";
 import { commandRegistration } from "./commandRegistration.js";
-import { generateConfigObject } from "./utils/config/appConfigs.js";
+import { generateConfigObject } from "./config/appConfigs.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 

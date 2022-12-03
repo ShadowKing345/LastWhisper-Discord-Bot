@@ -1,7 +1,7 @@
 import fs from "fs";
 
-import { ProjectConfiguration } from "../objects/index.js";
-import { toJson } from "../index.js";
+import { ProjectConfiguration } from "../utils/objects/index.js";
+import { toJson } from "../utils/index.js";
 import { container as defaultContainer, DependencyContainer } from "tsyringe";
 
 export const configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";

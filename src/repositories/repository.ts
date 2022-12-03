@@ -1,5 +1,5 @@
 import { Repository as Repo, EntityTarget, FindOneOptions, FindManyOptions } from "typeorm";
-import { DatabaseConfigurationService } from "../utils/config/databaseConfigurationService.js";
+import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
 import { RepositoryError } from "../utils/errors/index.js";
 import { GuildConfigBase } from "../entities/guildConfigBase.js";
 

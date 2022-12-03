@@ -1,8 +1,8 @@
 import { pino } from "pino";
 import { singleton, container } from "tsyringe";
 
-import { DatabaseConfigurationService } from "./utils/config/databaseConfigurationService.js";
-import { ModuleConfigurationService } from "./utils/config/moduleConfigurationService.js";
+import { DatabaseConfigurationService } from "./config/databaseConfigurationService.js";
+import { ModuleConfigurationService } from "./config/moduleConfigurationService.js";
 import { createLogger } from "./services/loggerService.js";
 import { Client } from "./utils/objects/client.js";
 import { Module, ProjectConfiguration } from "./utils/objects/index.js";

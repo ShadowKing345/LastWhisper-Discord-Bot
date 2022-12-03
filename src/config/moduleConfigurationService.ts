@@ -4,14 +4,14 @@ import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 
 import { ConfigurationClass } from "./configurationClass.js";
-import { LoggerService } from "../../services/loggerService.js";
-import { Client } from "../objects/client.js";
-import { Module, ProjectConfiguration } from "../objects/index.js";
-import { Timer } from "../objects/timer.js";
-import { ModuleConfiguration } from "../objects/moduleConfiguration.js";
-import { CommandResolverError } from "../errors/index.js";
-import { Command } from "../objects/command.js";
-import { EventListeners } from "../objects/eventListener.js";
+import { LoggerService } from "../services/loggerService.js";
+import { Client } from "../utils/objects/client.js";
+import { Module, ProjectConfiguration } from "../utils/objects/index.js";
+import { Timer } from "../utils/objects/timer.js";
+import { ModuleConfiguration } from "../utils/objects/moduleConfiguration.js";
+import { CommandResolverError } from "../utils/errors/index.js";
+import { Command } from "../utils/objects/command.js";
+import { EventListeners } from "../utils/objects/eventListener.js";
 
 /**
  * Configuration service that manages the creation and registration of the different modules in the application.

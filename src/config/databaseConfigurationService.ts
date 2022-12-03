@@ -1,12 +1,16 @@
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 
-import { createLogger } from "../../services/loggerService.js";
-import { ProjectConfiguration, DatabaseConfiguration } from "../objects/index.js";
+import { createLogger } from "../services/loggerService.js";
+import { ProjectConfiguration, DatabaseConfiguration } from "../utils/objects/index.js";
 import { ConfigurationClass } from "./configurationClass.js";
 import { DataSource } from "typeorm";
-import { BuffManagerEntities } from "../../entities/buff_manager/index.js";
-import { EventManagerEntities } from "../../entities/event_manager/index.js";
+import { BuffManagerEntities } from "../entities/buff_manager/index.js";
+import { EventManagerEntities } from "../entities/event_manager/index.js";
+import { GardeningManagerEntities } from "../entities/gardening_manager/index.js";
+import { PermissionManagerEntities } from "../entities/permission_manager/index.js";
+import { ManagerUtilsConfig } from "../entities/managerUtils.js";
+import { RoleManagerConfig } from "../entities/roleManager.js";
 
 /**
  * Database Configuration Service file.
@@ -52,6 +56,10 @@ export class DatabaseConfigurationService extends ConfigurationClass {
           entities: [
             ...Object.values(BuffManagerEntities),
             ...Object.values(EventManagerEntities),
+            ...Object.values(GardeningManagerEntities),
+            ...Object.values(PermissionManagerEntities),
+            ManagerUtilsConfig,
+            RoleManagerConfig,
           ],
         });
       }
