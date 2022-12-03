@@ -4,10 +4,8 @@ import { Repository } from "../utils/objects/repository.js";
 import { GardeningModuleConfig } from "../entities/gardening_manager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let GardeningManagerRepository = class GardeningManagerRepository extends Repository {
-    collectionName = "gardening_manager";
-    mappingObject = GardeningModuleConfig;
     constructor(db) {
-        super(db);
+        super(db, GardeningModuleConfig);
     }
 };
 GardeningManagerRepository = __decorate([

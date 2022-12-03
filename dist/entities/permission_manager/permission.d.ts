@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export declare class Permission extends ToJsonBase<Permission> {
+import { BaseEntity } from "typeorm";
+export declare class Permission extends BaseEntity {
     roles: string[];
     mode: PermissionMode;
     blackList?: boolean;

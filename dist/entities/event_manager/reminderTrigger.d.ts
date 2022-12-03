@@ -1,9 +1,9 @@
 import { Duration } from "luxon";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export declare class Reminder extends ToJsonBase<Reminder> {
+import { BaseEntity } from "typeorm";
+export declare class Reminder extends BaseEntity {
     message: string;
     timeDelta: string;
-    constructor(data?: Partial<Reminder>);
+    constructor();
     get asDuration(): Duration;
 }
 //# sourceMappingURL=reminderTrigger.d.ts.map

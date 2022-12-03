@@ -1,5 +1,4 @@
-import { ToJsonBase } from "../objects/toJsonBase.js";
-export class ModuleConfiguration extends ToJsonBase {
+export class ModuleConfiguration {
     enableCommands = true;
     enableEventListeners = true;
     enableTimers = true;

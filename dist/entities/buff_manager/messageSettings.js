@@ -11,30 +11,27 @@ let MessageSettings = class MessageSettings {
     guildConfig;
 };
 __decorate([
-    PrimaryGeneratedColumn(),
+    PrimaryGeneratedColumn("uuid"),
     __metadata("design:type", String)
 ], MessageSettings.prototype, "id", void 0);
 __decorate([
-    Column(),
+    Column({ nullable: true }),
     __metadata("design:type", String)
 ], MessageSettings.prototype, "channelId", void 0);
 __decorate([
-    Column(),
+    Column({ nullable: true }),
     __metadata("design:type", String)
 ], MessageSettings.prototype, "hour", void 0);
 __decorate([
-    Column({
-        type: "int",
-        nullable: true
-    }),
+    Column({ type: "int", nullable: true }),
     __metadata("design:type", Number)
 ], MessageSettings.prototype, "dow", void 0);
 __decorate([
-    Column(),
+    Column({ nullable: true }),
     __metadata("design:type", String)
 ], MessageSettings.prototype, "buffMessage", void 0);
 __decorate([
-    Column(),
+    Column({ nullable: true }),
     __metadata("design:type", String)
 ], MessageSettings.prototype, "weekMessage", void 0);
 __decorate([

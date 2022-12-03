@@ -1,6 +1,6 @@
-import { ToJsonBase } from "../utils/objects/toJsonBase.js";
-export class RoleManagerConfig extends ToJsonBase {
-    _id;
+import { BaseEntity } from "typeorm";
+export class RoleManagerConfig extends BaseEntity {
+    id;
     guildId = null;
     acceptedRoleId = null;
     reactionMessageIds = [];

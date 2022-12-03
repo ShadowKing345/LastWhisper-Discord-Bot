@@ -1,15 +1,13 @@
-import { ToJsonBase } from "./toJsonBase.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ApplicationCommandOptionType as OptionType, SlashCommandStringOption, } from "discord.js";
+import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ApplicationCommandOptionType as OptionType, SlashCommandStringOption } from "discord.js";
 import { deepMerge } from "../index.js";
-export class Command extends ToJsonBase {
+export class Command {
     name = null;
     description = null;
     execute = null;
     subcommands;
     options = [];
     constructor(data = null) {
-        super();
         if (data) {
             this.merge(data);
         }
@@ -61,14 +59,13 @@ export class Command extends ToJsonBase {
         return builder;
     }
 }
-export class CommandOption extends ToJsonBase {
+export class CommandOption {
     name = null;
     description = null;
     type = null;
     required = false;
     choices = [];
     constructor(data = null) {
-        super();
         if (data) {
             this.merge(data);
         }

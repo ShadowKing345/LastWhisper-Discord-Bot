@@ -1,5 +1,5 @@
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export class Permission extends ToJsonBase {
+import { BaseEntity } from "typeorm";
+export class Permission extends BaseEntity {
     roles = [];
     mode = PermissionMode.ANY;
     blackList = false;

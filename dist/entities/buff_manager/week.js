@@ -1,10 +1,9 @@
 import { __decorate, __metadata } from "tslib";
 import { Days } from "./days.js";
-import { MergeObjectBase } from "../../utils/objects/mergeObjectBase.js";
 import { deepMerge } from "../../utils/index.js";
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne, BaseEntity } from "typeorm";
 import { BuffManagerConfig } from "./buffManagerConfig.js";
-let Week = class Week extends MergeObjectBase {
+let Week = class Week extends BaseEntity {
     id;
     isEnabled = false;
     title = null;
@@ -27,7 +26,7 @@ let Week = class Week extends MergeObjectBase {
     }
 };
 __decorate([
-    PrimaryGeneratedColumn(),
+    PrimaryGeneratedColumn("uuid"),
     __metadata("design:type", String)
 ], Week.prototype, "id", void 0);
 __decorate([

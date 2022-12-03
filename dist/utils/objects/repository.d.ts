@@ -1,24 +1,16 @@
-import { Collection, Filter } from "mongodb";
-import { MergeObjectBase } from "./mergeObjectBase.js";
+import { EntityTarget, FindOneOptions, FindManyOptions } from "typeorm";
 import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
-export interface IEntity<T> {
-    _id: T;
-    guildId: string;
-}
-export declare abstract class Repository<T extends MergeObjectBase<T> & IEntity<unknown>> {
-    protected db: DatabaseConfigurationService;
-    protected abstract readonly collectionName: string;
-    protected abstract readonly mappingObject: {
-        new (): T;
-    };
-    protected constructor(db: DatabaseConfigurationService);
+import { GuildConfigBase } from "../../entities/guildConfigBase.js";
+export declare abstract class Repository<T extends GuildConfigBase> {
+    db: DatabaseConfigurationService;
+    private entityTarget;
+    private repo;
+    protected constructor(db: DatabaseConfigurationService, entityTarget: EntityTarget<T>);
     save(obj: T): Promise<T>;
-    findOne(filter: Filter<T>): Promise<T>;
-    findAll(filter: Filter<T>): Promise<T[]>;
+    findOne(filter: FindOneOptions<T>): Promise<T>;
+    findAll(filter: FindManyOptions<T>): Promise<T[]>;
     getAll(): Promise<T[]>;
-    bulkSave(objs: T[]): Promise<void>;
-    protected map(source: object): T;
-    private validateCollection;
-    protected get collection(): Collection<T>;
+    bulkSave(objs: T[]): Promise<T[]>;
+    private isConnected;
 }
 //# sourceMappingURL=repository.d.ts.map

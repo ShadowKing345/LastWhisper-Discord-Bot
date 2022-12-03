@@ -1,50 +1,86 @@
+import { __decorate, __metadata } from "tslib";
 import { EventObj } from "./eventObj.js";
-import { Reminder } from "./reminderTrigger.js";
+import { Reminder } from "./reminder.js";
 import { Tags } from "./tags.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-import { deepMerge } from "../../utils/index.js";
-export class EventManagerConfig extends ToJsonBase {
-    _id;
-    guildId = null;
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
+import { GuildConfigBase } from "../guildConfigBase.js";
+let EventManagerConfig = class EventManagerConfig extends GuildConfigBase {
+    id;
     listenerChannelId = null;
     postingChannelId = null;
     delimiterCharacters = ["[", "]"];
     tags = new Tags();
     dateTimeFormat = [];
-    events = [];
-    reminders = [];
+    events;
+    reminders;
     getEventByIndex(index) {
         return this.events[index % this.events.length];
     }
-    merge(obj) {
-        if (obj._id) {
-            this._id = obj._id;
+    nullChecks() {
+        if (!this.delimiterCharacters) {
+            this.delimiterCharacters = ["[", "]"];
         }
-        if (obj.guildId) {
-            this.guildId = obj.guildId;
+        if (!this.dateTimeFormat) {
+            this.dateTimeFormat = [];
         }
-        if (obj.listenerChannelId) {
-            this.listenerChannelId = obj.listenerChannelId;
+        if (!this.events) {
+            this.events = [];
         }
-        if (obj.postingChannelId) {
-            this.postingChannelId = obj.postingChannelId;
+        if (!this.reminders) {
+            this.reminders = [];
         }
-        if (obj.delimiterCharacters) {
-            this.delimiterCharacters = obj.delimiterCharacters;
-        }
-        if (obj.tags) {
-            this.tags = deepMerge(this.tags ?? new Tags(), obj.tags);
-        }
-        if (obj.dateTimeFormat) {
-            this.dateTimeFormat = obj.dateTimeFormat;
-        }
-        if (obj.events) {
-            this.events = obj.events.map(event => deepMerge(new EventObj(), event));
-        }
-        if (obj.reminders) {
-            this.reminders = obj.reminders.map(reminder => deepMerge(new Reminder(), reminder));
-        }
-        return this;
     }
-}
+};
+__decorate([
+    PrimaryGeneratedColumn("uuid"),
+    __metadata("design:type", String)
+], EventManagerConfig.prototype, "id", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], EventManagerConfig.prototype, "listenerChannelId", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], EventManagerConfig.prototype, "postingChannelId", void 0);
+__decorate([
+    Column("character", { array: true }),
+    __metadata("design:type", Array)
+], EventManagerConfig.prototype, "delimiterCharacters", void 0);
+__decorate([
+    OneToOne(() => Tags, tag => tag.guildConfig, { cascade: true, orphanedRowAction: "delete", onDelete: "CASCADE" }),
+    __metadata("design:type", Tags)
+], EventManagerConfig.prototype, "tags", void 0);
+__decorate([
+    Column("text", { array: true }),
+    __metadata("design:type", Array)
+], EventManagerConfig.prototype, "dateTimeFormat", void 0);
+__decorate([
+    OneToMany(() => EventObj, obj => obj.guildConfig, {
+        cascade: true,
+        orphanedRowAction: "delete",
+        onDelete: "CASCADE",
+    }),
+    __metadata("design:type", Array)
+], EventManagerConfig.prototype, "events", void 0);
+__decorate([
+    OneToMany(() => Reminder, obj => obj.guildConfig, {
+        cascade: true,
+        orphanedRowAction: "delete",
+        onDelete: "CASCADE",
+    }),
+    __metadata("design:type", Array)
+], EventManagerConfig.prototype, "reminders", void 0);
+__decorate([
+    AfterLoad(),
+    AfterInsert(),
+    AfterUpdate(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], EventManagerConfig.prototype, "nullChecks", null);
+EventManagerConfig = __decorate([
+    Entity()
+], EventManagerConfig);
+export { EventManagerConfig };
 //# sourceMappingURL=eventManagerConfig.js.map

@@ -1,53 +1,39 @@
-import { MergeObjectBase } from "./mergeObjectBase.js";
-import { deepMerge } from "../index.js";
-import { DatabaseError } from "../errors/index.js";
+import { RepositoryError } from "../errors/index.js";
 export class Repository {
     db;
-    constructor(db) {
+    entityTarget;
+    repo;
+    constructor(db, entityTarget) {
         this.db = db;
+        this.entityTarget = entityTarget;
     }
     async save(obj) {
-        this.validateCollection();
-        const result = await this.collection.findOneAndReplace({ _id: obj._id }, obj, { upsert: true });
-        return result.ok ? this.map(result.value) : null;
+        this.isConnected();
+        return this.repo.save(obj);
     }
     async findOne(filter) {
-        this.validateCollection();
-        const result = await this.collection.find(filter).batchSize(1).next();
-        if (!result) {
-            return null;
-        }
-        return this.map(result);
+        this.isConnected();
+        return this.repo.findOne(filter);
     }
     async findAll(filter) {
-        this.validateCollection();
-        return (await this.collection.find(filter).toArray()).map(obj => this.map(obj));
+        this.isConnected();
+        return this.repo.find(filter);
     }
     getAll() {
+        this.isConnected();
         return this.findAll({});
     }
     async bulkSave(objs) {
-        this.validateCollection();
-        if (objs.length <= 0)
-            return;
-        const bulk = this.collection.initializeOrderedBulkOp();
-        objs.forEach(config => bulk.find({ _id: config._id }).upsert().replaceOne(config));
-        await bulk.execute();
+        this.isConnected();
+        return this.repo.save(objs);
     }
-    map(source) {
-        const result = new this.mappingObject();
-        return result instanceof MergeObjectBase ? result.merge(source) : deepMerge(result, source);
-    }
-    validateCollection() {
-        if (!this.collection) {
-            throw new DatabaseError("Could not find a collection. Please ensure one is assigned to the class.");
-        }
-    }
-    get collection() {
+    isConnected() {
         if (!this.db.isConnected) {
-            throw new DatabaseError("Unable to get collection. Are you sure the database is connected?");
+            throw new RepositoryError("No valid connection to the database.");
         }
-        return null;
+        if (this.repo == null) {
+            this.repo = this.db.dataSource.getRepository(this.entityTarget);
+        }
     }
 }
 //# sourceMappingURL=repository.js.map

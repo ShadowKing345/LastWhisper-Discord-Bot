@@ -1,13 +1,10 @@
 import { Duration, DateTime } from "luxon";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export class Reminder extends ToJsonBase {
+import { BaseEntity } from "typeorm";
+export class Reminder extends BaseEntity {
     message = null;
     timeDelta = null;
-    constructor(data = null) {
+    constructor() {
         super();
-        if (data) {
-            this.merge(data);
-        }
     }
     get asDuration() {
         const hold = DateTime.fromFormat(this.timeDelta, "HH:mm");

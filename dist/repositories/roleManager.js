@@ -4,10 +4,8 @@ import { Repository } from "../utils/objects/repository.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
 import { repository } from "../utils/decorators/index.js";
 let RoleManagerRepository = class RoleManagerRepository extends Repository {
-    collectionName = "role_manager";
-    mappingObject = RoleManagerConfig;
     constructor(db) {
-        super(db);
+        super(db, RoleManagerConfig);
     }
 };
 RoleManagerRepository = __decorate([

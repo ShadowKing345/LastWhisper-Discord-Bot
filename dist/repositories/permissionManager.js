@@ -4,10 +4,8 @@ import { Repository } from "../utils/objects/repository.js";
 import { PermissionManagerConfig } from "../entities/permission_manager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let PermissionManagerRepository = class PermissionManagerRepository extends Repository {
-    collectionName = "permission_manager";
-    mappingObject = PermissionManagerConfig;
     constructor(db) {
-        super(db);
+        super(db, PermissionManagerConfig);
     }
 };
 PermissionManagerRepository = __decorate([

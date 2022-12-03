@@ -1,8 +1,7 @@
-import { IEntity } from "../../utils/objects/repository.js";
 import { Plot } from "./plot.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export declare class GardeningModuleConfig extends ToJsonBase<GardeningModuleConfig> implements IEntity<string> {
-    _id: any;
+import { BaseEntity } from "typeorm";
+export declare class GardeningModuleConfig extends BaseEntity {
+    id: any;
     guildId: string;
     plots: Plot[];
     messagePostingChannelId: string;

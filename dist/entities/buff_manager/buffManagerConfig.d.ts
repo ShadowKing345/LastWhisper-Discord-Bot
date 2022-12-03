@@ -1,11 +1,9 @@
 import { Buff } from "./buff.js";
 import { MessageSettings } from "./messageSettings.js";
 import { Week } from "./week.js";
-import { IEntity } from "../../utils/objects/repository.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
 import { DateTime } from "luxon";
-export declare class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> implements IEntity<string> {
-    _id: string;
+import { BaseEntity } from "typeorm";
+export declare class BuffManagerConfig extends BaseEntity {
     id: string;
     guildId: string;
     messageSettings: MessageSettings;
@@ -14,6 +12,6 @@ export declare class BuffManagerConfig extends ToJsonBase<BuffManagerConfig> imp
     getWeekOfYear(date: DateTime): Week;
     get getFilteredWeeks(): Week[];
     getBuff(buffId: string): Buff | null;
-    merge(obj: BuffManagerConfig): BuffManagerConfig;
+    nullChecks(): void;
 }
 //# sourceMappingURL=buffManagerConfig.d.ts.map

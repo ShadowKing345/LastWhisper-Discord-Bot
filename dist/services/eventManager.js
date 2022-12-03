@@ -5,16 +5,15 @@ import { DateTime } from "luxon";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.js";
-import { EventObj } from "../entities/event_manager/index.js";
+import { EventManagerConfig, EventObj } from "../entities/event_manager/index.js";
 import { Service } from "../utils/objects/service.js";
 import { createLogger } from "../utils/loggerService.js";
 import { pino } from "pino";
-import { WrongChannelError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
     logger;
     constructor(repository, logger) {
-        super(repository);
+        super(repository, EventManagerConfig);
         this.logger = logger;
     }
     async parseEvent(guildId, text) {
@@ -39,17 +38,15 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         }
         return result;
     }
-    async create(guildId, id, content, channelId) {
+    async create(guildId, _id, _content, _channelId) {
         const config = await this.getConfig(guildId);
-        if (channelId && config.listenerChannelId !== channelId) {
-            throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
-        }
-        const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
-        if (!event.isValid) {
-            return null;
-        }
-        config.events.push(event);
-        await this.repository.save(config);
+        const event = new EventObj();
+        event.guildConfig = config;
+        event.name = "Test";
+        event.description = "Fishing today";
+        event.dateTime = DateTime.now().plus({ day: 30 }).toUnixInteger();
+        event.additional = [["Hello", "World"]];
+        await this.repository.db.dataSource.getRepository(EventObj).save(event);
         return event;
     }
     async update(guildId, messageId, content) {
@@ -62,7 +59,6 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         if (!event.isValid) {
             return null;
         }
-        oldEvent.merge(event);
         await this.repository.save(config);
         return event;
     }
@@ -73,7 +69,6 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         if (!event.isValid) {
             return null;
         }
-        oldEvent.merge(event);
         await this.repository.save(config);
         return event;
     }
@@ -176,7 +171,8 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     }
     parseMessage(id, content, tags, dateTimeFormats, delimiter) {
         const [l, r] = delimiter.map(c => this.regexpEscape(c));
-        const event = new EventObj({ id });
+        const event = new EventObj();
+        event.id = id;
         const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
         for (const [, k, v] of content.matchAll(regExp)) {
             if (!k || !v)

@@ -2,13 +2,13 @@ import { __decorate, __metadata } from "tslib";
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinTable } from "typeorm";
 import { BuffManagerConfig } from "./buffManagerConfig.js";
 let Buff = class Buff {
-    id = null;
+    id;
     text = null;
     imageUrl = null;
     guildConfig;
 };
 __decorate([
-    PrimaryGeneratedColumn(),
+    PrimaryGeneratedColumn("uuid"),
     __metadata("design:type", String)
 ], Buff.prototype, "id", void 0);
 __decorate([

@@ -1,12 +1,13 @@
 import { __decorate, __metadata } from "tslib";
 import { AuditLogEvent, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
+import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "../utils/objects/service.js";
 import { service } from "../utils/decorators/index.js";
 let ManagerUtilsService = class ManagerUtilsService extends Service {
     constructor(repository) {
-        super(repository);
+        super(repository, ManagerUtilsConfig);
     }
     async getLoggingChannel(guild) {
         const config = await this.getConfig(guild.id);

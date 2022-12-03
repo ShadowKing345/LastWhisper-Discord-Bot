@@ -1,6 +1,6 @@
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export class GardeningModuleConfig extends ToJsonBase {
-    _id;
+import { BaseEntity } from "typeorm";
+export class GardeningModuleConfig extends BaseEntity {
+    id;
     guildId = null;
     plots = [];
     messagePostingChannelId = null;

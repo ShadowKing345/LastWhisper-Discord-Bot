@@ -1,10 +1,9 @@
 import { CommandRegistrationConfiguration } from "./commandRegistrationConfiguration.js";
 import { DatabaseConfiguration } from "./databaseConfiguration.js";
-import { ToJsonBase } from "../objects/toJsonBase.js";
 import { deepMerge } from "../index.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
-export class ProjectConfiguration extends ToJsonBase {
+export class ProjectConfiguration {
     token = null;
     database = new DatabaseConfiguration();
     commandRegistration = new CommandRegistrationConfiguration();

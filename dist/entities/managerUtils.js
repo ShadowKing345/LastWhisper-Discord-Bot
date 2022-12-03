@@ -1,6 +1,6 @@
-import { ToJsonBase } from "../utils/objects/toJsonBase.js";
-export class ManagerUtilsConfig extends ToJsonBase {
-    _id;
+import { BaseEntity } from "typeorm";
+export class ManagerUtilsConfig extends BaseEntity {
+    id;
     guildId = null;
     loggingChannel = null;
     clearChannelBlacklist = [];

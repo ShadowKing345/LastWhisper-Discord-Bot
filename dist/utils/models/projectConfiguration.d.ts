@@ -1,9 +1,8 @@
 import { CommandRegistrationConfiguration } from "./commandRegistrationConfiguration.js";
 import { DatabaseConfiguration } from "./databaseConfiguration.js";
-import { ToJsonBase } from "../objects/toJsonBase.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
-export declare class ProjectConfiguration extends ToJsonBase<ProjectConfiguration> {
+export declare class ProjectConfiguration {
     token: string;
     database?: DatabaseConfiguration;
     commandRegistration?: CommandRegistrationConfiguration;

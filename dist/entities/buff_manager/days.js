@@ -26,7 +26,7 @@ let Days = class Days {
     }
 };
 __decorate([
-    PrimaryGeneratedColumn(),
+    PrimaryGeneratedColumn("uuid"),
     __metadata("design:type", String)
 ], Days.prototype, "id", void 0);
 __decorate([

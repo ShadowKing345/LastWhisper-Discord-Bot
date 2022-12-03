@@ -1,7 +1,6 @@
-import { IEntity } from "../utils/objects/repository.js";
-import { ToJsonBase } from "../utils/objects/toJsonBase.js";
-export declare class ManagerUtilsConfig extends ToJsonBase<ManagerUtilsConfig> implements IEntity<string> {
-    _id: string;
+import { BaseEntity } from "typeorm";
+export declare class ManagerUtilsConfig extends BaseEntity {
+    id: string;
     guildId: string;
     loggingChannel: string;
     clearChannelBlacklist: string[];

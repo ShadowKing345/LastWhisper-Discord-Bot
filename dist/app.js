@@ -62,7 +62,7 @@ export async function main() {
     try {
         app = container.resolve(App);
         await app.init();
-        await app.stop();
+        await app.run();
     }
     catch (error) {
         console.error(error instanceof Error ? error.stack : error);

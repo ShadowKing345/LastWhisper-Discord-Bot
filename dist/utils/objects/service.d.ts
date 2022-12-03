@@ -1,8 +1,11 @@
-import { Repository, IEntity } from "./repository.js";
-import { MergeObjectBase } from "./mergeObjectBase.js";
-export declare abstract class Service<T extends MergeObjectBase<T> & IEntity<unknown>> {
+import { Repository } from "./repository.js";
+import { GuildConfigBase } from "../../entities/guildConfigBase.js";
+export declare abstract class Service<T extends GuildConfigBase> {
     protected repository: Repository<T>;
-    protected constructor(repository: Repository<T>);
-    protected getConfig(id: string): Promise<T>;
+    private entity;
+    protected constructor(repository: Repository<T>, entity: {
+        new (): T;
+    });
+    protected getConfig(guildId: string): Promise<T>;
 }
 //# sourceMappingURL=service.d.ts.map

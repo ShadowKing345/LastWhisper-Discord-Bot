@@ -1,19 +1,17 @@
-import { IEntity } from "../../utils/objects/repository.js";
 import { EventObj } from "./eventObj.js";
-import { Reminder } from "./reminderTrigger.js";
+import { Reminder } from "./reminder.js";
 import { Tags } from "./tags.js";
-import { ToJsonBase } from "../../utils/objects/toJsonBase.js";
-export declare class EventManagerConfig extends ToJsonBase<EventManagerConfig> implements IEntity<string> {
-    _id: string;
-    guildId: string;
-    listenerChannelId: string | null;
-    postingChannelId: string | null;
+import { GuildConfigBase } from "../guildConfigBase.js";
+export declare class EventManagerConfig extends GuildConfigBase {
+    id: string;
+    listenerChannelId: string;
+    postingChannelId: string;
     delimiterCharacters: [string, string];
     tags: Tags;
     dateTimeFormat: string[];
     events: EventObj[];
     reminders: Reminder[];
     getEventByIndex(index: number): EventObj;
-    merge(obj: Partial<EventManagerConfig>): EventManagerConfig;
+    nullChecks(): void;
 }
 //# sourceMappingURL=eventManagerConfig.d.ts.map

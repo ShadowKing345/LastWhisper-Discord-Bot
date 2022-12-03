@@ -1,6 +1,4 @@
 import { TextChannel } from "discord.js";
-import { ToJsonBase } from "./objects/toJsonBase.js";
-import { MergeObjectBase } from "./objects/mergeObjectBase.js";
 export async function fetchMessages(client, channelId, messageIds) {
     const promises = [];
     const channel = await client.channels.fetch(channelId);
@@ -19,21 +17,12 @@ export async function fetchMessages(client, channelId, messageIds) {
     return results;
 }
 export function toJson(t, str) {
-    if (t instanceof ToJsonBase) {
-        return t.fromJson(str);
-    }
     return Object.assign(t, JSON.parse(str));
 }
 export function deepMerge(target, ...sources) {
     sources = sources.filter(source => source != null);
     if (sources.length <= 0)
         return target;
-    if (target instanceof MergeObjectBase) {
-        for (const source of sources) {
-            target.merge(source);
-        }
-        return target;
-    }
     for (const source of sources) {
         for (const key in source) {
             const kValue = key.valueOf();

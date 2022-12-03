@@ -1,9 +1,8 @@
 import { Days } from "./days.js";
-import { MergeObjectBase } from "../../utils/objects/mergeObjectBase.js";
 import { DateTime } from "luxon";
-import { Relation } from "typeorm";
+import { Relation, BaseEntity } from "typeorm";
 import { BuffManagerConfig } from "./buffManagerConfig.js";
-export declare class Week extends MergeObjectBase<Week> {
+export declare class Week extends BaseEntity {
     id: string;
     isEnabled: boolean;
     title: string;

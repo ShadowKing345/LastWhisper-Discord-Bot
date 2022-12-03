@@ -4,10 +4,8 @@ import { Repository } from "../utils/objects/repository.js";
 import { BuffManagerConfig } from "../entities/buff_manager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let BuffManagerRepository = class BuffManagerRepository extends Repository {
-    collectionName = "buff_manager";
-    mappingObject = BuffManagerConfig;
     constructor(db) {
-        super(db);
+        super(db, BuffManagerConfig);
     }
 };
 BuffManagerRepository = __decorate([

@@ -7,6 +7,7 @@ import { ProjectConfiguration } from "../models/index.js";
 import { ConfigurationClass } from "../configurationClass.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../../entities/buff_manager/index.js";
+import { EventManagerEntities } from "../../entities/event_manager/index.js";
 let DatabaseConfigurationService = DatabaseConfigurationService_1 = class DatabaseConfigurationService extends ConfigurationClass {
     projectConfig;
     logger;
@@ -27,16 +28,21 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
                 this.logger.error("Connection already active. Please disconnect first before attempting to connect.");
                 return;
             }
-            this._dataSource = new DataSource({
-                type: "postgres",
-                username: databaseConfigs.username,
-                password: databaseConfigs.password,
-                port: Number(databaseConfigs.port),
-                database: databaseConfigs.database,
-                synchronize: databaseConfigs.sync,
-                logging: databaseConfigs.logging,
-                entities: [...Object.values(BuffManagerEntities)]
-            });
+            if (!this._dataSource) {
+                this._dataSource = new DataSource({
+                    type: "postgres",
+                    username: databaseConfigs.username,
+                    password: databaseConfigs.password,
+                    port: Number(databaseConfigs.port),
+                    database: databaseConfigs.database,
+                    synchronize: databaseConfigs.sync,
+                    logging: databaseConfigs.logging,
+                    entities: [
+                        ...Object.values(BuffManagerEntities),
+                        ...Object.values(EventManagerEntities),
+                    ],
+                });
+            }
             await this._dataSource.initialize();
         }
         catch (error) {
@@ -50,13 +56,10 @@ let DatabaseConfigurationService = DatabaseConfigurationService_1 = class Databa
         this.logger.info("Disconnecting from database.");
     }
     get dataSource() {
-        if (this._dataSource) {
-            return this._dataSource;
-        }
         return this._dataSource;
     }
     get isConnected() {
-        return this._dataSource != null;
+        return this._dataSource?.isInitialized;
     }
 };
 DatabaseConfigurationService = DatabaseConfigurationService_1 = __decorate([
