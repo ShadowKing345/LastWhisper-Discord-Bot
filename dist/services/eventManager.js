@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { EventManagerRepository } from "../repositories/eventManager.js";
-import { EventManagerConfig, EventObj } from "../entities/event_manager/index.js";
+import { EventManagerConfig, EventObj } from "../entities/eventManager/index.js";
 import { Service } from "./service.js";
 import { createLogger } from "./loggerService.js";
 import { pino } from "pino";

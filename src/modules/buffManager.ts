@@ -2,14 +2,14 @@ import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOpt
 import { pino } from "pino";
 import { createLogger } from "../services/loggerService.js";
 import { Client } from "../utils/objects/client.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { DateTime } from "luxon";
-import { Buff, WeekDTO } from "../entities/buff_manager/index.js";
+import { Buff, Week } from "../entities/buffManager/index.js";
 
 /**
  * Module designed to deal with requests about buffs.
@@ -139,7 +139,7 @@ export class BuffManagerModule extends Module {
       });
     }
 
-    await interaction.editReply({ embeds: [this.service.createBuffEmbed("The Buff Shall Be:", buff, date)] });
+    await interaction.editReply({ embeds: [ this.service.createBuffEmbed("The Buff Shall Be:", buff, date) ] });
   }
 
   /**
@@ -164,7 +164,7 @@ export class BuffManagerModule extends Module {
 
     this.logger.debug(`Command invoked for weeks.\nPosting week message for ${date.toISO()}.`);
 
-    let week: WeekDTO;
+    let week: Week;
     try {
       week = await this.service.getWeekByDate(interaction.guildId, date);
     } catch (error) {
@@ -185,7 +185,7 @@ export class BuffManagerModule extends Module {
     }
 
     await interaction.editReply({
-      embeds: [this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)],
+      embeds: [ this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date) ],
     });
   }
 

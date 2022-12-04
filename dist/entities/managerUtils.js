@@ -1,15 +1,10 @@
 import { __decorate, __metadata } from "tslib";
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { GuildConfigBase } from "./guildConfigBase.js";
-let ManagerUtilsConfig = class ManagerUtilsConfig extends GuildConfigBase {
-    id;
+import { Entity, Column } from "typeorm";
+import { EntityBase } from "./entityBase.js";
+let ManagerUtilsConfig = class ManagerUtilsConfig extends EntityBase {
     loggingChannel = null;
     clearChannelBlacklist;
 };
-__decorate([
-    PrimaryGeneratedColumn("uuid"),
-    __metadata("design:type", String)
-], ManagerUtilsConfig.prototype, "id", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)

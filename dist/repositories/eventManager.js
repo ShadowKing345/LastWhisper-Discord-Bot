@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
-import { EventManagerConfig } from "../entities/event_manager/index.js";
+import { EventManagerConfig } from "../entities/eventManager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let EventManagerRepository = class EventManagerRepository extends Repository {
     constructor(db) {
@@ -10,7 +10,7 @@ let EventManagerRepository = class EventManagerRepository extends Repository {
 };
 EventManagerRepository = __decorate([
     repository(),
-    __metadata("design:paramtypes", [DatabaseConfigurationService])
+    __metadata("design:paramtypes", [DatabaseService])
 ], EventManagerRepository);
 export { EventManagerRepository };
 //# sourceMappingURL=eventManager.js.map

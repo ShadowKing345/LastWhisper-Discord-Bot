@@ -1,7 +1,7 @@
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
-import { PermissionManagerConfig } from "../entities/permission_manager/index.js";
+import { PermissionManagerConfig } from "../entities/permissionManager/index.js";
 export declare class PermissionManagerRepository extends Repository<PermissionManagerConfig> {
-    constructor(db: DatabaseConfigurationService);
+    constructor(db: DatabaseService);
 }
 //# sourceMappingURL=permissionManager.d.ts.map

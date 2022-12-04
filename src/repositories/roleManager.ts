@@ -1,4 +1,4 @@
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
 import { repository } from "../utils/decorators/index.js";
@@ -9,7 +9,7 @@ import { repository } from "../utils/decorators/index.js";
  */
 @repository()
 export class RoleManagerRepository extends Repository<RoleManagerConfig> {
-  constructor(db: DatabaseConfigurationService) {
+  constructor(db: DatabaseService) {
     super(db, RoleManagerConfig);
   }
 }

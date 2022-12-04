@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
-import { GardeningModuleConfig } from "../entities/gardening_manager/index.js";
+import { GardeningModuleConfig } from "../entities/gardeningManager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let GardeningManagerRepository = class GardeningManagerRepository extends Repository {
     constructor(db) {
@@ -10,7 +10,7 @@ let GardeningManagerRepository = class GardeningManagerRepository extends Reposi
 };
 GardeningManagerRepository = __decorate([
     repository(),
-    __metadata("design:paramtypes", [DatabaseConfigurationService])
+    __metadata("design:paramtypes", [DatabaseService])
 ], GardeningManagerRepository);
 export { GardeningManagerRepository };
 //# sourceMappingURL=gardeningManager.js.map

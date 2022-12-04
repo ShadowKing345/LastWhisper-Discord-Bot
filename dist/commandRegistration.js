@@ -3,7 +3,7 @@ import { container } from "tsyringe";
 import { App } from "./app.js";
 import { LoggerService } from "./services/loggerService.js";
 import { ProjectConfiguration } from "./utils/objects/index.js";
-import { Routes, } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 export async function commandRegistration(args) {
     const app = container.resolve(App);
     const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");

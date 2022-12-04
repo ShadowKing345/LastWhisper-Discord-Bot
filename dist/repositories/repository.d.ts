@@ -1,11 +1,11 @@
 import { EntityTarget, FindOneOptions, FindManyOptions } from "typeorm";
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
-import { GuildConfigBase } from "../entities/guildConfigBase.js";
-export declare abstract class Repository<T extends GuildConfigBase> {
-    protected db: DatabaseConfigurationService;
+import { DatabaseService } from "../config/databaseService.js";
+import { EntityBase } from "../entities/entityBase.js";
+export declare abstract class Repository<T extends EntityBase> {
+    protected db: DatabaseService;
     private entityTarget;
     private repo;
-    protected constructor(db: DatabaseConfigurationService, entityTarget: EntityTarget<T>);
+    protected constructor(db: DatabaseService, entityTarget: EntityTarget<T>);
     save(obj: T): Promise<T>;
     findOne(filter: FindOneOptions<T>): Promise<T>;
     findAll(filter: FindManyOptions<T>): Promise<T[]>;

@@ -1,7 +1,7 @@
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
-import { GardeningModuleConfig } from "../entities/gardening_manager/index.js";
+import { GardeningModuleConfig } from "../entities/gardeningManager/index.js";
 export declare class GardeningManagerRepository extends Repository<GardeningModuleConfig> {
-    constructor(db: DatabaseConfigurationService);
+    constructor(db: DatabaseService);
 }
 //# sourceMappingURL=gardeningManager.d.ts.map

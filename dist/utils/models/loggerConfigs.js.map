@@ -1,1 +1,0 @@
-{"version":3,"file":"loggerConfigs.js","sourceRoot":"","sources":["../../../src/utils/models/loggerConfigs.ts"],"names":[],"mappings":"AAKA,MAAM,OAAO,aAAa;IACxB,KAAK,GAAyB,cAAc,CAAC,IAAI,CAAC;IAClD,UAAU,GAA8E,IAAI,CAAC;CAC9F;AAED,MAAM,CAAN,IAAY,cAKX;AALD,WAAY,cAAc;IACxB,iCAAe,CAAA;IACf,+BAAa,CAAA;IACb,+BAAa,CAAA;IACb,iCAAe,CAAA;AACjB,CAAC,EALW,cAAc,KAAd,cAAc,QAKzB"}

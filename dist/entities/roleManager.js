@@ -1,16 +1,11 @@
 import { __decorate, __metadata } from "tslib";
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { GuildConfigBase } from "./guildConfigBase.js";
-let RoleManagerConfig = class RoleManagerConfig extends GuildConfigBase {
-    id;
+import { Entity, Column } from "typeorm";
+import { EntityBase } from "./entityBase.js";
+let RoleManagerConfig = class RoleManagerConfig extends EntityBase {
     acceptedRoleId = null;
     reactionMessageIds;
     reactionListeningChannel = null;
 };
-__decorate([
-    PrimaryGeneratedColumn("uuid"),
-    __metadata("design:type", String)
-], RoleManagerConfig.prototype, "id", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)

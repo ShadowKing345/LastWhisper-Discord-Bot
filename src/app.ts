@@ -1,7 +1,7 @@
 import { pino } from "pino";
 import { singleton, container } from "tsyringe";
 
-import { DatabaseConfigurationService } from "./config/databaseConfigurationService.js";
+import { DatabaseService } from "./config/databaseService.js";
 import { ModuleConfigurationService } from "./config/moduleConfigurationService.js";
 import { createLogger } from "./services/loggerService.js";
 import { Client } from "./utils/objects/client.js";
@@ -17,7 +17,7 @@ export class App {
 
   constructor(
     private appConfig: ProjectConfiguration,
-    private databaseService: DatabaseConfigurationService,
+    private databaseService: DatabaseService,
     private moduleConfiguration: ModuleConfigurationService,
     @createLogger(App.name) private logger: pino.Logger,
   ) {

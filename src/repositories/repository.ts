@@ -1,16 +1,16 @@
 import { Repository as Repo, EntityTarget, FindOneOptions, FindManyOptions } from "typeorm";
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { RepositoryError } from "../utils/errors/index.js";
-import { GuildConfigBase } from "../entities/guildConfigBase.js";
+import { EntityBase } from "../entities/entityBase.js";
 
 /**
  * Base repository object.
  * Manages the majority of basic CRUD repository actions.
  */
-export abstract class Repository<T extends GuildConfigBase> {
+export abstract class Repository<T extends EntityBase> {
   private repo: Repo<T>;
 
-  protected constructor(protected db: DatabaseConfigurationService, private entityTarget: EntityTarget<T>) {}
+  protected constructor(protected db: DatabaseService, private entityTarget: EntityTarget<T>) {}
 
   /**
    * Saves a new database record.

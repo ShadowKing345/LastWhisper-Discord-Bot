@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import { DatabaseConfigurationService } from "./config/databaseConfigurationService.js";
+import { DatabaseService } from "./config/databaseService.js";
 import { ModuleConfigurationService } from "./config/moduleConfigurationService.js";
 import { Module, ProjectConfiguration } from "./utils/objects/index.js";
 export declare class App {
@@ -8,7 +8,7 @@ export declare class App {
     private moduleConfiguration;
     private logger;
     private readonly client;
-    constructor(appConfig: ProjectConfiguration, databaseService: DatabaseConfigurationService, moduleConfiguration: ModuleConfigurationService, logger: pino.Logger);
+    constructor(appConfig: ProjectConfiguration, databaseService: DatabaseService, moduleConfiguration: ModuleConfigurationService, logger: pino.Logger);
     init(): Promise<void>;
     run(): Promise<string>;
     stop(): Promise<void>;

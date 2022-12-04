@@ -1,1 +1,0 @@
-{"version":3,"file":"toJsonBase.d.ts","sourceRoot":"","sources":["../../../src/utils/objects/toJsonBase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAKvD,8BAAsB,UAAU,CAAC,CAAC,CAAE,SAAQ,eAAe,CAAC,CAAC,CAAC;IAKrD,MAAM,IAAI,MAAM;IAUhB,QAAQ,CAAC,GAAG,EAAE,MAAM,GAAG,CAAC;CAGhC"}

@@ -1,6 +1,6 @@
 import { Client, EmbedBuilder } from "discord.js";
 import { EventManagerRepository } from "../repositories/eventManager.js";
-import { EventManagerConfig, EventObj } from "../entities/event_manager/index.js";
+import { EventManagerConfig, EventObj } from "../entities/eventManager/index.js";
 import { Service } from "./service.js";
 import { pino } from "pino";
 export declare class EventManagerService extends Service<EventManagerConfig> {

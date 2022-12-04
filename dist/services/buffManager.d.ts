@@ -2,8 +2,8 @@ import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 import { Client } from "../utils/objects/client.js";
-import { BuffManagerRepository } from "../repositories/buffManager.js";
-import { Buff, BuffManagerConfig, WeekDTO } from "../entities/buff_manager/index.js";
+import { BuffManagerRepository } from "../repositories/buffManager/buffManager.js";
+import { Buff, BuffManagerConfig, WeekDTO } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 export declare class BuffManagerService extends Service<BuffManagerConfig> {

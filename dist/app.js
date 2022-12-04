@@ -2,7 +2,7 @@ var App_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
 import { singleton, container } from "tsyringe";
-import { DatabaseConfigurationService } from "./config/databaseConfigurationService.js";
+import { DatabaseService } from "./config/databaseService.js";
 import { ModuleConfigurationService } from "./config/moduleConfigurationService.js";
 import { createLogger } from "./services/loggerService.js";
 import { Client } from "./utils/objects/client.js";
@@ -51,7 +51,7 @@ App = App_1 = __decorate([
     singleton(),
     __param(3, createLogger(App_1.name)),
     __metadata("design:paramtypes", [ProjectConfiguration,
-        DatabaseConfigurationService,
+        DatabaseService,
         ModuleConfigurationService, Object])
 ], App);
 export { App };

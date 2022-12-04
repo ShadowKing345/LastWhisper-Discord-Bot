@@ -1,13 +1,8 @@
-import {
-  CommandInteraction,
-  ChatInputCommandInteraction,
-  InteractionResponse,
-  ApplicationCommandOptionType,
-} from "discord.js";
+import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
 import { Client } from "../utils/objects/client.js";
 import { Module } from "../utils/objects/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
-import { Reason } from "../entities/gardening_manager/index.js";
+import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";

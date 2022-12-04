@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";

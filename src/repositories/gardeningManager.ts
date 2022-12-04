@@ -1,6 +1,6 @@
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
-import { GardeningModuleConfig } from "../entities/gardening_manager/index.js";
+import { GardeningModuleConfig } from "../entities/gardeningManager/index.js";
 import { repository } from "../utils/decorators/index.js";
 
 /**
@@ -9,7 +9,7 @@ import { repository } from "../utils/decorators/index.js";
  */
 @repository()
 export class GardeningManagerRepository extends Repository<GardeningModuleConfig> {
-  constructor(db: DatabaseConfigurationService) {
+  constructor(db: DatabaseService) {
     super(db, GardeningModuleConfig);
   }
 }

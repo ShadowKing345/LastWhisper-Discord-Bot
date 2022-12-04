@@ -1,6 +1,5 @@
-import { GuildConfigBase } from "./guildConfigBase.js";
-export declare class RoleManagerConfig extends GuildConfigBase {
-    id: string;
+import { EntityBase } from "./entityBase.js";
+export declare class RoleManagerConfig extends EntityBase {
     acceptedRoleId: string;
     reactionMessageIds: string[];
     reactionListeningChannel: string;

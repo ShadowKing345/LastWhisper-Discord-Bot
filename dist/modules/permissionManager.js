@@ -2,7 +2,7 @@ var PermissionManagerModule_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { Module } from "../utils/objects/index.js";
-import { PermissionMode, Permission } from "../entities/permission_manager/index.js";
+import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";

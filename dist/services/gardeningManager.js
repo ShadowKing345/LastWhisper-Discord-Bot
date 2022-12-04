@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { createLogger } from "./loggerService.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
-import { GardeningModuleConfig, Reservation, Slot } from "../entities/gardening_manager/index.js";
+import { GardeningModuleConfig, Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";

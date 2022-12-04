@@ -3,7 +3,7 @@ import { __decorate, __metadata, __param } from "tslib";
 import { ApplicationCommandOptionType } from "discord.js";
 import { Module } from "../utils/objects/index.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
-import { Reason } from "../entities/gardening_manager/index.js";
+import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";

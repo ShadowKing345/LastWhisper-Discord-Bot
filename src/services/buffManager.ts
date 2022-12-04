@@ -5,11 +5,12 @@ import { pino } from "pino";
 import { createLogger } from "./loggerService.js";
 import { Client } from "../utils/objects/client.js";
 import { Timer } from "../utils/objects/timer.js";
-import { BuffManagerRepository } from "../repositories/buffManager.js";
-import { Buff, BuffManagerConfig, MessageSettings, Week, WeekDTO } from "../entities/buff_manager/index.js";
+import { Buff, Week } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
+import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
+import { MessageSettingsRepository } from "../repositories/buffManager/messageSettingsRepository.js";
 
 /**
  * Buff manager service.
@@ -17,9 +18,23 @@ import { service } from "../utils/decorators/index.js";
  * Obviously not within the game as I am very sure that is against TOS.
  */
 @service()
-export class BuffManagerService extends Service<BuffManagerConfig> {
-  constructor(repository: BuffManagerRepository, @createLogger(BuffManagerService.name) private logger: pino.Logger) {
-    super(repository, BuffManagerConfig);
+export class BuffManagerService extends Service {
+  // private readonly buffRepository: BuffRepository;
+
+  private readonly weekRepository: WeekRepository;
+  private readonly messageSettingsRepository: MessageSettingsRepository;
+
+  constructor(
+    // buffRepository: BuffRepository,
+    weekRepository: WeekRepository,
+    messageSettingsRepository: MessageSettingsRepository,
+    @createLogger(BuffManagerService.name) private logger: pino.Logger,
+  ) {
+    super(null, null);
+
+    // this.buffRepository = buffRepository;
+    this.weekRepository = weekRepository;
+    this.messageSettingsRepository = messageSettingsRepository;
   }
 
   /**
@@ -28,10 +43,8 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
    * @param date The date to get the buff from.
    */
   public async getBuffByDate(guildId: string | null, date: DateTime): Promise<Buff | null> {
-    const config = await this.tryGetConfig(guildId);
-
-    const week = config.getWeekOfYear(date);
-    return config.getBuff(week.getBuffId(date));
+    const week = await this.weekRepository.getWeekOfYear(guildId, date);
+    return week.getBuff(date);
   }
 
   /**
@@ -40,9 +53,8 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
    * @param guildId Guild ID to ge the configuration from.
    * @param date The date to get the buff from.
    */
-  public async getWeekByDate(guildId: string | null, date: DateTime): Promise<WeekDTO | null> {
-    const config = await this.tryGetConfig(guildId);
-    return WeekDTO.map(config.getWeekOfYear(date), config);
+  public async getWeekByDate(guildId: string | null, date: DateTime): Promise<Week | null> {
+    return await this.weekRepository.getWeekOfYear(guildId, date);
   }
 
   /**
@@ -53,27 +65,24 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     await Timer.waitTillReady(client);
     this.logger.debug("Posting daily buff message.");
 
-    const configs: BuffManagerConfig[] = await this.repository
-      .getAll()
-      .then(configs => configs.filter(config => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
+    const messageSettings = await this.messageSettingsRepository.getAll();
     const now: DateTime = DateTime.now();
 
-    for (const config of configs) {
+    for (const settings of messageSettings) {
       try {
-        const messageSettings: MessageSettings = config.messageSettings;
-        if (!messageSettings.channelId || !messageSettings.hour) continue;
-        if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) {
+        if (!settings.channelId || !settings.hour) continue;
+        if (!now.hasSame(DateTime.fromFormat(settings.hour, "HH:mm"), "minute")) {
           continue;
         }
 
-        const channel: Channel = await client.channels.fetch(messageSettings.channelId);
-        if (!(channel?.type === ChannelType.GuildText && channel.guildId === config.guildId)) {
+        const channel: Channel = await client.channels.fetch(settings.channelId);
+        if (!(channel?.type === ChannelType.GuildText && channel.guildId === settings.guildId)) {
           this.logger.warn(`Invalid channel ID for a guild. Skipping...`);
           continue;
         }
 
-        const week: Week = config.getWeekOfYear(now);
-        const buff: Buff = config.getBuff(week.getBuffId(now));
+        const week: Week = await this.weekRepository.getWeekOfYear(settings.guildId, now);
+        const buff: Buff = week.getBuff(now);
 
         const embeds: EmbedBuilder[] = [];
         if (!buff) {
@@ -82,11 +91,11 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
         }
 
         this.logger.debug(`Posting buff message.`);
-        embeds.push(this.createBuffEmbed(messageSettings.buffMessage, buff, now));
+        embeds.push(this.createBuffEmbed(settings.buffMessage, buff, now));
 
-        if (!isNaN(messageSettings.dow) && Number(messageSettings.dow) === now.weekday) {
+        if (!isNaN(settings.dow) && Number(settings.dow) === now.weekday) {
           this.logger.debug(`Posting week message.`);
-          embeds.push(this.createWeekEmbed(messageSettings.weekMessage, WeekDTO.map(week, config), now));
+          embeds.push(this.createWeekEmbed(settings.weekMessage, week, now));
         }
 
         await channel.send({ embeds });
@@ -119,7 +128,7 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
    * @param week A WeekDTO object ot be used.
    * @param date The date context for the week. Used to get the week and fill in footer data.
    */
-  public createWeekEmbed(title: string, week: WeekDTO, date: DateTime): EmbedBuilder {
+  public createWeekEmbed(title: string, week: Week, date: DateTime): EmbedBuilder {
     this.logger.debug(`Creating Week Embed.`);
 
     if (!week) {
@@ -129,36 +138,13 @@ export class BuffManagerService extends Service<BuffManagerConfig> {
     return new EmbedBuilder({
       title: title,
       description: week.title,
-      fields: Array(...week.days).map(([day, buff]) => ({
+      fields: week.days.toArray.map(([ day, buff ]) => ({
         name: day,
         value: buff?.text ?? "No buff found.",
         inline: true,
       })),
       footer: { text: `Week ${date.get("weekNumber")}.` },
     }).setColor("Random");
-  }
-
-  /**
-   * Tries to get the configuration object. If none can be found the discord interaction is responded to and null is returned instead.
-   * @param guildId The guild ID to get the configs from.
-   */
-  public async tryGetConfig(guildId: string | null): Promise<BuffManagerConfig> {
-    const config: BuffManagerConfig = await this.getConfig(guildId);
-
-    // Throws if the number of buffs are less than 1.
-    if ((config.buffs ?? []).length < 1) {
-      this.logger.debug(`No buffs were set in config.`);
-      throw new BuffManagerTryGetError("No buffs were set", BuffManagerTryGetErrorReasons.BUFFS);
-    }
-
-    // Throws if the number of filtered weeks are less than 1.
-    if (config.getFilteredWeeks?.length < 1) {
-      this.logger.debug(`No weeks were set in config.`);
-      throw new BuffManagerTryGetError("No weeks were set", BuffManagerTryGetErrorReasons.WEEKS);
-    }
-
-    this.logger.debug(`Returning results.`);
-    return config;
   }
 }
 

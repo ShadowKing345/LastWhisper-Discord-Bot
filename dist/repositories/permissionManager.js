@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
-import { DatabaseConfigurationService } from "../config/databaseConfigurationService.js";
+import { DatabaseService } from "../config/databaseService.js";
 import { Repository } from "./repository.js";
-import { PermissionManagerConfig } from "../entities/permission_manager/index.js";
+import { PermissionManagerConfig } from "../entities/permissionManager/index.js";
 import { repository } from "../utils/decorators/index.js";
 let PermissionManagerRepository = class PermissionManagerRepository extends Repository {
     constructor(db) {
@@ -10,7 +10,7 @@ let PermissionManagerRepository = class PermissionManagerRepository extends Repo
 };
 PermissionManagerRepository = __decorate([
     repository(),
-    __metadata("design:paramtypes", [DatabaseConfigurationService])
+    __metadata("design:paramtypes", [DatabaseService])
 ], PermissionManagerRepository);
 export { PermissionManagerRepository };
 //# sourceMappingURL=permissionManager.js.map

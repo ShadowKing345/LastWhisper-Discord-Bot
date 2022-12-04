@@ -1,19 +1,11 @@
-import {
-  CommandInteraction,
-  GuildMember,
-  EmbedBuilder,
-  TextChannel,
-  InteractionResponse,
-  ChatInputCommandInteraction,
-  APIEmbedField,
-} from "discord.js";
+import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { DateTime } from "luxon";
 import { pino } from "pino";
 
 import { createLogger } from "./loggerService.js";
 import { Client } from "../utils/objects/client.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
-import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entities/gardening_manager/index.js";
+import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
