@@ -3,7 +3,7 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 
-import { ConfigurationClass } from "./configurationClass.js";
+import { ConfigurationService } from "./configurationService.js";
 import { LoggerService } from "../services/loggerService.js";
 import { Client } from "../utils/objects/client.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
@@ -17,7 +17,7 @@ import { EventListeners } from "../utils/objects/eventListener.js";
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 @singleton()
-export class ModuleConfigurationService extends ConfigurationClass {
+export class ModuleConfigurationService extends ConfigurationService {
   private readonly moduleConfiguration: ModuleConfiguration;
   private readonly intervalIds: number[] = [];
 

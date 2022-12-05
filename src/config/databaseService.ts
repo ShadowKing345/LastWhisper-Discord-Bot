@@ -3,7 +3,7 @@ import { singleton } from "tsyringe";
 
 import { createLogger } from "../services/loggerService.js";
 import { ProjectConfiguration, DatabaseConfiguration } from "../utils/objects/index.js";
-import { ConfigurationClass } from "./configurationClass.js";
+import { ConfigurationService } from "./configurationService.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -17,7 +17,7 @@ import { RoleManagerConfig } from "../entities/roleManager.js";
  * This service provides access to the database object as well as connection to the database server.
  */
 @singleton()
-export class DatabaseService extends ConfigurationClass {
+export class DatabaseService extends ConfigurationService {
   private _dataSource: DataSource = null;
 
   constructor(
