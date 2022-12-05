@@ -7,9 +7,17 @@ import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 
 @service()
-export class ManagerUtilsService extends Service<ManagerUtilsConfig> {
+export class ManagerUtilsService extends Service {
+  private readonly repository: ManagerUtilsRepository;
+
   constructor(repository: ManagerUtilsRepository) {
-    super(repository, ManagerUtilsConfig);
+    super();
+
+    this.repository = repository;
+  }
+
+  private getConfig(guildId: string): Promise<ManagerUtilsConfig> {
+    return this.repository.findOne({ where: { guildId } });
   }
 
   private async getLoggingChannel(guild: Guild): Promise<TextChannel> {

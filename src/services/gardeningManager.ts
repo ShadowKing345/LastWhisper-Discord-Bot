@@ -11,12 +11,16 @@ import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 
 @service()
-export class GardeningManagerService extends Service<GardeningModuleConfig> {
+export class GardeningManagerService extends Service {
   constructor(
-    repository: GardeningManagerRepository,
+    private repository: GardeningManagerRepository,
     @createLogger(GardeningManagerService.name) private logger: pino.Logger,
   ) {
-    super(repository, GardeningModuleConfig);
+    super();
+  }
+
+  private getConfig(guildId: string): Promise<GardeningModuleConfig> {
+    return this.repository.findOne({ where: { guildId } });
   }
 
   protected static async validatePlotAndSlot(

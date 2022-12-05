@@ -11,11 +11,15 @@ import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 
 @service()
-export class RoleManagerService extends Service<RoleManagerConfig> {
+export class RoleManagerService extends Service {
   private collectors: { [key: string]: ReactionCollector } = {};
 
-  constructor(repository: RoleManagerRepository, @createLogger(RoleManagerService.name) private logger: pino.Logger) {
-    super(repository, RoleManagerConfig);
+  constructor(private repository: RoleManagerRepository, @createLogger(RoleManagerService.name) private logger: pino.Logger) {
+    super();
+  }
+
+  private getConfig(guildId: string): Promise<RoleManagerConfig> {
+    return this.repository.findOne({ where: { guildId } });
   }
 
   private static async alterMembersRoles(member: GuildMember, roleId: string) {

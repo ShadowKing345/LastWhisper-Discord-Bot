@@ -10,7 +10,7 @@ import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
-import { MessageSettingsRepository } from "../repositories/buffManager/messageSettingsRepository.js";
+import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
 
 /**
  * Buff manager service.
@@ -19,22 +19,19 @@ import { MessageSettingsRepository } from "../repositories/buffManager/messageSe
  */
 @service()
 export class BuffManagerService extends Service {
-  // private readonly buffRepository: BuffRepository;
-
   private readonly weekRepository: WeekRepository;
-  private readonly messageSettingsRepository: MessageSettingsRepository;
+  private readonly buffManagerSettingsRepository: BuffManagerSettingsRepository;
 
   constructor(
-    // buffRepository: BuffRepository,
     weekRepository: WeekRepository,
-    messageSettingsRepository: MessageSettingsRepository,
+    messageSettingsRepository: BuffManagerSettingsRepository,
     @createLogger(BuffManagerService.name) private logger: pino.Logger,
   ) {
-    super(null, null);
+    super();
 
     // this.buffRepository = buffRepository;
     this.weekRepository = weekRepository;
-    this.messageSettingsRepository = messageSettingsRepository;
+    this.buffManagerSettingsRepository = messageSettingsRepository;
   }
 
   /**
@@ -42,9 +39,9 @@ export class BuffManagerService extends Service {
    * @param guildId Guild ID to ge the configuration from.
    * @param date The date to get the buff from.
    */
-  public async getBuffByDate(guildId: string | null, date: DateTime): Promise<Buff | null> {
-    const week = await this.weekRepository.getWeekOfYear(guildId, date);
-    return week.getBuff(date);
+  public async getBuffByDate(guildId: string, date: DateTime): Promise<Buff | null> {
+    const week = await this.getWeekByDate(guildId, date);
+    return week?.getBuff(date);
   }
 
   /**
@@ -53,7 +50,7 @@ export class BuffManagerService extends Service {
    * @param guildId Guild ID to ge the configuration from.
    * @param date The date to get the buff from.
    */
-  public async getWeekByDate(guildId: string | null, date: DateTime): Promise<Week | null> {
+  public async getWeekByDate(guildId: string, date: DateTime): Promise<Week | null> {
     return await this.weekRepository.getWeekOfYear(guildId, date);
   }
 
@@ -65,12 +62,11 @@ export class BuffManagerService extends Service {
     await Timer.waitTillReady(client);
     this.logger.debug("Posting daily buff message.");
 
-    const messageSettings = await this.messageSettingsRepository.getAll();
+    const messageSettings = await this.buffManagerSettingsRepository.getActiveSettings();
     const now: DateTime = DateTime.now();
 
     for (const settings of messageSettings) {
       try {
-        if (!settings.channelId || !settings.hour) continue;
         if (!now.hasSame(DateTime.fromFormat(settings.hour, "HH:mm"), "minute")) {
           continue;
         }

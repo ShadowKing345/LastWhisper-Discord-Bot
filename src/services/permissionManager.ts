@@ -14,15 +14,19 @@ import { service } from "../utils/decorators/index.js";
  * The reason for this service is that while you are able to change certain permissions for regular slash commands, subcommands cannot have their permissions changed in the same way.
  */
 @service()
-export class PermissionManagerService extends Service<PermissionManagerConfig> {
+export class PermissionManagerService extends Service {
   private static readonly keys: string[] = [];
   private static _keysFormatted: string = null;
 
   constructor(
-    repository: PermissionManagerRepository,
+    private repository: PermissionManagerRepository,
     @createLogger(PermissionManagerService.name) private logger: pino.Logger,
   ) {
-    super(repository, PermissionManagerConfig);
+    super();
+  }
+
+  private getConfig(guildId: string): Promise<PermissionManagerConfig> {
+    return this.repository.findOne({ where: { guildId } });
   }
 
   /**
@@ -32,7 +36,8 @@ export class PermissionManagerService extends Service<PermissionManagerConfig> {
    */
   @PermissionManagerService.validateKey(1)
   public async getPermission(guildId: string | null, key: string): Promise<Permission | null> {
-    return (await this.getConfig(guildId)).permissions[key];
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return (await this.getConfig(guildId))?.permissions?.[key];
   }
 
   /**
@@ -45,6 +50,7 @@ export class PermissionManagerService extends Service<PermissionManagerConfig> {
   public async setPermission(guildId: string | null, key: string, permission: Permission): Promise<Permission | null> {
     const config = await this.getConfig(guildId);
     config.permissions[key] = permission;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return (await this.repository.save(config)).permissions[key];
   }
 

@@ -24,6 +24,7 @@ type CommandRegistrationArgs = {
 };
 
 /**
+ * Todo: Handle error processing.
  * Command that attempted to register the slash command to the bot.
  * @param args Arguments for command registration.
  */
@@ -65,10 +66,10 @@ export async function commandRegistration(args: CommandRegistrationArgs): Promis
       promise = Promise.all(commands.map(command => rest.delete(`${route}/${command.id}`)));
     } else {
       const commands: (
-        | RESTPostAPIChatInputApplicationCommandsJSONBody
+        RESTPostAPIChatInputApplicationCommandsJSONBody
         | APIApplicationCommandSubcommandGroupOption
         | APIApplicationCommandSubcommandOption
-      )[] = [];
+        )[] = [];
       app.modules.forEach(module => {
         for (const command of module.commands) {
           commands.push(command.build().toJSON());

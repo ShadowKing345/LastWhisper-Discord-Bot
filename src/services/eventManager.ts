@@ -3,22 +3,41 @@ import { DateTime } from "luxon";
 
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
-import { EventManagerRepository } from "../repositories/eventManager.js";
-import { EventManagerConfig, EventObj, Tags } from "../entities/eventManager/index.js";
+import { EventManagerSettings, EventObject } from "../entities/eventManager/index.js";
 import { Service } from "./service.js";
 import { createLogger } from "./loggerService.js";
 import { pino } from "pino";
 import { service } from "../utils/decorators/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
+import { EventManagerSettingsRepository } from "../repositories/eventManager/eventManagerSettingsRepository.js";
+import { EventObjectRepository } from "../repositories/eventManager/eventObjectRepository.js";
+import { EventReminderRepository } from "../repositories/eventManager/eventReminderRepository.js";
 
 /**
  * Event manager service.
  * Handles all things related to real life event, not Discord events.
  */
 @service()
-export class EventManagerService extends Service<EventManagerConfig> {
-  constructor(repository: EventManagerRepository, @createLogger(EventManagerService.name) private logger: pino.Logger) {
-    super(repository, EventManagerConfig);
+export class EventManagerService extends Service {
+  private readonly eventManagerConfigRepository: EventManagerSettingsRepository;
+  private readonly eventObjectRepository: EventObjectRepository;
+  private readonly eventReminderRepository: EventReminderRepository;
+
+  constructor(
+    eventManagerSettingsRepository: EventManagerSettingsRepository,
+    eventObjectRepository: EventObjectRepository,
+    eventReminderRepository: EventReminderRepository,
+    @createLogger(EventManagerService.name) private logger: pino.Logger,
+  ) {
+    super();
+
+    this.eventManagerConfigRepository = eventManagerSettingsRepository;
+    this.eventObjectRepository = eventObjectRepository;
+    this.eventReminderRepository = eventReminderRepository;
+  }
+
+  private getConfig(guildId: string): Promise<EventManagerSettings> {
+    return this.eventManagerSettingsRepository.findOne({ where: { guildId } });
   }
 
   /**
@@ -27,9 +46,9 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param guildId Guild ID to get the configuration from.
    * @param text The text to test against.
    */
-  public async parseEvent(guildId: string | null, text: string): Promise<EventObj> {
-    const { dateTimeFormat, delimiterCharacters, tags } = await this.getConfig(guildId);
-    return this.parseMessage(null, text, tags, dateTimeFormat, delimiterCharacters);
+  public async parseEvent(guildId: string | null, text: string): Promise<EventObject> {
+    const config = await this.getConfig(guildId);
+    return this.parseMessage(null, text, config);
   }
 
   /**
@@ -37,7 +56,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param guildId Guild ID to get the configuration from.
    * @param index An index number to pick a specific event.
    */
-  public async findIndex(guildId: string | null, index?: number): Promise<EventObj | EventObj[] | null> {
+  public async findIndex(guildId: string | null, index?: number): Promise<EventObject | EventObject[] | null> {
     const config = await this.getConfig(guildId);
 
     if (config.events.length < 1) {
@@ -60,16 +79,16 @@ export class EventManagerService extends Service<EventManagerConfig> {
     name: string,
     description: string,
     time: string,
-    additional: [string, string][] = [],
+    additional: [ string, string ][] = [],
   ): Promise<string> {
     const config = await this.getConfig(guildId);
-    const [l, r] = config.delimiterCharacters;
+    const [ l, r ] = config.delimiterCharacters;
 
-    let result = l + config.tags.announcement + r + name + "\n";
-    result += `${l}${config.tags.description}${r}\n${description}\n`;
-    result += `${l}${config.tags.dateTime}${r}\n${time}\n`;
+    let result = l + config.announcement + r + name + "\n";
+    result += `${l}${config.description}${r}\n${description}\n`;
+    result += `${l}${config.dateTime}${r}\n${time}\n`;
 
-    for (const [k, v] of additional) {
+    for (const [ k, v ] of additional) {
       result += `${l}${k}${r}\n${v}\n`;
     }
 
@@ -89,20 +108,20 @@ export class EventManagerService extends Service<EventManagerConfig> {
     id: string,
     content: string,
     channelId?: string,
-  ): Promise<EventObj | null> {
+  ): Promise<EventObject | null> {
     const config = await this.getConfig(guildId);
 
     if (channelId && config.listenerChannelId !== channelId) {
       throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
     }
 
-    const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+    const event = this.parseMessage(id, content, config);
     if (!event.isValid) {
       return null;
     }
 
     config.events.push(event);
-    await this.repository.save(config);
+    await this.eventManagerSettingsRepository.save(config);
     return event;
   }
 
@@ -112,7 +131,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param messageId ID of the message.
    * @param content Text content of the message.
    */
-  public async update(guildId: string | null, messageId: string, content: string): Promise<EventObj | null> {
+  public async update(guildId: string | null, messageId: string, content: string): Promise<EventObject | null> {
     const config = await this.getConfig(guildId);
 
     const oldEvent = config.events.find(event => event.id === messageId);
@@ -120,13 +139,13 @@ export class EventManagerService extends Service<EventManagerConfig> {
       throw new Error("Event does not exist.");
     }
 
-    const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+    const event = this.parseMessage(messageId, content, config);
     if (!event.isValid) {
       return null;
     }
 
     // oldEvent.merge(event);
-    await this.repository.save(config);
+    await this.eventManagerSettingsRepository.save(config);
 
     return event;
   }
@@ -137,24 +156,18 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param index Index of the event.
    * @param content Text content of the message.
    */
-  public async updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObj | null> {
+  public async updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObject | null> {
     const config = await this.getConfig(guildId);
 
     const oldEvent = config.getEventByIndex(index);
 
-    const event = this.parseMessage(
-      oldEvent.id,
-      content,
-      config.tags,
-      config.dateTimeFormat,
-      config.delimiterCharacters,
-    );
+    const event = this.parseMessage(oldEvent.id, content, config);
     if (!event.isValid) {
       return null;
     }
 
     // oldEvent.merge(event);
-    await this.repository.save(config);
+    await this.eventManagerSettingsRepository.save(config);
 
     return event;
   }
@@ -171,7 +184,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
     if (index === -1) return;
 
     config.events.splice(index, 1);
-    await this.repository.save(config);
+    await this.eventManagerSettingsRepository.save(config);
   }
 
   /**
@@ -182,7 +195,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
   public async cancelByIndex(guildId: string | null, index: number): Promise<void> {
     const config = await this.getConfig(guildId);
     config.events.splice(index % config.events.length, 1);
-    await this.repository.save(config);
+    await this.eventManagerSettingsRepository.save(config);
   }
 
   /**
@@ -201,7 +214,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
    */
   public async onReady(client: Client): Promise<void> {
     const promises: Promise<unknown>[] = [];
-    const configs: EventManagerConfig[] = await this.repository.getAll();
+    const configs: EventManagerSettings[] = await this.eventManagerSettingsRepository.getAll();
 
     for (const config of configs) {
       if (!config.listenerChannelId || config.events?.length < 1) continue;
@@ -227,8 +240,8 @@ export class EventManagerService extends Service<EventManagerConfig> {
     await Timer.waitTillReady(client);
 
     const now: DateTime = DateTime.now();
-    const alteredConfigs: EventManagerConfig[] = [];
-    const configs = await this.repository
+    const alteredConfigs: EventManagerSettings[] = [];
+    const configs = await this.eventManagerSettingsRepository
       .getAll()
       .then(configs =>
         configs.filter(
@@ -249,7 +262,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
           const reminderTimeDelta = reminder.asDuration;
           for (const event of config.events) {
             const eventTime = DateTime.fromSeconds(event.dateTime);
-            if (eventTime.diff(now, ["days"]).days > 1) continue;
+            if (eventTime.diff(now, [ "days" ]).days > 1) continue;
 
             const difference = eventTime.minus(reminderTimeDelta);
             if (difference.hour === now.hour && difference.minute === now.minute) {
@@ -282,7 +295,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
     }
 
     if (alteredConfigs.length > 0) {
-      await this.repository.bulkSave(alteredConfigs);
+      await this.eventManagerSettingsRepository.bulkSave(alteredConfigs);
     }
   }
 
@@ -291,7 +304,7 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * @param event The event object.
    * @private
    */
-  public createEventEmbed(event: EventObj): EmbedBuilder {
+  public createEventEmbed(event: EventObject): EmbedBuilder {
     return new EmbedBuilder({
       title: event.name,
       description: event.description,
@@ -315,42 +328,38 @@ export class EventManagerService extends Service<EventManagerConfig> {
    * Attempts to parse a string into a EventObject.
    * @param id The event ID.
    * @param content The content of the message. As in its text.
-   * @param tags Tags to parse with
-   * @param dateTimeFormats Collection of all possible formats for data and time parsing.
-   * @param delimiter Tuple containing the two delimiter characters.
+   * @param config Tags to parse with
    * @private
    */
   private parseMessage(
     id: string,
     content: string,
-    tags: Tags,
-    dateTimeFormats: string[],
-    delimiter: [string, string],
-  ): EventObj {
-    const [l, r] = delimiter.map(c => this.regexpEscape(c));
-    const event = new EventObj();
+    config: EventManagerSettings,
+  ): EventObject {
+    const [ l, r ] = config.delimiterCharacters.map(c => this.regexpEscape(c));
+    const event = new EventObject();
     event.id = id;
     const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
 
-    for (const [, k, v] of content.matchAll(regExp)) {
+    for (const [ , k, v ] of content.matchAll(regExp)) {
       if (!k || !v) continue;
       const key = k.trim(),
         value = v.trim();
 
       let date: DateTime, time: number;
       switch (key) {
-        case tags.announcement:
+        case config.announcement:
           event.name = value;
           break;
 
-        case tags.description:
+        case config.description:
           event.description = value;
           break;
 
-        case tags.dateTime:
-          if (dateTimeFormats.length > 0) {
+        case config.dateTime:
+          if (config.dateTimeFormat.length > 0) {
             let flag = false;
-            for (const format of dateTimeFormats) {
+            for (const format of config.dateTimeFormat) {
               date = DateTime.fromFormat(value, format);
               if (date.isValid) {
                 event.dateTime = date.toUnixInteger();
@@ -371,8 +380,8 @@ export class EventManagerService extends Service<EventManagerConfig> {
           break;
 
         default:
-          if (!tags.exclusionList.every(e => e !== key)) continue;
-          event.additional.push([key, value]);
+          if (!config.exclusionList.every(e => e !== key)) continue;
+          event.additional.push([ key, value ]);
           break;
       }
     }

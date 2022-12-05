@@ -4,16 +4,19 @@ import { singleton, injectWithTransform } from "tsyringe";
 import { ProjectConfiguration } from "../utils/objects/index.js";
 import { Transform } from "tsyringe/dist/typings/types/index.js";
 import { LOGGING_LEVELS, LoggerConfigs } from "../utils/objects/loggerConfigs.js";
+import { Service } from "./service.js";
 
 /**
  * Service used to handle logging calls.
  */
 @singleton()
-export class LoggerService {
+export class LoggerService extends Service {
   private readonly configs?: LoggerConfigs;
   private readonly pino: pino.Logger;
 
   constructor(appConfigs: ProjectConfiguration) {
+    super();
+
     this.configs = appConfigs.logger;
 
     this.pino = pino({
