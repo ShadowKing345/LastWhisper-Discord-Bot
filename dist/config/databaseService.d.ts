@@ -1,8 +1,8 @@
 import { pino } from "pino";
 import { ProjectConfiguration } from "../utils/objects/index.js";
-import { ConfigurationClass } from "./configurationClass.js";
+import { ConfigurationService } from "./configurationService.js";
 import { DataSource } from "typeorm";
-export declare class DatabaseService extends ConfigurationClass {
+export declare class DatabaseService extends ConfigurationService {
     private projectConfig;
     private logger;
     private _dataSource;

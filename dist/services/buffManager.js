@@ -5,58 +5,57 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { createLogger } from "./loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
-import { BuffManagerRepository } from "../repositories/buffManager/buffManager.js";
-import { BuffManagerConfig, WeekDTO } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
+import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
+import { MessageSettingsRepository } from "../repositories/buffManager/messageSettingsRepository.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {
     logger;
-    constructor(repository, logger) {
-        super(repository, BuffManagerConfig);
+    weekRepository;
+    messageSettingsRepository;
+    constructor(weekRepository, messageSettingsRepository, logger) {
+        super(null, null);
         this.logger = logger;
+        this.weekRepository = weekRepository;
+        this.messageSettingsRepository = messageSettingsRepository;
     }
     async getBuffByDate(guildId, date) {
-        const config = await this.tryGetConfig(guildId);
-        const week = config.getWeekOfYear(date);
-        return config.getBuff(week.getBuffId(date));
+        const week = await this.weekRepository.getWeekOfYear(guildId, date);
+        return week.getBuff(date);
     }
     async getWeekByDate(guildId, date) {
-        const config = await this.tryGetConfig(guildId);
-        return WeekDTO.map(config.getWeekOfYear(date), config);
+        return await this.weekRepository.getWeekOfYear(guildId, date);
     }
     async postDailyMessage(client) {
         await Timer.waitTillReady(client);
         this.logger.debug("Posting daily buff message.");
-        const configs = await this.repository
-            .getAll()
-            .then(configs => configs.filter(config => client.guilds.cache.has(config.guildId) && config.buffs.length > 0));
+        const messageSettings = await this.messageSettingsRepository.getAll();
         const now = DateTime.now();
-        for (const config of configs) {
+        for (const settings of messageSettings) {
             try {
-                const messageSettings = config.messageSettings;
-                if (!messageSettings.channelId || !messageSettings.hour)
+                if (!settings.channelId || !settings.hour)
                     continue;
-                if (!now.hasSame(DateTime.fromFormat(messageSettings.hour, "HH:mm"), "minute")) {
+                if (!now.hasSame(DateTime.fromFormat(settings.hour, "HH:mm"), "minute")) {
                     continue;
                 }
-                const channel = await client.channels.fetch(messageSettings.channelId);
-                if (!(channel?.type === ChannelType.GuildText && channel.guildId === config.guildId)) {
+                const channel = await client.channels.fetch(settings.channelId);
+                if (!(channel?.type === ChannelType.GuildText && channel.guildId === settings.guildId)) {
                     this.logger.warn(`Invalid channel ID for a guild. Skipping...`);
                     continue;
                 }
-                const week = config.getWeekOfYear(now);
-                const buff = config.getBuff(week.getBuffId(now));
+                const week = await this.weekRepository.getWeekOfYear(settings.guildId, now);
+                const buff = week.getBuff(now);
                 const embeds = [];
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID buffId for guild config.guildId. Skipping...`);
                     continue;
                 }
                 this.logger.debug(`Posting buff message.`);
-                embeds.push(this.createBuffEmbed(messageSettings.buffMessage, buff, now));
-                if (!isNaN(messageSettings.dow) && Number(messageSettings.dow) === now.weekday) {
+                embeds.push(this.createBuffEmbed(settings.buffMessage, buff, now));
+                if (!isNaN(settings.dow) && Number(settings.dow) === now.weekday) {
                     this.logger.debug(`Posting week message.`);
-                    embeds.push(this.createWeekEmbed(messageSettings.weekMessage, WeekDTO.map(week, config), now));
+                    embeds.push(this.createWeekEmbed(settings.weekMessage, week, now));
                 }
                 await channel.send({ embeds });
             }
@@ -82,7 +81,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
         return new EmbedBuilder({
             title: title,
             description: week.title,
-            fields: Array(...week.days).map(([day, buff]) => ({
+            fields: week.days.toArray.map(([day, buff]) => ({
                 name: day,
                 value: buff?.text ?? "No buff found.",
                 inline: true,
@@ -90,24 +89,12 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
             footer: { text: `Week ${date.get("weekNumber")}.` },
         }).setColor("Random");
     }
-    async tryGetConfig(guildId) {
-        const config = await this.getConfig(guildId);
-        if ((config.buffs ?? []).length < 1) {
-            this.logger.debug(`No buffs were set in config.`);
-            throw new BuffManagerTryGetError("No buffs were set", BuffManagerTryGetErrorReasons.BUFFS);
-        }
-        if (config.getFilteredWeeks?.length < 1) {
-            this.logger.debug(`No weeks were set in config.`);
-            throw new BuffManagerTryGetError("No weeks were set", BuffManagerTryGetErrorReasons.WEEKS);
-        }
-        this.logger.debug(`Returning results.`);
-        return config;
-    }
 };
 BuffManagerService = BuffManagerService_1 = __decorate([
     service(),
-    __param(1, createLogger(BuffManagerService_1.name)),
-    __metadata("design:paramtypes", [BuffManagerRepository, Object])
+    __param(2, createLogger(BuffManagerService_1.name)),
+    __metadata("design:paramtypes", [WeekRepository,
+        MessageSettingsRepository, Object])
 ], BuffManagerService);
 export { BuffManagerService };
 export class BuffManagerTryGetError extends ServiceError {

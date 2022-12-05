@@ -1,5 +1,6 @@
 import { Buff } from "./buff.js";
 import { EntityBase } from "../entityBase.js";
+import { WeekDays } from "./weekDays.js";
 export declare class Days extends EntityBase {
     monday: Buff;
     tuesday: Buff;
@@ -15,5 +16,6 @@ export declare class Days extends EntityBase {
         done: boolean;
         value: Buff;
     };
+    get toArray(): [WeekDays, Buff][];
 }
 //# sourceMappingURL=days.d.ts.map

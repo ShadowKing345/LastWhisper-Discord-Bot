@@ -1,6 +1,7 @@
 import { pino } from "pino";
 import { ProjectConfiguration } from "../utils/objects/index.js";
-export declare class LoggerService {
+import { Service } from "./service.js";
+export declare class LoggerService extends Service {
     private readonly configs?;
     private readonly pino;
     constructor(appConfigs: ProjectConfiguration);

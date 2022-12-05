@@ -1,9 +1,10 @@
 import { GuildBan, GuildMember, InteractionResponse, ChatInputCommandInteraction, PartialGuildMember } from "discord.js";
-import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "./service.js";
-export declare class ManagerUtilsService extends Service<ManagerUtilsConfig> {
+export declare class ManagerUtilsService extends Service {
+    private readonly repository;
     constructor(repository: ManagerUtilsRepository);
+    private getConfig;
     private getLoggingChannel;
     onMemberRemoved(member: GuildMember | PartialGuildMember): Promise<void>;
     onMemberBanned(ban: GuildBan): Promise<void>;

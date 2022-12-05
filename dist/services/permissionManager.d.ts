@@ -1,13 +1,15 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { Permission, PermissionManagerConfig } from "../entities/permissionManager/index.js";
+import { Permission } from "../entities/permissionManager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { Service } from "./service.js";
-export declare class PermissionManagerService extends Service<PermissionManagerConfig> {
+export declare class PermissionManagerService extends Service {
+    private repository;
     private logger;
     private static readonly keys;
     private static _keysFormatted;
     constructor(repository: PermissionManagerRepository, logger: pino.Logger);
+    private getConfig;
     getPermission(guildId: string | null, key: string): Promise<Permission | null>;
     setPermission(guildId: string | null, key: string, permission: Permission): Promise<Permission | null>;
     isAuthorized(interaction: ChatInputCommandInteraction, key: string): Promise<boolean>;

@@ -4,7 +4,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../services/loggerService.js";
 import { ProjectConfiguration } from "../utils/objects/index.js";
-import { ConfigurationClass } from "./configurationClass.js";
+import { ConfigurationService } from "./configurationService.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -12,7 +12,7 @@ import { GardeningManagerEntities } from "../entities/gardeningManager/index.js"
 import { PermissionManagerEntities } from "../entities/permissionManager/index.js";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
-let DatabaseService = DatabaseService_1 = class DatabaseService extends ConfigurationClass {
+let DatabaseService = DatabaseService_1 = class DatabaseService extends ConfigurationService {
     projectConfig;
     logger;
     _dataSource = null;

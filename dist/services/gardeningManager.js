@@ -5,15 +5,20 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 import { createLogger } from "./loggerService.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
-import { GardeningModuleConfig, Reservation, Slot } from "../entities/gardeningManager/index.js";
+import { Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService extends Service {
+    repository;
     logger;
     constructor(repository, logger) {
-        super(repository, GardeningModuleConfig);
+        super();
+        this.repository = repository;
         this.logger = logger;
+    }
+    getConfig(guildId) {
+        return this.repository.findOne({ where: { guildId } });
     }
     static async validatePlotAndSlot(interaction, config, plotNum, slotNum, slotShouldExist = true) {
         if (!(plotNum != null && slotNum != null && slotShouldExist != null)) {

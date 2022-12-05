@@ -7,8 +7,8 @@ let Week = class Week extends EntityBase {
     isEnabled = false;
     title = null;
     days;
-    getBuffId(date) {
-        return Array(...this.days)[date.weekday - 1].id;
+    getBuff(date) {
+        return Array(...this.days)[date.weekday - 1];
     }
     merge(obj) {
         if (obj.isEnabled) {

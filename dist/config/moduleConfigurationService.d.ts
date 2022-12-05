@@ -1,8 +1,8 @@
-import { ConfigurationClass } from "./configurationClass.js";
+import { ConfigurationService } from "./configurationService.js";
 import { LoggerService } from "../services/loggerService.js";
 import { Client } from "../utils/objects/client.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
-export declare class ModuleConfigurationService extends ConfigurationClass {
+export declare class ModuleConfigurationService extends ConfigurationService {
     private readonly moduleConfiguration;
     private readonly intervalIds;
     private readonly _modules;

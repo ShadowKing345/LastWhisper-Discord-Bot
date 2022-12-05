@@ -1,17 +1,26 @@
 import { __decorate, __metadata } from "tslib";
-import { EventObj } from "./eventObj.js";
-import { Reminder } from "./reminder.js";
-import { Tags } from "./tags.js";
-import { Entity, Column, OneToOne, OneToMany, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
+import { EventObject } from "./eventObject.js";
+import { EventReminder } from "./eventReminder.js";
+import { Entity, Column, OneToMany, AfterLoad, AfterInsert, AfterUpdate } from "typeorm";
 import { EntityBase } from "../entityBase.js";
 let EventManagerConfig = class EventManagerConfig extends EntityBase {
     listenerChannelId = null;
     postingChannelId = null;
     delimiterCharacters = ["[", "]"];
-    tags = new Tags();
+    announcement = null;
+    description = null;
+    dateTime = null;
+    exclusionList = [];
     dateTimeFormat = [];
     events;
     reminders;
+    constructor(announcement = "Event Announcement", description = "Event Description", dateTime = "Time", exclusionList = []) {
+        super();
+        this.announcement = announcement;
+        this.description = description;
+        this.dateTime = dateTime;
+        this.exclusionList = exclusionList;
+    }
     getEventByIndex(index) {
         return this.events[index % this.events.length];
     }
@@ -43,15 +52,27 @@ __decorate([
     __metadata("design:type", Array)
 ], EventManagerConfig.prototype, "delimiterCharacters", void 0);
 __decorate([
-    OneToOne(() => Tags, tag => tag.guildConfig, { cascade: true, orphanedRowAction: "delete", onDelete: "CASCADE" }),
-    __metadata("design:type", Tags)
-], EventManagerConfig.prototype, "tags", void 0);
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], EventManagerConfig.prototype, "announcement", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], EventManagerConfig.prototype, "description", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], EventManagerConfig.prototype, "dateTime", void 0);
+__decorate([
+    Column("character", { array: true }),
+    __metadata("design:type", Array)
+], EventManagerConfig.prototype, "exclusionList", void 0);
 __decorate([
     Column("text", { array: true }),
     __metadata("design:type", Array)
 ], EventManagerConfig.prototype, "dateTimeFormat", void 0);
 __decorate([
-    OneToMany(() => EventObj, obj => obj.guildConfig, {
+    OneToMany(() => EventObject, obj => obj.guildConfig, {
         cascade: true,
         orphanedRowAction: "delete",
         onDelete: "CASCADE",
@@ -59,7 +80,7 @@ __decorate([
     __metadata("design:type", Array)
 ], EventManagerConfig.prototype, "events", void 0);
 __decorate([
-    OneToMany(() => Reminder, obj => obj.guildConfig, {
+    OneToMany(() => EventReminder, obj => obj.guildConfig, {
         cascade: true,
         orphanedRowAction: "delete",
         onDelete: "CASCADE",
@@ -75,7 +96,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], EventManagerConfig.prototype, "nullChecks", null);
 EventManagerConfig = __decorate([
-    Entity()
+    Entity(),
+    __metadata("design:paramtypes", [Object, Object, Object, Array])
 ], EventManagerConfig);
 export { EventManagerConfig };
 //# sourceMappingURL=eventManagerConfig.js.map

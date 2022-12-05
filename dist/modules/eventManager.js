@@ -8,7 +8,7 @@ import { Command, CommandOption } from "../utils/objects/command.js";
 import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
-import { EventObj } from "../entities/eventManager/index.js";
+import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
@@ -212,7 +212,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
             });
             return;
         }
-        const embed = event instanceof EventObj
+        const embed = event instanceof EventObject
             ? this.service.createEventEmbed(event)
             : new EmbedBuilder({
                 title: "Upcoming Events",

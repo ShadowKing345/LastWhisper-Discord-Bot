@@ -2,22 +2,27 @@ var PermissionManagerService_1;
 import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
 import { createLogger } from "./loggerService.js";
-import { Permission, PermissionManagerConfig, PermissionMode } from "../entities/permissionManager/index.js";
+import { Permission, PermissionMode } from "../entities/permissionManager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService extends Service {
+    repository;
     logger;
     static keys = [];
     static _keysFormatted = null;
     constructor(repository, logger) {
-        super(repository, PermissionManagerConfig);
+        super();
+        this.repository = repository;
         this.logger = logger;
     }
+    getConfig(guildId) {
+        return this.repository.findOne({ where: { guildId } });
+    }
     async getPermission(guildId, key) {
-        return (await this.getConfig(guildId)).permissions[key];
+        return (await this.getConfig(guildId))?.permissions?.[key];
     }
     async setPermission(guildId, key, permission) {
         const config = await this.getConfig(guildId);

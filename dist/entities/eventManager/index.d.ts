@@ -1,10 +1,8 @@
 import { EventManagerConfig } from "./eventManagerConfig.js";
-import { EventObj } from "./eventObj.js";
-import { Reminder } from "./reminder.js";
-import { Tags } from "./tags.js";
+import { EventObject } from "./eventObject.js";
+import { EventReminder } from "./eventReminder.js";
 export * from "./eventManagerConfig.js";
-export * from "./eventObj.js";
-export * from "./reminder.js";
-export * from "./tags.js";
-export declare const EventManagerEntities: (typeof EventObj | typeof EventManagerConfig | typeof Reminder | typeof Tags)[];
+export * from "./eventObject.js";
+export * from "./eventReminder.js";
+export declare const EventManagerEntities: (typeof EventObject | typeof EventManagerConfig | typeof EventReminder)[];
 //# sourceMappingURL=index.d.ts.map

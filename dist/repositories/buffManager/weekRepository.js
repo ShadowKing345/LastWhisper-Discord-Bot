@@ -7,6 +7,18 @@ let WeekRepository = class WeekRepository extends Repository {
     constructor(db) {
         super(db, Week);
     }
+    getActiveWeeks(guildId) {
+        return this.findAll({
+            where: {
+                guildId: guildId,
+                isEnabled: true,
+            },
+        });
+    }
+    async getWeekOfYear(guildId, date) {
+        const filteredWeeks = await this.getActiveWeeks(guildId);
+        return filteredWeeks[date.weekNumber % filteredWeeks.length];
+    }
 };
 WeekRepository = __decorate([
     repository(),

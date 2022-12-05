@@ -3,10 +3,12 @@ import { pino } from "pino";
 import { singleton, injectWithTransform } from "tsyringe";
 import { ProjectConfiguration } from "../utils/objects/index.js";
 import { LOGGING_LEVELS } from "../utils/objects/loggerConfigs.js";
-let LoggerService = class LoggerService {
+import { Service } from "./service.js";
+let LoggerService = class LoggerService extends Service {
     configs;
     pino;
     constructor(appConfigs) {
+        super();
         this.configs = appConfigs.logger;
         this.pino = pino({
             level: this.configs?.level ?? LOGGING_LEVELS.info,

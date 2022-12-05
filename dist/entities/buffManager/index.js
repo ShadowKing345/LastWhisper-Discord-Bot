@@ -8,7 +8,6 @@ export * from "./week.js";
 export * from "./buff.js";
 export * from "./days.js";
 export * from "./messageSettings.js";
-export * from "./weekDTO.js";
 export * from "./weekDays.js";
 export const BuffManagerEntities = [BuffManagerConfig, Week, Buff, Days, MessageSettings];
 //# sourceMappingURL=index.js.map

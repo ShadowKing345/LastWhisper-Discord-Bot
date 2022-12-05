@@ -1,6 +1,6 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { BuffManagerService } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";

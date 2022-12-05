@@ -5,16 +5,20 @@ import { pino } from "pino";
 import { createLogger } from "./loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
-import { RoleManagerConfig } from "../entities/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends Service {
+    repository;
     logger;
     collectors = {};
     constructor(repository, logger) {
-        super(repository, RoleManagerConfig);
+        super();
+        this.repository = repository;
         this.logger = logger;
+    }
+    getConfig(guildId) {
+        return this.repository.findOne({ where: { guildId } });
     }
     static async alterMembersRoles(member, roleId) {
         if (member.roles.cache.has(roleId)) {

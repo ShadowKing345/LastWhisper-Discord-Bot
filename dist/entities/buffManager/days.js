@@ -24,6 +24,17 @@ let Days = class Days extends EntityBase {
         }
         return { done: true, value: null };
     }
+    get toArray() {
+        return [
+            ["Monday", this.monday],
+            ["Tuesday", this.tuesday],
+            ["Wednesday", this.wednesday],
+            ["Thursday", this.thursday],
+            ["Friday", this.friday],
+            ["Saturday", this.saturday],
+            ["Sunday", this.sunday],
+        ];
+    }
 };
 __decorate([
     OneToOne(() => Buff),

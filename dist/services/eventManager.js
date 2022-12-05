@@ -4,22 +4,27 @@ import { EmbedBuilder, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
-import { EventManagerRepository } from "../repositories/eventManager.js";
-import { EventManagerConfig, EventObj } from "../entities/eventManager/index.js";
+import { EventObject } from "../entities/eventManager/index.js";
 import { Service } from "./service.js";
 import { createLogger } from "./loggerService.js";
 import { pino } from "pino";
 import { service } from "../utils/decorators/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
+import { EventManagerConfigRepository } from "../repositories/eventManager/eventManagerConfigRepository.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
+    repository;
     logger;
     constructor(repository, logger) {
-        super(repository, EventManagerConfig);
+        super();
+        this.repository = repository;
         this.logger = logger;
     }
+    getConfig(guildId) {
+        return this.repository.findOne({ where: { guildId } });
+    }
     async parseEvent(guildId, text) {
-        const { dateTimeFormat, delimiterCharacters, tags } = await this.getConfig(guildId);
-        return this.parseMessage(null, text, tags, dateTimeFormat, delimiterCharacters);
+        const config = await this.getConfig(guildId);
+        return this.parseMessage(null, text, config);
     }
     async findIndex(guildId, index) {
         const config = await this.getConfig(guildId);
@@ -31,9 +36,9 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     async createContent(guildId, name, description, time, additional = []) {
         const config = await this.getConfig(guildId);
         const [l, r] = config.delimiterCharacters;
-        let result = l + config.tags.announcement + r + name + "\n";
-        result += `${l}${config.tags.description}${r}\n${description}\n`;
-        result += `${l}${config.tags.dateTime}${r}\n${time}\n`;
+        let result = l + config.announcement + r + name + "\n";
+        result += `${l}${config.description}${r}\n${description}\n`;
+        result += `${l}${config.dateTime}${r}\n${time}\n`;
         for (const [k, v] of additional) {
             result += `${l}${k}${r}\n${v}\n`;
         }
@@ -44,7 +49,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         if (channelId && config.listenerChannelId !== channelId) {
             throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
         }
-        const event = this.parseMessage(id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        const event = this.parseMessage(id, content, config);
         if (!event.isValid) {
             return null;
         }
@@ -58,7 +63,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         if (!oldEvent) {
             throw new Error("Event does not exist.");
         }
-        const event = this.parseMessage(messageId, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        const event = this.parseMessage(messageId, content, config);
         if (!event.isValid) {
             return null;
         }
@@ -68,7 +73,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     async updateByIndex(guildId, index, content) {
         const config = await this.getConfig(guildId);
         const oldEvent = config.getEventByIndex(index);
-        const event = this.parseMessage(oldEvent.id, content, config.tags, config.dateTimeFormat, config.delimiterCharacters);
+        const event = this.parseMessage(oldEvent.id, content, config);
         if (!event.isValid) {
             return null;
         }
@@ -172,9 +177,9 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
     regexpEscape(text) {
         return text.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
     }
-    parseMessage(id, content, tags, dateTimeFormats, delimiter) {
-        const [l, r] = delimiter.map(c => this.regexpEscape(c));
-        const event = new EventObj();
+    parseMessage(id, content, config) {
+        const [l, r] = config.delimiterCharacters.map(c => this.regexpEscape(c));
+        const event = new EventObject();
         event.id = id;
         const regExp = new RegExp(`${l}(.*?)${r}([^${l}]*)`, "g");
         for (const [, k, v] of content.matchAll(regExp)) {
@@ -183,16 +188,16 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             const key = k.trim(), value = v.trim();
             let date, time;
             switch (key) {
-                case tags.announcement:
+                case config.announcement:
                     event.name = value;
                     break;
-                case tags.description:
+                case config.description:
                     event.description = value;
                     break;
-                case tags.dateTime:
-                    if (dateTimeFormats.length > 0) {
+                case config.dateTime:
+                    if (config.dateTimeFormat.length > 0) {
                         let flag = false;
-                        for (const format of dateTimeFormats) {
+                        for (const format of config.dateTimeFormat) {
                             date = DateTime.fromFormat(value, format);
                             if (date.isValid) {
                                 event.dateTime = date.toUnixInteger();
@@ -212,7 +217,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
                     event.dateTime = date.toUnixInteger();
                     break;
                 default:
-                    if (!tags.exclusionList.every(e => e !== key))
+                    if (!config.exclusionList.every(e => e !== key))
                         continue;
                     event.additional.push([key, value]);
                     break;
@@ -224,7 +229,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
 EventManagerService = EventManagerService_1 = __decorate([
     service(),
     __param(1, createLogger(EventManagerService_1.name)),
-    __metadata("design:paramtypes", [EventManagerRepository, Object])
+    __metadata("design:paramtypes", [EventManagerConfigRepository, Object])
 ], EventManagerService);
 export { EventManagerService };
 //# sourceMappingURL=eventManager.js.map

@@ -3,7 +3,7 @@ import { __decorate, __metadata, __param } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
 import { pino } from "pino";
 import { createLogger } from "../services/loggerService.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
