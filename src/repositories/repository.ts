@@ -8,7 +8,7 @@ import { EntityBase } from "../entities/entityBase.js";
  * Manages the majority of basic CRUD repository actions.
  */
 export abstract class Repository<T extends EntityBase> {
-  private repo: Repo<T>;
+  protected repo: Repo<T>;
 
   protected constructor(protected db: DatabaseService, private entityTarget: EntityTarget<T>) {}
 

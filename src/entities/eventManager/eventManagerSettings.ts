@@ -1,13 +1,20 @@
-/**
- * Tag names for the event message parser.
- */
-import { Relation, Entity, BaseEntity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm";
-import { EventManagerConfig } from "./eventManagerConfig.js";
+import { Entity, Column } from "typeorm";
+import { EntityBase } from "../entityBase.js";
 
+/**
+ * Event manager configuration object.
+ */
 @Entity()
-export class Tags extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  public id: string;
+export class EventManagerSettings extends EntityBase {
+
+  @Column({ nullable: true })
+  public listenerChannelId: string = null;
+
+  @Column({ nullable: true })
+  public postingChannelId: string = null;
+
+  @Column("character", { array: true })
+  public delimiterCharacters: [ string, string ] = [ "[", "]" ];
 
   @Column({ nullable: true })
   public announcement: string = null;
@@ -21,9 +28,8 @@ export class Tags extends BaseEntity {
   @Column("character", { array: true })
   public exclusionList: string[] = [];
 
-  @OneToOne(() => EventManagerConfig, config => config.tags)
-  @JoinColumn({ name: "config_id" })
-  public guildConfig: Relation<EventManagerConfig>;
+  @Column("text", { array: true })
+  public dateTimeFormat: string[] = [];
 
   constructor(
     announcement = "Event Announcement",

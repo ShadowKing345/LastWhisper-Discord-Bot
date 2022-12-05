@@ -7,7 +7,7 @@ import { createLogger } from "../services/loggerService.js";
 import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
-import { EventObj } from "../entities/eventManager/index.js";
+import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
@@ -277,7 +277,7 @@ export class EventManagerModule extends Module {
     }
 
     const embed: EmbedBuilder =
-      event instanceof EventObj
+      event instanceof EventObject
         ? this.service.createEventEmbed(event)
         : new EmbedBuilder({
             title: "Upcoming Events",
@@ -310,7 +310,7 @@ export class EventManagerModule extends Module {
     }
 
     try {
-      const event: EventObj = await this.service.create(
+      const event: EventObject = await this.service.create(
         message.guildId,
         message.id,
         message.content,

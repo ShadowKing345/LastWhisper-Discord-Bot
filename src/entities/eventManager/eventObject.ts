@@ -2,13 +2,11 @@
  * Event object.
  */
 import { DateTime } from "luxon";
-import { BaseEntity, Relation, Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import { EventManagerConfig } from "./eventManagerConfig.js";
+import { Entity, Column } from "typeorm";
+import { EntityBase } from "../entityBase.js";
 
 @Entity()
-export class EventObj extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  public id: string;
+export class EventObject extends EntityBase {
 
   @Column()
   public name: string = null;
@@ -21,10 +19,6 @@ export class EventObj extends BaseEntity {
 
   @Column("text", { array: true })
   public additional: [string, string][] = [];
-
-  @ManyToOne(() => EventManagerConfig, config => config.events)
-  @JoinColumn({ name: "config_id" })
-  public guildConfig: Relation<EventManagerConfig>;
 
   constructor() {
     super();
