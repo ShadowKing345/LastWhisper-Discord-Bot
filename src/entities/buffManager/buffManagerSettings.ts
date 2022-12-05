@@ -5,7 +5,7 @@ import { EntityBase } from "../entityBase.js";
  * Settings for posting the daily messages.
  */
 @Entity()
-export class MessageSettings extends EntityBase{
+export class BuffManagerSettings extends EntityBase {
   @Column({ nullable: true })
   public channelId: string = null;
 

@@ -19,8 +19,13 @@ export class WeekRepository extends Repository<Week> {
     });
   }
 
-  public async getWeekOfYear(guildId: string, date: DateTime): Promise<Week> {
+  public async getWeekOfYear(guildId: string, date: DateTime): Promise<Week | null> {
     const filteredWeeks = await this.getActiveWeeks(guildId);
+
+    if (filteredWeeks.length < 1) {
+      return null;
+    }
+
     return filteredWeeks[date.weekNumber % filteredWeeks.length];
   }
 }
