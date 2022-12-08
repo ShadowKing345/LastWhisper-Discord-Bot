@@ -1,4 +1,4 @@
-import { Repository as Repo, EntityTarget, FindOneOptions, FindManyOptions } from "typeorm";
+import { Repository as Repo, EntityTarget, FindOneOptions, FindManyOptions, FindOptionsWhere } from "typeorm";
 import { DatabaseService } from "../config/databaseService.js";
 import { RepositoryError } from "../utils/errors/index.js";
 import { EntityBase } from "../entities/entityBase.js";
@@ -10,7 +10,8 @@ import { EntityBase } from "../entities/entityBase.js";
 export abstract class Repository<T extends EntityBase> {
   protected repo: Repo<T>;
 
-  protected constructor(protected db: DatabaseService, private entityTarget: EntityTarget<T>) {}
+  protected constructor(protected db: DatabaseService, private entityTarget: EntityTarget<T>) {
+  }
 
   /**
    * Saves a new database record.
@@ -64,6 +65,14 @@ export abstract class Repository<T extends EntityBase> {
     this.isConnected();
 
     return this.repo.save(objs);
+  }
+
+  /**
+   * Deletes an object from the repository.
+   * @param filter The object to be deleted
+   */
+  public async delete(filter: FindOptionsWhere<T>): Promise<void> {
+    await this.repo.delete(filter);
   }
 
   /**
