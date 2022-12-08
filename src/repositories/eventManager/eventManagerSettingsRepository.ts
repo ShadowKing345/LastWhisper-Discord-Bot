@@ -12,4 +12,8 @@ export class EventManagerSettingsRepository extends Repository<EventManagerSetti
   constructor(db: DatabaseService) {
     super(db, EventManagerSettings);
   }
+
+  public getConfig(guildId: string): Promise<EventManagerSettings> {
+    return this.findOne({ where: { guildId } });
+  }
 }

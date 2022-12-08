@@ -12,4 +12,8 @@ export class EventObjectRepository extends Repository<EventObject> {
   constructor(db: DatabaseService) {
     super(db, EventObject);
   }
+
+  public async getEventsByGuildId(guildId: string): Promise<EventObject[]> {
+    return this.repo.find({ where: { guildId } });
+  }
 }
