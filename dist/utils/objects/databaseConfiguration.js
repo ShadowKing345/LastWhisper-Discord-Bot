@@ -1,9 +1,9 @@
 export class DatabaseConfiguration {
-    username = null;
-    password = null;
-    port = null;
-    database = null;
+    username = "postgresql";
+    password = "postgres";
+    port = 5432;
+    database = "Bot";
     logging = false;
-    sync = true;
+    sync = false;
 }
 //# sourceMappingURL=databaseConfiguration.js.map

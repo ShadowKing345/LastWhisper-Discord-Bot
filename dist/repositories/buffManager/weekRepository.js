@@ -17,6 +17,9 @@ let WeekRepository = class WeekRepository extends Repository {
     }
     async getWeekOfYear(guildId, date) {
         const filteredWeeks = await this.getActiveWeeks(guildId);
+        if (filteredWeeks.length < 1) {
+            return null;
+        }
         return filteredWeeks[date.weekNumber % filteredWeeks.length];
     }
 };

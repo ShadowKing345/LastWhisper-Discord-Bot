@@ -5,6 +5,6 @@ import { DateTime } from "luxon";
 export declare class WeekRepository extends Repository<Week> {
     constructor(db: DatabaseService);
     getActiveWeeks(guildId: string): Promise<Week[]>;
-    getWeekOfYear(guildId: string, date: DateTime): Promise<Week>;
+    getWeekOfYear(guildId: string, date: DateTime): Promise<Week | null>;
 }
 //# sourceMappingURL=weekRepository.d.ts.map

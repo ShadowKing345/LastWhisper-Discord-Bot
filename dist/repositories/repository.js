@@ -27,6 +27,9 @@ export class Repository {
         this.isConnected();
         return this.repo.save(objs);
     }
+    async delete(filter) {
+        await this.repo.delete(filter);
+    }
     isConnected() {
         if (!this.db.isConnected) {
             throw new RepositoryError("No valid connection to the database.");

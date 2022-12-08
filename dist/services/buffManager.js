@@ -9,20 +9,20 @@ import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
-import { MessageSettingsRepository } from "../repositories/buffManager/messageSettingsRepository.js";
+import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {
     logger;
     weekRepository;
-    messageSettingsRepository;
+    buffManagerSettingsRepository;
     constructor(weekRepository, messageSettingsRepository, logger) {
-        super(null, null);
+        super();
         this.logger = logger;
         this.weekRepository = weekRepository;
-        this.messageSettingsRepository = messageSettingsRepository;
+        this.buffManagerSettingsRepository = messageSettingsRepository;
     }
     async getBuffByDate(guildId, date) {
-        const week = await this.weekRepository.getWeekOfYear(guildId, date);
-        return week.getBuff(date);
+        const week = await this.getWeekByDate(guildId, date);
+        return week?.getBuff(date);
     }
     async getWeekByDate(guildId, date) {
         return await this.weekRepository.getWeekOfYear(guildId, date);
@@ -30,12 +30,10 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
     async postDailyMessage(client) {
         await Timer.waitTillReady(client);
         this.logger.debug("Posting daily buff message.");
-        const messageSettings = await this.messageSettingsRepository.getAll();
+        const messageSettings = await this.buffManagerSettingsRepository.getActiveSettings();
         const now = DateTime.now();
         for (const settings of messageSettings) {
             try {
-                if (!settings.channelId || !settings.hour)
-                    continue;
                 if (!now.hasSame(DateTime.fromFormat(settings.hour, "HH:mm"), "minute")) {
                     continue;
                 }
@@ -94,7 +92,7 @@ BuffManagerService = BuffManagerService_1 = __decorate([
     service(),
     __param(2, createLogger(BuffManagerService_1.name)),
     __metadata("design:paramtypes", [WeekRepository,
-        MessageSettingsRepository, Object])
+        BuffManagerSettingsRepository, Object])
 ], BuffManagerService);
 export { BuffManagerService };
 export class BuffManagerTryGetError extends ServiceError {

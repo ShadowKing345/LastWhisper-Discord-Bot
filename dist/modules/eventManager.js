@@ -200,7 +200,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         });
     }
     async listEventCommand(interaction) {
-        const event = await this.service.findIndex(interaction.guildId, interaction.options.getInteger("index"));
+        const event = await this.service.findByIndex(interaction.guildId, interaction.options.getInteger("index"));
         if (event == null) {
             await interaction.editReply({
                 embeds: [

@@ -7,6 +7,9 @@ let EventObjectRepository = class EventObjectRepository extends Repository {
     constructor(db) {
         super(db, EventObject);
     }
+    async getEventsByGuildId(guildId) {
+        return this.repo.find({ where: { guildId } });
+    }
 };
 EventObjectRepository = __decorate([
     repository(),

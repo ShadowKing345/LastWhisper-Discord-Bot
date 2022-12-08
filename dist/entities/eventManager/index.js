@@ -1,8 +1,6 @@
-import { EventManagerConfig } from "./eventManagerConfig.js";
+import { EventManagerSettings } from "./eventManagerSettings.js";
 import { EventObject } from "./eventObject.js";
 import { EventReminder } from "./eventReminder.js";
-export * from "./eventManagerConfig.js";
-export * from "./eventObject.js";
-export * from "./eventReminder.js";
-export const EventManagerEntities = [EventManagerConfig, EventObject, EventReminder];
+export { EventManagerSettings, EventObject, EventReminder };
+export const EventManagerEntities = [EventManagerSettings, EventObject, EventReminder];
 //# sourceMappingURL=index.js.map
