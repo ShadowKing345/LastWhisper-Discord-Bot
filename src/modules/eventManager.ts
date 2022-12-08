@@ -262,7 +262,7 @@ export class EventManagerModule extends Module {
   @authorize(EventManagerModule.permissionKeys.list)
   @deferReply()
   private async listEventCommand(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const event = await this.service.findIndex(interaction.guildId, interaction.options.getInteger("index"));
+    const event = await this.service.findByIndex(interaction.guildId, interaction.options.getInteger("index"));
 
     if (event == null) {
       await interaction.editReply({
