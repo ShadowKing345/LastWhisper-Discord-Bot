@@ -32,6 +32,7 @@ export class EventManagerSettings extends EntityBase {
   public dateTimeFormat: string[] = [];
 
   constructor(
+    guildId: string = null,
     announcement = "Event Announcement",
     description = "Event Description",
     dateTime = "Time",
@@ -39,6 +40,7 @@ export class EventManagerSettings extends EntityBase {
   ) {
     super();
 
+    this.guildId = guildId;
     this.announcement = announcement;
     this.description = description;
     this.dateTime = dateTime;
