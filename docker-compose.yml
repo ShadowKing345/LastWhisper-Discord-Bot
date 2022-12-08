@@ -15,8 +15,9 @@ services:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=user
+      - POSTGRES_USER=postgresql
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=Bot
     ports:
       - "5432:5432"
     volumes:
