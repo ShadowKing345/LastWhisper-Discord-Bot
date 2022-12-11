@@ -7,17 +7,13 @@ import { userInfo } from "os";
 
 import { main } from "./app.js";
 import { commandRegistration } from "./commandRegistration.js";
-import { generateConfigObject } from "./config/appConfigs.js";
+import { ConfigurationService } from "./config/configurationService.js";
+import { DatabaseConfiguration, ProjectConfiguration } from "./utils/objects/index.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 
-generateConfigObject();
-
-// const configCheck = () => !existsSync(configPath) ? inquirer.prompt<{ result: boolean }>({
-//     name: "result",
-//     message: "I have noticed you do not have the configuration file. Would you like for me to create it?",
-//     type: "confirm",
-// }).then(({ result }) => result ? generateConfigs({ minimal: true }) : Promise.resolve()) : Promise.resolve();
+ConfigurationService.RegisterConfiguration<ProjectConfiguration>("", ProjectConfiguration);
+ConfigurationService.RegisterConfiguration<DatabaseConfiguration>("database", DatabaseConfiguration);
 
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
 
