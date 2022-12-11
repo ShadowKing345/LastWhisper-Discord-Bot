@@ -2,8 +2,7 @@ import { pino } from "pino";
 import { singleton } from "tsyringe";
 
 import { createLogger } from "../services/loggerService.js";
-import { ProjectConfiguration, DatabaseConfiguration } from "../utils/objects/index.js";
-import { ConfigurationService } from "./configurationService.js";
+import { DatabaseConfiguration } from "../utils/objects/index.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -17,23 +16,22 @@ import { RoleManagerConfig } from "../entities/roleManager.js";
  * This service provides access to the database object as well as connection to the database server.
  */
 @singleton()
-export class DatabaseService extends ConfigurationService {
+export class DatabaseService {
+  private readonly databaseConfigs: DatabaseConfiguration;
   private _dataSource: DataSource = null;
 
   constructor(
-    private projectConfig: ProjectConfiguration,
+    databaseConfigs: DatabaseConfiguration,
     @createLogger(DatabaseService.name) private logger: pino.Logger,
   ) {
-    super();
+    this.databaseConfigs = databaseConfigs;
   }
 
   /**
    * Attempts to establish a connection to the database.
    */
   public async connect(): Promise<void> {
-    const databaseConfigs: DatabaseConfiguration = this.projectConfig.database;
-
-    if (!databaseConfigs) {
+    if (!this.databaseConfigs) {
       throw new Error("Database configuration is null.");
     }
 
@@ -47,12 +45,12 @@ export class DatabaseService extends ConfigurationService {
       if (!this._dataSource) {
         this._dataSource = new DataSource({
           type: "postgres",
-          username: databaseConfigs.username,
-          password: databaseConfigs.password,
-          port: Number(databaseConfigs.port),
-          database: databaseConfigs.database,
-          synchronize: databaseConfigs.sync,
-          logging: databaseConfigs.logging,
+          username: this.databaseConfigs.username,
+          password: this.databaseConfigs.password,
+          port: this.databaseConfigs.port,
+          database: this.databaseConfigs.database,
+          synchronize: this.databaseConfigs.sync,
+          logging: this.databaseConfigs.logging,
           entities: [
             ...Object.values(BuffManagerEntities),
             ...Object.values(EventManagerEntities),
