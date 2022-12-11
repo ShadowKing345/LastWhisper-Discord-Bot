@@ -13,7 +13,9 @@
     "watch": "nodemon src/index.ts",
     "build": "rimraf dist && tsc --build",
     "test": "",
-    "lint": "eslint --max-warnings 10 . && prettier --check .",
+    "lint": "eslint --max-warnings 10 .",
+    "lint-fix": "eslint --fix .",
+    "pretty-check": "prettier --check .",
     "pretty": "prettier --write ."
   },
   "husky": {
