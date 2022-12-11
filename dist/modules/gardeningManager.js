@@ -1,16 +1,16 @@
 var GardeningManagerModule_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { ApplicationCommandOptionType } from "discord.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
+import { Logger } from "../utils/logger.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends Module {
     gardeningManagerService;
+    logger = new Logger(GardeningManagerModule_1);
     moduleName = "GardeningModule";
     commands = [
         new Command({
@@ -118,8 +118,8 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
         "gardening_module.list": this.list.bind(this),
         "gardening_module.cancel": this.cancel.bind(this),
     };
-    constructor(gardeningManagerService, permissionManagerService, logger) {
-        super(permissionManagerService, logger);
+    constructor(gardeningManagerService, permissionManagerService) {
+        super(permissionManagerService);
         this.gardeningManagerService = gardeningManagerService;
     }
     reserve(interaction, player, plant, duration, reason, plotNum, slotNum) {
@@ -152,9 +152,8 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
 };
 GardeningManagerModule = GardeningManagerModule_1 = __decorate([
     module(),
-    __param(2, createLogger(GardeningManagerModule_1.name)),
     __metadata("design:paramtypes", [GardeningManagerService,
-        PermissionManagerService, Object])
+        PermissionManagerService])
 ], GardeningManagerModule);
 export { GardeningManagerModule };
 //# sourceMappingURL=gardeningManager.js.map

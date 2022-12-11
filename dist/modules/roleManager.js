@@ -1,15 +1,15 @@
 var RoleManagerModule_1;
-import { __decorate, __metadata, __param } from "tslib";
-import { pino } from "pino";
-import { Module } from "../utils/objects/index.js";
-import { createLogger } from "../services/loggerService.js";
+import { __decorate, __metadata } from "tslib";
+import { Module } from "./module.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { EventListener } from "../utils/objects/eventListener.js";
+import { Logger } from "../utils/logger.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Module {
     roleManagerService;
+    logger = new Logger(RoleManagerModule_1);
     moduleName = "RoleManager";
     eventListeners = [new EventListener("ready", async (client) => this.onReady(client))];
     commands = [
@@ -52,8 +52,8 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
         "role_manager.register_message": this.registerMessage.bind(this),
         "role_manager.unregister_message": this.unregisterMessage.bind(this),
     };
-    constructor(roleManagerService, logger, permissionManagerService) {
-        super(permissionManagerService, logger);
+    constructor(roleManagerService, permissionManagerService) {
+        super(permissionManagerService);
         this.roleManagerService = roleManagerService;
     }
     onReady(client) {
@@ -71,8 +71,8 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
 };
 RoleManagerModule = RoleManagerModule_1 = __decorate([
     module(),
-    __param(1, createLogger(RoleManagerModule_1.name)),
-    __metadata("design:paramtypes", [RoleManagerService, Object, PermissionManagerService])
+    __metadata("design:paramtypes", [RoleManagerService,
+        PermissionManagerService])
 ], RoleManagerModule);
 export { RoleManagerModule };
 //# sourceMappingURL=roleManager.js.map

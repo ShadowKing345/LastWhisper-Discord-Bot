@@ -1,9 +1,6 @@
 var DatabaseService_1;
 import { __decorate, __metadata, __param } from "tslib";
-import { pino } from "pino";
-import { singleton } from "tsyringe";
-import { createLogger } from "../services/loggerService.js";
-import { DatabaseConfiguration } from "../utils/objects/index.js";
+import { singleton, inject } from "tsyringe";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -11,13 +8,13 @@ import { GardeningManagerEntities } from "../entities/gardeningManager/index.js"
 import { PermissionManagerEntities } from "../entities/permissionManager/index.js";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
+import { Logger } from "../utils/logger.js";
 let DatabaseService = DatabaseService_1 = class DatabaseService {
-    logger;
     databaseConfigs;
+    logger = new Logger(DatabaseService_1);
     _dataSource = null;
-    constructor(databaseConfigs, logger) {
-        this.logger = logger;
-        this.databaseConfigs = databaseConfigs;
+    constructor(databaseConfigs) {
+        this.databaseConfigs = databaseConfigs.getValue();
     }
     async connect() {
         if (!this.databaseConfigs) {
@@ -56,7 +53,7 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
         }
     }
     async disconnect() {
-        await this._dataSource.destroy();
+        await this._dataSource?.destroy();
         this._dataSource = null;
         this.logger.info("Disconnecting from database.");
     }
@@ -69,8 +66,8 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
 };
 DatabaseService = DatabaseService_1 = __decorate([
     singleton(),
-    __param(1, createLogger(DatabaseService_1.name)),
-    __metadata("design:paramtypes", [DatabaseConfiguration, Object])
+    __param(0, inject("IOptional<DatabaseConfiguration>")),
+    __metadata("design:paramtypes", [Object])
 ], DatabaseService);
 export { DatabaseService };
 //# sourceMappingURL=databaseService.js.map

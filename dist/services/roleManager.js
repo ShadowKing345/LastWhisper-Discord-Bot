@@ -1,21 +1,19 @@
 var RoleManagerService_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { TextChannel } from "discord.js";
-import { pino } from "pino";
-import { createLogger } from "./loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends Service {
     repository;
-    logger;
+    logger = new Logger(RoleManagerService_1);
     collectors = {};
-    constructor(repository, logger) {
+    constructor(repository) {
         super();
         this.repository = repository;
-        this.logger = logger;
     }
     getConfig(guildId) {
         return this.repository.findOne({ where: { guildId } });
@@ -180,8 +178,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends
 };
 RoleManagerService = RoleManagerService_1 = __decorate([
     service(),
-    __param(1, createLogger(RoleManagerService_1.name)),
-    __metadata("design:paramtypes", [RoleManagerRepository, Object])
+    __metadata("design:paramtypes", [RoleManagerRepository])
 ], RoleManagerService);
 export { RoleManagerService };
 //# sourceMappingURL=roleManager.js.map

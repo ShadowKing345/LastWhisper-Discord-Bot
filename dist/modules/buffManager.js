@@ -1,16 +1,16 @@
 var BuffManagerModule_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
-import { pino } from "pino";
-import { createLogger } from "../services/loggerService.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { DateTime } from "luxon";
+import { Logger } from "../utils/logger.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Module {
     service;
+    logger = new Logger(BuffManagerModule_1);
     static permissionKeys = {
         buffs: "BuffManager.buffs",
         weeks: "BuffManager.weeks",
@@ -72,8 +72,8 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         "buff_manager.buffs": this.postBuffCommand.bind(this),
         "buff_manager.weeks": this.postWeekCommand.bind(this),
     };
-    constructor(service, logger, permissionManagerService) {
-        super(permissionManagerService, logger);
+    constructor(service, permissionManagerService) {
+        super(permissionManagerService);
         this.service = service;
     }
     async postBuffCommand(interaction) {
@@ -172,8 +172,8 @@ __decorate([
 ], BuffManagerModule, "permissionKeys", void 0);
 BuffManagerModule = BuffManagerModule_1 = __decorate([
     module(),
-    __param(1, createLogger(BuffManagerModule_1.name)),
-    __metadata("design:paramtypes", [BuffManagerService, Object, PermissionManagerService])
+    __metadata("design:paramtypes", [BuffManagerService,
+        PermissionManagerService])
 ], BuffManagerModule);
 export { BuffManagerModule };
 //# sourceMappingURL=buffManager.js.map

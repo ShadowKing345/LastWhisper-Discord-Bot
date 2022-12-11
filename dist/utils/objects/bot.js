@@ -3,17 +3,16 @@ import { __decorate, __metadata, __param } from "tslib";
 import { Client, GatewayIntentBits, Collection } from "discord.js";
 import { ProjectConfiguration } from "./projectConfiguration.js";
 import { DatabaseService } from "../../config/databaseService.js";
-import { ModuleConfigurationService } from "../../config/moduleConfigurationService.js";
-import { createLogger } from "../../services/loggerService.js";
-import { pino } from "pino";
-import { singleton } from "tsyringe";
+import { ModuleService } from "../../config/moduleService.js";
+import { singleton, inject } from "tsyringe";
+import { Logger } from "../logger.js";
 let Bot = Bot_1 = class Bot extends Client {
     projectConfiguration;
     databaseService;
     moduleConfiguration;
-    logger;
+    logger = new Logger(Bot_1);
     events = new Collection();
-    constructor(appConfig, databaseService, moduleConfiguration, logger) {
+    constructor(appConfig, databaseService, moduleConfiguration) {
         super({
             intents: [
                 GatewayIntentBits.Guilds,
@@ -24,10 +23,9 @@ let Bot = Bot_1 = class Bot extends Client {
                 GatewayIntentBits.MessageContent,
             ],
         });
-        this.projectConfiguration = appConfig;
+        this.projectConfiguration = appConfig.getValue();
         this.databaseService = databaseService;
         this.moduleConfiguration = moduleConfiguration;
-        this.logger = logger;
     }
     async init() {
         try {
@@ -48,7 +46,9 @@ let Bot = Bot_1 = class Bot extends Client {
     async stop() {
         this.logger.info("Stopping application.");
         this.moduleConfiguration.cleanup();
-        this.destroy();
+        if (this.isReady()) {
+            this.destroy();
+        }
         await this.databaseService.disconnect();
         this.logger.info("Done. Have a nice day!");
     }
@@ -58,10 +58,9 @@ let Bot = Bot_1 = class Bot extends Client {
 };
 Bot = Bot_1 = __decorate([
     singleton(),
-    __param(3, createLogger(Bot_1.name)),
-    __metadata("design:paramtypes", [ProjectConfiguration,
-        DatabaseService,
-        ModuleConfigurationService, Object])
+    __param(0, inject(`IOptional<${ProjectConfiguration.name}>`)),
+    __metadata("design:paramtypes", [Object, DatabaseService,
+        ModuleService])
 ], Bot);
 export { Bot };
 //# sourceMappingURL=bot.js.map

@@ -3,11 +3,12 @@ import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
-import { pino } from "pino";
 import { EventListeners } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
+import { Logger } from "../utils/logger.js";
 export declare class EventManagerModule extends Module {
     private service;
+    protected logger: Logger;
     static permissionKeys: {
         create: string;
         update: string;
@@ -26,7 +27,7 @@ export declare class EventManagerModule extends Module {
         "event_manager.test": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
         "event_manager.list": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
     };
-    constructor(service: EventManagerService, permissionManagerService: PermissionManagerService, logger: pino.Logger);
+    constructor(service: EventManagerService, permissionManagerService: PermissionManagerService);
     private createEventCommand;
     private updateEventCommand;
     private cancelEventCommand;

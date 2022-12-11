@@ -6,4 +6,5 @@ export * from "./invalidArgumentError.js";
 export * from "./wrongChannelError.js";
 export * from "./serviceError.js";
 export * from "./repositoryError.js";
+export * from "./nullValueError.js";
 //# sourceMappingURL=index.js.map

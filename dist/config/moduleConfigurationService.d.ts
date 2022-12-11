@@ -1,4 +1,3 @@
-import { LoggerService } from "../services/loggerService.js";
 import { Bot } from "../utils/objects/bot.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
 export declare class ModuleConfigurationService {
@@ -9,7 +8,7 @@ export declare class ModuleConfigurationService {
     private readonly interactionLogger;
     private readonly eventLogger;
     private readonly taskLogger;
-    constructor(config: ProjectConfiguration, modules: Module[], loggerFactory: LoggerService);
+    constructor(config: ProjectConfiguration, modules: Module[]);
     private interactionEvent;
     private runEvent;
     private runTimer;

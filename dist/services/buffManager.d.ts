@@ -1,6 +1,5 @@
 import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
-import { pino } from "pino";
 import { Bot } from "../utils/objects/bot.js";
 import { Buff, Week } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
@@ -11,7 +10,7 @@ export declare class BuffManagerService extends Service {
     private logger;
     private readonly weekRepository;
     private readonly buffManagerSettingsRepository;
-    constructor(weekRepository: WeekRepository, messageSettingsRepository: BuffManagerSettingsRepository, logger: pino.Logger);
+    constructor(weekRepository: WeekRepository, messageSettingsRepository: BuffManagerSettingsRepository);
     getBuffByDate(guildId: string, date: DateTime): Promise<Buff | null>;
     getWeekByDate(guildId: string, date: DateTime): Promise<Week | null>;
     postDailyMessage(client: Bot): Promise<void>;

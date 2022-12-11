@@ -1,14 +1,12 @@
-import { __decorate, __metadata } from "tslib";
+import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
-import { singleton, injectWithTransform } from "tsyringe";
+import { singleton, inject } from "tsyringe";
 import { ProjectConfiguration } from "../utils/objects/index.js";
 import { LOGGING_LEVELS } from "../utils/objects/loggerConfigs.js";
-import { Service } from "./service.js";
-let LoggerService = class LoggerService extends Service {
+let LoggerService = class LoggerService {
     configs;
     pino;
     constructor(appConfigs) {
-        super();
         this.configs = appConfigs.logger;
         this.pino = pino({
             level: this.configs?.level ?? LOGGING_LEVELS.info,
@@ -21,15 +19,13 @@ let LoggerService = class LoggerService extends Service {
 };
 LoggerService = __decorate([
     singleton(),
+    __param(0, inject(`IOptional<${ProjectConfiguration.name}>`)),
     __metadata("design:paramtypes", [ProjectConfiguration])
 ], LoggerService);
 export { LoggerService };
-class LoggerFactoryTransformer {
+export class LoggerFactoryTransformer {
     transform(incoming, args) {
         return incoming.buildLogger(args);
     }
-}
-export function createLogger(context) {
-    return injectWithTransform(LoggerService, LoggerFactoryTransformer, context);
 }
 //# sourceMappingURL=loggerService.js.map

@@ -1,24 +1,20 @@
 import { __decorate, __metadata, __param } from "tslib";
 import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
-import { singleton, injectAll } from "tsyringe";
-import { LoggerService } from "../services/loggerService.js";
+import { singleton, injectAll, inject } from "tsyringe";
+import { Logger } from "../utils/logger.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 let ModuleConfigurationService = class ModuleConfigurationService {
     moduleConfiguration;
     intervalIds = [];
     _modules;
-    moduleLogger;
-    interactionLogger;
-    eventLogger;
-    taskLogger;
-    constructor(config, modules, loggerFactory) {
+    moduleLogger = new Logger("ModuleConfiguration");
+    interactionLogger = new Logger("InteractionExecution");
+    eventLogger = new Logger("EventExecution");
+    taskLogger = new Logger("TimerExecution");
+    constructor(config, modules) {
         this.moduleConfiguration = config.moduleConfiguration;
-        this.moduleLogger = loggerFactory.buildLogger("ModuleConfiguration");
-        this.interactionLogger = loggerFactory.buildLogger("InteractionExecution");
-        this.eventLogger = loggerFactory.buildLogger("EventExecution");
-        this.taskLogger = loggerFactory.buildLogger("TimerExecution");
         this._modules =
             this.moduleConfiguration.modules?.length !== 0
                 ? modules.filter(module => {
@@ -183,8 +179,9 @@ let ModuleConfigurationService = class ModuleConfigurationService {
 };
 ModuleConfigurationService = __decorate([
     singleton(),
+    __param(0, inject(`IOptional<${ProjectConfiguration.name}>`)),
     __param(1, injectAll(Module.name)),
-    __metadata("design:paramtypes", [ProjectConfiguration, Array, LoggerService])
+    __metadata("design:paramtypes", [ProjectConfiguration, Array])
 ], ModuleConfigurationService);
 export { ModuleConfigurationService };
 //# sourceMappingURL=moduleConfigurationService.js.map

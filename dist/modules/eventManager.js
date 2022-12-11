@@ -1,19 +1,19 @@
 var EventManagerModule_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends Module {
     service;
+    logger = new Logger(EventManagerModule_1);
     static permissionKeys = {
         create: "EventManager.create",
         update: "EventManager.update",
@@ -144,8 +144,8 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
         "event_manager.test": this.testEventCommand.bind(this),
         "event_manager.list": this.listEventCommand.bind(this),
     };
-    constructor(service, permissionManagerService, logger) {
-        super(permissionManagerService, logger);
+    constructor(service, permissionManagerService) {
+        super(permissionManagerService);
         this.service = service;
     }
     async createEventCommand(interaction) {
@@ -323,9 +323,8 @@ __decorate([
 ], EventManagerModule, "permissionKeys", void 0);
 EventManagerModule = EventManagerModule_1 = __decorate([
     module(),
-    __param(2, createLogger(EventManagerModule_1.name)),
     __metadata("design:paramtypes", [EventManagerService,
-        PermissionManagerService, Object])
+        PermissionManagerService])
 ], EventManagerModule);
 export { EventManagerModule };
 //# sourceMappingURL=eventManager.js.map

@@ -1,11 +1,11 @@
 import { REST } from "@discordjs/rest";
 import { container } from "tsyringe";
-import { LoggerService } from "./services/loggerService.js";
+import { Logger } from "./utils/logger.js";
 import { ProjectConfiguration, Bot } from "./utils/objects/index.js";
 import { Routes } from "discord-api-types/v10";
 export async function commandRegistration(args) {
     const app = container.resolve(Bot);
-    const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
+    const logger = new Logger("CommandRegistration");
     logger.info("Welcome again to command registration or un-registration.");
     const appConfigs = container.resolve(ProjectConfiguration);
     const commandConfigs = appConfigs.commandRegistration;

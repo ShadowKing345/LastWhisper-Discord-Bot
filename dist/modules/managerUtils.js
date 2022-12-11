@@ -1,15 +1,15 @@
 var ManagerUtilsModule_1;
-import { __decorate, __metadata, __param } from "tslib";
-import { Module } from "../utils/objects/index.js";
+import { __decorate, __metadata } from "tslib";
+import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { EventListener } from "../utils/objects/eventListener.js";
+import { Logger } from "../utils/logger.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends Module {
     managerUtilsService;
+    logger = new Logger(ManagerUtilsModule_1);
     moduleName = "ManagerUtils";
     commands = [
         new Command({
@@ -37,8 +37,8 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
     commandResolverKeys = {
         "manager_utils.clear": this.clear.bind(this),
     };
-    constructor(managerUtilsService, permissionManagerService, logger) {
-        super(permissionManagerService, logger);
+    constructor(managerUtilsService, permissionManagerService) {
+        super(permissionManagerService);
         this.managerUtilsService = managerUtilsService;
     }
     onMemberRemoved(member) {
@@ -53,9 +53,8 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
 };
 ManagerUtilsModule = ManagerUtilsModule_1 = __decorate([
     module(),
-    __param(2, createLogger(ManagerUtilsModule_1.name)),
     __metadata("design:paramtypes", [ManagerUtilsService,
-        PermissionManagerService, Object])
+        PermissionManagerService])
 ], ManagerUtilsModule);
 export { ManagerUtilsModule };
 //# sourceMappingURL=managerUtils.js.map

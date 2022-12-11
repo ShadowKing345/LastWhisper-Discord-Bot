@@ -1,22 +1,20 @@
 var BuffManagerService_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { EmbedBuilder, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
-import { pino } from "pino";
-import { createLogger } from "./loggerService.js";
 import { Timer } from "../utils/objects/timer.js";
 import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
 import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
+import { Logger } from "../utils/logger.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {
-    logger;
+    logger = new Logger(BuffManagerService_1);
     weekRepository;
     buffManagerSettingsRepository;
-    constructor(weekRepository, messageSettingsRepository, logger) {
+    constructor(weekRepository, messageSettingsRepository) {
         super();
-        this.logger = logger;
         this.weekRepository = weekRepository;
         this.buffManagerSettingsRepository = messageSettingsRepository;
     }
@@ -90,9 +88,8 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
 };
 BuffManagerService = BuffManagerService_1 = __decorate([
     service(),
-    __param(2, createLogger(BuffManagerService_1.name)),
     __metadata("design:paramtypes", [WeekRepository,
-        BuffManagerSettingsRepository, Object])
+        BuffManagerSettingsRepository])
 ], BuffManagerService);
 export { BuffManagerService };
 export class BuffManagerTryGetError extends ServiceError {

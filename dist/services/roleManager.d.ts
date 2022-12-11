@@ -1,5 +1,4 @@
 import { CommandInteraction, MessageReaction, User, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
-import { pino } from "pino";
 import { Bot } from "../utils/objects/bot.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
@@ -7,7 +6,7 @@ export declare class RoleManagerService extends Service {
     private repository;
     private logger;
     private collectors;
-    constructor(repository: RoleManagerRepository, logger: pino.Logger);
+    constructor(repository: RoleManagerRepository);
     private getConfig;
     private static alterMembersRoles;
     private static processMessageReactions;

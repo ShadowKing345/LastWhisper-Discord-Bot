@@ -1,6 +1,7 @@
 export class LoggerConfigs {
     level = LOGGING_LEVELS.info;
     transports = null;
+    disable = false;
 }
 export var LOGGING_LEVELS;
 (function (LOGGING_LEVELS) {

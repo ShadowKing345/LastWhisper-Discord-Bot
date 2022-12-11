@@ -3,7 +3,7 @@ export class ModuleConfiguration {
     enableEventListeners = true;
     enableTimers = true;
     enableInteractions = true;
-    modules = [];
+    modules = ["DevModule"];
     blacklist = true;
 }
 //# sourceMappingURL=moduleConfiguration.js.map

@@ -1,16 +1,16 @@
 var PermissionManagerModule_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
+import { Logger } from "../utils/logger.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends Module {
     service;
+    logger = new Logger(PermissionManagerModule_1);
     BadKeyErrorMessages = "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
     static permissionKeys = {
         list: "PermissionManager.list",
@@ -94,8 +94,8 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
         "permissions.reset": this.reset.bind(this),
         "permissions.list": this.listPermissions.bind(this),
     };
-    constructor(service, logger) {
-        super(service, logger);
+    constructor(service) {
+        super(service);
         this.service = service;
     }
     async commandResolver(interaction) {
@@ -251,8 +251,7 @@ __decorate([
 ], PermissionManagerModule, "permissionKeys", void 0);
 PermissionManagerModule = PermissionManagerModule_1 = __decorate([
     module(),
-    __param(1, createLogger(PermissionManagerModule_1.name)),
-    __metadata("design:paramtypes", [PermissionManagerService, Object])
+    __metadata("design:paramtypes", [PermissionManagerService])
 ], PermissionManagerModule);
 export { PermissionManagerModule };
 //# sourceMappingURL=permissionManager.js.map

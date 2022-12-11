@@ -1,6 +1,5 @@
 import { Client, EmbedBuilder } from "discord.js";
 import { Service } from "./service.js";
-import { pino } from "pino";
 import { EventManagerSettingsRepository } from "../repositories/eventManager/eventManagerSettingsRepository.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { EventObjectRepository } from "../repositories/eventManager/eventObjectRepository.js";
@@ -10,7 +9,7 @@ export declare class EventManagerService extends Service {
     private readonly eventManagerSettingsRepository;
     private readonly eventObjectRepository;
     private readonly eventReminderRepository;
-    constructor(eventManagerSettingsRepository: EventManagerSettingsRepository, eventObjectRepository: EventObjectRepository, eventReminderRepository: EventReminderRepository, logger: pino.Logger);
+    constructor(eventManagerSettingsRepository: EventManagerSettingsRepository, eventObjectRepository: EventObjectRepository, eventReminderRepository: EventReminderRepository);
     private getConfig;
     parseEvent(guildId: string | null, text: string): Promise<EventObject>;
     findByIndex(guildId: string | null, index?: number): Promise<EventObject | EventObject[] | null>;

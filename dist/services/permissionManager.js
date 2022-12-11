@@ -1,22 +1,20 @@
 var PermissionManagerService_1;
-import { __decorate, __metadata, __param } from "tslib";
-import { pino } from "pino";
-import { createLogger } from "./loggerService.js";
+import { __decorate, __metadata } from "tslib";
 import { Permission, PermissionMode } from "../entities/permissionManager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService extends Service {
     repository;
-    logger;
+    logger = new Logger(PermissionManagerService_1);
     static keys = [];
     static _keysFormatted = null;
-    constructor(repository, logger) {
+    constructor(repository) {
         super();
         this.repository = repository;
-        this.logger = logger;
     }
     getConfig(guildId) {
         return this.repository.findOne({ where: { guildId } });
@@ -140,8 +138,7 @@ __decorate([
 ], PermissionManagerService.prototype, "setPermission", null);
 PermissionManagerService = PermissionManagerService_1 = __decorate([
     service(),
-    __param(1, createLogger(PermissionManagerService_1.name)),
-    __metadata("design:paramtypes", [PermissionManagerRepository, Object])
+    __metadata("design:paramtypes", [PermissionManagerRepository])
 ], PermissionManagerService);
 export { PermissionManagerService };
 //# sourceMappingURL=permissionManager.js.map

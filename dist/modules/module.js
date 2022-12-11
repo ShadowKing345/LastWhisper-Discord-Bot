@@ -1,7 +1,8 @@
 import { CommandResolverError } from "../utils/errors/index.js";
+import { Logger } from "../utils/logger.js";
 export class Module {
     permissionManagerService;
-    logger;
+    logger = new Logger(Module);
     moduleName = "";
     commands = [];
     eventListeners = [];
@@ -10,9 +11,8 @@ export class Module {
     selectMenus = null;
     modalSubmits = null;
     commandResolverKeys = {};
-    constructor(permissionManagerService, logger) {
+    constructor(permissionManagerService) {
         this.permissionManagerService = permissionManagerService;
-        this.logger = logger;
     }
     commandResolver(interaction, call = true) {
         this.logger.debug(`Command invoked, dealing with subcommand options.`);

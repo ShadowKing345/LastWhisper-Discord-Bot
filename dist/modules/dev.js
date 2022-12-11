@@ -1,13 +1,13 @@
 var DevModule_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { module } from "../utils/decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
 import { Command } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
+import { Logger } from "../utils/logger.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
+    logger = new Logger(DevModule_1);
     moduleName = "DevModule";
     commands = [
         new Command({
@@ -24,8 +24,8 @@ let DevModule = DevModule_1 = class DevModule extends Module {
     buttons = {
         buttonTest1: (interaction) => this.buttonTest(interaction),
     };
-    constructor(permissionManagerService, logger) {
-        super(permissionManagerService, logger);
+    constructor(permissionManagerService) {
+        super(permissionManagerService);
     }
     async testInteractionTypes(interaction) {
         const button = new ButtonBuilder().setCustomId("buttonTest1").setLabel("click me").setStyle(ButtonStyle.Danger);
@@ -71,8 +71,7 @@ let DevModule = DevModule_1 = class DevModule extends Module {
 };
 DevModule = DevModule_1 = __decorate([
     module(),
-    __param(1, createLogger(DevModule_1.name)),
-    __metadata("design:paramtypes", [PermissionManagerService, Object])
+    __metadata("design:paramtypes", [PermissionManagerService])
 ], DevModule);
 export { DevModule };
 //# sourceMappingURL=dev.js.map

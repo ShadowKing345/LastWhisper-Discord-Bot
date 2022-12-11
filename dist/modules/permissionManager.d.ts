@@ -1,10 +1,11 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
-import { pino } from "pino";
+import { Logger } from "../utils/logger.js";
 export declare class PermissionManagerModule extends Module {
     private service;
+    protected logger: Logger;
     private readonly BadKeyErrorMessages;
     static permissionKeys: {
         list: string;
@@ -22,7 +23,7 @@ export declare class PermissionManagerModule extends Module {
         "permissions.reset": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
         "permissions.list": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
     };
-    constructor(service: PermissionManagerService, logger: pino.Logger);
+    constructor(service: PermissionManagerService);
     protected commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;
     addRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;
     removeRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void>;

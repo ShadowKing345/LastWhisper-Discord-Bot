@@ -1,12 +1,10 @@
 var EventManagerService_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { EmbedBuilder, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { Service } from "./service.js";
-import { createLogger } from "./loggerService.js";
-import { pino } from "pino";
 import { service } from "../utils/decorators/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { EventManagerSettingsRepository } from "../repositories/eventManager/eventManagerSettingsRepository.js";
@@ -14,14 +12,14 @@ import { EventManagerSettings, EventObject } from "../entities/eventManager/inde
 import { EventObjectRepository } from "../repositories/eventManager/eventObjectRepository.js";
 import { EventReminderRepository } from "../repositories/eventManager/eventReminderRepository.js";
 import { LessThanOrEqual } from "typeorm";
+import { Logger } from "../utils/logger.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
-    logger;
+    logger = new Logger(EventManagerService_1);
     eventManagerSettingsRepository;
     eventObjectRepository;
     eventReminderRepository;
-    constructor(eventManagerSettingsRepository, eventObjectRepository, eventReminderRepository, logger) {
+    constructor(eventManagerSettingsRepository, eventObjectRepository, eventReminderRepository) {
         super();
-        this.logger = logger;
         this.eventManagerSettingsRepository = eventManagerSettingsRepository;
         this.eventObjectRepository = eventObjectRepository;
         this.eventReminderRepository = eventReminderRepository;
@@ -218,10 +216,9 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
 };
 EventManagerService = EventManagerService_1 = __decorate([
     service(),
-    __param(3, createLogger(EventManagerService_1.name)),
     __metadata("design:paramtypes", [EventManagerSettingsRepository,
         EventObjectRepository,
-        EventReminderRepository, Object])
+        EventReminderRepository])
 ], EventManagerService);
 export { EventManagerService };
 //# sourceMappingURL=eventManager.js.map
