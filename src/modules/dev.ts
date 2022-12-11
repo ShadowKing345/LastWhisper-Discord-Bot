@@ -3,14 +3,15 @@ import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder, InteractionResponse, ButtonInteraction } from "discord.js";
 import { Commands, Command } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Development module used for testing features and random things.
  */
 @module()
 export class DevModule extends Module {
+  protected logger: Logger = new Logger(DevModule);
+
   public moduleName = "DevModule";
   public commands: Commands = [
     new Command({
@@ -31,9 +32,8 @@ export class DevModule extends Module {
 
   public constructor(
     permissionManagerService: PermissionManagerService,
-    @createLogger(DevModule.name) logger: pino.Logger,
   ) {
-    super(permissionManagerService, logger);
+    super(permissionManagerService);
   }
 
   private async testInteractionTypes(interaction: CommandInteraction): Promise<void> {

@@ -1,14 +1,13 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
-import { pino } from "pino";
 
 import { Module } from "./module.js";
-import { createLogger } from "../services/loggerService.js";
 import { Bot } from "../utils/objects/bot.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Module for managing the roles of a Guild.
@@ -16,6 +15,8 @@ import { EventListeners, EventListener } from "../utils/objects/eventListener.js
  */
 @module()
 export class RoleManagerModule extends Module {
+  protected logger: Logger = new Logger(RoleManagerModule);
+
   public moduleName = "RoleManager";
   public eventListeners: EventListeners = [new EventListener("ready", async client => this.onReady(client))];
   public commands: Commands = [
@@ -62,10 +63,9 @@ export class RoleManagerModule extends Module {
 
   constructor(
     private roleManagerService: RoleManagerService,
-    @createLogger(RoleManagerModule.name) logger: pino.Logger,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService, logger);
+    super(permissionManagerService);
   }
 
   /**

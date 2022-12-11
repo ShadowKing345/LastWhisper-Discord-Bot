@@ -3,14 +3,13 @@ import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
 import { Timers } from "../utils/objects/timer.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Module designed to deal with events. (Not Discord event)
@@ -18,6 +17,8 @@ import { module, addPermissionKeys, authorize, deferReply } from "../utils/decor
  */
 @module()
 export class EventManagerModule extends Module {
+  protected logger: Logger = new Logger(EventManagerModule);
+
   @addPermissionKeys()
   public static permissionKeys = {
     create: "EventManager.create",
@@ -155,9 +156,8 @@ export class EventManagerModule extends Module {
   constructor(
     private service: EventManagerService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(EventManagerModule.name) logger: pino.Logger,
   ) {
-    super(permissionManagerService, logger);
+    super(permissionManagerService);
   }
 
   // region Commands

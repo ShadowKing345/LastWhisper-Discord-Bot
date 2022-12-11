@@ -9,11 +9,13 @@ import { main } from "./app.js";
 import { commandRegistration } from "./commandRegistration.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { DatabaseConfiguration, ProjectConfiguration } from "./utils/objects/index.js";
+import { LoggerConfigs } from "./utils/objects/loggerConfigs.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 
 ConfigurationService.RegisterConfiguration<ProjectConfiguration>("", ProjectConfiguration);
 ConfigurationService.RegisterConfiguration<DatabaseConfiguration>("database", DatabaseConfiguration);
+ConfigurationService.RegisterConfiguration<LoggerConfigs>("logger", LoggerConfigs);
 
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
 

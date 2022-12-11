@@ -1,6 +1,8 @@
 import { container as globalContainer, DependencyContainer } from "tsyringe";
 import fs from "fs";
-import { flattenObject } from "../utils/index.js";
+import { flattenObject, deepMerge } from "../utils/index.js";
+import { IOptional } from "../utils/optional/iOptional.js";
+import { Optional } from "../utils/optional/optional.js";
 
 export class ConfigurationService {
   public static readonly configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";
@@ -15,15 +17,13 @@ export class ConfigurationService {
 
     const map = ConfigurationService.flattenConfigs;
 
-    console.log(map);
-
     if (!map.has(key)) {
       throw new Error(`Configuration file has no config with the key ${key}`);
     }
 
-    const e = new entity();
+    const e = deepMerge(new entity(), map.get(key));
 
-    container.register<T>(entity, { useValue: e });
+    container.register<IOptional<T>>(`IOptional<${entity.name}>`, { useValue: new Optional(e) });
   }
 
   private static getConfigs(): void {
@@ -37,6 +37,8 @@ export class ConfigurationService {
     for (const [ k, v ] of Object.entries(flattenObject(JSON.parse(configStr) as object, true))) {
       ConfigurationService.flattenConfigs.set(k, v);
     }
+
+    ConfigurationService.flattenConfigs.set("", JSON.parse(configStr) as object);
 
     const devConfigStr = ConfigurationService.readFile(ConfigurationService.devConfigPath);
     if (!devConfigStr) {

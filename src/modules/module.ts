@@ -4,12 +4,14 @@ import { EventListeners } from "../utils/objects/eventListener.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../utils/errors/index.js";
-import { pino } from "pino";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Base class for a module.
  */
 export abstract class Module {
+  protected logger: Logger = new Logger(Module);
+
   public moduleName = "";
   public commands: Commands = [];
   public eventListeners: EventListeners = [];
@@ -29,7 +31,8 @@ export abstract class Module {
     [key: string]: (...args) => Promise<InteractionResponse | void>;
   } = {};
 
-  protected constructor(public permissionManagerService: PermissionManagerService, protected logger: pino.Logger) {}
+  protected constructor(public permissionManagerService: PermissionManagerService) {
+  }
 
   /**
    * Method to resolve a slash command call from the discord client.

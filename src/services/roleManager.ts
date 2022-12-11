@@ -1,7 +1,5 @@
 import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, Channel } from "discord.js";
-import { pino } from "pino";
 
-import { createLogger } from "./loggerService.js";
 import { Bot } from "../utils/objects/bot.js";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
@@ -9,12 +7,14 @@ import { RoleManagerConfig } from "../entities/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 
 @service()
 export class RoleManagerService extends Service {
+  private logger: Logger = new Logger(RoleManagerService);
   private collectors: { [key: string]: ReactionCollector } = {};
 
-  constructor(private repository: RoleManagerRepository, @createLogger(RoleManagerService.name) private logger: pino.Logger) {
+  constructor(private repository: RoleManagerRepository) {
     super();
   }
 

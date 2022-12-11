@@ -1,6 +1,4 @@
 import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
-import { pino } from "pino";
-import { createLogger } from "../services/loggerService.js";
 import { Bot } from "../utils/objects/bot.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
@@ -10,6 +8,7 @@ import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Module designed to deal with requests about buffs.
@@ -17,6 +16,8 @@ import { Buff, Week } from "../entities/buffManager/index.js";
  */
 @module()
 export class BuffManagerModule extends Module {
+  protected logger: Logger = new Logger(BuffManagerModule);
+
   @addPermissionKeys()
   public static permissionKeys = {
     buffs: "BuffManager.buffs",
@@ -85,10 +86,9 @@ export class BuffManagerModule extends Module {
 
   constructor(
     private service: BuffManagerService,
-    @createLogger(BuffManagerModule.name) logger: pino.Logger,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService, logger);
+    super(permissionManagerService);
   }
 
   /**

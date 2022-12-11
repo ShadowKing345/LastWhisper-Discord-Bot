@@ -4,8 +4,6 @@ import { DateTime } from "luxon";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { Service } from "./service.js";
-import { createLogger } from "./loggerService.js";
-import { pino } from "pino";
 import { service } from "../utils/decorators/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { EventManagerSettingsRepository } from "../repositories/eventManager/eventManagerSettingsRepository.js";
@@ -13,6 +11,7 @@ import { EventManagerSettings, EventObject } from "../entities/eventManager/inde
 import { EventObjectRepository } from "../repositories/eventManager/eventObjectRepository.js";
 import { EventReminderRepository } from "../repositories/eventManager/eventReminderRepository.js";
 import { LessThanOrEqual } from "typeorm";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Event manager service.
@@ -20,6 +19,8 @@ import { LessThanOrEqual } from "typeorm";
  */
 @service()
 export class EventManagerService extends Service {
+  private logger: Logger = new Logger(EventManagerService);
+
   private readonly eventManagerSettingsRepository: EventManagerSettingsRepository;
   private readonly eventObjectRepository: EventObjectRepository;
   private readonly eventReminderRepository: EventReminderRepository;
@@ -28,7 +29,6 @@ export class EventManagerService extends Service {
     eventManagerSettingsRepository: EventManagerSettingsRepository,
     eventObjectRepository: EventObjectRepository,
     eventReminderRepository: EventReminderRepository,
-    @createLogger(EventManagerService.name) private logger: pino.Logger,
   ) {
     super();
 

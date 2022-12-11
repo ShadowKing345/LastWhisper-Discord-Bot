@@ -11,19 +11,10 @@ export async function main() {
     "Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.",
   );
 
-  let app: Bot;
   try {
-    app = container.resolve(Bot);
-    // await app.init();
-
-    // process.on("SIGTERM", () => app.stop())
-    //     .on("SIGINT", () => app.stop())
-    //     .on("uncaughtException", () => app.stop());
-
-
-    // await app.run();
+    const bot: Bot = container.resolve(Bot);
+    await bot.stop();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
-    await app.stop();
   }
 }

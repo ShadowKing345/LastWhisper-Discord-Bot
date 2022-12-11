@@ -2,11 +2,11 @@ import { Client, GatewayIntentBits, Collection, ClientEvents } from "discord.js"
 import { EventListeners } from "./eventListener.js";
 import { ProjectConfiguration } from "./projectConfiguration.js";
 import { DatabaseService } from "../../config/databaseService.js";
-import { ModuleConfigurationService } from "../../config/moduleConfigurationService.js";
-import { createLogger } from "../../services/loggerService.js";
-import { pino } from "pino";
+import { ModuleService } from "../../config/moduleService.js";
 import { Module } from "../../modules/module.js";
-import { singleton } from "tsyringe";
+import { singleton, inject } from "tsyringe";
+import { Logger } from "../logger.js";
+import { IOptional } from "../optional/iOptional.js";
 
 /**
  * Application class.
@@ -16,16 +16,15 @@ import { singleton } from "tsyringe";
 export class Bot extends Client {
   private readonly projectConfiguration: ProjectConfiguration;
   private readonly databaseService: DatabaseService;
-  private readonly moduleConfiguration: ModuleConfigurationService;
-  private readonly logger: pino.Logger;
+  private readonly moduleConfiguration: ModuleService;
+  private readonly logger: Logger = new Logger(Bot);
 
   public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<keyof ClientEvents, EventListeners>();
 
   constructor(
-    appConfig: ProjectConfiguration,
+    @inject(`IOptional<${ProjectConfiguration.name}>`) appConfig: IOptional<ProjectConfiguration>,
     databaseService: DatabaseService,
-    moduleConfiguration: ModuleConfigurationService,
-    @createLogger(Bot.name) logger: pino.Logger,
+    moduleConfiguration: ModuleService,
   ) {
     super({
       intents: [
@@ -37,10 +36,9 @@ export class Bot extends Client {
         GatewayIntentBits.MessageContent,
       ],
     });
-    this.projectConfiguration = appConfig;
+    this.projectConfiguration = appConfig.getValue();
     this.databaseService = databaseService;
     this.moduleConfiguration = moduleConfiguration;
-    this.logger = logger;
   }
 
   /**
@@ -73,9 +71,15 @@ export class Bot extends Client {
    */
   public async stop(): Promise<void> {
     this.logger.info("Stopping application.");
+
     this.moduleConfiguration.cleanup();
-    this.destroy();
+
+    if (this.isReady()) {
+      this.destroy();
+    }
+
     await this.databaseService.disconnect();
+
     this.logger.info("Done. Have a nice day!");
   }
 

@@ -1,18 +1,19 @@
 import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption, Commands } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Module that provides utilities for the managers..
  */
 @module()
 export class ManagerUtilsModule extends Module {
+  protected logger: Logger = new Logger(ManagerUtilsModule);
+
   public moduleName = "ManagerUtils";
   public commands: Commands = [
     new Command({
@@ -45,9 +46,8 @@ export class ManagerUtilsModule extends Module {
   constructor(
     private managerUtilsService: ManagerUtilsService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(ManagerUtilsModule.name) logger: pino.Logger,
   ) {
-    super(permissionManagerService, logger);
+    super(permissionManagerService);
   }
 
   /**

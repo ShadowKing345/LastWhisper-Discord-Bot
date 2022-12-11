@@ -1,9 +1,8 @@
 import { ButtonInteraction, CommandInteraction, Interaction, ComponentType } from "discord.js";
-import { pino } from "pino";
 import { clearInterval } from "timers";
-import { singleton, injectAll } from "tsyringe";
+import { singleton, injectAll, inject } from "tsyringe";
 
-import { LoggerService } from "../services/loggerService.js";
+import { Logger } from "../utils/logger.js";
 import { Bot } from "../utils/objects/bot.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
 import { Timer } from "../utils/objects/timer.js";
@@ -11,40 +10,36 @@ import { ModuleConfiguration } from "../utils/objects/moduleConfiguration.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Command } from "../utils/objects/command.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
+import { IOptional } from "../utils/optional/iOptional.js";
 
 /**
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 @singleton()
-export class ModuleConfigurationService {
+export class ModuleService {
   private readonly moduleConfiguration: ModuleConfiguration;
   private readonly intervalIds: number[] = [];
 
   private readonly _modules: Module[];
 
-  private readonly moduleLogger: pino.Logger;
-  private readonly interactionLogger: pino.Logger;
-  private readonly eventLogger: pino.Logger;
-  private readonly taskLogger: pino.Logger;
+  private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
+  private readonly interactionLogger: Logger = new Logger("InteractionExecution");
+  private readonly eventLogger: Logger = new Logger("EventExecution");
+  private readonly taskLogger: Logger = new Logger("TimerExecution");
 
-  constructor(config: ProjectConfiguration, @injectAll(Module.name) modules: Module[], loggerFactory: LoggerService) {
-    this.moduleConfiguration = config.moduleConfiguration;
-
-    this.moduleLogger = loggerFactory.buildLogger("ModuleConfiguration");
-    this.interactionLogger = loggerFactory.buildLogger("InteractionExecution");
-    this.eventLogger = loggerFactory.buildLogger("EventExecution");
-    this.taskLogger = loggerFactory.buildLogger("TimerExecution");
+  constructor(@inject(`IOptional<${ProjectConfiguration.name}>`) config: IOptional<ProjectConfiguration>, @injectAll(Module.name) modules: Module[]) {
+    this.moduleConfiguration = config.getValue().moduleConfiguration;
 
     this._modules =
       this.moduleConfiguration.modules?.length !== 0
         ? modules.filter(module => {
-            const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-            const blacklist = this.moduleConfiguration.blacklist;
-            return (!blacklist && inList) || (blacklist && !inList);
-          })
+          const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
+          const blacklist = this.moduleConfiguration.blacklist;
+          return (!blacklist && inList) || (blacklist && !inList);
+        })
         : modules;
 
-    this.moduleLogger.debug(`Modules list. [${this._modules.map(module => module.moduleName).join(",")}]`);
+    this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(this._modules.map(module => module.moduleName))}.`);
 
     if (this.moduleConfiguration.enableCommands) {
       this.moduleLogger.debug("Commands enabled.");
@@ -240,7 +235,7 @@ export class ModuleConfigurationService {
     if (this.moduleConfiguration.enableEventListeners) {
       this.moduleLogger.debug("Registering event.");
 
-      for (const [event, listeners] of client.events) {
+      for (const [ event, listeners ] of client.events) {
         client.on(event, (...args) => this.runEvent(listeners, client, ...args));
       }
     }

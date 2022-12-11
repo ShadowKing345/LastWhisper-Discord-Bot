@@ -1,13 +1,12 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { pino } from "pino";
 
-import { createLogger } from "./loggerService.js";
 import { Permission, PermissionManagerConfig, PermissionMode } from "../entities/permissionManager/index.js";
 import { PermissionManagerRepository } from "../repositories/permissionManager.js";
 import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Service that manages the permissions of commands throughout the project.
@@ -15,12 +14,12 @@ import { service } from "../utils/decorators/index.js";
  */
 @service()
 export class PermissionManagerService extends Service {
+  private readonly logger: Logger = new Logger(PermissionManagerService);
   private static readonly keys: string[] = [];
   private static _keysFormatted: string = null;
 
   constructor(
     private repository: PermissionManagerRepository,
-    @createLogger(PermissionManagerService.name) private logger: pino.Logger,
   ) {
     super();
   }
@@ -163,7 +162,7 @@ export class PermissionManagerService extends Service {
       const spaces = "\t".repeat(index);
       let result = "";
 
-      for (const [key, value] of Object.entries(obj)) {
+      for (const [ key, value ] of Object.entries(obj)) {
         result +=
           typeof value === "object" ? `${spaces}${key}:\n${format(value as object, index + 1)}` : `${spaces}${key};\n`;
       }
@@ -186,10 +185,10 @@ export class PermissionManagerService extends Service {
     property: string | symbol,
     descriptor: PropertyDescriptor,
   ) => PropertyDescriptor {
-    return function (_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
+    return function(_target: PermissionManagerService, _property: string | symbol, descriptor: PropertyDescriptor) {
       const originalMethod = descriptor.value as (...args: unknown[]) => unknown;
 
-      descriptor.value = function (...args: unknown[]) {
+      descriptor.value = function(...args: unknown[]) {
         const key = args[index];
 
         if (!(key && typeof key === "string")) {

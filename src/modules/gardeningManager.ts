@@ -6,12 +6,13 @@ import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { Timers } from "../utils/objects/timer.js";
+import { Logger } from "../utils/logger.js";
 
 @module()
 export class GardeningManagerModule extends Module {
+  protected logger: Logger = new Logger(GardeningManagerModule);
+
   public moduleName = "GardeningModule";
   public commands: Commands = [
     new Command({
@@ -125,9 +126,8 @@ export class GardeningManagerModule extends Module {
   constructor(
     private gardeningManagerService: GardeningManagerService,
     permissionManagerService: PermissionManagerService,
-    @createLogger(GardeningManagerModule.name) logger: pino.Logger,
   ) {
-    super(permissionManagerService, logger);
+    super(permissionManagerService);
   }
 
   private reserve(

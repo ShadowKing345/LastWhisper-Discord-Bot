@@ -1,13 +1,12 @@
 import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { createLogger } from "../services/loggerService.js";
-import { pino } from "pino";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Module to manager the permissions of commands from a Discord client.
@@ -15,6 +14,9 @@ import { BadAuthorizationKeyError } from "../utils/errors/index.js";
  */
 @module()
 export class PermissionManagerModule extends Module {
+  protected logger: Logger = new Logger(PermissionManagerModule);
+
+
   private readonly BadKeyErrorMessages =
     "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
 
@@ -106,9 +108,8 @@ export class PermissionManagerModule extends Module {
 
   constructor(
     private service: PermissionManagerService,
-    @createLogger(PermissionManagerModule.name) logger: pino.Logger,
   ) {
-    super(service, logger);
+    super(service);
   }
 
   protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {

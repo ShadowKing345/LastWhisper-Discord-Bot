@@ -1,7 +1,5 @@
-import { pino } from "pino";
-import { singleton } from "tsyringe";
+import { singleton, inject } from "tsyringe";
 
-import { createLogger } from "../services/loggerService.js";
 import { DatabaseConfiguration } from "../utils/objects/index.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
@@ -10,6 +8,8 @@ import { GardeningManagerEntities } from "../entities/gardeningManager/index.js"
 import { PermissionManagerEntities } from "../entities/permissionManager/index.js";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
+import { Logger } from "../utils/logger.js";
+import { IOptional } from "../utils/optional/iOptional.js";
 
 /**
  * Database Configuration Service file.
@@ -18,13 +18,14 @@ import { RoleManagerConfig } from "../entities/roleManager.js";
 @singleton()
 export class DatabaseService {
   private readonly databaseConfigs: DatabaseConfiguration;
+  private readonly logger: Logger = new Logger(DatabaseService);
+
   private _dataSource: DataSource = null;
 
   constructor(
-    databaseConfigs: DatabaseConfiguration,
-    @createLogger(DatabaseService.name) private logger: pino.Logger,
+    @inject("IOptional<DatabaseConfiguration>") databaseConfigs: IOptional<DatabaseConfiguration>,
   ) {
-    this.databaseConfigs = databaseConfigs;
+    this.databaseConfigs = databaseConfigs.getValue();
   }
 
   /**
@@ -73,7 +74,7 @@ export class DatabaseService {
    * Attempts to disconnect from the client.
    */
   public async disconnect(): Promise<void> {
-    await this._dataSource.destroy();
+    await this._dataSource?.destroy();
     this._dataSource = null;
     this.logger.info("Disconnecting from database.");
   }

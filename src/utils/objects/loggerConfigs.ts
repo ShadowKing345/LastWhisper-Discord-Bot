@@ -4,8 +4,9 @@ import { TransportSingleOptions, TransportMultiOptions, TransportPipelineOptions
  * Configuration object for the logger service.
  */
 export class LoggerConfigs {
-  level: pino.LevelWithSilent = LOGGING_LEVELS.info;
-  transports: TransportSingleOptions | TransportMultiOptions | TransportPipelineOptions = null;
+  public level: pino.Level = LOGGING_LEVELS.info;
+  public transports: TransportSingleOptions | TransportMultiOptions | TransportPipelineOptions = null;
+  public disable = false;
 }
 
 export enum LOGGING_LEVELS {

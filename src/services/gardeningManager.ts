@@ -1,20 +1,20 @@
 import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { DateTime } from "luxon";
-import { pino } from "pino";
 
-import { createLogger } from "./loggerService.js";
 import { Bot } from "../utils/objects/bot.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
+import { Logger } from "../utils/logger.js";
 
 @service()
 export class GardeningManagerService extends Service {
+  private logger: Logger = new Logger(GardeningManagerService);
+
   constructor(
-    private repository: GardeningManagerRepository,
-    @createLogger(GardeningManagerService.name) private logger: pino.Logger,
+    private repository: GardeningManagerRepository
   ) {
     super();
   }

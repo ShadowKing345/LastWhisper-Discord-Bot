@@ -12,7 +12,7 @@ export class ModuleConfiguration {
   public enableInteractions?: boolean = true;
 
   // A collection of module names to be filtered.
-  public modules?: string[] = [];
+  public modules?: string[] = [ "DevModule" ];
   // Should the list be treated as a blacklist.
   public blacklist?: boolean = true;
 }

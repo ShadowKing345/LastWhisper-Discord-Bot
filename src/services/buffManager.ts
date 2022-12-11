@@ -1,8 +1,6 @@
 import { EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
-import { pino } from "pino";
 
-import { createLogger } from "./loggerService.js";
 import { Bot } from "../utils/objects/bot.js";
 import { Timer } from "../utils/objects/timer.js";
 import { Buff, Week } from "../entities/buffManager/index.js";
@@ -11,6 +9,7 @@ import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
 import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
+import { Logger } from "../utils/logger.js";
 
 /**
  * Buff manager service.
@@ -19,13 +18,13 @@ import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffM
  */
 @service()
 export class BuffManagerService extends Service {
+  private logger: Logger = new Logger(BuffManagerService);
   private readonly weekRepository: WeekRepository;
   private readonly buffManagerSettingsRepository: BuffManagerSettingsRepository;
 
   constructor(
     weekRepository: WeekRepository,
     messageSettingsRepository: BuffManagerSettingsRepository,
-    @createLogger(BuffManagerService.name) private logger: pino.Logger,
   ) {
     super();
 
