@@ -3,9 +3,8 @@ import { pino } from "pino";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
 
-import { ConfigurationService } from "./configurationService.js";
 import { LoggerService } from "../services/loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
 import { Timer } from "../utils/objects/timer.js";
 import { ModuleConfiguration } from "../utils/objects/moduleConfiguration.js";
@@ -17,7 +16,7 @@ import { EventListeners } from "../utils/objects/eventListener.js";
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 @singleton()
-export class ModuleConfigurationService extends ConfigurationService {
+export class ModuleConfigurationService {
   private readonly moduleConfiguration: ModuleConfiguration;
   private readonly intervalIds: number[] = [];
 
@@ -29,8 +28,6 @@ export class ModuleConfigurationService extends ConfigurationService {
   private readonly taskLogger: pino.Logger;
 
   constructor(config: ProjectConfiguration, @injectAll(Module.name) modules: Module[], loggerFactory: LoggerService) {
-    super();
-
     this.moduleConfiguration = config.moduleConfiguration;
 
     this.moduleLogger = loggerFactory.buildLogger("ModuleConfiguration");
@@ -170,7 +167,7 @@ export class ModuleConfigurationService extends ConfigurationService {
    * @param args Any additional arguments provided to the event.
    * @private
    */
-  private async runEvent(listeners: EventListeners, client: Client, ...args): Promise<void> {
+  private async runEvent(listeners: EventListeners, client: Bot, ...args): Promise<void> {
     const results = await Promise.allSettled(
       listeners.map(
         listener =>
@@ -196,7 +193,7 @@ export class ModuleConfigurationService extends ConfigurationService {
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    * @private
    */
-  private runTimer(timer: Timer, client: Client): void {
+  private runTimer(timer: Timer, client: Bot): void {
     try {
       this.intervalIds.push(
         setInterval(
@@ -218,7 +215,7 @@ export class ModuleConfigurationService extends ConfigurationService {
    * Registers events, timers, commands, etc...
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    */
-  public configureModules(client: Client): void {
+  public configureModules(client: Bot): void {
     this.moduleLogger.info("Loading modules.");
     for (const module of this.modules) {
       this.moduleLogger.info(module.moduleName);
