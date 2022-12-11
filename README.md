@@ -92,7 +92,7 @@ the project. Simply provide the following.
 
 ```json
 {
-  "$schema": "docs/schema.json",
+  "$schema": "docs/Schemas/schema.json",
   "token": "[Your Discord bot token]",
   "database": {
     "url": "[The MongoDB DB url]"
@@ -110,7 +110,7 @@ mkdir config
 ```
 
 _Note: A schema file is also provided to help with configuration of the bot. It can be found under
-[`docs/schema.json`](docs/schema.json). Presuming the text editor you are using can handle JSON schemas. Additionally,
+[`docs/schema.json`](docs/Schemas/schema.json). Presuming the text editor you are using can handle JSON schemas. Additionally,
 if you are having issues seeing the schema try use `../docs/schema.json` instead._
 
 ## Command Setup
