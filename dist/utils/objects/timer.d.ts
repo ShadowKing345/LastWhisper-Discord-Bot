@@ -1,9 +1,9 @@
 import { Client as DiscordClient } from "discord.js";
-import { Client } from "./client.js";
+import { Bot } from "./bot.js";
 export declare class Timer {
     name: string;
     timeout: number;
-    execute: (client: Client) => Promise<unknown>;
+    execute: (client: Bot) => Promise<unknown>;
     static waitTillReady(client: DiscordClient, checkAgainTime?: number): Promise<void>;
 }
 export declare type Timers = Timer[];

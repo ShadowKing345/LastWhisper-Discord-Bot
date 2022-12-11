@@ -5,9 +5,11 @@ import { program } from "commander";
 import { userInfo } from "os";
 import { main } from "./app.js";
 import { commandRegistration } from "./commandRegistration.js";
-import { generateConfigObject } from "./config/appConfigs.js";
+import { ConfigurationService } from "./config/configurationService.js";
+import { DatabaseConfiguration, ProjectConfiguration } from "./utils/objects/index.js";
 console.log(`Welcome ${userInfo().username}.`);
-generateConfigObject();
+ConfigurationService.RegisterConfiguration("", ProjectConfiguration);
+ConfigurationService.RegisterConfiguration("database", DatabaseConfiguration);
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
 program.command("deploy", { isDefault: true }).description("Runs to bot.").action(main);
 program

@@ -43,14 +43,16 @@ export function deepMerge(target, ...sources) {
     }
     return target;
 }
-export function flattenObject(obj) {
+export function flattenObject(obj, includeOriginal = false) {
     const result = new Map();
     for (const [k, v] of Object.entries(obj)) {
         if (v instanceof Object && !Array.isArray(v)) {
-            for (const [k1, v1] of Object.entries(flattenObject(v))) {
+            for (const [k1, v1] of Object.entries(flattenObject(v, includeOriginal))) {
                 result.set(`${k}.${k1}`, v1);
             }
-            continue;
+            if (!includeOriginal) {
+                continue;
+            }
         }
         result.set(k, v);
     }

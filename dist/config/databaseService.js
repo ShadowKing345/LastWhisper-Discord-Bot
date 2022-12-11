@@ -3,8 +3,7 @@ import { __decorate, __metadata, __param } from "tslib";
 import { pino } from "pino";
 import { singleton } from "tsyringe";
 import { createLogger } from "../services/loggerService.js";
-import { ProjectConfiguration } from "../utils/objects/index.js";
-import { ConfigurationService } from "./configurationService.js";
+import { DatabaseConfiguration } from "../utils/objects/index.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -12,18 +11,16 @@ import { GardeningManagerEntities } from "../entities/gardeningManager/index.js"
 import { PermissionManagerEntities } from "../entities/permissionManager/index.js";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
-let DatabaseService = DatabaseService_1 = class DatabaseService extends ConfigurationService {
-    projectConfig;
+let DatabaseService = DatabaseService_1 = class DatabaseService {
     logger;
+    databaseConfigs;
     _dataSource = null;
-    constructor(projectConfig, logger) {
-        super();
-        this.projectConfig = projectConfig;
+    constructor(databaseConfigs, logger) {
         this.logger = logger;
+        this.databaseConfigs = databaseConfigs;
     }
     async connect() {
-        const databaseConfigs = this.projectConfig.database;
-        if (!databaseConfigs) {
+        if (!this.databaseConfigs) {
             throw new Error("Database configuration is null.");
         }
         try {
@@ -35,12 +32,12 @@ let DatabaseService = DatabaseService_1 = class DatabaseService extends Configur
             if (!this._dataSource) {
                 this._dataSource = new DataSource({
                     type: "postgres",
-                    username: databaseConfigs.username,
-                    password: databaseConfigs.password,
-                    port: Number(databaseConfigs.port),
-                    database: databaseConfigs.database,
-                    synchronize: databaseConfigs.sync,
-                    logging: databaseConfigs.logging,
+                    username: this.databaseConfigs.username,
+                    password: this.databaseConfigs.password,
+                    port: this.databaseConfigs.port,
+                    database: this.databaseConfigs.database,
+                    synchronize: this.databaseConfigs.sync,
+                    logging: this.databaseConfigs.logging,
                     entities: [
                         ...Object.values(BuffManagerEntities),
                         ...Object.values(EventManagerEntities),
@@ -73,7 +70,7 @@ let DatabaseService = DatabaseService_1 = class DatabaseService extends Configur
 DatabaseService = DatabaseService_1 = __decorate([
     singleton(),
     __param(1, createLogger(DatabaseService_1.name)),
-    __metadata("design:paramtypes", [ProjectConfiguration, Object])
+    __metadata("design:paramtypes", [DatabaseConfiguration, Object])
 ], DatabaseService);
 export { DatabaseService };
 //# sourceMappingURL=databaseService.js.map

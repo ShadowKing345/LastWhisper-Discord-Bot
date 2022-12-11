@@ -1,12 +1,11 @@
 import { pino } from "pino";
-import { ProjectConfiguration } from "../utils/objects/index.js";
-import { ConfigurationService } from "./configurationService.js";
+import { DatabaseConfiguration } from "../utils/objects/index.js";
 import { DataSource } from "typeorm";
-export declare class DatabaseService extends ConfigurationService {
-    private projectConfig;
+export declare class DatabaseService {
     private logger;
+    private readonly databaseConfigs;
     private _dataSource;
-    constructor(projectConfig: ProjectConfiguration, logger: pino.Logger);
+    constructor(databaseConfigs: DatabaseConfiguration, logger: pino.Logger);
     connect(): Promise<void>;
     disconnect(): Promise<void>;
     get dataSource(): DataSource;

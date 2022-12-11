@@ -1,6 +1,6 @@
 import { CommandInteraction, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { pino } from "pino";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Slot } from "../entities/gardeningManager/index.js";
 import { Service } from "./service.js";
@@ -15,8 +15,8 @@ export declare class GardeningManagerService extends Service {
     register(interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number): Promise<void>;
     cancel(interaction: ChatInputCommandInteraction, player: string, plant: string, plotNum: number, slotNum: number): Promise<InteractionResponse | void>;
     list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number): Promise<InteractionResponse<boolean>>;
-    tick(client: Client): Promise<void>;
-    postChannelMessage(client: Client, config: GardeningModuleConfig, messageArgs: MessagePostArgs): Promise<void>;
+    tick(client: Bot): Promise<void>;
+    postChannelMessage(client: Bot, config: GardeningModuleConfig, messageArgs: MessagePostArgs): Promise<void>;
 }
 export declare class MessagePostArgs {
     title: string;

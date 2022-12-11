@@ -2,11 +2,10 @@ import { __decorate, __metadata, __param } from "tslib";
 import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
 import { singleton, injectAll } from "tsyringe";
-import { ConfigurationService } from "./configurationService.js";
 import { LoggerService } from "../services/loggerService.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
 import { CommandResolverError } from "../utils/errors/index.js";
-let ModuleConfigurationService = class ModuleConfigurationService extends ConfigurationService {
+let ModuleConfigurationService = class ModuleConfigurationService {
     moduleConfiguration;
     intervalIds = [];
     _modules;
@@ -15,7 +14,6 @@ let ModuleConfigurationService = class ModuleConfigurationService extends Config
     eventLogger;
     taskLogger;
     constructor(config, modules, loggerFactory) {
-        super();
         this.moduleConfiguration = config.moduleConfiguration;
         this.moduleLogger = loggerFactory.buildLogger("ModuleConfiguration");
         this.interactionLogger = loggerFactory.buildLogger("InteractionExecution");

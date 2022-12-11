@@ -1,8 +1,7 @@
-import { ConfigurationService } from "./configurationService.js";
 import { LoggerService } from "../services/loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
-export declare class ModuleConfigurationService extends ConfigurationService {
+export declare class ModuleConfigurationService {
     private readonly moduleConfiguration;
     private readonly intervalIds;
     private readonly _modules;
@@ -14,7 +13,7 @@ export declare class ModuleConfigurationService extends ConfigurationService {
     private interactionEvent;
     private runEvent;
     private runTimer;
-    configureModules(client: Client): void;
+    configureModules(client: Bot): void;
     cleanup(): void;
     get modules(): Module[];
 }
