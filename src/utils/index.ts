@@ -76,17 +76,20 @@ export function deepMerge<T, O>(target: T, ...sources: O[]): T {
 /**
  * Flattens an object down to a depth of 1.
  * @param obj Object to be flattened
+ * @param includeOriginal Adds the original in the final list.
  */
-export function flattenObject(obj: object): object {
+export function flattenObject(obj: object, includeOriginal = false): object {
   const result = new Map<string, unknown>();
 
-  for (const [k, v] of Object.entries(obj)) {
+  for (const [ k, v ] of Object.entries(obj)) {
     if (v instanceof Object && !Array.isArray(v)) {
-      for (const [k1, v1] of Object.entries(flattenObject(v as object))) {
+      for (const [ k1, v1 ] of Object.entries(flattenObject(v as object, includeOriginal))) {
         result.set(`${k}.${k1}`, v1);
       }
 
-      continue;
+      if (!includeOriginal) {
+        continue;
+      }
     }
 
     result.set(k, v);
