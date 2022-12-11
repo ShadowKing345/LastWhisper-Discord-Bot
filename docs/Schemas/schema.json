@@ -8,16 +8,16 @@
       "type": "string"
     },
     "database": {
-      "$ref": "./databaseSchema.json"
+      "$ref": "databaseSchema.json"
     },
     "commandRegistration": {
-      "$ref": "./commandRegistrationSchema.json"
+      "$ref": "commandRegistrationSchema.json"
     },
     "logger": {
-      "$ref": "./loggerSchema.json"
+      "$ref": "loggerSchema.json"
     },
     "moduleConfiguration": {
-      "$ref": "./moduleConfigurationSchema.json"
+      "$ref": "moduleConfigurationSchema.json"
     }
   },
   "required": ["token"]

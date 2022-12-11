@@ -84,7 +84,7 @@ is considered a valid event then it will save that event and react to inform the
 the time when the event will occur will be used to determine when to post reminders. If the user has set a reminder the
 bot will post a message before the actual event starts.
 
-Commands for seeing what up and coming events as well as the details on a command should also exist.
+Commands for seeing what up-and-coming events as well as the details on a command should also exist.
 
 The event object will contain the following:
 
@@ -168,7 +168,7 @@ simple generic message then the color will be left as default. The color meaning
 For the logger level:
 
 | Color  | Meaning or usage |
-| ------ | ---------------- |
+|--------|------------------|
 | Red    | Errors           |
 | Yellow | Warnings         |
 | Cyan   | Information      |
@@ -178,7 +178,7 @@ For the logger level:
 For the logger message:
 
 | Color  | Meaning or Usage          |
-| ------ | ------------------------- |
+|--------|---------------------------|
 | Yellow | Any object value          |
 | Red    | Classes                   |
 | Green  | Events (Skipping, etc...) |
