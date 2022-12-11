@@ -2,7 +2,7 @@ import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, React
 import { pino } from "pino";
 
 import { createLogger } from "./loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { Timer } from "../utils/objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
@@ -63,7 +63,7 @@ export class RoleManagerService extends Service {
       });
   }
 
-  public async onReady(client: Client) {
+  public async onReady(client: Bot) {
     await Timer.waitTillReady(client);
     const configs: RoleManagerConfig[] = (await this.repository.getAll()).filter(
       config =>

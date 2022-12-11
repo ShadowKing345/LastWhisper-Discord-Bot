@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 
 import { createLogger } from "./loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
@@ -129,7 +129,7 @@ export class GardeningManagerService extends Service {
 
     await this.repository.save(config);
     await interaction.reply({ content: "Reservation has been created." });
-    await this.postChannelMessage(interaction.client as Client, config, {
+    await this.postChannelMessage(interaction.client as Bot, config, {
       title: "Gardening Plot Has Been Reserved!",
       description: `${(interaction.member as GuildMember).displayName} has registered the plot **${
         plot.name
@@ -269,7 +269,7 @@ export class GardeningManagerService extends Service {
     return interaction.reply(text);
   }
 
-  public async tick(client: Client) {
+  public async tick(client: Bot) {
     const now: number = DateTime.now().toUnixInteger();
     const configs: GardeningModuleConfig[] = await this.repository.getAll();
     const altered: GardeningModuleConfig[] = [];
@@ -300,7 +300,7 @@ export class GardeningManagerService extends Service {
     }
   }
 
-  public async postChannelMessage(client: Client, config: GardeningModuleConfig, messageArgs: MessagePostArgs) {
+  public async postChannelMessage(client: Bot, config: GardeningModuleConfig, messageArgs: MessagePostArgs) {
     if (!client.guilds.cache.has(config.guildId)) return;
     const guild = await client.guilds.fetch(config.guildId);
 

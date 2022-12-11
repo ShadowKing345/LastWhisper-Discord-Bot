@@ -1,9 +1,9 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 import { pino } from "pino";
 
-import { Module } from "../utils/objects/index.js";
+import { Module } from "./module.js";
 import { createLogger } from "../services/loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
@@ -73,7 +73,7 @@ export class RoleManagerModule extends Module {
    * @param client The Discord Client.
    * @private
    */
-  private onReady(client: Client): Promise<void> {
+  private onReady(client: Bot): Promise<void> {
     return this.roleManagerService.onReady(client);
   }
 

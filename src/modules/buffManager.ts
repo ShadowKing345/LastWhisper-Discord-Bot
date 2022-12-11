@@ -1,7 +1,7 @@
 import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
 import { pino } from "pino";
 import { createLogger } from "../services/loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -189,7 +189,7 @@ export class BuffManagerModule extends Module {
     });
   }
 
-  private postDailyMessage(client: Client): Promise<void> {
+  private postDailyMessage(client: Bot): Promise<void> {
     return this.service.postDailyMessage(client);
   }
 }

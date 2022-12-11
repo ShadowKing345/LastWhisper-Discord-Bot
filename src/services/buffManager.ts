@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { pino } from "pino";
 
 import { createLogger } from "./loggerService.js";
-import { Client } from "../utils/objects/client.js";
+import { Bot } from "../utils/objects/bot.js";
 import { Timer } from "../utils/objects/timer.js";
 import { Buff, Week } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
@@ -58,7 +58,7 @@ export class BuffManagerService extends Service {
    * Posts a daily message based on the configuration of the guild.
    * @param client The discord client.
    */
-  public async postDailyMessage(client: Client): Promise<void> {
+  public async postDailyMessage(client: Bot): Promise<void> {
     await Timer.waitTillReady(client);
     this.logger.debug("Posting daily buff message.");
 

@@ -1,5 +1,5 @@
 import { Client as DiscordClient } from "discord.js";
-import { Client } from "./client.js";
+import { Bot } from "./bot.js";
 
 /**
  * A representation of a timer for a module.
@@ -7,7 +7,7 @@ import { Client } from "./client.js";
 export class Timer {
   public name: string = null;
   public timeout: number = null;
-  public execute: (client: Client) => Promise<unknown> = null;
+  public execute: (client: Bot) => Promise<unknown> = null;
 
   /**
    * Function that waits till the client is ready then simply exits.

@@ -1,6 +1,6 @@
 import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
-import { Client } from "../utils/objects/client.js";
-import { Module } from "../utils/objects/index.js";
+import { Bot } from "../utils/objects/bot.js";
+import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -156,7 +156,7 @@ export class GardeningManagerModule extends Module {
     return this.gardeningManagerService.list(interaction, plotNum, slotNum);
   }
 
-  private tick(client: Client): Promise<void> {
+  private tick(client: Bot): Promise<void> {
     return this.gardeningManagerService.tick(client);
   }
 

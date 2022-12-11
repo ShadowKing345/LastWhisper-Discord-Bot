@@ -1,9 +1,8 @@
 import { REST, RouteLike } from "@discordjs/rest";
 import { container } from "tsyringe";
 
-import { App } from "./app.js";
 import { LoggerService } from "./services/loggerService.js";
-import { ProjectConfiguration, CommandRegistrationConfiguration } from "./utils/objects/index.js";
+import { ProjectConfiguration, CommandRegistrationConfiguration, Bot } from "./utils/objects/index.js";
 import { Routes, RESTPostAPIChatInputApplicationCommandsJSONBody, APIApplicationCommandSubcommandOption, APIApplicationCommandSubcommandGroupOption } from "discord-api-types/v10";
 
 /**
@@ -29,7 +28,8 @@ type CommandRegistrationArgs = {
  * @param args Arguments for command registration.
  */
 export async function commandRegistration(args: CommandRegistrationArgs): Promise<void> {
-  const app = container.resolve(App);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const app = container.resolve<Bot>(Bot);
   const logger = container.resolve(LoggerService).buildLogger("CommandRegistration");
   logger.info("Welcome again to command registration or un-registration.");
 
