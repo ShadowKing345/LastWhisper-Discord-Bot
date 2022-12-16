@@ -1,7 +1,6 @@
 import { pino } from "pino";
 import { LOGGING_LEVELS, LoggerConfigs } from "./objects/loggerConfigs.js";
 import { container } from "tsyringe";
-import { IOptional } from "./optional/iOptional.js";
 import { EntityTarget, EntitySchema } from "typeorm";
 
 /**
@@ -50,10 +49,7 @@ export class Logger {
 
   private createLogger(): void {
     if (!this.config) {
-      const optionalConfig = container.resolve<IOptional<LoggerConfigs>>(`IOptional<${LoggerConfigs.name}>`);
-      if (optionalConfig.hasValue()) {
-        this.config = optionalConfig.getValue();
-      }
+      this.config = container.resolve<LoggerConfigs>(LoggerConfigs);
     }
 
     this.pino = pino({

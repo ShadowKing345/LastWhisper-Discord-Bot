@@ -1,7 +1,6 @@
 import { container as globalContainer } from "tsyringe";
 import fs from "fs";
 import { flattenObject, deepMerge } from "../utils/index.js";
-import { Optional } from "../utils/optional/optional.js";
 export class ConfigurationService {
     static configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";
     static devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectConfiguration.dev.json";
@@ -15,7 +14,7 @@ export class ConfigurationService {
             throw new Error(`Configuration file has no config with the key ${key}`);
         }
         const e = deepMerge(new entity(), map.get(key));
-        container.register(`IOptional<${entity.name}>`, { useValue: new Optional(e) });
+        container.register(entity, { useValue: e });
     }
     static getConfigs() {
         ConfigurationService.flattenConfigs.clear();

@@ -1,10 +1,10 @@
 var Bot_1;
-import { __decorate, __metadata, __param } from "tslib";
+import { __decorate, __metadata } from "tslib";
 import { Client, GatewayIntentBits, Collection } from "discord.js";
 import { ProjectConfiguration } from "./projectConfiguration.js";
 import { DatabaseService } from "../../config/databaseService.js";
 import { ModuleService } from "../../config/moduleService.js";
-import { singleton, inject } from "tsyringe";
+import { singleton } from "tsyringe";
 import { Logger } from "../logger.js";
 let Bot = Bot_1 = class Bot extends Client {
     projectConfiguration;
@@ -23,7 +23,7 @@ let Bot = Bot_1 = class Bot extends Client {
                 GatewayIntentBits.MessageContent,
             ],
         });
-        this.projectConfiguration = appConfig.getValue();
+        this.projectConfiguration = appConfig;
         this.databaseService = databaseService;
         this.moduleConfiguration = moduleConfiguration;
     }
@@ -58,8 +58,8 @@ let Bot = Bot_1 = class Bot extends Client {
 };
 Bot = Bot_1 = __decorate([
     singleton(),
-    __param(0, inject(`IOptional<${ProjectConfiguration.name}>`)),
-    __metadata("design:paramtypes", [Object, DatabaseService,
+    __metadata("design:paramtypes", [ProjectConfiguration,
+        DatabaseService,
         ModuleService])
 ], Bot);
 export { Bot };

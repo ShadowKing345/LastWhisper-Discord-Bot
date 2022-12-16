@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import "reflect-metadata";
-import "./modules/index.js";
 
 import { program } from "commander";
 import { userInfo } from "os";
@@ -10,6 +9,7 @@ import { commandRegistration } from "./commandRegistration.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { DatabaseConfiguration, ProjectConfiguration } from "./utils/objects/index.js";
 import { LoggerConfigs } from "./utils/objects/loggerConfigs.js";
+import "./modules/index.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 

@@ -1,1 +1,0 @@
-{"version":3,"file":"createLogger.js","sourceRoot":"","sources":["../../../src/utils/decorators/createLogger.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAC/C,OAAO,EAAE,aAAa,EAAE,wBAAwB,EAAE,MAAM,iCAAiC,CAAC;AAQ1F,MAAM,UAAU,YAAY,CAAC,OAAe;IAC1C,OAAO,mBAAmB,CAAC,aAAa,EAAE,wBAAwB,EAAE,OAAO,CAAC,CAAC;AAC/E,CAAC"}

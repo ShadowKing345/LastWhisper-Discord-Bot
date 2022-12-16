@@ -1,6 +1,6 @@
-import { singleton, inject } from "tsyringe";
+import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration } from "../utils/objects/index.js";
+import { DatabaseConfiguration, ProjectConfiguration } from "../utils/objects/index.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -9,7 +9,6 @@ import { PermissionManagerEntities } from "../entities/permissionManager/index.j
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
 import { Logger } from "../utils/logger.js";
-import { IOptional } from "../utils/optional/iOptional.js";
 
 /**
  * Database Configuration Service file.
@@ -22,10 +21,8 @@ export class DatabaseService {
 
   private _dataSource: DataSource = null;
 
-  constructor(
-    @inject("IOptional<DatabaseConfiguration>") databaseConfigs: IOptional<DatabaseConfiguration>,
-  ) {
-    this.databaseConfigs = databaseConfigs.getValue();
+  constructor(config: ProjectConfiguration) {
+    this.databaseConfigs = config.database;
   }
 
   /**

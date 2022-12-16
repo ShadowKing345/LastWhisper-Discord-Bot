@@ -1,6 +1,6 @@
 import { ButtonInteraction, CommandInteraction, Interaction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
-import { singleton, injectAll, inject } from "tsyringe";
+import { singleton, injectAll } from "tsyringe";
 
 import { Logger } from "../utils/logger.js";
 import { Bot } from "../utils/objects/bot.js";
@@ -10,7 +10,6 @@ import { ModuleConfiguration } from "../utils/objects/moduleConfiguration.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Command } from "../utils/objects/command.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
-import { IOptional } from "../utils/optional/iOptional.js";
 
 /**
  * Configuration service that manages the creation and registration of the different modules in the application.
@@ -27,8 +26,8 @@ export class ModuleService {
   private readonly eventLogger: Logger = new Logger("EventExecution");
   private readonly taskLogger: Logger = new Logger("TimerExecution");
 
-  constructor(@inject(`IOptional<${ProjectConfiguration.name}>`) config: IOptional<ProjectConfiguration>, @injectAll(Module.name) modules: Module[]) {
-    this.moduleConfiguration = config.getValue().moduleConfiguration;
+  constructor(config: ProjectConfiguration, @injectAll(Module.name) modules: Module[]) {
+    this.moduleConfiguration = config.moduleConfiguration;
 
     this._modules =
       this.moduleConfiguration.modules?.length !== 0

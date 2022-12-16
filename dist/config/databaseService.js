@@ -1,6 +1,7 @@
 var DatabaseService_1;
-import { __decorate, __metadata, __param } from "tslib";
-import { singleton, inject } from "tsyringe";
+import { __decorate, __metadata } from "tslib";
+import { singleton } from "tsyringe";
+import { ProjectConfiguration } from "../utils/objects/index.js";
 import { DataSource } from "typeorm";
 import { BuffManagerEntities } from "../entities/buffManager/index.js";
 import { EventManagerEntities } from "../entities/eventManager/index.js";
@@ -13,8 +14,8 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
     databaseConfigs;
     logger = new Logger(DatabaseService_1);
     _dataSource = null;
-    constructor(databaseConfigs) {
-        this.databaseConfigs = databaseConfigs.getValue();
+    constructor(config) {
+        this.databaseConfigs = config.database;
     }
     async connect() {
         if (!this.databaseConfigs) {
@@ -66,8 +67,7 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
 };
 DatabaseService = DatabaseService_1 = __decorate([
     singleton(),
-    __param(0, inject("IOptional<DatabaseConfiguration>")),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [ProjectConfiguration])
 ], DatabaseService);
 export { DatabaseService };
 //# sourceMappingURL=databaseService.js.map

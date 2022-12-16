@@ -1,7 +1,7 @@
 import { __decorate, __metadata, __param } from "tslib";
 import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
-import { singleton, injectAll, inject } from "tsyringe";
+import { singleton, injectAll } from "tsyringe";
 import { Logger } from "../utils/logger.js";
 import { Module, ProjectConfiguration } from "../utils/objects/index.js";
 import { CommandResolverError } from "../utils/errors/index.js";
@@ -14,7 +14,7 @@ let ModuleService = class ModuleService {
     eventLogger = new Logger("EventExecution");
     taskLogger = new Logger("TimerExecution");
     constructor(config, modules) {
-        this.moduleConfiguration = config.getValue().moduleConfiguration;
+        this.moduleConfiguration = config.moduleConfiguration;
         this._modules =
             this.moduleConfiguration.modules?.length !== 0
                 ? modules.filter(module => {
@@ -179,9 +179,8 @@ let ModuleService = class ModuleService {
 };
 ModuleService = __decorate([
     singleton(),
-    __param(0, inject(`IOptional<${ProjectConfiguration.name}>`)),
     __param(1, injectAll(Module.name)),
-    __metadata("design:paramtypes", [Object, Array])
+    __metadata("design:paramtypes", [ProjectConfiguration, Array])
 ], ModuleService);
 export { ModuleService };
 //# sourceMappingURL=moduleService.js.map

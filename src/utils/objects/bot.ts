@@ -4,9 +4,8 @@ import { ProjectConfiguration } from "./projectConfiguration.js";
 import { DatabaseService } from "../../config/databaseService.js";
 import { ModuleService } from "../../config/moduleService.js";
 import { Module } from "../../modules/module.js";
-import { singleton, inject } from "tsyringe";
+import { singleton } from "tsyringe";
 import { Logger } from "../logger.js";
-import { IOptional } from "../optional/iOptional.js";
 
 /**
  * Application class.
@@ -22,7 +21,7 @@ export class Bot extends Client {
   public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<keyof ClientEvents, EventListeners>();
 
   constructor(
-    @inject(`IOptional<${ProjectConfiguration.name}>`) appConfig: IOptional<ProjectConfiguration>,
+    appConfig: ProjectConfiguration,
     databaseService: DatabaseService,
     moduleConfiguration: ModuleService,
   ) {
@@ -36,7 +35,7 @@ export class Bot extends Client {
         GatewayIntentBits.MessageContent,
       ],
     });
-    this.projectConfiguration = appConfig.getValue();
+    this.projectConfiguration = appConfig;
     this.databaseService = databaseService;
     this.moduleConfiguration = moduleConfiguration;
   }

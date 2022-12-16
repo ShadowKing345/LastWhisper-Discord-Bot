@@ -37,10 +37,7 @@ export class Logger {
     }
     createLogger() {
         if (!this.config) {
-            const optionalConfig = container.resolve(`IOptional<${LoggerConfigs.name}>`);
-            if (optionalConfig.hasValue()) {
-                this.config = optionalConfig.getValue();
-            }
+            this.config = container.resolve(LoggerConfigs);
         }
         this.pino = pino({
             level: this.config?.level ?? LOGGING_LEVELS.info,

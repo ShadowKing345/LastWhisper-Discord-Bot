@@ -1,15 +1,12 @@
 import { container as globalContainer, DependencyContainer } from "tsyringe";
 import fs from "fs";
 import { flattenObject, deepMerge } from "../utils/index.js";
-import { IOptional } from "../utils/optional/iOptional.js";
-import { Optional } from "../utils/optional/optional.js";
 
 export class ConfigurationService {
   public static readonly configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";
   public static readonly devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectConfiguration.dev.json";
   private static flattenConfigs: Map<string, unknown> = new Map<string, unknown>();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static RegisterConfiguration<T extends object>(key: string, entity: { new(): T }, container: DependencyContainer = globalContainer): void {
     if (ConfigurationService.flattenConfigs.size < 1) {
       this.getConfigs();
@@ -23,7 +20,7 @@ export class ConfigurationService {
 
     const e = deepMerge(new entity(), map.get(key));
 
-    container.register<IOptional<T>>(`IOptional<${entity.name}>`, { useValue: new Optional(e) });
+    container.register(entity, { useValue: e });
   }
 
   private static getConfigs(): void {
