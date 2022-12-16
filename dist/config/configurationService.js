@@ -1,11 +1,15 @@
 import { container as globalContainer } from "tsyringe";
 import fs from "fs";
 import { flattenObject, deepMerge } from "../utils/index.js";
+import config from "config";
 export class ConfigurationService {
-    static configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";
-    static devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectConfiguration.dev.json";
+    static configPath = process.env.CONFIG_PATH ?? "./config/default.json";
+    static devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/development.json";
     static flattenConfigs = new Map();
     static RegisterConfiguration(key, entity, container = globalContainer) {
+        if (config.has("database")) {
+            console.log(config.get("database"));
+        }
         if (ConfigurationService.flattenConfigs.size < 1) {
             this.getConfigs();
         }

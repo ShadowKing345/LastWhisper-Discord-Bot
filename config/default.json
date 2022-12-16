@@ -1,0 +1,17 @@
+{
+  "$schema": "../docs/Schemas/schema.json",
+  "token": "NjkyMDkwMTYzNzMxNDk3MDQx.XnpdMQ.GAehEF1moi9uh5KAjVrpns31P94",
+  "database": {
+    "sync": true,
+    "logging": true
+  },
+  "commandRegistration": {
+    "clientId": "692090163731497041",
+    "guildId": "749977488347889834",
+    "registerForGuild": false,
+    "unregister": false
+  },
+  "logger": {
+    "level": "debug"
+  }
+}

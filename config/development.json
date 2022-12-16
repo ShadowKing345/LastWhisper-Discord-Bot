@@ -1,0 +1,17 @@
+{
+  "$schema": "../docs/Schemas/schema.json",
+  "token": "ODAzMjkxOTk4ODEwOTMxMjMw.GuFNGJ.6pBUYt0nLGncipyysQBNoo-qkqYQu5BbthTfa8",
+  "logger": {
+    "transports": {
+      "target": "pino-pretty"
+    },
+    "level": "debug"
+  },
+  "moduleConfiguration": {
+    "modules": [],
+    "enableCommands": true,
+    "enableEventListeners": true,
+    "enableTimers": true,
+    "enableInteractions": true
+  }
+}
