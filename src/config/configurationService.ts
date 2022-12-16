@@ -3,8 +3,8 @@ import fs from "fs";
 import { flattenObject, deepMerge } from "../utils/index.js";
 
 export class ConfigurationService {
-  public static readonly configPath = process.env.CONFIG_PATH ?? "./config/ProjectConfiguration.json";
-  public static readonly devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/ProjectConfiguration.dev.json";
+  public static readonly configPath = process.env.CONFIG_PATH ?? "./config/default.json";
+  public static readonly devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/development.json";
   private static flattenConfigs: Map<string, unknown> = new Map<string, unknown>();
 
   public static RegisterConfiguration<T extends object>(key: string, entity: { new(): T }, container: DependencyContainer = globalContainer): void {

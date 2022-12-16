@@ -13,8 +13,8 @@
 
 Configuration files are to be stored inside the [`config`](/config) directory found in the project root.
 
-The name of the files shall be as follows, `ProjectConfiguration.{config type}.json`. The config type placeholder
-denotes if it is a dev configuration, a production configuration or a command configuration.
+The name of the files shall be as follows, `{configuration-type}.json`. By default, the `configuration-type` placeholder
+should be default however you can create a development file used for development instead.
 
 A dev or production configuration should overwrite the common configuration values.
 
