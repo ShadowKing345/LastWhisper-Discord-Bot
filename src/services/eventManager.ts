@@ -38,29 +38,13 @@ export class EventManagerService extends Service {
   }
 
   /**
-   * Used to get a version of the event manager settings class.
-   * Creates a new one if none can be found.
-   * @param guildId
-   * @private
-   */
-  private async getConfig(guildId: string): Promise<EventManagerSettings> {
-    const config: EventManagerSettings = await this.eventManagerSettingsRepository.findOne({ where: { guildId: guildId } });
-
-    if (config) {
-      return config;
-    }
-
-    return await this.eventManagerSettingsRepository.save(new EventManagerSettings(guildId));
-  }
-
-  /**
    * Parses the string into an EventObj.
    * No event will be created.
    * @param guildId Guild ID to get the configuration from.
    * @param text The text to test against.
    */
   public async parseEvent(guildId: string | null, text: string): Promise<EventObject> {
-    const config = await this.getConfig(guildId);
+    const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
     return this.parseMessage(null, text, config);
   }
 
@@ -94,7 +78,7 @@ export class EventManagerService extends Service {
     time: string,
     additional: [ string, string ][] = [],
   ): Promise<string> {
-    const config = await this.getConfig(guildId);
+    const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
     const [ l, r ] = config.delimiterCharacters;
 
     let result = l + config.announcement + r + name + "\n";
@@ -116,13 +100,8 @@ export class EventManagerService extends Service {
    * @param content Text content of the message.
    * @param channelId ID of the channel the message was posted in. Used for additional validation.
    */
-  public async create(
-    guildId: string | null,
-    id: string,
-    content: string,
-    channelId?: string,
-  ): Promise<EventObject | null> {
-    const config = await this.getConfig(guildId);
+  public async create(guildId: string | null, id: string, content: string, channelId?: string): Promise<EventObject | null> {
+    const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
 
     if (channelId && config.listenerChannelId !== channelId) {
       throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
@@ -134,8 +113,7 @@ export class EventManagerService extends Service {
     }
 
     event.guildId = guildId;
-    await this.eventObjectRepository.save(event);
-    return event;
+    return this.eventObjectRepository.save(event);
   }
 
   /**
@@ -145,7 +123,7 @@ export class EventManagerService extends Service {
    * @param content Text content of the message.
    */
   public async update(guildId: string | null, messageId: string, content: string): Promise<EventObject | null> {
-    const config = await this.getConfig(guildId);
+    const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
 
     const oldEvent = await this.eventObjectRepository.findOne({ where: { guildId, id: messageId } });
     if (!oldEvent) {
@@ -166,8 +144,8 @@ export class EventManagerService extends Service {
    * @param index Index of the event.
    * @param content Text content of the message.
    */
-  public async updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObject | null> {
-    const config = await this.getConfig(guildId);
+  public async updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObject> {
+    const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
 
     const oldEvent = await this.findByIndex(guildId, index) as EventObject;
 

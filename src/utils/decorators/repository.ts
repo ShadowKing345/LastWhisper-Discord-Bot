@@ -1,6 +1,6 @@
 import { constructor } from "tsyringe/dist/typings/types/index.js";
 import { injectable, container } from "tsyringe";
-import { Repository } from "../../repositories/repository.js";
+import { Repository } from "../../repositories/base/repository.js";
 import { EntityBase } from "../../entities/entityBase.js";
 
 /**

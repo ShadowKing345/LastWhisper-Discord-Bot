@@ -23,15 +23,6 @@ export class RoleManagerService extends Service {
   }
 
   /**
-   * Returns a configuration object.
-   * @param guildId
-   * @private
-   */
-  private getConfig(guildId: string): Promise<RoleManagerConfig> {
-    return this.repository.findOne({ where: { guildId } });
-  }
-
-  /**
    * Alters a members roles based on certain conditions.
    * @param member
    * @param roleId
@@ -118,7 +109,7 @@ export class RoleManagerService extends Service {
       return;
     }
 
-    const config: RoleManagerConfig = await this.getConfig(guild.id);
+    const config: RoleManagerConfig = await this.repository.findOneOrCreateByGuildId(guild.id);
 
     if (!config.reactionMessageIds.includes(messageReaction.message.id)) {
       return;
@@ -130,7 +121,7 @@ export class RoleManagerService extends Service {
   }
 
   public async revokeRole(interaction: CommandInteraction) {
-    const config = await this.getConfig(interaction.guildId);
+    const config = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
 
     if (!config?.acceptedRoleId) {
       return interaction.reply({
@@ -156,7 +147,7 @@ export class RoleManagerService extends Service {
   }
 
   public async registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    const config: RoleManagerConfig = await this.getConfig(interaction.guildId);
+    const config: RoleManagerConfig = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
     const message_id: string = interaction.options.getString("message_id");
 
     const channel: TextChannel = (await interaction.guild?.channels.fetch(
@@ -194,7 +185,7 @@ export class RoleManagerService extends Service {
   }
 
   public async unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    const config: RoleManagerConfig = await this.getConfig(interaction.guildId);
+    const config: RoleManagerConfig = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
     const message_id: string = interaction.options.getString("message_id");
 
     const channel: Channel = await interaction.guild?.channels.fetch(config.reactionListeningChannel);

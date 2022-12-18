@@ -1,19 +1,15 @@
 import { DatabaseService } from "../../config/databaseService.js";
-import { Repository } from "../repository.js";
 import { EventManagerSettings } from "../../entities/eventManager/index.js";
 import { repository } from "../../utils/decorators/index.js";
+import { SelfCreatingRepository } from "../base/selfCreatingRepository.js";
 
 /**
  * Repository for EventManagerConfig
  * @see EventManagerSettings
  */
 @repository()
-export class EventManagerSettingsRepository extends Repository<EventManagerSettings> {
+export class EventManagerSettingsRepository extends SelfCreatingRepository<EventManagerSettings> {
   constructor(db: DatabaseService) {
     super(db, EventManagerSettings);
-  }
-
-  public getConfig(guildId: string): Promise<EventManagerSettings> {
-    return this.findOne({ where: { guildId } });
   }
 }

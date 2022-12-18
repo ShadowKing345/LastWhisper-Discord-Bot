@@ -1,5 +1,5 @@
 import { repository } from "../../utils/decorators/index.js";
-import { Repository } from "../repository.js";
+import { Repository } from "../base/repository.js";
 import { Week } from "../../entities/buffManager/index.js";
 import { DatabaseService } from "../../config/databaseService.js";
 import { DateTime } from "luxon";

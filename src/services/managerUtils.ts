@@ -20,27 +20,12 @@ export class ManagerUtilsService extends Service {
   }
 
   /**
-   * Returns a configuration file.
-   * Creates one if none can be found.
-   * @param guildId
-   * @private
-   */
-  private async getConfig(guildId: string): Promise<ManagerUtilsConfig> {
-    const result = await this.repository.findOne({ where: { guildId } });
-    if (result) {
-      return result;
-    }
-
-    return this.repository.save(new ManagerUtilsConfig(guildId));
-  }
-
-  /**
    * Returns the logging channel.
    * @param guild
    * @private
    */
   private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
-    const config: ManagerUtilsConfig = await this.getConfig(guild.id);
+    const config: ManagerUtilsConfig = await this.repository.findOneOrCreateByGuildId(guild.id);
 
     if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
       return (await guild.channels.fetch(config.loggingChannel)) as TextChannel;
@@ -144,7 +129,7 @@ export class ManagerUtilsService extends Service {
    * @param interaction
    */
   public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const config = await this.getConfig(interaction.guildId);
+    const config = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
 
     if (config.clearChannelBlacklist.includes(interaction.channelId)) {
       return interaction.reply({

@@ -1,7 +1,7 @@
 import { Repository as Repo, EntityTarget, FindOneOptions, FindManyOptions, FindOptionsWhere } from "typeorm";
-import { DatabaseService } from "../config/databaseService.js";
-import { RepositoryError } from "../utils/errors/index.js";
-import { EntityBase } from "../entities/entityBase.js";
+import { DatabaseService } from "../../config/databaseService.js";
+import { RepositoryError } from "../../utils/errors/index.js";
+import { EntityBase } from "../../entities/entityBase.js";
 
 /**
  * Base repository object.
@@ -10,7 +10,7 @@ import { EntityBase } from "../entities/entityBase.js";
 export abstract class Repository<T extends EntityBase> {
   protected repo: Repo<T>;
 
-  protected constructor(protected db: DatabaseService, private entityTarget: EntityTarget<T>) {
+  protected constructor(protected db: DatabaseService, protected entityTarget: EntityTarget<T>) {
   }
 
   /**
