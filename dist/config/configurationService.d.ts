@@ -8,5 +8,7 @@ export declare class ConfigurationService {
     }, container?: DependencyContainer): void;
     private static getConfigs;
     private static readFile;
+    private static parseConfigFile;
+    private static parseConfigs;
 }
 //# sourceMappingURL=configurationService.d.ts.map

@@ -2,7 +2,8 @@ import { CommandRegistrationConfiguration } from "./commandRegistrationConfigura
 import { DatabaseConfiguration } from "./databaseConfiguration.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
-export declare class ProjectConfiguration {
+import { IMerge } from "../IMerge.js";
+export declare class ProjectConfiguration extends IMerge<ProjectConfiguration> {
     token: string;
     database?: DatabaseConfiguration;
     commandRegistration?: CommandRegistrationConfiguration;

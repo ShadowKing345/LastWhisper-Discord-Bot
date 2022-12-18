@@ -1,4 +1,5 @@
 import { TextChannel } from "discord.js";
+import { IMerge } from "./IMerge.js";
 export async function fetchMessages(client, channelId, messageIds) {
     const promises = [];
     const channel = await client.channels.fetch(channelId);
@@ -16,32 +17,37 @@ export async function fetchMessages(client, channelId, messageIds) {
     }
     return results;
 }
-export function toJson(t, str) {
-    return Object.assign(t, JSON.parse(str));
-}
 export function deepMerge(target, ...sources) {
+    const result = typeof target === "function" ? Reflect.construct(target, []) : target;
     sources = sources.filter(source => source != null);
     if (sources.length <= 0)
-        return target;
+        return result;
+    if (result instanceof (IMerge)) {
+        let t = result;
+        for (const source of sources) {
+            t = t.merge(source);
+        }
+        return t;
+    }
     for (const source of sources) {
         for (const key in source) {
             const kValue = key.valueOf();
             if (source[key]) {
-                if (!target[kValue]) {
-                    target[kValue] = source[key];
+                if (!result[kValue]) {
+                    result[kValue] = source[key];
                 }
                 else {
-                    if (target[kValue] instanceof Object) {
-                        deepMerge(target[kValue], source[key]);
+                    if (result[kValue] instanceof Object) {
+                        deepMerge(result[kValue], source[key]);
                     }
                     else {
-                        target[kValue] = source[key];
+                        result[kValue] = source[key];
                     }
                 }
             }
         }
     }
-    return target;
+    return result;
 }
 export function flattenObject(obj, includeOriginal = false) {
     const result = new Map();

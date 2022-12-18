@@ -1,15 +1,12 @@
 import { container as globalContainer } from "tsyringe";
 import fs from "fs";
 import { flattenObject, deepMerge } from "../utils/index.js";
-import config from "config";
+import { ProjectConfiguration } from "../utils/objects/index.js";
 export class ConfigurationService {
     static configPath = process.env.CONFIG_PATH ?? "./config/default.json";
     static devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/development.json";
     static flattenConfigs = new Map();
     static RegisterConfiguration(key, entity, container = globalContainer) {
-        if (config.has("database")) {
-            console.log(config.get("database"));
-        }
         if (ConfigurationService.flattenConfigs.size < 1) {
             this.getConfigs();
         }
@@ -22,27 +19,32 @@ export class ConfigurationService {
     }
     static getConfigs() {
         ConfigurationService.flattenConfigs.clear();
-        const configStr = ConfigurationService.readFile(ConfigurationService.configPath);
-        if (!configStr) {
-            return;
+        const config = ConfigurationService.parseConfigs();
+        for (const [key, value] of Object.entries(flattenObject(config, true))) {
+            ConfigurationService.flattenConfigs.set(key, value);
         }
-        for (const [k, v] of Object.entries(flattenObject(JSON.parse(configStr), true))) {
-            ConfigurationService.flattenConfigs.set(k, v);
-        }
-        ConfigurationService.flattenConfigs.set("", JSON.parse(configStr));
-        const devConfigStr = ConfigurationService.readFile(ConfigurationService.devConfigPath);
-        if (!devConfigStr) {
-            return;
-        }
-        for (const [k, v] of Object.entries(flattenObject(JSON.parse(devConfigStr), true))) {
-            ConfigurationService.flattenConfigs.set(k, v);
-        }
+        ConfigurationService.flattenConfigs.set("", config);
     }
     static readFile(path) {
         if (!(path && fs.existsSync(path))) {
             return null;
         }
         return fs.readFileSync(path, "utf-8");
+    }
+    static parseConfigFile(path) {
+        const objStr = ConfigurationService.readFile(path);
+        if (!objStr) {
+            return null;
+        }
+        return deepMerge(ProjectConfiguration, JSON.parse(objStr));
+    }
+    static parseConfigs() {
+        const config = ConfigurationService.parseConfigFile(ConfigurationService.configPath);
+        if (process.env.NODE_ENV !== "development") {
+            return config;
+        }
+        const devConfig = ConfigurationService.parseConfigFile(ConfigurationService.devConfigPath);
+        return devConfig ? deepMerge(config, devConfig) : config;
     }
 }
 //# sourceMappingURL=configurationService.js.map

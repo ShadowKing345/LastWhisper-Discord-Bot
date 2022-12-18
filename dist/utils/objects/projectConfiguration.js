@@ -3,7 +3,8 @@ import { DatabaseConfiguration } from "./databaseConfiguration.js";
 import { deepMerge } from "../index.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
-export class ProjectConfiguration {
+import { IMerge } from "../IMerge.js";
+export class ProjectConfiguration extends IMerge {
     token = null;
     database = new DatabaseConfiguration();
     commandRegistration = new CommandRegistrationConfiguration();
