@@ -6,6 +6,9 @@ import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 
+/**
+ * Service used to provide some basic manager utilities.
+ */
 @service()
 export class ManagerUtilsService extends Service {
   private readonly repository: ManagerUtilsRepository;
@@ -16,10 +19,26 @@ export class ManagerUtilsService extends Service {
     this.repository = repository;
   }
 
-  private getConfig(guildId: string): Promise<ManagerUtilsConfig> {
-    return this.repository.findOne({ where: { guildId } });
+  /**
+   * Returns a configuration file.
+   * Creates one if none can be found.
+   * @param guildId
+   * @private
+   */
+  private async getConfig(guildId: string): Promise<ManagerUtilsConfig> {
+    const result = await this.repository.findOne({ where: { guildId } });
+    if (result) {
+      return result;
+    }
+
+    return this.repository.save(new ManagerUtilsConfig(guildId));
   }
 
+  /**
+   * Returns the logging channel.
+   * @param guild
+   * @private
+   */
   private async getLoggingChannel(guild: Guild): Promise<TextChannel> {
     const config: ManagerUtilsConfig = await this.getConfig(guild.id);
 
@@ -30,6 +49,10 @@ export class ManagerUtilsService extends Service {
     return null;
   }
 
+  /**
+   * Sends a message when a member was removed from the discord server.
+   * @param member
+   */
   public async onMemberRemoved(member: GuildMember | PartialGuildMember) {
     if (member.partial) {
       await member.fetch();
@@ -72,9 +95,13 @@ export class ManagerUtilsService extends Service {
       embed.setTitle("User Left!").setDescription(`User **${member.user.username}** has left this discord server`);
     }
 
-    await loggingChannel.send({ embeds: [embed] });
+    await loggingChannel.send({ embeds: [ embed ] });
   }
 
+  /**
+   * Creates a message when the user has been banned from the server.
+   * @param ban
+   */
   public async onMemberBanned(ban: GuildBan) {
     const loggingChannel: TextChannel = await this.getLoggingChannel(ban.guild);
     if (!loggingChannel) return;
@@ -106,12 +133,16 @@ export class ManagerUtilsService extends Service {
         embed.setDescription("Somehow a user was banned but we cannot find out who it was!");
       }
 
-      await loggingChannel.send({ embeds: [embed] });
+      await loggingChannel.send({ embeds: [ embed ] });
     } else {
       await loggingChannel.send("A ban somehow occurred but no logs about it could be found!");
     }
   }
 
+  /**
+   * Clears a channel of its messages.
+   * @param interaction
+   */
   public async clearChannelMessages(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
     const config = await this.getConfig(interaction.guildId);
 

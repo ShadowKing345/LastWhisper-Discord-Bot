@@ -37,6 +37,12 @@ export class EventManagerService extends Service {
     this.eventReminderRepository = eventReminderRepository;
   }
 
+  /**
+   * Used to get a version of the event manager settings class.
+   * Creates a new one if none can be found.
+   * @param guildId
+   * @private
+   */
   private async getConfig(guildId: string): Promise<EventManagerSettings> {
     const config: EventManagerSettings = await this.eventManagerSettingsRepository.findOne({ where: { guildId: guildId } });
 

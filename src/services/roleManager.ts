@@ -9,6 +9,10 @@ import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 import { Logger } from "../utils/logger.js";
 
+/**
+ * Service used to manage roles in the server.
+ * Todo: Refactor.
+ */
 @service()
 export class RoleManagerService extends Service {
   private logger: Logger = new Logger(RoleManagerService);
@@ -18,10 +22,21 @@ export class RoleManagerService extends Service {
     super();
   }
 
+  /**
+   * Returns a configuration object.
+   * @param guildId
+   * @private
+   */
   private getConfig(guildId: string): Promise<RoleManagerConfig> {
     return this.repository.findOne({ where: { guildId } });
   }
 
+  /**
+   * Alters a members roles based on certain conditions.
+   * @param member
+   * @param roleId
+   * @private
+   */
   private static async alterMembersRoles(member: GuildMember, roleId: string) {
     if (member.roles.cache.has(roleId)) {
       return;

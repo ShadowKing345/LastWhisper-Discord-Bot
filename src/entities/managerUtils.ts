@@ -11,4 +11,10 @@ export class ManagerUtilsConfig extends EntityBase {
 
   @Column("text", { array: true })
   public clearChannelBlacklist: string[];
+
+  constructor(guildId: string = null) {
+    super();
+
+    this.guildId = guildId;
+  }
 }
