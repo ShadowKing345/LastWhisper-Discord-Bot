@@ -1,4 +1,5 @@
 import { Client, Message, Snowflake, TextChannel, Channel } from "discord.js";
+import { IMerge } from "./IMerge.js";
 
 /**
  * Fetches the messages from a channel.
@@ -30,47 +31,44 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
 }
 
 /**
- * Wrapper function for JSON string conversation.
- * Object returned will be the assigned object.
- * If object extends type ToJsonBase then the fromJson function will be called.
- * @param t Object to be assigned to.
- * @param str Json string.
- * @return Newly created object.
- */
-export function toJson<T>(t: T, str: string): T {
-  return Object.assign<T, T>(t, JSON.parse(str) as T);
-}
-
-/**
  * Performs a deep merge on an object.
  * If the object extends SanitizeObjectBase then the sanitize function will be called.
  * @param target Target object.
  * @param sources All sources to merge from.
  * @return The newly created object.
  */
-export function deepMerge<T, O>(target: T, ...sources: O[]): T {
+export function deepMerge<T, O>(target: T | { new(): T }, ...sources: O[]): T {
+  const result = typeof target === "function" ? Reflect.construct(target, []) as T : target;
   sources = sources.filter(source => source != null);
+  if (sources.length <= 0) return result;
 
-  if (sources.length <= 0) return target;
+  if (result instanceof IMerge<T>) {
+    let t = result;
+    for (const source of sources) {
+      t = (t as IMerge<T>).merge(source) as T & IMerge<T>;
+    }
+    return t;
+  }
+
 
   for (const source of sources) {
     for (const key in source) {
       const kValue = key.valueOf();
       if (source[key]) {
-        if (!target[kValue]) {
-          target[kValue] = source[key];
+        if (!result[kValue]) {
+          result[kValue] = source[key];
         } else {
-          if (target[kValue] instanceof Object) {
-            deepMerge(target[kValue], source[key]);
+          if (result[kValue] instanceof Object) {
+            deepMerge(result[kValue], source[key]);
           } else {
-            target[kValue] = source[key];
+            result[kValue] = source[key];
           }
         }
       }
     }
   }
 
-  return target;
+  return result;
 }
 
 /**

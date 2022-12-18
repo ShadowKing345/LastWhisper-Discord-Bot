@@ -3,11 +3,12 @@ import { DatabaseConfiguration } from "./databaseConfiguration.js";
 import { deepMerge } from "../index.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
+import { IMerge } from "../IMerge.js";
 
 /**
  * Default configuration object for the application.
  */
-export class ProjectConfiguration {
+export class ProjectConfiguration extends IMerge<ProjectConfiguration>{
   // Discord application token.
   public token: string = null;
   // Database settings.
