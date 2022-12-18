@@ -7,7 +7,7 @@ import { ProjectConfiguration } from "../utils/objects/index.js";
  * A Service class used to register configuration objects into the dependency tree.
  */
 export class ConfigurationService {
-  public static readonly configPath = process.env.CONFIG_PATH ?? "./config/default.json";
+  public static readonly configPath = process.env.CONFIG_PATH ?? "./config/common.json";
   public static readonly devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/development.json";
   private static flattenConfigs: Map<string, unknown> = new Map<string, unknown>();
 
