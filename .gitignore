@@ -3,7 +3,7 @@
 node_modules
 
 # Standard files.
-config/ProjectConfiguration*.json
+config/*.json
 
 # Log files
 *.log
