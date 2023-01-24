@@ -12,11 +12,12 @@
     "start": "node dist/index.js",
     "watch": "nodemon src/index.ts",
     "build": "rimraf dist && tsc --build",
-    "test": "",
+    "test": "echo 'Tested'",
     "lint": "eslint --max-warnings 10 .",
     "lint-fix": "eslint --fix .",
     "pretty-check": "prettier --check .",
-    "pretty": "prettier --write ."
+    "pretty": "prettier --write .",
+    "typeorm": "typeorm-ts-node-esm"
   },
   "husky": {
     "hooks": {
@@ -33,12 +34,11 @@
     "discord.js": "^14.6.0",
     "inquirer": "^8.2.2",
     "luxon": "^2.3.2",
-    "mongodb": "^4.11.0",
     "pg": "^8.8.0",
     "pino": "^8.0.0",
     "reflect-metadata": "^0.1.13",
     "tsyringe": "^4.6.0",
-    "typeorm": "^0.3.10",
+    "typeorm": "^0.3.11",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
