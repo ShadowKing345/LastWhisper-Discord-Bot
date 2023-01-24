@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   bot:
-    container_name: "Discord Bot Application"
+    container_name: "Discord_Bot_Application"
     build: .
     command: yarn start
     tty: true
@@ -12,11 +12,12 @@ services:
     links:
       - db
   db:
-    image: postgres:14.1-alpine
+    container_name: "Discord_Bot_Database"
+    image: postgres:15-alpine
     restart: always
     environment:
       - POSTGRES_USER=postgresql
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=postgresql
       - POSTGRES_DB=Bot
     ports:
       - "5432:5432"
