@@ -30,7 +30,7 @@ async function runBot() {
 
   try {
     const bot: Bot = container.resolve(Bot);
-    await bot.stop();
+    await bot.run();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
   }
