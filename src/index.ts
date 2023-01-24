@@ -2,13 +2,11 @@
 import { program } from "commander";
 import { userInfo } from "os";
 import "reflect-metadata";
-import { container } from "tsyringe";
 import { ConfigurationService } from "./config/configurationService.js";
 import {
   ApplicationConfiguration,
   CommandRegistrationConfiguration,
   CommonConfigurationKeys,
-  LoggerConfigs,
 } from "./config/index.js";
 import "./modules/index.js";
 
@@ -18,18 +16,17 @@ import { Bot } from "./utils/objects/index.js";
 console.log(`Welcome ${userInfo().username}.`);
 
 ConfigurationService.registerConfiguration<ApplicationConfiguration>(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
-ConfigurationService.registerConfiguration<LoggerConfigs>(CommonConfigurationKeys.LOGGER, LoggerConfigs);
 
 /**
  * Main function of application.
- * Should be used as starting point if bot needs to be started.
+ * Should be used as starting point for the bot.
  */
 async function runBot() {
   process.setMaxListeners(30);
   console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
   try {
-    const bot: Bot = container.resolve(Bot);
+    const bot = new Bot();
     await bot.run();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
