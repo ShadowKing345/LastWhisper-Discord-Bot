@@ -1,19 +1,15 @@
-import { Client, GatewayIntentBits, Collection, ClientEvents } from "discord.js";
-import { EventListeners } from "./eventListener.js";
-import { ProjectConfiguration } from "./projectConfiguration.js";
-import { DatabaseService } from "../../config/databaseService.js";
-import { ModuleService } from "../../config/moduleService.js";
+import { Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
+import { ApplicationConfiguration, DatabaseService, ModuleService } from "../../config/index.js";
+import { Logger } from "../../config/logger.js";
 import { Module } from "../../modules/module.js";
-import { singleton } from "tsyringe";
-import { Logger } from "../logger.js";
+import { EventListeners } from "./eventListener.js";
 
 /**
  * Application class.
  * To simplify dependency injection this class is used and can be easily resolved.
  */
-@singleton()
 export class Bot extends Client {
-  private readonly projectConfiguration: ProjectConfiguration;
+  private readonly projectConfiguration: ApplicationConfiguration;
   private readonly databaseService: DatabaseService;
   private readonly moduleConfiguration: ModuleService;
   private readonly logger: Logger = new Logger(Bot);
@@ -21,7 +17,7 @@ export class Bot extends Client {
   public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<keyof ClientEvents, EventListeners>();
 
   constructor(
-    appConfig: ProjectConfiguration,
+    appConfig: ApplicationConfiguration,
     databaseService: DatabaseService,
     moduleConfiguration: ModuleService,
   ) {
