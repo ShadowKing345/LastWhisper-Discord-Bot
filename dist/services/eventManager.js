@@ -8,11 +8,11 @@ import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { EventManagerSettingsRepository } from "../repositories/eventManager/eventManagerSettingsRepository.js";
-import { EventManagerSettings, EventObject } from "../entities/eventManager/index.js";
+import { EventObject } from "../entities/eventManager/index.js";
 import { EventObjectRepository } from "../repositories/eventManager/eventObjectRepository.js";
 import { EventReminderRepository } from "../repositories/eventManager/eventReminderRepository.js";
 import { LessThanOrEqual } from "typeorm";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let EventManagerService = EventManagerService_1 = class EventManagerService extends Service {
     logger = new Logger(EventManagerService_1);
     eventManagerSettingsRepository;
@@ -24,15 +24,8 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         this.eventObjectRepository = eventObjectRepository;
         this.eventReminderRepository = eventReminderRepository;
     }
-    async getConfig(guildId) {
-        const config = await this.eventManagerSettingsRepository.findOne({ where: { guildId: guildId } });
-        if (config) {
-            return config;
-        }
-        return await this.eventManagerSettingsRepository.save(new EventManagerSettings(guildId));
-    }
     async parseEvent(guildId, text) {
-        const config = await this.getConfig(guildId);
+        const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
         return this.parseMessage(null, text, config);
     }
     async findByIndex(guildId, index) {
@@ -43,7 +36,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         return index == null ? events : events[index % events.length];
     }
     async createContent(guildId, name, description, time, additional = []) {
-        const config = await this.getConfig(guildId);
+        const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
         const [l, r] = config.delimiterCharacters;
         let result = l + config.announcement + r + name + "\n";
         result += `${l}${config.description}${r}\n${description}\n`;
@@ -54,7 +47,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         return result;
     }
     async create(guildId, id, content, channelId) {
-        const config = await this.getConfig(guildId);
+        const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
         if (channelId && config.listenerChannelId !== channelId) {
             throw new WrongChannelError("Listening channel is not the same as the provided channel ID.");
         }
@@ -63,11 +56,10 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
             return null;
         }
         event.guildId = guildId;
-        await this.eventObjectRepository.save(event);
-        return event;
+        return this.eventObjectRepository.save(event);
     }
     async update(guildId, messageId, content) {
-        const config = await this.getConfig(guildId);
+        const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
         const oldEvent = await this.eventObjectRepository.findOne({ where: { guildId, id: messageId } });
         if (!oldEvent) {
             throw new Error("Event does not exist.");
@@ -79,7 +71,7 @@ let EventManagerService = EventManagerService_1 = class EventManagerService exte
         return this.eventObjectRepository.save(event);
     }
     async updateByIndex(guildId, index, content) {
-        const config = await this.getConfig(guildId);
+        const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
         const oldEvent = await this.findByIndex(guildId, index);
         const event = this.parseMessage(oldEvent.messageId, content, config);
         if (!event.isValid) {

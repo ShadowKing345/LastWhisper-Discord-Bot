@@ -1,9 +1,9 @@
 import { __decorate, __metadata } from "tslib";
 import { DatabaseService } from "../config/databaseService.js";
-import { Repository } from "./repository.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
 import { repository } from "../utils/decorators/index.js";
-let RoleManagerRepository = class RoleManagerRepository extends Repository {
+import { SelfCreatingRepository } from "./base/selfCreatingRepository.js";
+let RoleManagerRepository = class RoleManagerRepository extends SelfCreatingRepository {
     constructor(db) {
         super(db, RoleManagerConfig);
     }

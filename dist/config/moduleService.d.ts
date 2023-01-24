@@ -1,5 +1,5 @@
 import { Bot } from "../utils/objects/bot.js";
-import { Module, ProjectConfiguration } from "../utils/objects/index.js";
+import { Module, ApplicationConfiguration } from "../utils/objects/index.js";
 export declare class ModuleService {
     private readonly moduleConfiguration;
     private readonly intervalIds;
@@ -8,7 +8,7 @@ export declare class ModuleService {
     private readonly interactionLogger;
     private readonly eventLogger;
     private readonly taskLogger;
-    constructor(config: ProjectConfiguration, modules: Module[]);
+    constructor(config: ApplicationConfiguration, modules: Module[]);
     private interactionEvent;
     private runEvent;
     private runTimer;

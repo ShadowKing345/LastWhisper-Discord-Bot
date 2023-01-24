@@ -1,11 +1,8 @@
-import { __decorate, __metadata, __param } from "tslib";
 import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
-import { singleton, injectAll } from "tsyringe";
-import { Logger } from "../utils/logger.js";
-import { Module, ProjectConfiguration } from "../utils/objects/index.js";
+import { Logger } from "./logger.js";
 import { CommandResolverError } from "../utils/errors/index.js";
-let ModuleService = class ModuleService {
+export class ModuleService {
     moduleConfiguration;
     intervalIds = [];
     _modules;
@@ -176,11 +173,5 @@ let ModuleService = class ModuleService {
     get modules() {
         return this._modules;
     }
-};
-ModuleService = __decorate([
-    singleton(),
-    __param(1, injectAll(Module.name)),
-    __metadata("design:paramtypes", [ProjectConfiguration, Array])
-], ModuleService);
-export { ModuleService };
+}
 //# sourceMappingURL=moduleService.js.map

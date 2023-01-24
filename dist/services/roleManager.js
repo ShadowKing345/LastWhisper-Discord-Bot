@@ -6,7 +6,7 @@ import { fetchMessages } from "../utils/index.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends Service {
     repository;
     logger = new Logger(RoleManagerService_1);
@@ -14,9 +14,6 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends
     constructor(repository) {
         super();
         this.repository = repository;
-    }
-    getConfig(guildId) {
-        return this.repository.findOne({ where: { guildId } });
     }
     static async alterMembersRoles(member, roleId) {
         if (member.roles.cache.has(roleId)) {
@@ -86,7 +83,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends
             console.error("How the actual... did a user that is not in the guild react to a message?");
             return;
         }
-        const config = await this.getConfig(guild.id);
+        const config = await this.repository.findOneOrCreateByGuildId(guild.id);
         if (!config.reactionMessageIds.includes(messageReaction.message.id)) {
             return;
         }
@@ -94,7 +91,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends
         await messageReaction.remove();
     }
     async revokeRole(interaction) {
-        const config = await this.getConfig(interaction.guildId);
+        const config = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
         if (!config?.acceptedRoleId) {
             return interaction.reply({
                 content: "Cannot revoke roles as role was not set.",
@@ -115,7 +112,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends
         return interaction.reply({ content: "Done", ephemeral: true });
     }
     async registerMessage(interaction) {
-        const config = await this.getConfig(interaction.guildId);
+        const config = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
         const message_id = interaction.options.getString("message_id");
         const channel = (await interaction.guild?.channels.fetch(config.reactionListeningChannel));
         if (!channel) {
@@ -143,7 +140,7 @@ let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends
         });
     }
     async unregisterMessage(interaction) {
-        const config = await this.getConfig(interaction.guildId);
+        const config = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
         const message_id = interaction.options.getString("message_id");
         const channel = await interaction.guild?.channels.fetch(config.reactionListeningChannel);
         if (!channel) {

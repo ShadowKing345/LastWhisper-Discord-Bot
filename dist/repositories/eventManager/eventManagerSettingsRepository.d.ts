@@ -1,8 +1,7 @@
-import { DatabaseService } from "../../config/databaseService.js";
-import { Repository } from "../repository.js";
+import { DatabaseService } from "../../config/index.js";
 import { EventManagerSettings } from "../../entities/eventManager/index.js";
-export declare class EventManagerSettingsRepository extends Repository<EventManagerSettings> {
+import { SelfCreatingRepository } from "../base/selfCreatingRepository.js";
+export declare class EventManagerSettingsRepository extends SelfCreatingRepository<EventManagerSettings> {
     constructor(db: DatabaseService);
-    getConfig(guildId: string): Promise<EventManagerSettings>;
 }
 //# sourceMappingURL=eventManagerSettingsRepository.d.ts.map

@@ -1,5 +1,5 @@
 import { CommandResolverError } from "../utils/errors/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 export class Module {
     permissionManagerService;
     logger = new Logger(Module);

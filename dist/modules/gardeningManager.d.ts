@@ -5,7 +5,7 @@ import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 export declare class GardeningManagerModule extends Module {
     private gardeningManagerService;
     protected logger: Logger;

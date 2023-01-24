@@ -7,7 +7,7 @@ import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends Module {
     gardeningManagerService;
     logger = new Logger(GardeningManagerModule_1);

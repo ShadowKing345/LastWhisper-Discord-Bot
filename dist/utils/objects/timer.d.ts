@@ -6,5 +6,5 @@ export declare class Timer {
     execute: (client: Bot) => Promise<unknown>;
     static waitTillReady(client: DiscordClient, checkAgainTime?: number): Promise<void>;
 }
-export declare type Timers = Timer[];
+export type Timers = Timer[];
 //# sourceMappingURL=timer.d.ts.map

@@ -3,7 +3,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 export declare abstract class Module {
     permissionManagerService: PermissionManagerService;
     protected logger: Logger;

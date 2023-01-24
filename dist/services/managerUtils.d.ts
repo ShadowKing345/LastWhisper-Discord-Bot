@@ -4,7 +4,6 @@ import { Service } from "./service.js";
 export declare class ManagerUtilsService extends Service {
     private readonly repository;
     constructor(repository: ManagerUtilsRepository);
-    private getConfig;
     private getLoggingChannel;
     onMemberRemoved(member: GuildMember | PartialGuildMember): Promise<void>;
     onMemberBanned(ban: GuildBan): Promise<void>;

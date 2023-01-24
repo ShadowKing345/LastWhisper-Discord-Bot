@@ -4,6 +4,10 @@ import { EntityBase } from "./entityBase.js";
 let ManagerUtilsConfig = class ManagerUtilsConfig extends EntityBase {
     loggingChannel = null;
     clearChannelBlacklist;
+    constructor(guildId = null) {
+        super();
+        this.guildId = guildId;
+    }
 };
 __decorate([
     Column({ nullable: true }),
@@ -14,7 +18,8 @@ __decorate([
     __metadata("design:type", Array)
 ], ManagerUtilsConfig.prototype, "clearChannelBlacklist", void 0);
 ManagerUtilsConfig = __decorate([
-    Entity()
+    Entity(),
+    __metadata("design:paramtypes", [String])
 ], ManagerUtilsConfig);
 export { ManagerUtilsConfig };
 //# sourceMappingURL=managerUtils.js.map

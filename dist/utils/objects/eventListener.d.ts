@@ -5,5 +5,5 @@ export declare class EventListener<T extends keyof ClientEvents> {
     execute: (client: Bot, args: ClientEvents[T]) => Promise<void>;
     constructor(event?: T, run?: (client: Bot, args: ClientEvents[T]) => Promise<void>);
 }
-export declare type EventListeners = Array<EventListener<any>>;
+export type EventListeners = Array<EventListener<any>>;
 //# sourceMappingURL=eventListener.d.ts.map

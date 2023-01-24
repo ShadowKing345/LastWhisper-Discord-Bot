@@ -6,7 +6,7 @@ import { unFlattenObject } from "../utils/index.js";
 import { InvalidArgumentError, BadAuthorizationKeyError, DecoratorError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let PermissionManagerService = PermissionManagerService_1 = class PermissionManagerService extends Service {
     repository;
     logger = new Logger(PermissionManagerService_1);

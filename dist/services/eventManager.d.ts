@@ -10,13 +10,12 @@ export declare class EventManagerService extends Service {
     private readonly eventObjectRepository;
     private readonly eventReminderRepository;
     constructor(eventManagerSettingsRepository: EventManagerSettingsRepository, eventObjectRepository: EventObjectRepository, eventReminderRepository: EventReminderRepository);
-    private getConfig;
     parseEvent(guildId: string | null, text: string): Promise<EventObject>;
     findByIndex(guildId: string | null, index?: number): Promise<EventObject | EventObject[] | null>;
     createContent(guildId: string | null, name: string, description: string, time: string, additional?: [string, string][]): Promise<string>;
     create(guildId: string | null, id: string, content: string, channelId?: string): Promise<EventObject | null>;
     update(guildId: string | null, messageId: string, content: string): Promise<EventObject | null>;
-    updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObject | null>;
+    updateByIndex(guildId: string | null, index: number, content: string): Promise<EventObject>;
     cancel(guildId: string | null, messageId: string): Promise<void>;
     cancelByIndex(guildId: string | null, index: number): Promise<void>;
     eventExists(guildId: string | null, messageId: string): Promise<boolean>;

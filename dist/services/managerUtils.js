@@ -10,11 +10,8 @@ let ManagerUtilsService = class ManagerUtilsService extends Service {
         super();
         this.repository = repository;
     }
-    getConfig(guildId) {
-        return this.repository.findOne({ where: { guildId } });
-    }
     async getLoggingChannel(guild) {
-        const config = await this.getConfig(guild.id);
+        const config = await this.repository.findOneOrCreateByGuildId(guild.id);
         if (config.loggingChannel && guild.channels.cache.has(config.loggingChannel)) {
             return (await guild.channels.fetch(config.loggingChannel));
         }
@@ -80,7 +77,7 @@ let ManagerUtilsService = class ManagerUtilsService extends Service {
         }
     }
     async clearChannelMessages(interaction) {
-        const config = await this.getConfig(interaction.guildId);
+        const config = await this.repository.findOneOrCreateByGuildId(interaction.guildId);
         if (config.clearChannelBlacklist.includes(interaction.channelId)) {
             return interaction.reply({
                 content: "Wo hold it. No! Sorry this channel was blacklisted from the clear command to prevent accidental deletion.",

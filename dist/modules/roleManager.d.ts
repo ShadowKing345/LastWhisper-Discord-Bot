@@ -4,7 +4,7 @@ import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 export declare class RoleManagerModule extends Module {
     private roleManagerService;
     protected logger: Logger;

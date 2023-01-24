@@ -8,7 +8,7 @@ import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../utils/decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
 import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends Service {
     logger = new Logger(BuffManagerService_1);
     weekRepository;

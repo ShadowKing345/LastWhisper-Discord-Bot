@@ -2,7 +2,7 @@ import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Commands } from "../utils/objects/command.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 export declare class DevModule extends Module {
     protected logger: Logger;
     moduleName: string;

@@ -5,7 +5,7 @@ import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
 import { Command } from "../utils/objects/command.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
     logger = new Logger(DevModule_1);
     moduleName = "DevModule";

@@ -7,7 +7,6 @@ export declare class RoleManagerService extends Service {
     private logger;
     private collectors;
     constructor(repository: RoleManagerRepository);
-    private getConfig;
     private static alterMembersRoles;
     private static processMessageReactions;
     private registerReactionCollector;

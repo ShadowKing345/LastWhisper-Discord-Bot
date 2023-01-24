@@ -7,7 +7,7 @@ import { Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../utils/decorators/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService extends Service {
     repository;
     logger = new Logger(GardeningManagerService_1);

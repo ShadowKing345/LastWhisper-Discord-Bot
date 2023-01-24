@@ -1,7 +1,7 @@
 import { DatabaseService } from "../config/databaseService.js";
-import { Repository } from "./repository.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
-export declare class RoleManagerRepository extends Repository<RoleManagerConfig> {
+import { SelfCreatingRepository } from "./base/selfCreatingRepository.js";
+export declare class RoleManagerRepository extends SelfCreatingRepository<RoleManagerConfig> {
     constructor(db: DatabaseService);
 }
 //# sourceMappingURL=roleManager.d.ts.map

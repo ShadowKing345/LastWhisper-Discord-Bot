@@ -1,8 +1,8 @@
 import { __decorate, __metadata } from "tslib";
-import { repository } from "../../utils/decorators/index.js";
-import { Repository } from "../repository.js";
+import { DatabaseService } from "../../config/index.js";
 import { Days } from "../../entities/buffManager/index.js";
-import { DatabaseService } from "../../config/databaseService.js";
+import { repository } from "../../utils/decorators/index.js";
+import { Repository } from "../base/repository.js";
 let DaysRepository = class DaysRepository extends Repository {
     constructor(db) {
         super(db, Days);

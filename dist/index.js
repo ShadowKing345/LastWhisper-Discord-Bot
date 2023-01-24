@@ -1,15 +1,13 @@
 #!/usr/bin/env node
-import "reflect-metadata";
 import { program } from "commander";
 import { userInfo } from "os";
+import "reflect-metadata";
 import { main } from "./app.js";
-import { commandRegistration } from "./commandRegistration.js";
 import { ConfigurationService } from "./config/configurationService.js";
-import { DatabaseConfiguration, ProjectConfiguration } from "./utils/objects/index.js";
-import { LoggerConfigs } from "./utils/objects/loggerConfigs.js";
+import { ApplicationConfiguration, DatabaseConfiguration, LoggerConfigs } from "./config/index.js";
 import "./modules/index.js";
 console.log(`Welcome ${userInfo().username}.`);
-ConfigurationService.RegisterConfiguration("", ProjectConfiguration);
+ConfigurationService.RegisterConfiguration("", ApplicationConfiguration);
 ConfigurationService.RegisterConfiguration("database", DatabaseConfiguration);
 ConfigurationService.RegisterConfiguration("logger", LoggerConfigs);
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
@@ -21,6 +19,12 @@ program
     .option("-c, --client <string>", "Client ID.")
     .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
     .option("-u, --unregister", "Use to unregister commands instead.")
-    .action(args => commandRegistration(args));
+    .action(args => {
+    console.log(args);
+    if (typeof args === "object" && !Array.isArray(args)) {
+        console.log(args);
+    }
+    console.log("Hello World");
+});
 program.parse();
 //# sourceMappingURL=index.js.map

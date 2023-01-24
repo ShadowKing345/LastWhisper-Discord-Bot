@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice } from "discord.js";
-declare type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
+type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 export declare class Command {
     name: string;
     description: string;
@@ -24,7 +24,7 @@ export declare class CommandOption {
     build(builder: SlashCommandBuilder | SlashCommandSubcommandBuilder): SlashCommandBuilder | SlashCommandSubcommandBuilder;
     merge(obj: Partial<CommandOption>): CommandOption;
 }
-export declare type Commands = Command[];
-export declare type CommandOptions = CommandOption[];
+export type Commands = Command[];
+export type CommandOptions = CommandOption[];
 export {};
 //# sourceMappingURL=command.d.ts.map

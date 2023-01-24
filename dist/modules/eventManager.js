@@ -10,7 +10,7 @@ import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends Module {
     service;
     logger = new Logger(EventManagerModule_1);

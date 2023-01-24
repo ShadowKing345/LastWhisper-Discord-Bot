@@ -7,7 +7,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { DateTime } from "luxon";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Module {
     service;
     logger = new Logger(BuffManagerModule_1);

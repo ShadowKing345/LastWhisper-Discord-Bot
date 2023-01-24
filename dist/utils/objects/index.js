@@ -1,6 +1,6 @@
 export * from "./bot.js";
-export * from "./commandRegistrationConfiguration.js";
-export * from "./databaseConfiguration.js";
+export * from "../../config/entities/commandRegistrationConfiguration.js";
+export * from "../../config/entities/databaseConfiguration.js";
 export * from "../../modules/module.js";
-export * from "./projectConfiguration.js";
+export * from "../../config/entities/applicationConfiguration.js";
 //# sourceMappingURL=index.js.map

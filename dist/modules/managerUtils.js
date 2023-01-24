@@ -6,7 +6,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { EventListener } from "../utils/objects/eventListener.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends Module {
     managerUtilsService;
     logger = new Logger(ManagerUtilsModule_1);

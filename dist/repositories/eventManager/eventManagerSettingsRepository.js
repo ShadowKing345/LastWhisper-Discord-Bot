@@ -1,14 +1,11 @@
 import { __decorate, __metadata } from "tslib";
-import { DatabaseService } from "../../config/databaseService.js";
-import { Repository } from "../repository.js";
+import { DatabaseService } from "../../config/index.js";
 import { EventManagerSettings } from "../../entities/eventManager/index.js";
 import { repository } from "../../utils/decorators/index.js";
-let EventManagerSettingsRepository = class EventManagerSettingsRepository extends Repository {
+import { SelfCreatingRepository } from "../base/selfCreatingRepository.js";
+let EventManagerSettingsRepository = class EventManagerSettingsRepository extends SelfCreatingRepository {
     constructor(db) {
         super(db, EventManagerSettings);
-    }
-    getConfig(guildId) {
-        return this.findOne({ where: { guildId } });
     }
 };
 EventManagerSettingsRepository = __decorate([

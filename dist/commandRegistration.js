@@ -1,28 +1,21 @@
-import { REST } from "@discordjs/rest";
+import { REST, Routes, } from "discord.js";
 import { container } from "tsyringe";
-import { Logger } from "./utils/logger.js";
-import { ProjectConfiguration, Bot } from "./utils/objects/index.js";
-import { Routes } from "discord-api-types/v10";
-export async function commandRegistration(args) {
+import { ConfigurationService } from "./config/configurationService.js";
+import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, } from "./config/index.js";
+import { deepMerge } from "./utils/index.js";
+import { Bot } from "./utils/objects/index.js";
+export async function commandRegistration(token = null, args = new CommandRegistrationConfiguration()) {
     const app = container.resolve(Bot);
     const logger = new Logger("CommandRegistration");
     logger.info("Welcome again to command registration or un-registration.");
-    const appConfigs = container.resolve(ProjectConfiguration);
-    const commandConfigs = appConfigs.commandRegistration;
-    if (!commandConfigs) {
-        throw new Error("Command configurations were not set.");
-    }
-    if (args.token)
-        appConfigs.token = args.token;
-    if (args.client)
-        commandConfigs.clientId = args.client;
-    if (args.guild) {
-        commandConfigs.guildId = args.guild;
-        commandConfigs.registerForGuild = true;
+    const appConfigs = ConfigurationService.GetConfiguration(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
+    const commandConfigs = deepMerge(appConfigs?.commandRegistration ?? new CommandRegistrationConfiguration(), args);
+    if (!commandConfigs?.isValid) {
+        throw new Error("Command configuration was not setup correctly.");
     }
     if (args.unregister)
         commandConfigs.unregister = true;
-    const rest = new REST({ version: "10" }).setToken(appConfigs.token);
+    const rest = new REST({ version: "10" }).setToken(token ?? appConfigs.token);
     const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
     const isGlobal = commandConfigs.registerForGuild ? `guild ${commandConfigs.guildId}` : "everyone";
     try {

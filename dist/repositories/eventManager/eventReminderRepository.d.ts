@@ -1,6 +1,6 @@
-import { Repository } from "../repository.js";
+import { DatabaseService } from "../../config/index.js";
 import { EventReminder } from "../../entities/eventManager/index.js";
-import { DatabaseService } from "../../config/databaseService.js";
+import { Repository } from "../base/repository.js";
 export declare class EventReminderRepository extends Repository<EventReminder> {
     constructor(db: DatabaseService);
 }

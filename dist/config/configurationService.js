@@ -1,14 +1,14 @@
 import { container as globalContainer } from "tsyringe";
 import fs from "fs";
 import { flattenObject, deepMerge } from "../utils/index.js";
-import { ProjectConfiguration } from "../utils/objects/index.js";
+import { ApplicationConfiguration } from "../utils/objects/index.js";
 export class ConfigurationService {
-    static configPath = process.env.CONFIG_PATH ?? "./config/default.json";
+    static configPath = process.env.CONFIG_PATH ?? "./config/common.json";
     static devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/development.json";
     static flattenConfigs = new Map();
     static RegisterConfiguration(key, entity, container = globalContainer) {
         if (ConfigurationService.flattenConfigs.size < 1) {
-            this.getConfigs();
+            this.createConfigMap();
         }
         const map = ConfigurationService.flattenConfigs;
         if (!map.has(key)) {
@@ -17,7 +17,17 @@ export class ConfigurationService {
         const e = deepMerge(new entity(), map.get(key));
         container.register(entity, { useValue: e });
     }
-    static getConfigs() {
+    static GetConfiguration(key, entity) {
+        if (ConfigurationService.flattenConfigs.size < 1) {
+            this.createConfigMap();
+        }
+        const map = ConfigurationService.flattenConfigs;
+        if (!map.has(key)) {
+            throw new Error(`Configuration file has no config with the key ${key}`);
+        }
+        return deepMerge(new entity(), map.get(key));
+    }
+    static createConfigMap() {
         ConfigurationService.flattenConfigs.clear();
         const config = ConfigurationService.parseConfigs();
         for (const [key, value] of Object.entries(flattenObject(config, true))) {
@@ -36,12 +46,12 @@ export class ConfigurationService {
         if (!objStr) {
             return null;
         }
-        return deepMerge(ProjectConfiguration, JSON.parse(objStr));
+        return deepMerge(ApplicationConfiguration, JSON.parse(objStr));
     }
     static parseConfigs() {
         const config = ConfigurationService.parseConfigFile(ConfigurationService.configPath);
         if (process.env.NODE_ENV !== "development") {
-            return config;
+            return config ?? new ApplicationConfiguration();
         }
         const devConfig = ConfigurationService.parseConfigFile(ConfigurationService.devConfigPath);
         return devConfig ? deepMerge(config, devConfig) : config;

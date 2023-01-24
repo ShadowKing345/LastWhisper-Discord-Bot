@@ -7,7 +7,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Command, CommandOption } from "../utils/objects/command.js";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends Module {
     service;
     logger = new Logger(PermissionManagerModule_1);

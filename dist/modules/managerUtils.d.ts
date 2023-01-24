@@ -4,7 +4,7 @@ import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands } from "../utils/objects/command.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 export declare class ManagerUtilsModule extends Module {
     private managerUtilsService;
     protected logger: Logger;

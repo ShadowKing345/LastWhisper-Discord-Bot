@@ -1,16 +1,10 @@
-var Bot_1;
-import { __decorate, __metadata } from "tslib";
 import { Client, GatewayIntentBits, Collection } from "discord.js";
-import { ProjectConfiguration } from "./projectConfiguration.js";
-import { DatabaseService } from "../../config/databaseService.js";
-import { ModuleService } from "../../config/moduleService.js";
-import { singleton } from "tsyringe";
-import { Logger } from "../logger.js";
-let Bot = Bot_1 = class Bot extends Client {
+import { Logger } from "../../config/logger.js";
+export class Bot extends Client {
     projectConfiguration;
     databaseService;
     moduleConfiguration;
-    logger = new Logger(Bot_1);
+    logger = new Logger(Bot);
     events = new Collection();
     constructor(appConfig, databaseService, moduleConfiguration) {
         super({
@@ -55,12 +49,5 @@ let Bot = Bot_1 = class Bot extends Client {
     get modules() {
         return this.moduleConfiguration?.modules ?? [];
     }
-};
-Bot = Bot_1 = __decorate([
-    singleton(),
-    __metadata("design:paramtypes", [ProjectConfiguration,
-        DatabaseService,
-        ModuleService])
-], Bot);
-export { Bot };
+}
 //# sourceMappingURL=bot.js.map
