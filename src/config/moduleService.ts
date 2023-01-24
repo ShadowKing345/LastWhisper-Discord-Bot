@@ -1,48 +1,34 @@
-import { ButtonInteraction, CommandInteraction, Interaction, ComponentType } from "discord.js";
+import { ButtonInteraction, CommandInteraction, ComponentType, Interaction } from "discord.js";
 import { clearInterval } from "timers";
-import { injectAll, singleton } from "tsyringe";
+import { container } from "tsyringe";
+import { Module } from "../modules/module.js";
+import { CommandResolverError } from "../utils/errors/index.js";
+import { Bot } from "../utils/objects/bot.js";
+import { Command } from "../utils/objects/command.js";
+import { EventListeners } from "../utils/objects/index.js";
+import { Timer } from "../utils/objects/timer.js";
+import { CommonConfigurationKeys } from "./configurationKeys.js";
+import { ConfigurationService } from "./configurationService.js";
+import { ModuleConfiguration } from "./entities/index.js";
 
 import { Logger } from "./logger.js";
-import { Bot } from "../utils/objects/bot.js";
-import { Module } from "../modules/module.js";
-import { Timer } from "../utils/objects/timer.js";
-import { ApplicationConfiguration, ModuleConfiguration } from "./entities/index.js";
-import { CommandResolverError } from "../utils/errors/index.js";
-import { Command } from "../utils/objects/command.js";
-import { EventListeners } from "../utils/objects/eventListener.js";
 
 /**
+ * Todo: Remove the multiple loggers
+ * Todo: Add scoped to interactions.
+ * Todo: Separate concerns to the interaction function.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
-@singleton()
 export class ModuleService {
-  private readonly moduleConfiguration: ModuleConfiguration;
   private readonly intervalIds: number[] = [];
-
-  private readonly _modules: Module[];
-
   private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
   private readonly interactionLogger: Logger = new Logger("InteractionExecution");
   private readonly eventLogger: Logger = new Logger("EventExecution");
   private readonly taskLogger: Logger = new Logger("TimerExecution");
 
-  constructor(config: ApplicationConfiguration, @injectAll(Module.name) modules: Module[]) {
-    this.moduleConfiguration = config.moduleConfiguration;
-
-    this._modules =
-      this.moduleConfiguration.modules?.length !== 0
-        ? modules.filter(module => {
-          const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-          const blacklist = this.moduleConfiguration.blacklist;
-          return (!blacklist && inList) || (blacklist && !inList);
-        })
-        : modules;
-
-    this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(this._modules.map(module => module.moduleName))}.`);
-
-    if (this.moduleConfiguration.enableCommands) {
-      this.moduleLogger.debug("Commands enabled.");
-    }
+  constructor(
+    private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration),
+  ) {
   }
 
   /**
@@ -87,7 +73,7 @@ export class ModuleService {
             return;
           }
 
-          const command: Command | undefined = this.modules
+          const command: Command | undefined = this.filteredModules
             .find(module => module.hasCommand(interaction.commandName))
             ?.getCommand(interaction.commandName);
           if (!command) {
@@ -107,17 +93,8 @@ export class ModuleService {
         if (interaction.isMessageComponent()) {
           switch (interaction.componentType) {
             case ComponentType.Button:
-              // const f = client.buttons.get((interaction as ButtonInteraction).customId);
-              // if (!f) {
-              //     await interaction.reply({
-              //         content: "Cannot find action for this button.",
-              //         ephemeral: true,
-              //     });
-              //     return;
-              // }
-              // await f(interaction as unknown as ChatInputCommandInteraction);
               break;
-            case ComponentType.SelectMenu:
+            case ComponentType.StringSelect:
               break;
             default:
               break;
@@ -211,7 +188,15 @@ export class ModuleService {
    */
   public configureModules(client: Bot): void {
     this.moduleLogger.info("Loading modules.");
-    for (const module of this.modules) {
+    const modules = this.filteredModules;
+
+    this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
+
+    if (this.moduleConfiguration.enableCommands) {
+      this.moduleLogger.debug("Commands enabled.");
+    }
+
+    for (const module of modules) {
       this.moduleLogger.info(module.moduleName);
 
       try {
@@ -219,6 +204,7 @@ export class ModuleService {
           this.moduleLogger.debug("Setting up event module events.");
 
           for (const listener of module.eventListeners) {
+            // FixMe: Get rid of these eslint disable statement.
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             const collection: EventListeners = client.events.get(listener.event) ?? [];
             collection.push(listener);
@@ -234,14 +220,14 @@ export class ModuleService {
     if (this.moduleConfiguration.enableEventListeners) {
       this.moduleLogger.debug("Registering event.");
 
-      for (const [ event, listeners ] of client.events) {
+      for (const [event, listeners] of client.events) {
         client.on(event, (...args) => this.runEvent(listeners, client, ...args));
       }
     }
 
     if (this.moduleConfiguration.enableTimers) {
       this.moduleLogger.debug("Timers were enabled.");
-      for (const timer of this.modules.map(module => module.timers).flat()) {
+      for (const timer of modules.map(module => module.timers).flat()) {
         this.runTimer(timer, client);
       }
     }
@@ -267,7 +253,17 @@ export class ModuleService {
   /**
    * List of all modules registered.
    */
-  public get modules(): Module[] {
-    return this._modules;
+  public get filteredModules(): Module[] {
+    const modules: Module[] = container.resolveAll(Module.name);
+
+    if (this.moduleConfiguration.modules?.length !== 0) {
+      return modules.filter(module => {
+        const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
+        const blacklist = this.moduleConfiguration.blacklist;
+        return (!blacklist && inList) || (blacklist && !inList);
+      });
+    }
+
+    return modules;
   }
 }
