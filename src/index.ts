@@ -3,23 +3,22 @@ import { program } from "commander";
 import { userInfo } from "os";
 import "reflect-metadata";
 import { container } from "tsyringe";
-
-import { registerCommands } from "./registerCommandsScript.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import {
   ApplicationConfiguration,
   CommandRegistrationConfiguration,
-  DatabaseConfiguration,
+  CommonConfigurationKeys,
   LoggerConfigs,
 } from "./config/index.js";
 import "./modules/index.js";
+
+import { registerCommands } from "./registerCommandsScript.js";
 import { Bot } from "./utils/objects/index.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 
-ConfigurationService.registerConfiguration<ApplicationConfiguration>("", ApplicationConfiguration);
-ConfigurationService.registerConfiguration<DatabaseConfiguration>("database", DatabaseConfiguration);
-ConfigurationService.registerConfiguration<LoggerConfigs>("logger", LoggerConfigs);
+ConfigurationService.registerConfiguration<ApplicationConfiguration>(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
+ConfigurationService.registerConfiguration<LoggerConfigs>(CommonConfigurationKeys.LOGGER, LoggerConfigs);
 
 /**
  * Main function of application.
@@ -48,26 +47,27 @@ program.command("register-commands")
   .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
   .option("-u, --unregister [boolean]", "Use to unregister commands instead.")
   .action((args: Record<string, unknown>) => {
-    if (!args || typeof args !== "object" || Array.isArray(args)) {
-      throw new Error("Args was for some reason null. This is not correct.");
-    }
+      if (!args || typeof args !== "object" || Array.isArray(args)) {
+        throw new Error("Args was for some reason null. This is not correct.");
+      }
 
-    const config: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
+      const config: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
 
-    if ("client" in args && typeof args.client === "string") {
-      config.clientId = args.client;
-    }
+      if ("client" in args && typeof args.client === "string") {
+        config.clientId = args.client;
+      }
 
-    if ("guild" in args && typeof args.guild === "string") {
-      config.guildId = args.guild;
-      config.registerForGuild = true;
-    }
+      if ("guild" in args && typeof args.guild === "string") {
+        config.guildId = args.guild;
+        config.registerForGuild = true;
+      }
 
-    if ("unregister" in args && typeof args.unregister === "boolean") {
-      config.unregister = args.unregister;
-    }
+      if ("unregister" in args && typeof args.unregister === "boolean") {
+        config.unregister = args.unregister;
+      }
 
-    return registerCommands("token" in args && typeof args.token === "string" ? args.token : null, config);
-  });
+      return registerCommands("token" in args && typeof args.token === "string" ? args.token : null, config);
+    },
+  );
 
 program.parse();
