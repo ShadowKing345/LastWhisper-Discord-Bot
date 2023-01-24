@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import { LOGGING_LEVELS, LoggerConfigs } from "./objects/loggerConfigs.js";
+import { LOGGING_LEVELS, LoggerConfigs } from "./entities/index.js";
 import { container } from "tsyringe";
 import { EntityTarget, EntitySchema } from "typeorm";
 
