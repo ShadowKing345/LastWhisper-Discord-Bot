@@ -1,7 +1,7 @@
-import { container as globalContainer, DependencyContainer } from "tsyringe";
 import fs from "fs";
-import { flattenObject, deepMerge } from "../utils/index.js";
-import { ProjectConfiguration } from "../utils/objects/index.js";
+import { container as globalContainer, DependencyContainer } from "tsyringe";
+import { deepMerge, flattenObject } from "../utils/index.js";
+import { ApplicationConfiguration } from "./entities/index.js";
 
 /**
  * A Service class used to register configuration objects into the dependency tree.
@@ -17,9 +17,8 @@ export class ConfigurationService {
    * @param entity A constructor function to create an object from.
    * @param container Override for the global container.
    * @throws A bad configuration error when the key cannot be found.
-   * @constructor
    */
-  public static RegisterConfiguration<T extends object>(key: string, entity: { new(): T }, container: DependencyContainer = globalContainer): void {
+  public static registerConfiguration<T extends object>(key: string, entity: { new(): T } = null, container: DependencyContainer = globalContainer): void {
     if (ConfigurationService.flattenConfigs.size < 1) {
       this.createConfigMap();
     }
@@ -30,9 +29,32 @@ export class ConfigurationService {
       throw new Error(`Configuration file has no config with the key ${key}`);
     }
 
-    const e = deepMerge(new entity(), map.get(key));
+    if (entity) {
+      const e = deepMerge(new entity(), map.get(key));
+      container.register(entity, { useValue: e });
+    } else {
+      container.register(key, { useValue: map.get(key) as T });
+    }
+  }
 
-    container.register(entity, { useValue: e });
+  /**
+   * Attempts to return a parse configuration object.
+   * Throws if none can be found.
+   * @param key The key in the configuration file.
+   * @param entity The object to be mapped to.
+   */
+  public static getConfiguration<T>(key: string, entity: { new(): T } = null): T {
+    if (ConfigurationService.flattenConfigs.size < 1) {
+      this.createConfigMap();
+    }
+
+    const map = ConfigurationService.flattenConfigs;
+
+    if (!map.has(key)) {
+      throw new Error(`Configuration file has no config with the key ${key}`);
+    }
+
+    return entity ? deepMerge(new entity(), map.get(key)) : map.get(key) as T;
   }
 
   /**
@@ -45,7 +67,7 @@ export class ConfigurationService {
 
     const config = ConfigurationService.parseConfigs();
 
-    for (const [ key, value ] of Object.entries(flattenObject(config, true))) {
+    for (const [key, value] of Object.entries(flattenObject(config as object, true))) {
       ConfigurationService.flattenConfigs.set(key, value);
     }
 
@@ -75,14 +97,14 @@ export class ConfigurationService {
    * @private
    */
 
-  private static parseConfigFile(path: string): ProjectConfiguration {
+  private static parseConfigFile(path: string): ApplicationConfiguration {
     const objStr: string = ConfigurationService.readFile(path);
 
     if (!objStr) {
       return null;
     }
 
-    return deepMerge(ProjectConfiguration, JSON.parse(objStr));
+    return deepMerge(ApplicationConfiguration, JSON.parse(objStr));
   }
 
   /**
@@ -90,11 +112,11 @@ export class ConfigurationService {
    * This function also merges the relevant config file for each environment.
    * @private
    */
-  private static parseConfigs(): ProjectConfiguration {
+  private static parseConfigs(): ApplicationConfiguration {
     const config = ConfigurationService.parseConfigFile(ConfigurationService.configPath);
 
     if (process.env.NODE_ENV !== "development") {
-      return config ?? new ProjectConfiguration();
+      return config ?? new ApplicationConfiguration();
     }
 
     const devConfig = ConfigurationService.parseConfigFile(ConfigurationService.devConfigPath);
