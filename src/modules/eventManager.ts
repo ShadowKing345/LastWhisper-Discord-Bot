@@ -3,7 +3,7 @@ import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
+import { EventListeners, EventListener } from "../utils/objects/index.js";
 import { Timers } from "../utils/objects/timer.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
@@ -292,6 +292,7 @@ export class EventManagerModule extends Module {
   }
 
   // endregion
+
   // region Events
 
   /**
@@ -384,6 +385,7 @@ export class EventManagerModule extends Module {
 
   // endregion
 
+  // region Loops
   /**
    * Timer loop fired for when an event reminder needs to be called.
    * @param client
@@ -392,4 +394,5 @@ export class EventManagerModule extends Module {
   private reminderLoop(client: Client): Promise<void> {
     return this.service.reminderLoop(client);
   }
+  // endregion
 }

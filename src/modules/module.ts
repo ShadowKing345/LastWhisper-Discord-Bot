@@ -1,6 +1,6 @@
 import { Timers } from "../utils/objects/timer.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { EventListeners } from "../utils/objects/eventListener.js";
+import { EventListeners } from "../utils/objects/index.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../utils/errors/index.js";
