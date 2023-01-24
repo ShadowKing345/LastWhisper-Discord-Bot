@@ -18,8 +18,6 @@ export class Bot extends Client {
 
   constructor(
     appConfig: ApplicationConfiguration,
-    databaseService: DatabaseService,
-    moduleConfiguration: ModuleService,
   ) {
     super({
       intents: [
@@ -32,8 +30,6 @@ export class Bot extends Client {
       ],
     });
     this.projectConfiguration = appConfig;
-    this.databaseService = databaseService;
-    this.moduleConfiguration = moduleConfiguration;
   }
 
   /**
@@ -84,5 +80,4 @@ export class Bot extends Client {
   public get modules(): Module[] {
     return this.moduleConfiguration?.modules ?? [];
   }
-
 }
