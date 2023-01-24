@@ -3,4 +3,5 @@ export enum CommonConfigurationKeys {
   TOKEN = "token",
   DATABASE = "database",
   COMMAND_REGISTRATION = "commandRegistration",
+  LOGGER = "logger",
 }
