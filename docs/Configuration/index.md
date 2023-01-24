@@ -14,7 +14,9 @@
 Configuration files are to be stored inside the [`config`](/config) directory found in the project root.
 
 The name of the files shall be as follows, `{configuration-type}.json`. By default, the `configuration-type` placeholder
-should be default however you can create a development file used for development instead.
+should be `common` however you can create a development file used for development instead using the file name `development`.
+
+*Note: You must have `NODE_ENV` environment variable set to `development` in order to have this configuration file work*
 
 A dev or production configuration should overwrite the common configuration values. You can also change which type will
 be used by changing the NODE_ENV variable.
