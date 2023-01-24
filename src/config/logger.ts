@@ -1,6 +1,7 @@
 import { pino } from "pino";
+import { CommonConfigurationKeys } from "./configurationKeys.js";
+import { ConfigurationService } from "./configurationService.js";
 import { LOGGING_LEVELS, LoggerConfigs } from "./entities/index.js";
-import { container } from "tsyringe";
 import { EntityTarget, EntitySchema } from "typeorm";
 
 /**
@@ -49,7 +50,7 @@ export class Logger {
 
   private createLogger(): void {
     if (!this.config) {
-      this.config = container.resolve<LoggerConfigs>(LoggerConfigs);
+      this.config = ConfigurationService.getConfiguration(CommonConfigurationKeys.LOGGER, LoggerConfigs);
     }
 
     this.pino = pino({
