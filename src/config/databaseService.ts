@@ -1,38 +1,22 @@
-import { singleton } from "tsyringe";
 
-import { DatabaseConfiguration, ProjectConfiguration } from "../utils/objects/index.js";
-import { DataSource } from "typeorm";
-import { BuffManagerEntities } from "../entities/buffManager/index.js";
-import { EventManagerEntities } from "../entities/eventManager/index.js";
-import { GardeningManagerEntities } from "../entities/gardeningManager/index.js";
-import { PermissionManagerEntities } from "../entities/permissionManager/index.js";
-import { ManagerUtilsConfig } from "../entities/managerUtils.js";
-import { RoleManagerConfig } from "../entities/roleManager.js";
-import { Logger } from "../utils/logger.js";
+import { DatabaseConfiguration } from "./entities/index.js";
+import { DataSource, DataSourceOptions } from "typeorm";
+import { Logger } from "./logger.js";
+import { CommonConfigurationKeys } from "./configurationKeys.js";
+import { ConfigurationService } from "./configurationService.js";
 
 /**
  * Database Configuration Service file.
- * This service provides access to the database object as well as connection to the database server.
+ * This service acts like a wrapper to the DataSource object that can be globally accessed.
  */
-@singleton()
 export class DatabaseService {
-  private readonly databaseConfigs: DatabaseConfiguration;
   private readonly logger: Logger = new Logger(DatabaseService);
-
   private _dataSource: DataSource = null;
-
-  constructor(config: ProjectConfiguration) {
-    this.databaseConfigs = config.database;
-  }
 
   /**
    * Attempts to establish a connection to the database.
    */
   public async connect(): Promise<void> {
-    if (!this.databaseConfigs) {
-      throw new Error("Database configuration is null.");
-    }
-
     try {
       this.logger.info(`Connecting to Database`);
       if (this.isConnected) {
@@ -41,23 +25,7 @@ export class DatabaseService {
       }
 
       if (!this._dataSource) {
-        this._dataSource = new DataSource({
-          type: "postgres",
-          username: this.databaseConfigs.username,
-          password: this.databaseConfigs.password,
-          port: this.databaseConfigs.port,
-          database: this.databaseConfigs.database,
-          synchronize: this.databaseConfigs.sync,
-          logging: this.databaseConfigs.logging,
-          entities: [
-            ...Object.values(BuffManagerEntities),
-            ...Object.values(EventManagerEntities),
-            ...Object.values(GardeningManagerEntities),
-            ...Object.values(PermissionManagerEntities),
-            ManagerUtilsConfig,
-            RoleManagerConfig,
-          ],
-        });
+        this._dataSource = AppDataSource;
       }
 
       await this._dataSource.initialize();
@@ -71,8 +39,14 @@ export class DatabaseService {
    * Attempts to disconnect from the client.
    */
   public async disconnect(): Promise<void> {
+    if (!this._dataSource) {
+      this.logger.error("Database is not connected to.");
+      return;
+    }
+
     await this._dataSource?.destroy();
     this._dataSource = null;
+
     this.logger.info("Disconnecting from database.");
   }
 
@@ -91,4 +65,24 @@ export class DatabaseService {
   public get isConnected(): boolean {
     return this._dataSource?.isInitialized;
   }
+
+  /**
+   * Attempts to create a new datasource to be used by throughout the project.
+   * @param config Database configuration override.
+   */
+  public static createDataSource(config: DatabaseConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)): DataSource {
+    return new DataSource({
+      type: config.type,
+      username: config.username,
+      password: config.password,
+      port: config.port,
+      database: config.database,
+      logging: config.logging,
+      entities: ["./src/entities/**/*.ts"],
+      migrations: ["./src/migrations/*.ts"],
+    } as DataSourceOptions);
+  }
 }
+
+export const AppDataSource = DatabaseService.createDataSource();
+
