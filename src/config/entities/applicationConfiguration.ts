@@ -1,26 +1,26 @@
+import { IMerge } from "../../utils/IMerge.js";
+import { deepMerge } from "../../utils/index.js";
 import { CommandRegistrationConfiguration } from "./commandRegistrationConfiguration.js";
 import { DatabaseConfiguration } from "./databaseConfiguration.js";
-import { deepMerge } from "../index.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
 import { ModuleConfiguration } from "./moduleConfiguration.js";
-import { IMerge } from "../IMerge.js";
 
 /**
  * Default configuration object for the application.
  */
-export class ProjectConfiguration extends IMerge<ProjectConfiguration>{
+export class ApplicationConfiguration extends IMerge<ApplicationConfiguration> {
   // Discord application token.
   public token: string = null;
   // Database settings.
   public database?: DatabaseConfiguration = new DatabaseConfiguration();
   // Configuration for command registration.
-  public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
+  public commandRegistration?: CommandRegistrationConfiguration = null;
   // Configuration for logger.
   public logger?: LoggerConfigs = new LoggerConfigs();
   // Configuration for module service.
-  public moduleConfiguration: ModuleConfiguration = new ModuleConfiguration();
+  public moduleConfiguration?: ModuleConfiguration = new ModuleConfiguration();
 
-  public merge(obj: ProjectConfiguration): ProjectConfiguration {
+  public merge(obj: ApplicationConfiguration): ApplicationConfiguration {
     if (obj.token) {
       this.token = obj.token;
     }

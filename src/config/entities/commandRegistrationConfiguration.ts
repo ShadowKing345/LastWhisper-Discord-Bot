@@ -3,4 +3,8 @@ export class CommandRegistrationConfiguration {
   public guildId: string = null;
   public registerForGuild?: boolean = false;
   public unregister?: boolean = false;
+
+  public get isValid(): boolean {
+    return !this.clientId? false : this.guildId && this.registerForGuild
+  }
 }
