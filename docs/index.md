@@ -31,7 +31,7 @@ Subdirectories can be used to separate files and combine files that describe asp
 configurations classes, etc. Each subdirectory will contain an `index.md` file that can be used to explain the high
 level logic of the files contained or provide a link to them.
 
-The index file much do at least one of the previously mentioned functions or both.
+The index file must do at least one of the previously mentioned functions or both.
 
 Files names do not have any special syntax such as camel case. They should however reflect the topics being discussed
 inside as well they cannot be sentences unless strictly necessary. Folder names have a similar naming convention. The
