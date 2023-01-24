@@ -1,12 +1,12 @@
 import { ButtonInteraction, CommandInteraction, Interaction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
-import { singleton, injectAll } from "tsyringe";
+import { injectAll, singleton } from "tsyringe";
 
-import { Logger } from "../utils/logger.js";
+import { Logger } from "./logger.js";
 import { Bot } from "../utils/objects/bot.js";
-import { Module, ProjectConfiguration } from "../utils/objects/index.js";
+import { Module } from "../modules/module.js";
 import { Timer } from "../utils/objects/timer.js";
-import { ModuleConfiguration } from "../utils/objects/moduleConfiguration.js";
+import { ApplicationConfiguration, ModuleConfiguration } from "./entities/index.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Command } from "../utils/objects/command.js";
 import { EventListeners } from "../utils/objects/eventListener.js";
@@ -26,7 +26,7 @@ export class ModuleService {
   private readonly eventLogger: Logger = new Logger("EventExecution");
   private readonly taskLogger: Logger = new Logger("TimerExecution");
 
-  constructor(config: ProjectConfiguration, @injectAll(Module.name) modules: Module[]) {
+  constructor(config: ApplicationConfiguration, @injectAll(Module.name) modules: Module[]) {
     this.moduleConfiguration = config.moduleConfiguration;
 
     this._modules =

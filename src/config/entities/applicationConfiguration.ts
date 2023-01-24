@@ -9,6 +9,7 @@ import { ModuleConfiguration } from "./moduleConfiguration.js";
  * Default configuration object for the application.
  */
 export class ApplicationConfiguration extends IMerge<ApplicationConfiguration> {
+
   // Discord application token.
   public token: string = null;
   // Database settings.
