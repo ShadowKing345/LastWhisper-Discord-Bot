@@ -5,6 +5,10 @@ export class CommandRegistrationConfiguration {
   public unregister?: boolean = false;
 
   public get isValid(): boolean {
-    return !this.clientId? false : this.guildId && this.registerForGuild
+    if (!this.clientId) {
+      return false;
+    }
+
+    return this.guildId && this.registerForGuild;
   }
 }
