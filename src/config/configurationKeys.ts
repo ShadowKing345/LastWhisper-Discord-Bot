@@ -4,4 +4,5 @@ export enum CommonConfigurationKeys {
   DATABASE = "database",
   COMMAND_REGISTRATION = "commandRegistration",
   LOGGER = "logger",
+  MODULE = "moduleConfiguration",
 }
