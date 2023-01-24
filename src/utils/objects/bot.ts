@@ -1,7 +1,7 @@
 import { Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
-import { ApplicationConfiguration, DatabaseService, ModuleService } from "../../config/index.js";
+import { ConfigurationService } from "../../config/configurationService.js";
+import { CommonConfigurationKeys, DatabaseService, ModuleService } from "../../config/index.js";
 import { Logger } from "../../config/logger.js";
-import { Module } from "../../modules/module.js";
 import { EventListeners } from "./eventListener.js";
 
 /**
@@ -9,16 +9,14 @@ import { EventListeners } from "./eventListener.js";
  * To simplify dependency injection this class is used and can be easily resolved.
  */
 export class Bot extends Client {
-  private readonly projectConfiguration: ApplicationConfiguration;
+  private readonly appToken: string;
   private readonly databaseService: DatabaseService;
-  private readonly moduleConfiguration: ModuleService;
+  private readonly moduleService: ModuleService;
   private readonly logger: Logger = new Logger(Bot);
 
   public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<keyof ClientEvents, EventListeners>();
 
-  constructor(
-    appConfig: ApplicationConfiguration,
-  ) {
+  constructor() {
     super({
       intents: [
         GatewayIntentBits.Guilds,
@@ -29,16 +27,16 @@ export class Bot extends Client {
         GatewayIntentBits.MessageContent,
       ],
     });
-    this.projectConfiguration = appConfig;
+    this.appToken = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN);
+    this.moduleService = new ModuleService();
   }
 
   /**
    * Main function to initialize application.
    */
-  public async init(): Promise<void> {
+  public init(): void {
     try {
-      await this.databaseService.connect();
-      this.moduleConfiguration.configureModules(this);
+      this.moduleService.configureModules(this);
 
       this.once("ready", () => this.logger.info("Bot is up and ready to roll!"));
       this.on("error", error => this.logger.error(error.stack));
@@ -54,7 +52,7 @@ export class Bot extends Client {
    * Runs the bot.
    */
   public async run(): Promise<string> {
-    return this.login(this.projectConfiguration.token);
+    return this.login(this.appToken);
   }
 
   /**
@@ -63,7 +61,7 @@ export class Bot extends Client {
   public async stop(): Promise<void> {
     this.logger.info("Stopping application.");
 
-    this.moduleConfiguration.cleanup();
+    this.moduleService.cleanup();
 
     if (this.isReady()) {
       this.destroy();
@@ -72,12 +70,5 @@ export class Bot extends Client {
     await this.databaseService.disconnect();
 
     this.logger.info("Done. Have a nice day!");
-  }
-
-  /**
-   * Returns all the registered modules from the module class.
-   */
-  public get modules(): Module[] {
-    return this.moduleConfiguration?.modules ?? [];
   }
 }
