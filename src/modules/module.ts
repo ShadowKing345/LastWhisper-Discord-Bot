@@ -4,7 +4,7 @@ import { EventListeners } from "../utils/objects/eventListener.js";
 import { Commands, Command } from "../utils/objects/command.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../utils/errors/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 
 /**
  * Base class for a module.

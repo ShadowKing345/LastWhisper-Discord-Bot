@@ -11,7 +11,7 @@ import { EventManagerSettings, EventObject } from "../entities/eventManager/inde
 import { EventObjectRepository } from "../repositories/eventManager/eventObjectRepository.js";
 import { EventReminderRepository } from "../repositories/eventManager/eventReminderRepository.js";
 import { LessThanOrEqual } from "typeorm";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 
 /**
  * Event manager service.

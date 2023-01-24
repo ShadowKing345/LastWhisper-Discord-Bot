@@ -1,7 +1,7 @@
-import { Repository } from "./repository.js";
-import { DatabaseService } from "../../config/databaseService.js";
 import { EntityTarget, FindOptionsWhere } from "typeorm";
+import { DatabaseService } from "../../config/index.js";
 import { EntityBase } from "../../entities/entityBase.js";
+import { Repository } from "./repository.js";
 
 export abstract class SelfCreatingRepository<T extends EntityBase> extends Repository<T> {
   protected constructor(db: DatabaseService, entity: EntityTarget<T>) {

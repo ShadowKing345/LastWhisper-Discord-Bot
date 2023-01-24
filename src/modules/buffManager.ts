@@ -8,7 +8,7 @@ import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 
 /**
  * Module designed to deal with requests about buffs.

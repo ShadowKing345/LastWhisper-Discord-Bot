@@ -1,7 +1,7 @@
-import { repository } from "../../utils/decorators/index.js";
+import { DatabaseService } from "../../config/index.js";
 import { Buff } from "../../entities/buffManager/index.js";
+import { repository } from "../../utils/decorators/index.js";
 import { Repository } from "../base/repository.js";
-import { DatabaseService } from "../../config/databaseService.js";
 
 @repository()
 export class BuffRepository extends Repository<Buff> {

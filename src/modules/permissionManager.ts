@@ -6,7 +6,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 
 /**
  * Module to manager the permissions of commands from a Discord client.

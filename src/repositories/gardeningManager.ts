@@ -1,7 +1,7 @@
-import { DatabaseService } from "../config/databaseService.js";
-import { Repository } from "./base/repository.js";
+import { DatabaseService } from "../config/index.js";
 import { GardeningModuleConfig } from "../entities/gardeningManager/index.js";
 import { repository } from "../utils/decorators/index.js";
+import { Repository } from "./base/repository.js";
 
 /**
  * Repository for GardeningModuleConfig

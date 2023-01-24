@@ -1,8 +1,8 @@
+import { DateTime } from "luxon";
+import { DatabaseService } from "../../config/index.js";
+import { Week } from "../../entities/buffManager/index.js";
 import { repository } from "../../utils/decorators/index.js";
 import { Repository } from "../base/repository.js";
-import { Week } from "../../entities/buffManager/index.js";
-import { DatabaseService } from "../../config/databaseService.js";
-import { DateTime } from "luxon";
 
 @repository()
 export class WeekRepository extends Repository<Week> {

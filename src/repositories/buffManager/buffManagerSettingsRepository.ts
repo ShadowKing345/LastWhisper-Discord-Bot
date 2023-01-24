@@ -1,8 +1,8 @@
+import { IsNull, Not } from "typeorm";
+import { DatabaseService } from "../../config/index.js";
+import { BuffManagerSettings } from "../../entities/buffManager/index.js";
 import { repository } from "../../utils/decorators/index.js";
 import { Repository } from "../base/repository.js";
-import { BuffManagerSettings } from "../../entities/buffManager/index.js";
-import { DatabaseService } from "../../config/databaseService.js";
-import { IsNull, Not } from "typeorm";
 
 @repository()
 export class BuffManagerSettingsRepository extends Repository<BuffManagerSettings> {

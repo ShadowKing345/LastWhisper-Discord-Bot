@@ -7,7 +7,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../utils/decorators/index.js";
 import { Commands, Command, CommandOption } from "../utils/objects/command.js";
 import { Timers } from "../utils/objects/timer.js";
-import { Logger } from "../utils/logger.js";
+import { Logger } from "../config/logger.js";
 
 @module()
 export class GardeningManagerModule extends Module {
