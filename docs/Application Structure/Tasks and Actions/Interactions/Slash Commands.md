@@ -12,7 +12,7 @@ The most basic slash command has the following:
 
 | Variable Name | Description                                                                                                                                                                                                     |
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name          | The name of the slash command. The name has to be unique between all commands and cannot have any spaces, capital, or special letters.                                                                          |
+| name          | The name of the slash command. The name has to be unique between all commands and cannot have any spaces, capital, or special letters. Underscores can be used.                                                 |
 | description   | The description of the command. This should provide some idea of what the command does. There is a limit to how long this can be.                                                                               |
 | execute       | The callback function called when the slash command needs to be invoked.<br/>The only thing provided as an argument to this callback is the `ChatInputCommandInteraction` object created upon event invocation. |
 
