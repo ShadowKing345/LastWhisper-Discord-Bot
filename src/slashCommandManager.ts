@@ -61,7 +61,7 @@ async function register(rest: REST, route: RouteLike, modules: Module[]) {
  * @param args Arguments for command registration. Same as configuration.
  * @param modules Override for the module service.
  */
-export async function registerCommands(
+export async function manageCommands(
   token: string = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN),
   args: CommandRegistrationConfiguration = new CommandRegistrationConfiguration(),
   modules: ModuleService = container.resolve<ModuleService>(ModuleService),

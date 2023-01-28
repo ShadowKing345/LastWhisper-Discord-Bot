@@ -10,7 +10,7 @@ import {
 } from "./config/index.js";
 import "./modules/index.js";
 
-import { registerCommands } from "./slashCommandManager.js";
+import { manageCommands } from "./slashCommandManager.js";
 import { Bot } from "./utils/objects/index.js";
 
 console.log(`Welcome ${userInfo().username}.`);
@@ -57,7 +57,7 @@ async function runCommandRegistration(args: Record<string, unknown>) {
     config.unregister = args.unregister;
   }
 
-  return registerCommands("token" in args && typeof args.token === "string" ? args.token : null, config);
+  return manageCommands("token" in args && typeof args.token === "string" ? args.token : null, config);
 }
 
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
