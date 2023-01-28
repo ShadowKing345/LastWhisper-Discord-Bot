@@ -1,6 +1,6 @@
 import { Module } from "../modules/module.js";
 import { Bot } from "../objects/bot.js";
-import { SlashCommand } from "../objects/slashCommand.js";
+import { SlashCommand } from "../objects/index.js";
 import { ModuleConfiguration } from "./entities/index.js";
 export declare class ModuleService {
     private readonly moduleConfiguration;
@@ -11,12 +11,12 @@ export declare class ModuleService {
     private readonly eventLogger;
     private readonly taskLogger;
     constructor(moduleConfiguration?: ModuleConfiguration);
-    private interactionEvent;
+    get filteredModules(): Module[];
     private runEvent;
+    private interactionEvent;
     private runTimer;
     configureModules(client: Bot): void;
     cleanup(): void;
-    get filteredModules(): Module[];
-    static registerCommand(command: SlashCommand, type: symbol): void;
+    static registerCommand(command: SlashCommand, type: string): void;
 }
 //# sourceMappingURL=moduleService.d.ts.map

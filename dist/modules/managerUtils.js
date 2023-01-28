@@ -4,8 +4,7 @@ import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../decorators/index.js";
-import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
-import { EventListener } from "../objects/eventListener.js";
+import { CommandOption, EventListener, SlashCommand } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends Module {
     managerUtilsService;
@@ -27,7 +26,7 @@ let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends
                     ],
                 }),
             },
-            execute: interaction => this.commandResolver(interaction),
+            callback: interaction => this.commandResolver(interaction),
         }),
     ];
     eventListeners = [

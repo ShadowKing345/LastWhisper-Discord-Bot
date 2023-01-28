@@ -1,9 +1,9 @@
-import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
+import { ChatInputCommandInteraction, CommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SlashCommands } from "../objects/slashCommand.js";
+import { SlashCommands } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 export declare class GardeningManagerModule extends Module {

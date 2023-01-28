@@ -1,12 +1,12 @@
 var GardeningManagerModule_1;
 import { __decorate, __metadata } from "tslib";
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, } from "discord.js";
 import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../decorators/index.js";
-import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
+import { CommandOption, SlashCommand } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends Module {
     gardeningManagerService;
@@ -103,7 +103,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                     ],
                 }),
             },
-            execute: async (interaction) => this.commandResolver(interaction),
+            callback: async (interaction) => this.commandResolver(interaction),
         }),
     ];
     timers = [

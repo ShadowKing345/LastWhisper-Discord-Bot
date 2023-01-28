@@ -1,8 +1,8 @@
-import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { BuffManagerService } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SlashCommands } from "../objects/slashCommand.js";
+import { SlashCommands } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 export declare class BuffManagerModule extends Module {

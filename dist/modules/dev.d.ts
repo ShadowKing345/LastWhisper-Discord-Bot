@@ -7,11 +7,11 @@ export declare class DevModule extends Module {
     protected logger: Logger;
     moduleName: string;
     commands: SlashCommands;
-    testChatInteractionFunction(interaction: ChatInputCommandInteraction): Promise<unknown>;
     buttons: {
         buttonTest1: (interaction: ChatInputCommandInteraction) => Promise<void | InteractionResponse<boolean>>;
     };
     constructor(permissionManagerService: PermissionManagerService);
+    testChatInteractionFunction(interaction: ChatInputCommandInteraction): Promise<unknown>;
     private testInteractionTypes;
     private testModal;
     private buttonTest;

@@ -3,9 +3,8 @@ import "reflect-metadata";
 import { program } from "commander";
 import { userInfo } from "os";
 import { ConfigurationService } from "./config/configurationService.js";
-import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys, } from "./config/index.js";
+import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys, ModuleService, } from "./config/index.js";
 import "./modules/index.js";
-import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
 console.log(`Welcome ${userInfo().username}.`);
 ConfigurationService.registerConfiguration(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
@@ -13,7 +12,7 @@ async function runBot() {
     process.setMaxListeners(30);
     console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
     try {
-        new Bot();
+        new ModuleService().filteredModules;
     }
     catch (error) {
         console.error(error instanceof Error ? error.stack : error);

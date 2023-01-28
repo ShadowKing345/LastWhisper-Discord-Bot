@@ -1,11 +1,11 @@
 var PermissionManagerModule_1;
 import { __decorate, __metadata } from "tslib";
-import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder, } from "discord.js";
 import { Module } from "./module.js";
-import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
+import { Permission, PermissionMode } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
-import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
+import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
+import { CommandOption, SlashCommand } from "../objects/index.js";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 import { Logger } from "../config/logger.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends Module {
@@ -84,7 +84,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                     options: [this.commandKeyHelperBuilder(true)],
                 }),
             },
-            execute: this.commandResolver.bind(this),
+            callback: this.commandResolver.bind(this),
         }),
     ];
     commandResolverKeys = {

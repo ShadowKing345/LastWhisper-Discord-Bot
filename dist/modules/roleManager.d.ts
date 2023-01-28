@@ -1,9 +1,8 @@
-import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SlashCommands } from "../objects/slashCommand.js";
-import { EventListeners } from "../objects/eventListener.js";
+import { EventListeners, SlashCommands } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 export declare class RoleManagerModule extends Module {
     private roleManagerService;

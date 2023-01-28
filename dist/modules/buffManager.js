@@ -1,11 +1,11 @@
 var BuffManagerModule_1;
 import { __decorate, __metadata } from "tslib";
-import { ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, authorize, addPermissionKeys, deferReply } from "../decorators/index.js";
-import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
+import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
+import { CommandOption, SlashCommand } from "../objects/index.js";
 import { DateTime } from "luxon";
 import { Logger } from "../config/logger.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Module {
@@ -65,7 +65,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                     ],
                 }),
             },
-            execute: this.commandResolver.bind(this),
+            callback: this.commandResolver.bind(this),
         }),
     ];
     commandResolverKeys = {

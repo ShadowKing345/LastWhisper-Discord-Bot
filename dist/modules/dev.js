@@ -20,27 +20,27 @@ let DevModule = DevModule_1 = class DevModule extends Module {
                     description: "Returns ping.",
                 }),
             },
-            execute: interaction => interaction.reply({ content: "ping" }),
+            callback: interaction => interaction.reply({ content: "ping" }),
         }),
         new SlashCommand({
             name: "test_inputs",
             description: "Testing command.",
-            execute: interaction => this.testInteractionTypes(interaction),
+            callback: interaction => this.testInteractionTypes(interaction),
         }),
         new SlashCommand({
             name: "test_modal",
             description: "Testing command.",
-            execute: interaction => this.testModal(interaction),
+            callback: interaction => this.testModal(interaction),
         }),
     ];
-    async testChatInteractionFunction(interaction) {
-        return interaction.reply({ content: "Hello World" });
-    }
     buttons = {
         buttonTest1: (interaction) => this.buttonTest(interaction),
     };
     constructor(permissionManagerService) {
         super(permissionManagerService);
+    }
+    async testChatInteractionFunction(interaction) {
+        return interaction.reply({ content: "Hello World" });
     }
     async testInteractionTypes(interaction) {
         const button = new ButtonBuilder().setCustomId("buttonTest1").setLabel("click me").setStyle(ButtonStyle.Danger);
@@ -85,11 +85,11 @@ let DevModule = DevModule_1 = class DevModule extends Module {
     }
 };
 __decorate([
-    Command(new SlashCommand({
+    Command({
         name: "slash_command_test",
         description: "Tests the slash command system. Returns all values placed.",
         options: [],
-    })),
+    }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)

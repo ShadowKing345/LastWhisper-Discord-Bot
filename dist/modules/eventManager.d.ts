@@ -2,8 +2,7 @@ import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SlashCommands } from "../objects/slashCommand.js";
-import { EventListeners } from "../objects/index.js";
+import { EventListeners, SlashCommands } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 export declare class EventManagerModule extends Module {

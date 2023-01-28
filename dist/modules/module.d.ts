@@ -1,7 +1,6 @@
 import { Timers } from "../objects/timer.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { EventListeners } from "../objects/index.js";
-import { SlashCommands, SlashCommand } from "../objects/slashCommand.js";
+import { EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Logger } from "../config/logger.js";
 export declare abstract class Module {

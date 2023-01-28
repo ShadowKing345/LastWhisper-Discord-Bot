@@ -18,6 +18,31 @@ export class ModuleService {
     constructor(moduleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration)) {
         this.moduleConfiguration = moduleConfiguration;
     }
+    get filteredModules() {
+        console.log(ModuleService.commands);
+        const modules = container.resolveAll(Module.name);
+        if (this.moduleConfiguration.modules?.length !== 0) {
+            return modules.filter(module => {
+                const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
+                const blacklist = this.moduleConfiguration.blacklist;
+                return (!blacklist && inList) || (blacklist && !inList);
+            });
+        }
+        return modules;
+    }
+    async runEvent(listeners, client, ...args) {
+        const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
+            try {
+                resolve(listener.execute(client, args));
+            }
+            catch (error) {
+                reject(error);
+            }
+        })));
+        for (const result of results.filter(result => result.status === "rejected")) {
+            this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
+        }
+    }
     async interactionEvent(interaction) {
         this.interactionLogger.debug("Interaction event invoked.");
         try {
@@ -51,7 +76,7 @@ export class ModuleService {
                         this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
                         return;
                     }
-                    await command.execute(interaction);
+                    await command.callback(interaction);
                 }
             }
             else {
@@ -95,19 +120,6 @@ export class ModuleService {
                     });
                 }
             }
-        }
-    }
-    async runEvent(listeners, client, ...args) {
-        const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
-            try {
-                resolve(listener.execute(client, args));
-            }
-            catch (error) {
-                reject(error);
-            }
-        })));
-        for (const result of results.filter(result => result.status === "rejected")) {
-            this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
         }
     }
     runTimer(timer, client) {
@@ -168,22 +180,10 @@ export class ModuleService {
             clearInterval(id);
         }
     }
-    get filteredModules() {
-        const modules = container.resolveAll(Module.name);
-        if (this.moduleConfiguration.modules?.length !== 0) {
-            return modules.filter(module => {
-                const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-                const blacklist = this.moduleConfiguration.blacklist;
-                return (!blacklist && inList) || (blacklist && !inList);
-            });
-        }
-        return modules;
-    }
     static registerCommand(command, type) {
         if (!(type in ModuleService.commands)) {
             ModuleService.commands[type] = [];
         }
-        console.log(type);
         ModuleService.commands[type].push(command);
     }
 }

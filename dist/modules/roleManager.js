@@ -4,8 +4,7 @@ import { Module } from "./module.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../decorators/index.js";
-import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
-import { EventListener } from "../objects/eventListener.js";
+import { CommandOption, EventListener, SlashCommand } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Module {
     roleManagerService;
@@ -44,7 +43,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                     ],
                 }),
             },
-            execute: interaction => this.commandResolver(interaction),
+            callback: interaction => this.commandResolver(interaction),
         }),
     ];
     commandResolverKeys = {

@@ -2,8 +2,7 @@ import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SlashCommands } from "../objects/slashCommand.js";
-import { EventListeners } from "../objects/eventListener.js";
+import { EventListeners, SlashCommands } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 export declare class ManagerUtilsModule extends Module {
     private managerUtilsService;

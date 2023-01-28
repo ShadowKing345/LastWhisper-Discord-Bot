@@ -1,15 +1,14 @@
 var EventManagerModule_1;
 import { __decorate, __metadata } from "tslib";
-import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder, } from "discord.js";
 import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
-import { EventListener } from "../objects/index.js";
+import { CommandOption, EventListener, SlashCommand } from "../objects/index.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
-import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
+import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends Module {
     service;
@@ -121,7 +120,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                     ],
                 }),
             },
-            execute: this.commandResolver.bind(this),
+            callback: this.commandResolver.bind(this),
         }),
     ];
     eventListeners = [
