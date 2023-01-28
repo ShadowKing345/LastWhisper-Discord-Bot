@@ -27,8 +27,9 @@ async function runBot() {
   console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
   try {
-    new Bot();
-    // await bot.run();
+    const bot = new Bot();
+    bot.init();
+    await bot.run();
   } catch (error) {
     console.error(error instanceof Error ? error.stack : error);
   }
