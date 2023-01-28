@@ -1,6 +1,6 @@
 import { DatabaseService } from "../../config/index.js";
 import { EventReminder } from "../../entities/eventManager/index.js";
-import { repository } from "../../utils/decorators/index.js";
+import { repository } from "../../decorators/index.js";
 import { Repository } from "../base/repository.js";
 
 /**

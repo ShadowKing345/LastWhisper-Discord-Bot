@@ -2,13 +2,13 @@ import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionT
 import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { EventListeners, EventListener } from "../utils/objects/index.js";
-import { Timers } from "../utils/objects/timer.js";
+import { Commands, Command, CommandOption } from "../objects/command.js";
+import { EventListeners, EventListener } from "../objects/index.js";
+import { Timers } from "../objects/timer.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
-import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 
 /**

@@ -1,12 +1,12 @@
 import { CommandInteraction, GuildMember, EmbedBuilder, TextChannel, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
 import { DateTime } from "luxon";
 
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 
 @service()

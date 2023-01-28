@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { Module } from "../../modules/module.js";
+import { Module } from "../modules/module.js";
 
 /**
  * Decorator that wraps a function call with a permission check.

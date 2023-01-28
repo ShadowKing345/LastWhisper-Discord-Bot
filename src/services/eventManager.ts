@@ -1,10 +1,10 @@
 import { Client, EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 
-import { Timer } from "../utils/objects/timer.js";
+import { Timer } from "../objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { EventManagerSettingsRepository } from "../repositories/eventManager/eventManagerSettingsRepository.js";
 import { EventManagerSettings, EventObject } from "../entities/eventManager/index.js";

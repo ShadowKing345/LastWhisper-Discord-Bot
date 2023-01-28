@@ -1,12 +1,12 @@
 import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
 
 import { Module } from "./module.js";
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../utils/decorators/index.js";
-import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
+import { module } from "../decorators/index.js";
+import { Commands, Command, CommandOption } from "../objects/command.js";
+import { EventListeners, EventListener } from "../objects/eventListener.js";
 import { Logger } from "../config/logger.js";
 
 /**

@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 
 /**
  * Service used to provide some basic manager utilities.

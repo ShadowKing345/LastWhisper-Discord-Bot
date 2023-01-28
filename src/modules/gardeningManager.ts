@@ -1,12 +1,12 @@
 import { CommandInteraction, ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType } from "discord.js";
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../utils/decorators/index.js";
-import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { Timers } from "../utils/objects/timer.js";
+import { module } from "../decorators/index.js";
+import { Commands, Command, CommandOption } from "../objects/command.js";
+import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 
 @module()

@@ -1,7 +1,7 @@
 import { Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
-import { ConfigurationService } from "../../config/configurationService.js";
-import { CommonConfigurationKeys, DatabaseService, ModuleService } from "../../config/index.js";
-import { Logger } from "../../config/logger.js";
+import { ConfigurationService } from "../config/configurationService.js";
+import { CommonConfigurationKeys, DatabaseService, ModuleService } from "../config/index.js";
+import { Logger } from "../config/logger.js";
 import { EventListeners } from "./eventListener.js";
 
 /**

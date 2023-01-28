@@ -11,7 +11,7 @@ import {
 import "./modules/index.js";
 
 import { manageCommands } from "./slashCommandManager.js";
-import { Bot } from "./utils/objects/index.js";
+import { Bot } from "./objects/index.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 

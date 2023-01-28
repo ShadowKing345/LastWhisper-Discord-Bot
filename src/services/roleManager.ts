@@ -1,12 +1,12 @@
 import { CommandInteraction, Guild, GuildMember, Message, MessageReaction, ReactionCollector, Role, TextChannel, User, InteractionResponse, ChatInputCommandInteraction, Channel } from "discord.js";
 
-import { Bot } from "../utils/objects/bot.js";
-import { Timer } from "../utils/objects/timer.js";
+import { Bot } from "../objects/bot.js";
+import { Timer } from "../objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerConfig } from "../entities/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 
 /**

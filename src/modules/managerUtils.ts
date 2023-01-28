@@ -2,9 +2,9 @@ import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse
 import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../utils/decorators/index.js";
-import { Command, CommandOption, Commands } from "../utils/objects/command.js";
-import { EventListeners, EventListener } from "../utils/objects/eventListener.js";
+import { module } from "../decorators/index.js";
+import { Command, CommandOption, Commands } from "../objects/command.js";
+import { EventListeners, EventListener } from "../objects/eventListener.js";
 import { Logger } from "../config/logger.js";
 
 /**

@@ -1,8 +1,8 @@
-import { module } from "../utils/decorators/index.js";
+import { module } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder, InteractionResponse, ButtonInteraction } from "discord.js";
-import { Commands, Command } from "../utils/objects/command.js";
+import { Commands, Command } from "../objects/command.js";
 import { Logger } from "../config/logger.js";
 
 /**

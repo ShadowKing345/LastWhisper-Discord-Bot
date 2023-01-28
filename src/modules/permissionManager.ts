@@ -3,8 +3,8 @@ import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOpt
 import { Module } from "./module.js";
 import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
-import { Commands, Command, CommandOption } from "../utils/objects/command.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
+import { Commands, Command, CommandOption } from "../objects/command.js";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 import { Logger } from "../config/logger.js";
 

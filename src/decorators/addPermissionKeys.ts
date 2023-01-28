@@ -1,5 +1,5 @@
-import { flattenObject } from "../index.js";
-import { PermissionManagerService } from "../../services/permissionManager.js";
+import { flattenObject } from "../utils/index.js";
+import { PermissionManagerService } from "../services/permissionManager.js";
 
 /**
  * Adds an object of values into the permission service keys list.

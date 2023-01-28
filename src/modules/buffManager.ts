@@ -1,11 +1,11 @@
 import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
-import { Commands, Command, CommandOption } from "../utils/objects/command.js";
-import { Timers } from "../utils/objects/timer.js";
+import { module, authorize, addPermissionKeys, deferReply } from "../decorators/index.js";
+import { Commands, Command, CommandOption } from "../objects/command.js";
+import { Timers } from "../objects/timer.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
 import { Logger } from "../config/logger.js";

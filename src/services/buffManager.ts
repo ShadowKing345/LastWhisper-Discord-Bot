@@ -1,12 +1,12 @@
 import { EmbedBuilder, Channel, ChannelType } from "discord.js";
 import { DateTime } from "luxon";
 
-import { Bot } from "../utils/objects/bot.js";
-import { Timer } from "../utils/objects/timer.js";
+import { Bot } from "../objects/bot.js";
+import { Timer } from "../objects/timer.js";
 import { Buff, Week } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
 import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
 import { Logger } from "../config/logger.js";
