@@ -4,11 +4,9 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonInteraction,
   ButtonStyle,
   ChatInputCommandInteraction,
   CommandInteraction,
-  InteractionResponse,
   ModalActionRowComponentBuilder,
   ModalBuilder,
   SelectMenuBuilder,
@@ -17,7 +15,7 @@ import {
 } from "discord.js";
 import { Logger } from "../config/logger.js";
 import { Command } from "../decorators/command.js";
-import { SlashCommand, SlashCommands } from "../objects/index.js";
+import { SlashCommand } from "../objects/index.js";
 
 /**
  * Development module used for testing features and random things.
@@ -27,33 +25,6 @@ export class DevModule extends Module {
   protected logger: Logger = new Logger(DevModule);
 
   public moduleName = "DevModule";
-  public commands: SlashCommands = [
-    new SlashCommand({
-      name: "slash_command_subcommand_test",
-      description: "Tests if subcommands are working.",
-      subcommands: {
-        ping: new SlashCommand({
-          name: "pong",
-          description: "Returns ping.",
-        }),
-      },
-      callback: interaction => interaction.reply({ content: "ping" }),
-    }),
-    new SlashCommand({
-      name: "test_inputs",
-      description: "Testing command.",
-      callback: interaction => this.testInteractionTypes(interaction),
-    }),
-    new SlashCommand({
-      name: "test_modal",
-      description: "Testing command.",
-      callback: interaction => this.testModal(interaction),
-    }),
-  ];
-
-  public buttons = {
-    buttonTest1: (interaction: ChatInputCommandInteraction) => this.buttonTest(interaction),
-  };
 
   public constructor(
     permissionManagerService: PermissionManagerService,
@@ -61,7 +32,45 @@ export class DevModule extends Module {
     super(permissionManagerService);
   }
 
-  private async testInteractionTypes(interaction: CommandInteraction): Promise<void> {
+  @Command({
+    name: "slash_command_subcommand_test",
+    description: "Tests if subcommands are working.",
+    subcommands: {
+      ping: new SlashCommand({
+        name: "ping",
+        description: "Returns pong.",
+      }),
+      pong: new SlashCommand({
+        name: "pong",
+        description: "Returns ping.",
+      }),
+    },
+  })
+  public async subcommandResolverTest(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    switch (interaction.options.getSubcommand()) {
+      case "ping":
+        return interaction.reply("pong");
+      case "pong":
+        return interaction.reply("ping");
+      default:
+        return interaction.reply("what?");
+    }
+  }
+
+  @Command({
+    name: "slash_command_test",
+    description: "Tests the slash command system. Returns all values placed.",
+    options: [],
+  })
+  public async testChatInteractionFunction(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    return interaction.reply({ content: "Hello World" });
+  }
+
+  @Command({
+    name: "test_inputs",
+    description: "Testing command.",
+  })
+  public async testInteractionTypes(interaction: CommandInteraction): Promise<unknown> {
     const button = new ButtonBuilder().setCustomId("buttonTest1").setLabel("click me").setStyle(ButtonStyle.Danger);
 
     const select = new SelectMenuBuilder().setCustomId("selectTest1").setPlaceholder("Nothing selected").addOptions(
@@ -77,7 +86,7 @@ export class DevModule extends Module {
       },
     );
 
-    await interaction.reply({
+    return interaction.reply({
       fetchReply: true,
       content: "Testing text",
       components: [
@@ -87,7 +96,11 @@ export class DevModule extends Module {
     });
   }
 
-  private async testModal(interaction: ChatInputCommandInteraction) {
+  @Command({
+    name: "test_modal",
+    description: "Testing command.",
+  })
+  public async testModal(interaction: ChatInputCommandInteraction): Promise<unknown> {
     const modal = new ModalBuilder().setCustomId("TestModal1").setTitle("Test Modal");
 
     const favoriteColorInput = new TextInputBuilder()
@@ -104,15 +117,6 @@ export class DevModule extends Module {
     const secondActionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(hobbiesInput);
 
     modal.addComponents(firstActionRow, secondActionRow);
-    await interaction.showModal(modal);
-  }
-
-  private async buttonTest(interaction: ChatInputCommandInteraction): Promise<void | InteractionResponse> {
-    await interaction.reply({
-      content: `${interaction.member?.avatar ?? "No avatar set"} has clicked button ${interaction.commandName} ${
-        (interaction as unknown as ButtonInteraction).customId
-      }.`,
-      ephemeral: true,
-    });
+    return interaction.showModal(modal);
   }
 }

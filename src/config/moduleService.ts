@@ -78,109 +78,6 @@ export class ModuleService {
   }
 
   /**
-   * Function that sets up a Javascript timer to go off.
-   * Also fires the timer as well.
-   * @param timer The timer object data used to create a timer.
-   * @param client The main app client. Not to be confused with Discord.Js Client object.
-   * @private
-   */
-  private runTimer(timer: Timer, client: Bot): void {
-    try {
-      this.intervalIds.push(
-        setInterval(
-          () => {
-            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-          },
-          timer.timeout,
-          client,
-        ),
-      );
-      timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-    } catch (error) {
-      this.taskLogger.error(error instanceof Error ? error.stack : error);
-    }
-  }
-
-  /**
-   * Configures a client with all the necessary module and callback information.
-   * Registers events, timers, commands, etc...
-   * @param client The main app client. Not to be confused with Discord.Js Client object.
-   */
-  public configureModules(client: Bot): void {
-    this.moduleLogger.info("Loading modules.");
-    const modules = this.filteredModules;
-
-    this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
-
-    if (this.moduleConfiguration.enableCommands) {
-      this.moduleLogger.debug("Commands enabled.");
-    }
-
-    for (const module of modules) {
-      this.moduleLogger.info(module.moduleName);
-
-      try {
-        if (this.moduleConfiguration.enableEventListeners) {
-          this.moduleLogger.debug("Setting up event module events.");
-
-          for (const listener of module.eventListeners) {
-            // FixMe: Get rid of these eslint disable statement.
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            const collection: EventListeners = client.events.get(listener.event) ?? [];
-            collection.push(listener);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            client.events.set(listener.event, collection);
-          }
-        }
-      } catch (error) {
-        this.moduleLogger.error(error instanceof Error ? error.stack : error);
-      }
-    }
-
-    if (this.moduleConfiguration.enableEventListeners) {
-      this.moduleLogger.debug("Registering event.");
-
-      for (const [event, listeners] of client.events) {
-        client.on(event, (...args) => this.runEvent(listeners, client, ...args));
-      }
-    }
-
-    if (this.moduleConfiguration.enableTimers) {
-      this.moduleLogger.debug("Timers were enabled.");
-      for (const timer of modules.map(module => module.timers).flat()) {
-        this.runTimer(timer, client);
-      }
-    }
-
-    if (this.moduleConfiguration.enableInteractions) {
-      this.moduleLogger.debug("Interactions were enabled.");
-      client.on("interactionCreate", this.interactionEvent.bind(this));
-    }
-
-    this.moduleLogger.info("Done.");
-  }
-
-  /**
-   * Cleanup function.
-   */
-  public cleanup() {
-    this.moduleLogger.info(`Cleaning up module configurations.`);
-    for (const id of this.intervalIds) {
-      clearInterval(id);
-    }
-  }
-
-  public static registerCommand(command: SlashCommand, type: string) {
-    if (!(type in ModuleService.commands)) {
-      ModuleService.commands[type] = [];
-    }
-
-    ModuleService.commands[type].push(command);
-  }
-
-  // region Static Method
-
-  /**
    * Todo: Setup modal responding.
    * Todo: Setup buttons/select menu
    * Todo: Context Menu.
@@ -278,6 +175,109 @@ export class ModuleService {
         }
       }
     }
+  }
+
+  /**
+   * Function that sets up a Javascript timer to go off.
+   * Also fires the timer as well.
+   * @param timer The timer object data used to create a timer.
+   * @param client The main app client. Not to be confused with Discord.Js Client object.
+   * @private
+   */
+  private runTimer(timer: Timer, client: Bot): void {
+    try {
+      this.intervalIds.push(
+        setInterval(
+          () => {
+            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
+          },
+          timer.timeout,
+          client,
+        ),
+      );
+      timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
+    } catch (error) {
+      this.taskLogger.error(error instanceof Error ? error.stack : error);
+    }
+  }
+
+  /**
+   * Configures a client with all the necessary module and callback information.
+   * Registers events, timers, commands, etc...
+   * @param client The main app client. Not to be confused with Discord.Js Client object.
+   */
+  public configureModules(client: Bot): void {
+    this.moduleLogger.info("Loading modules.");
+    const modules = this.filteredModules;
+
+    this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
+
+    if (this.moduleConfiguration.enableCommands) {
+      this.moduleLogger.debug("Commands enabled.");
+    }
+
+    for (const module of modules) {
+      this.moduleLogger.info(module.moduleName);
+
+      try {
+        if (this.moduleConfiguration.enableEventListeners) {
+          this.moduleLogger.debug("Setting up event module events.");
+
+          for (const listener of module.eventListeners) {
+            // FixMe: Get rid of these eslint disable statement.
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            const collection: EventListeners = client.events.get(listener.event) ?? [];
+            collection.push(listener);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            client.events.set(listener.event, collection);
+          }
+        }
+      } catch (error) {
+        this.moduleLogger.error(error instanceof Error ? error.stack : error);
+      }
+    }
+
+    if (this.moduleConfiguration.enableEventListeners) {
+      this.moduleLogger.debug("Registering event.");
+
+      for (const [event, listeners] of client.events) {
+        client.on(event, (...args) => this.runEvent(listeners, client, ...args));
+      }
+    }
+
+    if (this.moduleConfiguration.enableTimers) {
+      this.moduleLogger.debug("Timers were enabled.");
+      for (const timer of modules.map(module => module.timers).flat()) {
+        this.runTimer(timer, client);
+      }
+    }
+
+    if (this.moduleConfiguration.enableInteractions) {
+      this.moduleLogger.debug("Interactions were enabled.");
+      client.on("interactionCreate", this.interactionEvent.bind(this));
+    }
+
+    this.moduleLogger.info("Done.");
+  }
+
+  /**
+   * Cleanup function.
+   */
+  public cleanup() {
+    this.moduleLogger.info(`Cleaning up module configurations.`);
+    for (const id of this.intervalIds) {
+      clearInterval(id);
+    }
+  }
+
+  // region Static Method
+
+  public static registerCommand(command: SlashCommand, type: string) {
+    if (!(type in ModuleService.commands)) {
+      ModuleService.commands[type] = [];
+    }
+
+    ModuleService.commands[type].push(command);
   }
 
   // endregion

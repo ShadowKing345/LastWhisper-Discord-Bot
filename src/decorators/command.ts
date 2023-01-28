@@ -1,19 +1,23 @@
-import { SlashCommands } from "../objects/index.js";
 import { ModuleService } from "../config/index.js";
+import { SlashCommand } from "../objects/index.js";
+import { ChatInputCommandInteraction } from "discord.js";
+import { Module } from "../modules/module.js";
 
 /**
  * Decorator that attempts to register commands to the module service system.
  * Methods decorated with this command act as the executed method.
  */
-export function Command(command: Omit<SlashCommands, "">): (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => void {
-  console.log(command);
+export function Command<T extends Module>(command: Partial<Omit<SlashCommand, "callback">>) {
+  return function(target: T, _: string, descriptor: PropertyDescriptor): PropertyDescriptor {
+    const value = descriptor.value as (interaction: ChatInputCommandInteraction) => Promise<unknown>;
 
-  return function(target: unknown, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor {
-    console.log(target, propertyKey, descriptor);
-
-    if (typeof target === "object" && "name" in target && typeof target["name"] === "string") {
-      ModuleService.registerCommand(command, target.name);
-    }
+    ModuleService.registerCommand(new SlashCommand({
+      name: command.name,
+      description: command.description,
+      callback: value,
+      subcommands: command.subcommands,
+      options: command.options,
+    }), target.constructor.name);
 
     return descriptor;
   };
