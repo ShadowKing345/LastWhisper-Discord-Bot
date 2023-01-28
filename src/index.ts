@@ -10,7 +10,7 @@ import {
 } from "./config/index.js";
 import "./modules/index.js";
 
-import { registerCommands } from "./registerCommandsScript.js";
+import { registerCommands } from "./slashCommandManager.js";
 import { Bot } from "./utils/objects/index.js";
 
 console.log(`Welcome ${userInfo().username}.`);

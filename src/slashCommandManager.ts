@@ -86,7 +86,7 @@ export async function registerCommands(
 
     logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
 
-    await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, modules.modules));
+    await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, modules.filteredModules));
     logger.info(`Finished ${isRegistering} for ${isGlobal}.`);
   } catch (error) {
     logger.error(error instanceof Error ? error.stack : error);
