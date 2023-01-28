@@ -1,7 +1,8 @@
 #!/usr/bin/env node
+import "reflect-metadata";
+
 import { program } from "commander";
 import { userInfo } from "os";
-import "reflect-metadata";
 import { ConfigurationService } from "./config/configurationService.js";
 import {
   ApplicationConfiguration,
@@ -9,9 +10,8 @@ import {
   CommonConfigurationKeys,
 } from "./config/index.js";
 import "./modules/index.js";
-
-import { manageCommands } from "./slashCommandManager.js";
 import { Bot } from "./objects/index.js";
+import { manageCommands } from "./slashCommandManager.js";
 
 console.log(`Welcome ${userInfo().username}.`);
 
