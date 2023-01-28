@@ -1,4 +1,4 @@
-import { LOGGING_LEVELS } from "./entities/loggerConfigs.js";
+import { LOGGING_LEVELS } from "./entities/index.js";
 import { EntityTarget } from "typeorm";
 export declare class Logger {
     private readonly name;

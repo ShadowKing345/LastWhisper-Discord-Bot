@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
-import { DatabaseService } from "../config/databaseService.js";
+import { DatabaseService } from "../config/index.js";
 import { GardeningModuleConfig } from "../entities/gardeningManager/index.js";
-import { repository } from "../utils/decorators/index.js";
+import { repository } from "../decorators/index.js";
 import { Repository } from "./base/repository.js";
 let GardeningManagerRepository = class GardeningManagerRepository extends Repository {
     constructor(db) {

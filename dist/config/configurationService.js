@@ -1,12 +1,12 @@
-import { container as globalContainer } from "tsyringe";
 import fs from "fs";
-import { flattenObject, deepMerge } from "../utils/index.js";
-import { ApplicationConfiguration } from "../utils/objects/index.js";
+import { container as globalContainer } from "tsyringe";
+import { deepMerge, flattenObject } from "../utils/index.js";
+import { ApplicationConfiguration } from "./entities/index.js";
 export class ConfigurationService {
     static configPath = process.env.CONFIG_PATH ?? "./config/common.json";
     static devConfigPath = process.env.DEV_CONFIG_PATH ?? "./config/development.json";
     static flattenConfigs = new Map();
-    static RegisterConfiguration(key, entity, container = globalContainer) {
+    static registerConfiguration(key, entity = null, container = globalContainer) {
         if (ConfigurationService.flattenConfigs.size < 1) {
             this.createConfigMap();
         }
@@ -14,10 +14,15 @@ export class ConfigurationService {
         if (!map.has(key)) {
             throw new Error(`Configuration file has no config with the key ${key}`);
         }
-        const e = deepMerge(new entity(), map.get(key));
-        container.register(entity, { useValue: e });
+        if (entity) {
+            const e = deepMerge(new entity(), map.get(key));
+            container.register(entity, { useValue: e });
+        }
+        else {
+            container.register(key, { useValue: map.get(key) });
+        }
     }
-    static GetConfiguration(key, entity) {
+    static getConfiguration(key, entity = null) {
         if (ConfigurationService.flattenConfigs.size < 1) {
             this.createConfigMap();
         }
@@ -25,7 +30,7 @@ export class ConfigurationService {
         if (!map.has(key)) {
             throw new Error(`Configuration file has no config with the key ${key}`);
         }
-        return deepMerge(new entity(), map.get(key));
+        return entity ? deepMerge(new entity(), map.get(key)) : map.get(key);
     }
     static createConfigMap() {
         ConfigurationService.flattenConfigs.clear();

@@ -1,5 +1,5 @@
 import { CommandInteraction, MessageReaction, User, InteractionResponse, ChatInputCommandInteraction } from "discord.js";
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
 export declare class RoleManagerService extends Service {

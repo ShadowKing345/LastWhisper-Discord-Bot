@@ -1,28 +1,36 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction, ApplicationCommandOptionType as OptionType, APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
+import {
+  APIApplicationCommandOptionChoice,
+  ApplicationCommandOptionBase,
+  ApplicationCommandOptionType as OptionType,
+  ChatInputCommandInteraction,
+  SlashCommandStringOption,
+  SlashCommandSubcommandBuilder,
+  SlashCommandSubcommandGroupBuilder,
+} from "discord.js";
 import { deepMerge } from "../utils/index.js";
 
-type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
+type SlashCommandType = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 
 /**
- * Class representation of a collection of permission keys.
+ * Object that represents a slash command to be used.
  */
-export class Command {
+export class SlashCommand {
   public name: string = null;
   public description: string = null;
 
-  public execute: (interaction: ChatInputCommandInteraction) => Promise<unknown> | unknown = null;
-  public subcommands?: { [key: string]: Command };
+  public callback: (interaction: ChatInputCommandInteraction) => Promise<unknown> | unknown = null;
+  public subcommands?: { [key: string]: SlashCommand };
 
   public options: CommandOptions = [];
 
-  public constructor(data: Partial<Command> = null) {
+  public constructor(data: Partial<SlashCommand> = null) {
     if (data) {
       this.merge(data);
     }
   }
 
-  public merge(obj: Partial<Command>): Command {
+  public merge(obj: Partial<SlashCommand>): SlashCommand {
     if (obj.name) {
       this.name = obj.name;
     }
@@ -37,12 +45,12 @@ export class Command {
       }
 
       for (const key in obj.subcommands) {
-        this.subcommands[key] = deepMerge(this.subcommands[key] ?? new Command(), obj.subcommands[key]);
+        this.subcommands[key] = deepMerge(this.subcommands[key] ?? new SlashCommand(), obj.subcommands[key]);
       }
     }
 
-    if (obj.execute) {
-      this.execute = obj.execute;
+    if (obj.callback) {
+      this.callback = obj.callback;
     }
 
     if (obj.options) {
@@ -53,7 +61,7 @@ export class Command {
     return this;
   }
 
-  public build(builder: SlashCommand = new SlashCommandBuilder()): SlashCommand {
+  public build(builder: SlashCommandType = new SlashCommandBuilder()): SlashCommandType {
     builder.setName(this.name).setDescription(this.description);
 
     if (this.subcommands) {
@@ -172,5 +180,5 @@ export class CommandOption {
   }
 }
 
-export type Commands = Command[];
+export type SlashCommands = SlashCommand[];
 export type CommandOptions = CommandOption[];

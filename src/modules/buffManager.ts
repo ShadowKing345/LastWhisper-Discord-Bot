@@ -1,10 +1,10 @@
-import { InteractionResponse, ChatInputCommandInteraction, ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Bot } from "../objects/bot.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, authorize, addPermissionKeys, deferReply } from "../decorators/index.js";
-import { Commands, Command, CommandOption } from "../objects/command.js";
+import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
+import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
@@ -33,12 +33,12 @@ export class BuffManagerModule extends Module {
     },
   ];
 
-  public commands: Commands = [
-    new Command({
+  public commands: SlashCommands = [
+    new SlashCommand({
       name: "buff_manager",
       description: "Manages all things related to buffs",
       subcommands: {
-        Buffs: new Command({
+        Buffs: new SlashCommand({
           name: "buffs",
           description: "Shows you what buffs are set.",
           options: [
@@ -56,7 +56,7 @@ export class BuffManagerModule extends Module {
             }),
           ],
         }),
-        Weeks: new Command({
+        Weeks: new SlashCommand({
           name: "weeks",
           description: "Shows you what buffs for the week, are set to.",
           options: [
@@ -75,7 +75,7 @@ export class BuffManagerModule extends Module {
           ],
         }),
       },
-      execute: this.commandResolver.bind(this),
+      callback: this.commandResolver.bind(this),
     }),
   ];
 

@@ -1,29 +1,22 @@
 import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
-import { Logger } from "./logger.js";
+import { container } from "tsyringe";
+import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
+import { CommonConfigurationKeys } from "./configurationKeys.js";
+import { ConfigurationService } from "./configurationService.js";
+import { ModuleConfiguration } from "./entities/index.js";
+import { Logger } from "./logger.js";
 export class ModuleService {
     moduleConfiguration;
+    static commands = {};
     intervalIds = [];
-    _modules;
     moduleLogger = new Logger("ModuleConfiguration");
     interactionLogger = new Logger("InteractionExecution");
     eventLogger = new Logger("EventExecution");
     taskLogger = new Logger("TimerExecution");
-    constructor(config, modules) {
-        this.moduleConfiguration = config.moduleConfiguration;
-        this._modules =
-            this.moduleConfiguration.modules?.length !== 0
-                ? modules.filter(module => {
-                    const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-                    const blacklist = this.moduleConfiguration.blacklist;
-                    return (!blacklist && inList) || (blacklist && !inList);
-                })
-                : modules;
-        this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(this._modules.map(module => module.moduleName))}.`);
-        if (this.moduleConfiguration.enableCommands) {
-            this.moduleLogger.debug("Commands enabled.");
-        }
+    constructor(moduleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration)) {
+        this.moduleConfiguration = moduleConfiguration;
     }
     async interactionEvent(interaction) {
         this.interactionLogger.debug("Interaction event invoked.");
@@ -51,7 +44,7 @@ export class ModuleService {
                         this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
                         return;
                     }
-                    const command = this.modules
+                    const command = this.filteredModules
                         .find(module => module.hasCommand(interaction.commandName))
                         ?.getCommand(interaction.commandName);
                     if (!command) {
@@ -70,7 +63,7 @@ export class ModuleService {
                     switch (interaction.componentType) {
                         case ComponentType.Button:
                             break;
-                        case ComponentType.SelectMenu:
+                        case ComponentType.StringSelect:
                             break;
                         default:
                             break;
@@ -130,7 +123,12 @@ export class ModuleService {
     }
     configureModules(client) {
         this.moduleLogger.info("Loading modules.");
-        for (const module of this.modules) {
+        const modules = this.filteredModules;
+        this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
+        if (this.moduleConfiguration.enableCommands) {
+            this.moduleLogger.debug("Commands enabled.");
+        }
+        for (const module of modules) {
             this.moduleLogger.info(module.moduleName);
             try {
                 if (this.moduleConfiguration.enableEventListeners) {
@@ -154,7 +152,7 @@ export class ModuleService {
         }
         if (this.moduleConfiguration.enableTimers) {
             this.moduleLogger.debug("Timers were enabled.");
-            for (const timer of this.modules.map(module => module.timers).flat()) {
+            for (const timer of modules.map(module => module.timers).flat()) {
                 this.runTimer(timer, client);
             }
         }
@@ -170,8 +168,23 @@ export class ModuleService {
             clearInterval(id);
         }
     }
-    get modules() {
-        return this._modules;
+    get filteredModules() {
+        const modules = container.resolveAll(Module.name);
+        if (this.moduleConfiguration.modules?.length !== 0) {
+            return modules.filter(module => {
+                const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
+                const blacklist = this.moduleConfiguration.blacklist;
+                return (!blacklist && inList) || (blacklist && !inList);
+            });
+        }
+        return modules;
+    }
+    static registerCommand(command, type) {
+        if (!(type in ModuleService.commands)) {
+            ModuleService.commands[type] = [];
+        }
+        console.log(type);
+        ModuleService.commands[type].push(command);
     }
 }
 //# sourceMappingURL=moduleService.js.map

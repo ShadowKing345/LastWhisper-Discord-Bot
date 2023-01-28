@@ -2,14 +2,14 @@ import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { Commands } from "../utils/objects/command.js";
-import { EventListeners } from "../utils/objects/eventListener.js";
+import { SlashCommands } from "../objects/slashCommand.js";
+import { EventListeners } from "../objects/eventListener.js";
 import { Logger } from "../config/logger.js";
 export declare class ManagerUtilsModule extends Module {
     private managerUtilsService;
     protected logger: Logger;
     moduleName: string;
-    commands: Commands;
+    commands: SlashCommands;
     eventListeners: EventListeners;
     protected commandResolverKeys: {
         "manager_utils.clear": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;

@@ -4,12 +4,12 @@ import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder
 import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { Command, CommandOption } from "../utils/objects/command.js";
-import { EventListener } from "../utils/objects/eventListener.js";
+import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
+import { EventListener } from "../objects/index.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
-import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends Module {
     service;
@@ -23,11 +23,11 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
     };
     moduleName = "EventManager";
     commands = [
-        new Command({
+        new SlashCommand({
             name: "event_manager",
             description: "Manages all things related to event planning.",
             subcommands: {
-                CreateEvent: new Command({
+                CreateEvent: new SlashCommand({
                     name: "create",
                     description: "Creates a new event. Note no message will be posted only the data saved.",
                     options: [
@@ -53,7 +53,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                         }),
                     ],
                 }),
-                UpdateEvent: new Command({
+                UpdateEvent: new SlashCommand({
                     name: "update",
                     description: "Updates event information with new one.",
                     options: [
@@ -85,7 +85,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                         }),
                     ],
                 }),
-                CancelEvent: new Command({
+                CancelEvent: new SlashCommand({
                     name: "cancel",
                     description: "Cancels an event. This is will effectively stop it.",
                     options: [
@@ -97,7 +97,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                         }),
                     ],
                 }),
-                TestEvent: new Command({
+                TestEvent: new SlashCommand({
                     name: "test",
                     description: "Tests a given string with the event parser. Checking if it's valid and returning event details.",
                     options: [
@@ -109,7 +109,7 @@ let EventManagerModule = EventManagerModule_1 = class EventManagerModule extends
                         }),
                     ],
                 }),
-                ListEvent: new Command({
+                ListEvent: new SlashCommand({
                     name: "list",
                     description: "Displays events.",
                     options: [

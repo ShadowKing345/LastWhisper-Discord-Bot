@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { Buff, Week } from "../entities/buffManager/index.js";
 import { Service } from "./service.js";
 import { ServiceError } from "../utils/errors/index.js";

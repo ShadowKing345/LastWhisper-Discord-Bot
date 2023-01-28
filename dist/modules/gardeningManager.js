@@ -5,19 +5,19 @@ import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../utils/decorators/index.js";
-import { Command, CommandOption } from "../utils/objects/command.js";
+import { module } from "../decorators/index.js";
+import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
 import { Logger } from "../config/logger.js";
 let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerModule extends Module {
     gardeningManagerService;
     logger = new Logger(GardeningManagerModule_1);
     moduleName = "GardeningModule";
     commands = [
-        new Command({
+        new SlashCommand({
             name: "gardening_module",
             description: "gardening module.",
             subcommands: {
-                Reverse: new Command({
+                Reverse: new SlashCommand({
                     name: "reserve",
                     description: "Reserve a slot in a plot to be used by you.",
                     options: [
@@ -57,7 +57,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                         }),
                     ],
                 }),
-                Cancel: new Command({
+                Cancel: new SlashCommand({
                     name: "cancel",
                     description: "Cancel any reservations you have made to a slot in a plot.",
                     options: [
@@ -81,7 +81,7 @@ let GardeningManagerModule = GardeningManagerModule_1 = class GardeningManagerMo
                         }),
                     ],
                 }),
-                List: new Command({
+                List: new SlashCommand({
                     name: "list",
                     description: "Shows all plots and their states.",
                     options: [

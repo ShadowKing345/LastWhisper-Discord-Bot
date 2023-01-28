@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
 import { DatabaseService } from "../../config/index.js";
 import { EventManagerSettings } from "../../entities/eventManager/index.js";
-import { repository } from "../../utils/decorators/index.js";
+import { repository } from "../../decorators/index.js";
 import { SelfCreatingRepository } from "../base/selfCreatingRepository.js";
 let EventManagerSettingsRepository = class EventManagerSettingsRepository extends SelfCreatingRepository {
     constructor(db) {

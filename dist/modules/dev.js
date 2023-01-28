@@ -1,26 +1,41 @@
 var DevModule_1;
 import { __decorate, __metadata } from "tslib";
-import { module } from "../utils/decorators/index.js";
+import { module } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } from "discord.js";
-import { Command } from "../utils/objects/command.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
 import { Logger } from "../config/logger.js";
+import { Command } from "../decorators/command.js";
+import { SlashCommand } from "../objects/index.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
     logger = new Logger(DevModule_1);
     moduleName = "DevModule";
     commands = [
-        new Command({
+        new SlashCommand({
+            name: "slash_command_subcommand_test",
+            description: "Tests if subcommands are working.",
+            subcommands: {
+                ping: new SlashCommand({
+                    name: "pong",
+                    description: "Returns ping.",
+                }),
+            },
+            execute: interaction => interaction.reply({ content: "ping" }),
+        }),
+        new SlashCommand({
             name: "test_inputs",
             description: "Testing command.",
             execute: interaction => this.testInteractionTypes(interaction),
         }),
-        new Command({
+        new SlashCommand({
             name: "test_modal",
             description: "Testing command.",
             execute: interaction => this.testModal(interaction),
         }),
     ];
+    async testChatInteractionFunction(interaction) {
+        return interaction.reply({ content: "Hello World" });
+    }
     buttons = {
         buttonTest1: (interaction) => this.buttonTest(interaction),
     };
@@ -69,6 +84,16 @@ let DevModule = DevModule_1 = class DevModule extends Module {
         });
     }
 };
+__decorate([
+    Command(new SlashCommand({
+        name: "slash_command_test",
+        description: "Tests the slash command system. Returns all values placed.",
+        options: [],
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], DevModule.prototype, "testChatInteractionFunction", null);
 DevModule = DevModule_1 = __decorate([
     module(),
     __metadata("design:paramtypes", [PermissionManagerService])

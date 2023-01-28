@@ -6,7 +6,7 @@ import { GardeningManagerRepository } from "../repositories/gardeningManager.js"
 import { Reservation, Slot } from "../entities/gardeningManager/index.js";
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 let GardeningManagerService = GardeningManagerService_1 = class GardeningManagerService extends Service {
     repository;

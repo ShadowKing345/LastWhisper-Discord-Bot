@@ -4,8 +4,8 @@ import { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder
 import { Module } from "./module.js";
 import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, addPermissionKeys, authorize, deferReply } from "../utils/decorators/index.js";
-import { Command, CommandOption } from "../utils/objects/command.js";
+import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
+import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 import { Logger } from "../config/logger.js";
 let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManagerModule extends Module {
@@ -21,16 +21,16 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
     };
     moduleName = "PermissionManager";
     commands = [
-        new Command({
+        new SlashCommand({
             name: "permissions",
             description: "Controls the permission for each command.",
             subcommands: {
-                List: new Command({
+                List: new SlashCommand({
                     name: "list",
                     description: "Lists out all permissions.",
                     options: [this.commandKeyHelperBuilder(false)],
                 }),
-                AddRole: new Command({
+                AddRole: new SlashCommand({
                     name: "add_role",
                     description: "Adds a role to a permission setting.",
                     options: [
@@ -43,7 +43,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                         }),
                     ],
                 }),
-                RemoveRole: new Command({
+                RemoveRole: new SlashCommand({
                     name: "remove_role",
                     description: "Removes a role to a permission setting.",
                     options: [
@@ -56,7 +56,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                         }),
                     ],
                 }),
-                Config: new Command({
+                Config: new SlashCommand({
                     name: "set_config",
                     description: "Configures a permission.",
                     options: [
@@ -78,7 +78,7 @@ let PermissionManagerModule = PermissionManagerModule_1 = class PermissionManage
                         }),
                     ],
                 }),
-                Reset: new Command({
+                Reset: new SlashCommand({
                     name: "reset",
                     description: "Resets a permission to the default parameters.",
                     options: [this.commandKeyHelperBuilder(true)],

@@ -1,12 +1,11 @@
-import { InteractionResponse, ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 
 import { Module } from "./module.js";
 import { Bot } from "../objects/bot.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../decorators/index.js";
-import { Commands, Command, CommandOption } from "../objects/command.js";
-import { EventListeners, EventListener } from "../objects/eventListener.js";
+import { CommandOption, EventListener, EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 
 /**
@@ -19,16 +18,16 @@ export class RoleManagerModule extends Module {
 
   public moduleName = "RoleManager";
   public eventListeners: EventListeners = [new EventListener("ready", async client => this.onReady(client))];
-  public commands: Commands = [
-    new Command({
+  public commands: SlashCommands = [
+    new SlashCommand({
       name: "role_manager",
       description: "Manages roles within a guild.",
       subcommands: {
-        RevokeRole: new Command({
+        RevokeRole: new SlashCommand({
           name: "revoke_role",
           description: "Revokes the role for all uses.",
         }),
-        RegisterMessage: new Command({
+        RegisterMessage: new SlashCommand({
           name: "register_message",
           description: "Registers a message to be reacted to.",
           options: [
@@ -39,7 +38,7 @@ export class RoleManagerModule extends Module {
             }),
           ],
         }),
-        UnregisterMessage: new Command({
+        UnregisterMessage: new SlashCommand({
           name: "unregister_message",
           description: "Unregisters a message to be reacted to.",
           options: [
@@ -51,7 +50,7 @@ export class RoleManagerModule extends Module {
           ],
         }),
       },
-      execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
+      callback: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }),
   ];
 

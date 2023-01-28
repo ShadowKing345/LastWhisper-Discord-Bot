@@ -3,20 +3,20 @@ import { __decorate, __metadata } from "tslib";
 import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../utils/decorators/index.js";
-import { Command, CommandOption } from "../utils/objects/command.js";
-import { EventListener } from "../utils/objects/eventListener.js";
+import { module } from "../decorators/index.js";
+import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
+import { EventListener } from "../objects/eventListener.js";
 import { Logger } from "../config/logger.js";
 let ManagerUtilsModule = ManagerUtilsModule_1 = class ManagerUtilsModule extends Module {
     managerUtilsService;
     logger = new Logger(ManagerUtilsModule_1);
     moduleName = "ManagerUtils";
     commands = [
-        new Command({
+        new SlashCommand({
             name: "manager_utils",
             description: "Utility functions for managers.",
             subcommands: {
-                Clear: new Command({
+                Clear: new SlashCommand({
                     name: "clear",
                     description: "Clears a channel of its messages.",
                     options: [

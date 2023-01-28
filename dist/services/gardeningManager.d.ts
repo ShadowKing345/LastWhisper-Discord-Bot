@@ -1,5 +1,5 @@
 import { CommandInteraction, InteractionResponse, ChatInputCommandInteraction, APIEmbedField } from "discord.js";
-import { Bot } from "../utils/objects/bot.js";
+import { Bot } from "../objects/bot.js";
 import { GardeningManagerRepository } from "../repositories/gardeningManager.js";
 import { GardeningModuleConfig, Plot, Reason, Slot } from "../entities/gardeningManager/index.js";
 import { Service } from "./service.js";

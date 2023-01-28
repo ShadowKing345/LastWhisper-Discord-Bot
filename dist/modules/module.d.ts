@@ -1,14 +1,14 @@
-import { Timers } from "../utils/objects/timer.js";
+import { Timers } from "../objects/timer.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { EventListeners } from "../utils/objects/eventListener.js";
-import { Commands, Command } from "../utils/objects/command.js";
+import { EventListeners } from "../objects/index.js";
+import { SlashCommands, SlashCommand } from "../objects/slashCommand.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Logger } from "../config/logger.js";
 export declare abstract class Module {
     permissionManagerService: PermissionManagerService;
     protected logger: Logger;
     moduleName: string;
-    commands: Commands;
+    commands: SlashCommands;
     eventListeners: EventListeners;
     timers: Timers;
     buttons: {
@@ -26,7 +26,7 @@ export declare abstract class Module {
     protected constructor(permissionManagerService: PermissionManagerService);
     protected commandResolver(interaction: ChatInputCommandInteraction, call?: boolean): Promise<void | InteractionResponse<boolean>> | ((...args: any[]) => Promise<void | InteractionResponse<boolean>>);
     hasCommand(command: string): boolean;
-    getCommand(command: string): Command | undefined;
+    getCommand(command: string): SlashCommand | undefined;
     get handlesCommands(): boolean;
     get handlesButtons(): boolean;
     get handlesSelectMenu(): boolean;

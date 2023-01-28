@@ -1,9 +1,23 @@
 import { module } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { CommandInteraction, SelectMenuBuilder, ButtonStyle, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ChatInputCommandInteraction, ModalActionRowComponentBuilder, InteractionResponse, ButtonInteraction } from "discord.js";
-import { Commands, Command } from "../objects/command.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  InteractionResponse,
+  ModalActionRowComponentBuilder,
+  ModalBuilder,
+  SelectMenuBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+} from "discord.js";
 import { Logger } from "../config/logger.js";
+import { Command } from "../decorators/command.js";
+import { SlashCommand, SlashCommands } from "../objects/index.js";
 
 /**
  * Development module used for testing features and random things.
@@ -13,16 +27,27 @@ export class DevModule extends Module {
   protected logger: Logger = new Logger(DevModule);
 
   public moduleName = "DevModule";
-  public commands: Commands = [
-    new Command({
+  public commands: SlashCommands = [
+    new SlashCommand({
+      name: "slash_command_subcommand_test",
+      description: "Tests if subcommands are working.",
+      subcommands: {
+        ping: new SlashCommand({
+          name: "pong",
+          description: "Returns ping.",
+        }),
+      },
+      callback: interaction => interaction.reply({ content: "ping" }),
+    }),
+    new SlashCommand({
       name: "test_inputs",
       description: "Testing command.",
-      execute: interaction => this.testInteractionTypes(interaction),
+      callback: interaction => this.testInteractionTypes(interaction),
     }),
-    new Command({
+    new SlashCommand({
       name: "test_modal",
       description: "Testing command.",
-      execute: interaction => this.testModal(interaction),
+      callback: interaction => this.testModal(interaction),
     }),
   ];
 

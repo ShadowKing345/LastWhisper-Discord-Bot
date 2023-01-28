@@ -4,8 +4,7 @@ import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Bot } from "../objects/bot.js";
-import { Command } from "../objects/command.js";
-import { EventListeners } from "../objects/index.js";
+import { EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
 import { Timer } from "../objects/timer.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
@@ -20,6 +19,8 @@ import { Logger } from "./logger.js";
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export class ModuleService {
+  private static commands: Record<string, SlashCommands> = {};
+
   private readonly intervalIds: number[] = [];
   private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
   private readonly interactionLogger: Logger = new Logger("InteractionExecution");
@@ -32,103 +33,22 @@ export class ModuleService {
   }
 
   /**
-   * Todo: Setup modal responding.
-   * Todo: Setup buttons/select menu
-   * Todo: Context Menu.
-   * The main interaction event callback function that is called when a Discord interaction event is called.
-   * @param interaction The interaction data object.
-   * @private
+   * List of all modules registered.
    */
-  private async interactionEvent(interaction: Interaction): Promise<void> {
-    this.interactionLogger.debug("Interaction event invoked.");
+  public get filteredModules(): Module[] {
+    console.log(ModuleService.commands);
 
-    try {
-      if (interaction.isCommand()) {
-        this.interactionLogger.debug("Interaction is a command.");
+    const modules: Module[] = container.resolveAll(Module.name);
 
-        if (interaction.isContextMenuCommand()) {
-          this.interactionLogger.debug(
-            `Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`,
-          );
-
-          if (interaction.isUserContextMenuCommand()) {
-            await interaction.reply({
-              content: "Responded with a user",
-              ephemeral: true,
-            });
-          } else {
-            await interaction.reply({
-              content: "Responded with a message",
-              ephemeral: true,
-            });
-          }
-        }
-
-        if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
-          this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
-
-          // Edge case if somehow a command can be invoked inside a DM.
-          if (!interaction.guildId) {
-            this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
-            return;
-          }
-
-          const command: Command | undefined = this.filteredModules
-            .find(module => module.hasCommand(interaction.commandName))
-            ?.getCommand(interaction.commandName);
-          if (!command) {
-            this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
-            return;
-          }
-
-          await command.execute(interaction);
-        }
-      } else {
-        this.interactionLogger.debug("Interaction is not a command.");
-
-        if (interaction.isModalSubmit()) {
-          await interaction.reply({ content: "Responded", ephemeral: true });
-        }
-
-        if (interaction.isMessageComponent()) {
-          switch (interaction.componentType) {
-            case ComponentType.Button:
-              break;
-            case ComponentType.StringSelect:
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    } catch (error) {
-      this.interactionLogger.error(error instanceof Error ? error.stack : error);
-
-      if (
-        interaction &&
-        (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) &&
-        !interaction.replied
-      ) {
-        if (error instanceof CommandResolverError) {
-          await interaction.reply({
-            content: "Sorry there was an issue resolving the command name.",
-            ephemeral: true,
-          });
-          return;
-        }
-
-        if (interaction.deferred) {
-          await interaction.editReply({
-            content: "There was an internal error that occurred when using this interaction.",
-          });
-        } else {
-          await interaction.reply({
-            content: "There was an internal error that occurred when using this interaction.",
-            ephemeral: true,
-          });
-        }
-      }
+    if (this.moduleConfiguration.modules?.length !== 0) {
+      return modules.filter(module => {
+        const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
+        const blacklist = this.moduleConfiguration.blacklist;
+        return (!blacklist && inList) || (blacklist && !inList);
+      });
     }
+
+    return modules;
   }
 
   /**
@@ -250,20 +170,115 @@ export class ModuleService {
     }
   }
 
-  /**
-   * List of all modules registered.
-   */
-  public get filteredModules(): Module[] {
-    const modules: Module[] = container.resolveAll(Module.name);
-
-    if (this.moduleConfiguration.modules?.length !== 0) {
-      return modules.filter(module => {
-        const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-        const blacklist = this.moduleConfiguration.blacklist;
-        return (!blacklist && inList) || (blacklist && !inList);
-      });
+  public static registerCommand(command: SlashCommand, type: string) {
+    if (!(type in ModuleService.commands)) {
+      ModuleService.commands[type] = [];
     }
 
-    return modules;
+    ModuleService.commands[type].push(command);
   }
+
+  // region Static Method
+
+  /**
+   * Todo: Setup modal responding.
+   * Todo: Setup buttons/select menu
+   * Todo: Context Menu.
+   * The main interaction event callback function that is called when a Discord interaction event is called.
+   * @param interaction The interaction data object.
+   * @private
+   */
+  private async interactionEvent(interaction: Interaction): Promise<void> {
+    this.interactionLogger.debug("Interaction event invoked.");
+
+    try {
+      if (interaction.isCommand()) {
+        this.interactionLogger.debug("Interaction is a command.");
+
+        if (interaction.isContextMenuCommand()) {
+          this.interactionLogger.debug(
+            `Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`,
+          );
+
+          if (interaction.isUserContextMenuCommand()) {
+            await interaction.reply({
+              content: "Responded with a user",
+              ephemeral: true,
+            });
+          } else {
+            await interaction.reply({
+              content: "Responded with a message",
+              ephemeral: true,
+            });
+          }
+        }
+
+        if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
+          this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
+
+          // Edge case if somehow a command can be invoked inside a DM.
+          if (!interaction.guildId) {
+            this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
+            return;
+          }
+
+          const command: SlashCommand | undefined = this.filteredModules
+            .find(module => module.hasCommand(interaction.commandName))
+            ?.getCommand(interaction.commandName);
+          if (!command) {
+            this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
+            return;
+          }
+
+          await command.callback(interaction);
+        }
+      } else {
+        this.interactionLogger.debug("Interaction is not a command.");
+
+        if (interaction.isModalSubmit()) {
+          await interaction.reply({ content: "Responded", ephemeral: true });
+        }
+
+        if (interaction.isMessageComponent()) {
+          switch (interaction.componentType) {
+            case ComponentType.Button:
+              break;
+            case ComponentType.StringSelect:
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    } catch (error) {
+      this.interactionLogger.error(error instanceof Error ? error.stack : error);
+
+      if (
+        interaction &&
+        (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) &&
+        !interaction.replied
+      ) {
+        if (error instanceof CommandResolverError) {
+          await interaction.reply({
+            content: "Sorry there was an issue resolving the command name.",
+            ephemeral: true,
+          });
+          return;
+        }
+
+        if (interaction.deferred) {
+          await interaction.editReply({
+            content: "There was an internal error that occurred when using this interaction.",
+          });
+        } else {
+          await interaction.reply({
+            content: "There was an internal error that occurred when using this interaction.",
+            ephemeral: true,
+          });
+        }
+      }
+    }
+  }
+
+  // endregion
 }

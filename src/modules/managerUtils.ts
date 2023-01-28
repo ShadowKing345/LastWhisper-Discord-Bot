@@ -1,10 +1,15 @@
-import { GuildBan, GuildMember, ChatInputCommandInteraction, InteractionResponse, PartialGuildMember } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  GuildBan,
+  GuildMember,
+  InteractionResponse,
+  PartialGuildMember,
+} from "discord.js";
 import { Module } from "./module.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module } from "../decorators/index.js";
-import { Command, CommandOption, Commands } from "../objects/command.js";
-import { EventListeners, EventListener } from "../objects/eventListener.js";
+import { CommandOption, EventListener, EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
 import { Logger } from "../config/logger.js";
 
 /**
@@ -15,12 +20,12 @@ export class ManagerUtilsModule extends Module {
   protected logger: Logger = new Logger(ManagerUtilsModule);
 
   public moduleName = "ManagerUtils";
-  public commands: Commands = [
-    new Command({
+  public commands: SlashCommands = [
+    new SlashCommand({
       name: "manager_utils",
       description: "Utility functions for managers.",
       subcommands: {
-        Clear: new Command({
+        Clear: new SlashCommand({
           name: "clear",
           description: "Clears a channel of its messages.",
           options: [
@@ -31,7 +36,7 @@ export class ManagerUtilsModule extends Module {
           ],
         }),
       },
-      execute: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
+      callback: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
     }),
   ];
   public eventListeners: EventListeners = [

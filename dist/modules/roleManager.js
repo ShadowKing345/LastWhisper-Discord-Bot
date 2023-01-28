@@ -3,9 +3,9 @@ import { __decorate, __metadata } from "tslib";
 import { Module } from "./module.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../utils/decorators/index.js";
-import { Command, CommandOption } from "../utils/objects/command.js";
-import { EventListener } from "../utils/objects/eventListener.js";
+import { module } from "../decorators/index.js";
+import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
+import { EventListener } from "../objects/eventListener.js";
 import { Logger } from "../config/logger.js";
 let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Module {
     roleManagerService;
@@ -13,15 +13,15 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
     moduleName = "RoleManager";
     eventListeners = [new EventListener("ready", async (client) => this.onReady(client))];
     commands = [
-        new Command({
+        new SlashCommand({
             name: "role_manager",
             description: "Manages roles within a guild.",
             subcommands: {
-                RevokeRole: new Command({
+                RevokeRole: new SlashCommand({
                     name: "revoke_role",
                     description: "Revokes the role for all uses.",
                 }),
-                RegisterMessage: new Command({
+                RegisterMessage: new SlashCommand({
                     name: "register_message",
                     description: "Registers a message to be reacted to.",
                     options: [
@@ -32,7 +32,7 @@ let RoleManagerModule = RoleManagerModule_1 = class RoleManagerModule extends Mo
                         }),
                     ],
                 }),
-                UnregisterMessage: new Command({
+                UnregisterMessage: new SlashCommand({
                     name: "unregister_message",
                     description: "Unregisters a message to be reacted to.",
                     options: [

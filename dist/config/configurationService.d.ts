@@ -3,10 +3,10 @@ export declare class ConfigurationService {
     static readonly configPath: string;
     static readonly devConfigPath: string;
     private static flattenConfigs;
-    static RegisterConfiguration<T extends object>(key: string, entity: {
+    static registerConfiguration<T extends object>(key: string, entity?: {
         new (): T;
     }, container?: DependencyContainer): void;
-    static GetConfiguration<T extends object>(key: string, entity: {
+    static getConfiguration<T>(key: string, entity?: {
         new (): T;
     }): T;
     private static createConfigMap;

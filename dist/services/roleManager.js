@@ -1,11 +1,11 @@
 var RoleManagerService_1;
 import { __decorate, __metadata } from "tslib";
 import { TextChannel } from "discord.js";
-import { Timer } from "../utils/objects/timer.js";
+import { Timer } from "../objects/timer.js";
 import { fetchMessages } from "../utils/index.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 let RoleManagerService = RoleManagerService_1 = class RoleManagerService extends Service {
     repository;

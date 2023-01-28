@@ -3,7 +3,7 @@ import { AuditLogEvent, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { ManagerUtilsRepository } from "../repositories/managerUtils.js";
 import { Service } from "./service.js";
-import { service } from "../utils/decorators/index.js";
+import { service } from "../decorators/index.js";
 let ManagerUtilsService = class ManagerUtilsService extends Service {
     repository;
     constructor(repository) {

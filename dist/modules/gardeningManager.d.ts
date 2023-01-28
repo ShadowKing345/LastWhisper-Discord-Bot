@@ -3,14 +3,14 @@ import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { Commands } from "../utils/objects/command.js";
-import { Timers } from "../utils/objects/timer.js";
+import { SlashCommands } from "../objects/slashCommand.js";
+import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 export declare class GardeningManagerModule extends Module {
     private gardeningManagerService;
     protected logger: Logger;
     moduleName: string;
-    commands: Commands;
+    commands: SlashCommands;
     timers: Timers;
     protected commandResolverKeys: {
         "gardening_module.reserve": (interaction: CommandInteraction, player: string, plant: string, duration: number, reason: Reason, plotNum: number, slotNum: number) => Promise<void>;

@@ -1,4 +1,4 @@
-import { DatabaseService } from "../config/databaseService.js";
+import { DatabaseService } from "../config/index.js";
 import { PermissionManagerConfig } from "../entities/permissionManager/index.js";
 import { Repository } from "./base/repository.js";
 export declare class PermissionManagerRepository extends Repository<PermissionManagerConfig> {

@@ -1,14 +1,21 @@
-import { Client, Message, ChatInputCommandInteraction, ApplicationCommandOptionType, PartialMessage, InteractionResponse, EmbedBuilder } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+  Client,
+  EmbedBuilder,
+  InteractionResponse,
+  Message,
+  PartialMessage,
+} from "discord.js";
 import { Module } from "./module.js";
 import { EventManagerService } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { Commands, Command, CommandOption } from "../objects/command.js";
-import { EventListeners, EventListener } from "../objects/index.js";
+import { CommandOption, EventListener, EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
 import { DateTime } from "luxon";
-import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
+import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
 
 /**
@@ -29,12 +36,12 @@ export class EventManagerModule extends Module {
   };
 
   public moduleName = "EventManager";
-  public commands: Commands = [
-    new Command({
+  public commands: SlashCommands = [
+    new SlashCommand({
       name: "event_manager",
       description: "Manages all things related to event planning.",
       subcommands: {
-        CreateEvent: new Command({
+        CreateEvent: new SlashCommand({
           name: "create",
           description: "Creates a new event. Note no message will be posted only the data saved.",
           options: [
@@ -60,7 +67,7 @@ export class EventManagerModule extends Module {
             }),
           ],
         }),
-        UpdateEvent: new Command({
+        UpdateEvent: new SlashCommand({
           name: "update",
           description: "Updates event information with new one.",
           options: [
@@ -92,7 +99,7 @@ export class EventManagerModule extends Module {
             }),
           ],
         }),
-        CancelEvent: new Command({
+        CancelEvent: new SlashCommand({
           name: "cancel",
           description: "Cancels an event. This is will effectively stop it.",
           options: [
@@ -104,7 +111,7 @@ export class EventManagerModule extends Module {
             }),
           ],
         }),
-        TestEvent: new Command({
+        TestEvent: new SlashCommand({
           name: "test",
           description:
             "Tests a given string with the event parser. Checking if it's valid and returning event details.",
@@ -117,7 +124,7 @@ export class EventManagerModule extends Module {
             }),
           ],
         }),
-        ListEvent: new Command({
+        ListEvent: new SlashCommand({
           name: "list",
           description: "Displays events.",
           options: [
@@ -129,7 +136,7 @@ export class EventManagerModule extends Module {
           ],
         }),
       },
-      execute: this.commandResolver.bind(this),
+      callback: this.commandResolver.bind(this),
     }),
   ];
   public eventListeners: EventListeners = [

@@ -1,10 +1,15 @@
-import { ChatInputCommandInteraction, InteractionResponse, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  InteractionResponse,
+} from "discord.js";
 
 import { Module } from "./module.js";
-import { PermissionMode, Permission } from "../entities/permissionManager/index.js";
+import { Permission, PermissionMode } from "../entities/permissionManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, addPermissionKeys, authorize, deferReply } from "../decorators/index.js";
-import { Commands, Command, CommandOption } from "../objects/command.js";
+import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
+import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
 import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 import { Logger } from "../config/logger.js";
 
@@ -30,17 +35,17 @@ export class PermissionManagerModule extends Module {
   };
 
   public moduleName = "PermissionManager";
-  public commands: Commands = [
-    new Command({
+  public commands: SlashCommands = [
+    new SlashCommand({
       name: "permissions",
       description: "Controls the permission for each command.",
       subcommands: {
-        List: new Command({
+        List: new SlashCommand({
           name: "list",
           description: "Lists out all permissions.",
           options: [this.commandKeyHelperBuilder(false)],
         }),
-        AddRole: new Command({
+        AddRole: new SlashCommand({
           name: "add_role",
           description: "Adds a role to a permission setting.",
           options: [
@@ -53,7 +58,7 @@ export class PermissionManagerModule extends Module {
             }),
           ],
         }),
-        RemoveRole: new Command({
+        RemoveRole: new SlashCommand({
           name: "remove_role",
           description: "Removes a role to a permission setting.",
           options: [
@@ -66,7 +71,7 @@ export class PermissionManagerModule extends Module {
             }),
           ],
         }),
-        Config: new Command({
+        Config: new SlashCommand({
           name: "set_config",
           description: "Configures a permission.",
           options: [
@@ -88,13 +93,13 @@ export class PermissionManagerModule extends Module {
             }),
           ],
         }),
-        Reset: new Command({
+        Reset: new SlashCommand({
           name: "reset",
           description: "Resets a permission to the default parameters.",
           options: [this.commandKeyHelperBuilder(true)],
         }),
       },
-      execute: this.commandResolver.bind(this),
+      callback: this.commandResolver.bind(this),
     }),
   ];
 

@@ -1,6 +1,7 @@
 import { pino } from "pino";
-import { LOGGING_LEVELS, LoggerConfigs } from "./entities/loggerConfigs.js";
-import { container } from "tsyringe";
+import { CommonConfigurationKeys } from "./configurationKeys.js";
+import { ConfigurationService } from "./configurationService.js";
+import { LOGGING_LEVELS, LoggerConfigs } from "./entities/index.js";
 import { EntitySchema } from "typeorm";
 export class Logger {
     name;
@@ -37,7 +38,7 @@ export class Logger {
     }
     createLogger() {
         if (!this.config) {
-            this.config = container.resolve(LoggerConfigs);
+            this.config = ConfigurationService.getConfiguration(CommonConfigurationKeys.LOGGER, LoggerConfigs);
         }
         this.pino = pino({
             level: this.config?.level ?? LOGGING_LEVELS.info,

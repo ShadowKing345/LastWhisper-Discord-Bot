@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
 import { DatabaseService } from "../config/databaseService.js";
 import { ManagerUtilsConfig } from "../entities/managerUtils.js";
-import { repository } from "../utils/decorators/index.js";
+import { repository } from "../decorators/index.js";
 import { SelfCreatingRepository } from "./base/selfCreatingRepository.js";
 let ManagerUtilsRepository = class ManagerUtilsRepository extends SelfCreatingRepository {
     constructor(db) {

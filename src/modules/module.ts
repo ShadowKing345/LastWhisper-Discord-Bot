@@ -1,7 +1,6 @@
 import { Timers } from "../objects/timer.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { EventListeners } from "../objects/index.js";
-import { Commands, Command } from "../objects/command.js";
+import { EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Logger } from "../config/logger.js";
@@ -13,7 +12,7 @@ export abstract class Module {
   protected logger: Logger = new Logger(Module);
 
   public moduleName = "";
-  public commands: Commands = [];
+  public commands: SlashCommands = [];
   public eventListeners: EventListeners = [];
   public timers: Timers = [];
 
@@ -79,7 +78,7 @@ export abstract class Module {
    * Returns the first instance of a command with the given name.
    * @param command The name of the command.
    */
-  public getCommand(command: string): Command | undefined {
+  public getCommand(command: string): SlashCommand | undefined {
     if (!this.handlesCommands) {
       return undefined;
     }

@@ -1,12 +1,13 @@
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
-import { Commands } from "../utils/objects/command.js";
 import { Logger } from "../config/logger.js";
+import { SlashCommands } from "../objects/index.js";
 export declare class DevModule extends Module {
     protected logger: Logger;
     moduleName: string;
-    commands: Commands;
+    commands: SlashCommands;
+    testChatInteractionFunction(interaction: ChatInputCommandInteraction): Promise<unknown>;
     buttons: {
         buttonTest1: (interaction: ChatInputCommandInteraction) => Promise<void | InteractionResponse<boolean>>;
     };

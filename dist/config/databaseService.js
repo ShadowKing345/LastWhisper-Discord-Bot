@@ -38,7 +38,7 @@ export class DatabaseService {
     get isConnected() {
         return this._dataSource?.isInitialized;
     }
-    static createDataSource(config = ConfigurationService.GetConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)) {
+    static createDataSource(config = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)) {
         return new DataSource({
             type: config.type,
             username: config.username,

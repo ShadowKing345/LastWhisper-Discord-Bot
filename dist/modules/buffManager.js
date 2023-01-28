@@ -4,8 +4,8 @@ import { ChatInputCommandInteraction, ApplicationCommandOptionType } from "disco
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module, authorize, addPermissionKeys, deferReply } from "../utils/decorators/index.js";
-import { Command, CommandOption } from "../utils/objects/command.js";
+import { module, authorize, addPermissionKeys, deferReply } from "../decorators/index.js";
+import { SlashCommand, CommandOption } from "../objects/slashCommand.js";
 import { DateTime } from "luxon";
 import { Logger } from "../config/logger.js";
 let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Module {
@@ -24,11 +24,11 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
         },
     ];
     commands = [
-        new Command({
+        new SlashCommand({
             name: "buff_manager",
             description: "Manages all things related to buffs",
             subcommands: {
-                Buffs: new Command({
+                Buffs: new SlashCommand({
                     name: "buffs",
                     description: "Shows you what buffs are set.",
                     options: [
@@ -46,7 +46,7 @@ let BuffManagerModule = BuffManagerModule_1 = class BuffManagerModule extends Mo
                         }),
                     ],
                 }),
-                Weeks: new Command({
+                Weeks: new SlashCommand({
                     name: "weeks",
                     description: "Shows you what buffs for the week, are set to.",
                     options: [

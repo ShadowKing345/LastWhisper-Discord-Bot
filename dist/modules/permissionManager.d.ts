@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { Commands } from "../utils/objects/command.js";
+import { SlashCommands } from "../objects/slashCommand.js";
 import { Logger } from "../config/logger.js";
 export declare class PermissionManagerModule extends Module {
     private service;
@@ -15,7 +15,7 @@ export declare class PermissionManagerModule extends Module {
         reset: string;
     };
     moduleName: string;
-    commands: Commands;
+    commands: SlashCommands;
     protected commandResolverKeys: {
         "permissions.add_role": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
         "permissions.remove_role": (interaction: ChatInputCommandInteraction) => Promise<InteractionResponse | void>;
