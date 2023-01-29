@@ -20,7 +20,7 @@
     "unregister": {
       "type": "boolean",
       "description": "Boolean flag to simply unregister all commands instead of register them.",
-      "const": false
+      "default": false
     }
   },
   "required": ["clientId", "guildId", "registerForGuild", "unregister"]
