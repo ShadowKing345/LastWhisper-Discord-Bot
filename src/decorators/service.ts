@@ -1,5 +1,5 @@
 import { constructor } from "tsyringe/dist/typings/types/index.js";
-import { injectable, container } from "tsyringe";
+import { injectable, container, Lifecycle } from "tsyringe";
 import { Service } from "../services/service.js";
 
 /**
@@ -9,7 +9,7 @@ import { Service } from "../services/service.js";
 export function service<T extends Service>(): (target: constructor<T>) => void {
   return function (target: constructor<T>) {
     injectable()(target);
-    container.registerSingleton<T>(target);
+    container.register<T>(target, target, { lifecycle: Lifecycle.ResolutionScoped });
     container.register(Service.name, { useClass: target });
   };
 }
