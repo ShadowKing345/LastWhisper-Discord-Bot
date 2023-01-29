@@ -5,7 +5,8 @@ import { Bot } from "./bot.js";
 /**
  * A representation of an event listener for a module.
  */
-export class EventListener<T extends keyof ClientEvents> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class EventListener<T extends keyof ClientEvents = any> {
   // The name of the event to listen to.
   public event: T;
   // Function to be called when the event is executed.
@@ -17,4 +18,4 @@ export class EventListener<T extends keyof ClientEvents> {
   }
 }
 
-export type EventListeners = Array<EventListener<never>>;
+export type EventListeners = Array<EventListener>;
