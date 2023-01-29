@@ -1,9 +1,8 @@
 import { REST, RouteLike, Routes } from "discord.js";
-import { container } from "tsyringe";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
-import { Module } from "./modules/module.js";
 import { deepMerge } from "./utils/index.js";
+import { SlashCommands } from "./objects/index.js";
 
 const logger = new Logger("CommandRegistration");
 
@@ -42,14 +41,12 @@ async function unregister(rest: REST, route: RouteLike) {
  * Registers commands for a route.
  * @param rest The REST object.
  * @param route The route.
- * @param modules All modules to get the command of.
+ * @param slashCommands Collection of slash commands to be registered.
  */
-async function register(rest: REST, route: RouteLike, modules: Module[]) {
+async function register(rest: REST, route: RouteLike, slashCommands: SlashCommands) {
   const commands = [];
-  for (const module of modules) {
-    for (const command of module.commands) {
-      commands.push(command.build().toJSON());
-    }
+  for (const slashCommand of slashCommands) {
+    commands.push(slashCommand.build().toJSON());
   }
 
   await rest.put(route, { body: commands });
@@ -59,12 +56,12 @@ async function register(rest: REST, route: RouteLike, modules: Module[]) {
  * Command that attempted to register the slash command to the bot.
  * @param token The token to be used. Overrides the configuration token.
  * @param args Arguments for command registration. Same as configuration.
- * @param modules Override for the module service.
+ * @param commands A list of commands to be registered.
  */
 export async function manageCommands(
-  token: string = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN),
-  args: CommandRegistrationConfiguration = new CommandRegistrationConfiguration(),
-  modules: ModuleService = container.resolve<ModuleService>(ModuleService),
+  token = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN),
+  args = new CommandRegistrationConfiguration(),
+  commands = ModuleService.getCommands().map(struct => struct.command),
 ): Promise<void> {
   logger.info("Welcome again to command registration or un-registration.");
 
@@ -86,7 +83,7 @@ export async function manageCommands(
 
     logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
 
-    await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, modules.filteredModules));
+    await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, commands));
     logger.info(`Finished ${isRegistering} for ${isGlobal}.`);
   } catch (error) {
     logger.error(error instanceof Error ? error.stack : error);
