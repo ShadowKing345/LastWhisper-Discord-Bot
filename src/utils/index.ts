@@ -112,3 +112,15 @@ export function unFlattenObject(obj: object): object {
   console.log(result);
   return result;
 }
+
+/**
+ * Checks if an unknown is a rejected promise.
+ * @param obj
+ */
+export function isRejectedPromise(obj: unknown): obj is PromiseRejectedResult {
+  if (typeof obj !== "object" || Array.isArray(obj)) {
+    return false;
+  }
+
+  return "status" in obj && obj.status === "rejected";
+}

@@ -1,22 +1,10 @@
 import { REST, RouteLike, Routes } from "discord.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
-import { deepMerge } from "./utils/index.js";
+import { deepMerge, isRejectedPromise } from "./utils/index.js";
 import { SlashCommands } from "./objects/index.js";
 
 const logger = new Logger("CommandRegistration");
-
-/**
- * Checks if an unknown is a rejected promise.
- * @param obj
- */
-function isRejectedPromise(obj: unknown): obj is PromiseRejectedResult {
-  if (typeof obj !== "object" || Array.isArray(obj)) {
-    return false;
-  }
-
-  return "status" in obj && obj.status === "rejected";
-}
 
 /**
  * Unregisters commands from a route.
@@ -28,9 +16,9 @@ async function unregister(rest: REST, route: RouteLike) {
   const commands = (await rest.get(route)) as { id: string }[];
   const result = await Promise.allSettled(commands.map(command => rest.delete(`${route}/${command.id}`)));
 
-  if (Array.isArray(result)) {
+  if(Array.isArray(result)) {
     for (const r of result) {
-      if (isRejectedPromise(r)) {
+      if(isRejectedPromise(r)) {
         logger.error(r.reason);
       }
     }
@@ -67,7 +55,7 @@ export async function manageCommands(
 
   const commandConfigs: CommandRegistrationConfiguration = deepMerge(ConfigurationService.getConfiguration(CommonConfigurationKeys.COMMAND_REGISTRATION) ?? new CommandRegistrationConfiguration(), args);
 
-  if (!commandConfigs?.isValid) {
+  if(!commandConfigs?.isValid) {
     throw new Error("Command configuration was not setup correctly.");
   }
 
