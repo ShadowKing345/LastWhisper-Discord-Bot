@@ -4,13 +4,15 @@ import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Bot } from "../objects/bot.js";
-import { EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
-import { Timer } from "../objects/timer.js";
+import { SlashCommand } from "../objects/index.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
 
 import { Logger } from "./logger.js";
+import { CTR } from "../utils/commonTypes.js";
+
+type CommandStruct = { type: CTR<Module>, command: SlashCommand }
 
 /**
  * Todo: Remove the multiple loggers
@@ -19,13 +21,13 @@ import { Logger } from "./logger.js";
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export class ModuleService {
-  private static commands: Record<string, SlashCommands> = {};
+  private static commands: Record<string, CommandStruct> = {};
 
   private readonly intervalIds: number[] = [];
   private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
   private readonly interactionLogger: Logger = new Logger("InteractionExecution");
-  private readonly eventLogger: Logger = new Logger("EventExecution");
-  private readonly taskLogger: Logger = new Logger("TimerExecution");
+  // private readonly eventLogger: Logger = new Logger("EventExecution");
+  // private readonly taskLogger: Logger = new Logger("TimerExecution");
 
   constructor(
     private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration),
@@ -40,14 +42,6 @@ export class ModuleService {
 
     const modules: Module[] = container.resolveAll(Module.name);
 
-    if (this.moduleConfiguration.modules?.length !== 0) {
-      return modules.filter(module => {
-        const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-        const blacklist = this.moduleConfiguration.blacklist;
-        return (!blacklist && inList) || (blacklist && !inList);
-      });
-    }
-
     return modules;
   }
 
@@ -58,24 +52,24 @@ export class ModuleService {
    * @param args Any additional arguments provided to the event.
    * @private
    */
-  private async runEvent(listeners: EventListeners, client: Bot, ...args): Promise<void> {
-    const results = await Promise.allSettled(
-      listeners.map(
-        listener =>
-          new Promise((resolve, reject) => {
-            try {
-              resolve(listener.execute(client, args));
-            } catch (error) {
-              reject(error);
-            }
-          }),
-      ),
-    );
-
-    for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
-      this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
-    }
-  }
+  // private async runEvent(listeners: EventListeners, client: Bot, ...args): Promise<void> {
+  //   const results = await Promise.allSettled(
+  //     listeners.map(
+  //       listener =>
+  //         new Promise((resolve, reject) => {
+  //           try {
+  //             resolve(listener.execute(client, args));
+  //           } catch (error) {
+  //             reject(error);
+  //           }
+  //         }),
+  //     ),
+  //   );
+  //
+  //   for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
+  //     this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
+  //   }
+  // }
 
   /**
    * Todo: Setup modal responding.
@@ -119,15 +113,13 @@ export class ModuleService {
             return;
           }
 
-          const command: SlashCommand | undefined = this.filteredModules
-            .find(module => module.hasCommand(interaction.commandName))
-            ?.getCommand(interaction.commandName);
-          if (!command) {
+          const commandStruct: CommandStruct = ModuleService.commands[interaction.commandName];
+          if (!commandStruct) {
             this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
             return;
           }
 
-          await command.callback(interaction);
+          await this.callCallback(commandStruct.type, commandStruct.command.callback, [interaction]);
         }
       } else {
         this.interactionLogger.debug("Interaction is not a command.");
@@ -184,22 +176,22 @@ export class ModuleService {
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    * @private
    */
-  private runTimer(timer: Timer, client: Bot): void {
-    try {
-      this.intervalIds.push(
-        setInterval(
-          () => {
-            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-          },
-          timer.timeout,
-          client,
-        ),
-      );
-      timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-    } catch (error) {
-      this.taskLogger.error(error instanceof Error ? error.stack : error);
-    }
-  }
+  // private runTimer(timer: Timer, client: Bot): void {
+  //   try {
+  //     this.intervalIds.push(
+  //       setInterval(
+  //         () => {
+  //           timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
+  //         },
+  //         timer.timeout,
+  //         client,
+  //       ),
+  //     );
+  //     timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
+  //   } catch (error) {
+  //     this.taskLogger.error(error instanceof Error ? error.stack : error);
+  //   }
+  // }
 
   /**
    * Configures a client with all the necessary module and callback information.
@@ -208,49 +200,50 @@ export class ModuleService {
    */
   public configureModules(client: Bot): void {
     this.moduleLogger.info("Loading modules.");
-    const modules = this.filteredModules;
 
-    this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
-
-    if (this.moduleConfiguration.enableCommands) {
-      this.moduleLogger.debug("Commands enabled.");
-    }
-
-    for (const module of modules) {
-      this.moduleLogger.info(module.moduleName);
-
-      try {
-        if (this.moduleConfiguration.enableEventListeners) {
-          this.moduleLogger.debug("Setting up event module events.");
-
-          for (const listener of module.eventListeners) {
-            // FixMe: Get rid of these eslint disable statement.
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            const collection: EventListeners = client.events.get(listener.event) ?? [];
-            collection.push(listener);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            client.events.set(listener.event, collection);
-          }
-        }
-      } catch (error) {
-        this.moduleLogger.error(error instanceof Error ? error.stack : error);
-      }
-    }
-
-    if (this.moduleConfiguration.enableEventListeners) {
-      this.moduleLogger.debug("Registering event.");
-
-      for (const [event, listeners] of client.events) {
-        client.on(event, (...args) => this.runEvent(listeners, client, ...args));
-      }
-    }
-
-    if (this.moduleConfiguration.enableTimers) {
-      this.moduleLogger.debug("Timers were enabled.");
-      for (const timer of modules.map(module => module.timers).flat()) {
-        this.runTimer(timer, client);
-      }
-    }
+    // const modules = this.filteredModules;
+    //
+    // this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
+    //
+    // if (this.moduleConfiguration.enableCommands) {
+    //   this.moduleLogger.debug("Commands enabled.");
+    // }
+    //
+    // for (const module of modules) {
+    //   this.moduleLogger.info(module.moduleName);
+    //
+    //   try {
+    //     if (this.moduleConfiguration.enableEventListeners) {
+    //       this.moduleLogger.debug("Setting up event module events.");
+    //
+    //       for (const listener of module.eventListeners) {
+    //         // FixMe: Get rid of these eslint disable statement.
+    //         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    //         const collection: EventListeners = client.events.get(listener.event) ?? [];
+    //         collection.push(listener);
+    //         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    //         client.events.set(listener.event, collection);
+    //       }
+    //     }
+    //   } catch (error) {
+    //     this.moduleLogger.error(error instanceof Error ? error.stack : error);
+    //   }
+    // }
+    //
+    // if (this.moduleConfiguration.enableEventListeners) {
+    //   this.moduleLogger.debug("Registering event.");
+    //
+    //   for (const [event, listeners] of client.events) {
+    //     client.on(event, (...args) => this.runEvent(listeners, client, ...args));
+    //   }
+    // }
+    //
+    // if (this.moduleConfiguration.enableTimers) {
+    //   this.moduleLogger.debug("Timers were enabled.");
+    //   for (const timer of modules.map(module => module.timers).flat()) {
+    //     this.runTimer(timer, client);
+    //   }
+    // }
 
     if (this.moduleConfiguration.enableInteractions) {
       this.moduleLogger.debug("Interactions were enabled.");
@@ -270,14 +263,19 @@ export class ModuleService {
     }
   }
 
+  /**
+   * Calls a callback with the necessary steps first.
+   * @private
+   */
+  private callCallback(type: CTR<Module>, callback: (...args) => unknown | void, args: unknown[]): unknown {
+    const thisArg = container.resolve(type);
+    return callback.apply(thisArg, args);
+  }
+
   // region Static Method
 
-  public static registerCommand(command: SlashCommand, type: string) {
-    if (!(type in ModuleService.commands)) {
-      ModuleService.commands[type] = [];
-    }
-
-    ModuleService.commands[type].push(command);
+  public static registerCommand<T extends Module>(command: SlashCommand, type: CTR<T>) {
+    ModuleService.commands[command.name] = { command, type };
   }
 
   // endregion
