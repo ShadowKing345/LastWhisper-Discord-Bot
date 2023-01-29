@@ -17,5 +17,4 @@ export class EventListener<T extends keyof ClientEvents> {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type EventListeners = Array<EventListener<any>>;
+export type EventListeners = Array<EventListener<never>>;
