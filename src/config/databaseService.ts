@@ -9,7 +9,7 @@ import { Lifecycle, scoped } from "tsyringe";
  * Database Configuration Service file.
  * This service acts like a wrapper to the DataSource object that can be globally accessed.
  */
-@scoped(Lifecycle.ResolutionScoped)
+@scoped(Lifecycle.ContainerScoped)
 export class DatabaseService {
   private readonly logger: Logger = new Logger(DatabaseService);
   private _dataSource: DataSource = null;
