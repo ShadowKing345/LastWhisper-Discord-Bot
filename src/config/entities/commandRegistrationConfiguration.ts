@@ -9,6 +9,10 @@ export class CommandRegistrationConfiguration {
       return false;
     }
 
-    return this.guildId && this.registerForGuild;
+    if (this.registerForGuild){
+      return this.guildId != null;
+    }
+
+    return true;
   }
 }
