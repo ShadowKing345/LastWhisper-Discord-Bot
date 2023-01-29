@@ -10,7 +10,7 @@ import { Module } from "../modules/module.js";
  */
 export function Command<T extends Module>(command: Partial<Omit<SlashCommand, "callback">>) {
   return function(target: unknown, _: string, descriptor: PropertyDescriptor): PropertyDescriptor {
-    ModuleService.registerCommand(new SlashCommand({
+    ModuleService.registerSlashCommand(new SlashCommand({
       name: command.name,
       description: command.description,
       callback: descriptor.value as (interaction: ChatInputCommandInteraction) => Promise<unknown>,

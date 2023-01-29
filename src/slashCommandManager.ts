@@ -61,7 +61,7 @@ async function register(rest: REST, route: RouteLike, slashCommands: SlashComman
 export async function manageCommands(
   token = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN),
   args = new CommandRegistrationConfiguration(),
-  commands = ModuleService.getCommands().map(struct => struct.command),
+  commands = ModuleService.getSlashCommands().map(struct => struct.value),
 ): Promise<void> {
   logger.info("Welcome again to command registration or un-registration.");
 

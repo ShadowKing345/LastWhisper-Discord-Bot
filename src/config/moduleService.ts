@@ -4,7 +4,7 @@ import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Bot } from "../objects/bot.js";
-import { SlashCommand } from "../objects/index.js";
+import { SlashCommand, EventListener, Timer } from "../objects/index.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
@@ -13,7 +13,7 @@ import { Logger } from "./logger.js";
 import { CTR } from "../utils/commonTypes.js";
 import { DatabaseService } from "./databaseService.js";
 
-type CommandStruct = { type: CTR<Module>, command: SlashCommand }
+type CommandStruct<T> = { type: CTR<Module>, value: T }
 
 /**
  * Todo: Remove the multiple loggers
@@ -22,7 +22,9 @@ type CommandStruct = { type: CTR<Module>, command: SlashCommand }
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export class ModuleService {
-  private static commands: Record<string, CommandStruct> = {};
+  private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
+  private static eventListeners: CommandStruct<EventListener<never>>[] = [];
+  private static timers: CommandStruct<Timer>[] = [];
 
   private readonly intervalIds: number[] = [];
   private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
@@ -39,7 +41,7 @@ export class ModuleService {
    * List of all modules registered.
    */
   public get filteredModules(): Module[] {
-    console.log(ModuleService.commands);
+    console.log(ModuleService.slashCommands);
 
     const modules: Module[] = container.resolveAll(Module.name);
 
@@ -114,13 +116,13 @@ export class ModuleService {
             return;
           }
 
-          const commandStruct: CommandStruct = ModuleService.commands[interaction.commandName];
+          const commandStruct = ModuleService.slashCommands[interaction.commandName];
           if(!commandStruct) {
             this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
             return;
           }
 
-          await this.callCallback(commandStruct.type, commandStruct.command.callback, [ interaction ]);
+          await this.callCallback(commandStruct.type, commandStruct.value.callback, [ interaction ]);
         }
       } else {
         this.interactionLogger.debug("Interaction is not a command.");
@@ -285,12 +287,28 @@ export class ModuleService {
 
   // region Static Method
 
-  public static registerCommand<T extends Module>(command: SlashCommand, type: CTR<T>) {
-    ModuleService.commands[command.name] = { command, type };
+  public static registerSlashCommand(command: SlashCommand, type: CTR<Module>) {
+    ModuleService.slashCommands[command.name] = { value: command, type };
   }
 
-  public static getCommands(): CommandStruct[] {
-    return Object.values(ModuleService.commands);
+  public static getSlashCommands(): CommandStruct<SlashCommand>[] {
+    return Object.values(ModuleService.slashCommands);
+  }
+
+  public static registerEventListener(listener: EventListener<never>, type: CTR<Module>) {
+    ModuleService.eventListeners.push({ value: listener, type });
+  }
+
+  public static getEventListeners(): CommandStruct<EventListener<never>>[] {
+    return ModuleService.eventListeners;
+  }
+
+  public static registerTimer(timer: Timer, type: CTR<Module>) {
+    ModuleService.timers.push({ value: timer, type });
+  }
+
+  public static getTimers(): CommandStruct<Timer>[] {
+    return ModuleService.timers;
   }
 
   // endregion
