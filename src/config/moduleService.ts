@@ -11,6 +11,7 @@ import { ModuleConfiguration } from "./entities/index.js";
 
 import { Logger } from "./logger.js";
 import { CTR } from "../utils/commonTypes.js";
+import { DatabaseService } from "./databaseService.js";
 
 type CommandStruct = { type: CTR<Module>, command: SlashCommand }
 
@@ -83,15 +84,15 @@ export class ModuleService {
     this.interactionLogger.debug("Interaction event invoked.");
 
     try {
-      if (interaction.isCommand()) {
+      if(interaction.isCommand()) {
         this.interactionLogger.debug("Interaction is a command.");
 
-        if (interaction.isContextMenuCommand()) {
+        if(interaction.isContextMenuCommand()) {
           this.interactionLogger.debug(
             `Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`,
           );
 
-          if (interaction.isUserContextMenuCommand()) {
+          if(interaction.isUserContextMenuCommand()) {
             await interaction.reply({
               content: "Responded with a user",
               ephemeral: true,
@@ -104,17 +105,17 @@ export class ModuleService {
           }
         }
 
-        if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
+        if(interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
           this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
 
           // Edge case if somehow a command can be invoked inside a DM.
-          if (!interaction.guildId) {
+          if(!interaction.guildId) {
             this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
             return;
           }
 
           const commandStruct: CommandStruct = ModuleService.commands[interaction.commandName];
-          if (!commandStruct) {
+          if(!commandStruct) {
             this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
             return;
           }
@@ -124,11 +125,11 @@ export class ModuleService {
       } else {
         this.interactionLogger.debug("Interaction is not a command.");
 
-        if (interaction.isModalSubmit()) {
+        if(interaction.isModalSubmit()) {
           await interaction.reply({ content: "Responded", ephemeral: true });
         }
 
-        if (interaction.isMessageComponent()) {
+        if(interaction.isMessageComponent()) {
           switch (interaction.componentType) {
             case ComponentType.Button:
               break;
@@ -142,12 +143,12 @@ export class ModuleService {
     } catch (error) {
       this.interactionLogger.error(error instanceof Error ? error.stack : error);
 
-      if (
+      if(
         interaction &&
         (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) &&
         !interaction.replied
       ) {
-        if (error instanceof CommandResolverError) {
+        if(error instanceof CommandResolverError) {
           await interaction.reply({
             content: "Sorry there was an issue resolving the command name.",
             ephemeral: true,
@@ -155,7 +156,7 @@ export class ModuleService {
           return;
         }
 
-        if (interaction.deferred) {
+        if(interaction.deferred) {
           await interaction.editReply({
             content: "There was an internal error that occurred when using this interaction.",
           });
@@ -245,7 +246,7 @@ export class ModuleService {
     //   }
     // }
 
-    if (this.moduleConfiguration.enableInteractions) {
+    if(this.moduleConfiguration.enableInteractions) {
       this.moduleLogger.debug("Interactions were enabled.");
       client.on("interactionCreate", this.interactionEvent.bind(this));
     }
@@ -267,9 +268,16 @@ export class ModuleService {
    * Calls a callback with the necessary steps first.
    * @private
    */
-  private callCallback(type: CTR<Module>, callback: (...args) => unknown | void, args: unknown[]): unknown {
-    const thisArg = container.resolve(type);
-    return callback.apply(thisArg, args);
+  private async callCallback(type: CTR<Module>, callback: (...args) => unknown | void, args: unknown[]): Promise<unknown> {
+    const childContainer = container.createChildContainer();
+
+    const dbService = childContainer.resolve(DatabaseService);
+    await dbService.connect();
+    const obj = childContainer.resolve(type);
+    const result = await callback.apply(obj, args);
+    await dbService.disconnect();
+
+    return result;
   }
 
   // region Static Method
