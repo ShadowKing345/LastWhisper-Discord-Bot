@@ -59,7 +59,7 @@ async function runCommandRegistration(args: Record<string, unknown>) {
     config.unregister = args.unregister;
   }
 
-  return manageCommands("token" in args && typeof args.token === "string" ? args.token : null, config);
+  return manageCommands("token" in args && typeof args.token === "string" ? args.token : undefined, config);
 }
 
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
