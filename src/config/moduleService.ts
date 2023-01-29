@@ -1,4 +1,4 @@
-import { ButtonInteraction, CommandInteraction, ComponentType, Interaction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, ComponentType, Interaction, ClientEvents } from "discord.js";
 import { clearInterval } from "timers";
 import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
@@ -12,6 +12,7 @@ import { ModuleConfiguration } from "./entities/index.js";
 import { Logger } from "./logger.js";
 import { CTR } from "../utils/commonTypes.js";
 import { DatabaseService } from "./databaseService.js";
+import { isRejectedPromise } from "../utils/index.js";
 
 type CommandStruct<T> = { type: CTR<Module>, value: T }
 
@@ -23,29 +24,19 @@ type CommandStruct<T> = { type: CTR<Module>, value: T }
  */
 export class ModuleService {
   private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
-  private static eventListeners: CommandStruct<EventListener>[] = [];
+  private static eventListeners: Record<string, CommandStruct<EventListener>[]> = {};
   private static timers: CommandStruct<Timer>[] = [];
 
   private readonly intervalIds: number[] = [];
   private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
   private readonly interactionLogger: Logger = new Logger("InteractionExecution");
-  // private readonly eventLogger: Logger = new Logger("EventExecution");
+  private readonly eventLogger: Logger = new Logger("EventExecution");
+
   // private readonly taskLogger: Logger = new Logger("TimerExecution");
 
   constructor(
     private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration),
   ) {
-  }
-
-  /**
-   * List of all modules registered.
-   */
-  public get filteredModules(): Module[] {
-    console.log(ModuleService.slashCommands);
-
-    const modules: Module[] = container.resolveAll(Module.name);
-
-    return modules;
   }
 
   /**
@@ -55,24 +46,26 @@ export class ModuleService {
    * @param args Any additional arguments provided to the event.
    * @private
    */
-  // private async runEvent(listeners: EventListeners, client: Bot, ...args): Promise<void> {
-  //   const results = await Promise.allSettled(
-  //     listeners.map(
-  //       listener =>
-  //         new Promise((resolve, reject) => {
-  //           try {
-  //             resolve(listener.execute(client, args));
-  //           } catch (error) {
-  //             reject(error);
-  //           }
-  //         }),
-  //     ),
-  //   );
-  //
-  //   for (const result of results.filter(result => result.status === "rejected") as PromiseRejectedResult[]) {
-  //     this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
-  //   }
-  // }
+  private async runEvent(listeners: CommandStruct<EventListener>[], client: Bot, args: unknown[]): Promise<void> {
+    const childContainer = container.createChildContainer();
+    const dbService = childContainer.resolve(DatabaseService);
+    await dbService.connect();
+
+    const results = await Promise.allSettled(
+      listeners.map(struct => {
+        const obj = childContainer.resolve(struct.type);
+        return struct.value.execute.apply(obj, [ client, args ]);
+      }),
+    );
+
+    await dbService.disconnect();
+
+    for (const result of results) {
+      if(isRejectedPromise(result)) {
+        this.eventLogger.error(result.reason);
+      }
+    }
+  }
 
   /**
    * Todo: Setup modal responding.
@@ -219,27 +212,18 @@ export class ModuleService {
     //     if (this.moduleConfiguration.enableEventListeners) {
     //       this.moduleLogger.debug("Setting up event module events.");
     //
-    //       for (const listener of module.eventListeners) {
-    //         // FixMe: Get rid of these eslint disable statement.
-    //         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    //         const collection: EventListeners = client.events.get(listener.event) ?? [];
-    //         collection.push(listener);
-    //         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    //         client.events.set(listener.event, collection);
-    //       }
     //     }
     //   } catch (error) {
     //     this.moduleLogger.error(error instanceof Error ? error.stack : error);
     //   }
     // }
     //
-    // if (this.moduleConfiguration.enableEventListeners) {
-    //   this.moduleLogger.debug("Registering event.");
-    //
-    //   for (const [event, listeners] of client.events) {
-    //     client.on(event, (...args) => this.runEvent(listeners, client, ...args));
-    //   }
-    // }
+    if(this.moduleConfiguration.enableEventListeners) {
+      this.moduleLogger.debug("Registering event.");
+      for (const eventName in ModuleService.eventListeners) {
+        client.on(eventName, (...args) => this.runEvent(ModuleService.eventListeners[eventName], client, args));
+      }
+    }
     //
     // if (this.moduleConfiguration.enableTimers) {
     //   this.moduleLogger.debug("Timers were enabled.");
@@ -296,11 +280,20 @@ export class ModuleService {
   }
 
   public static registerEventListener(listener: EventListener, type: CTR<Module>) {
-    ModuleService.eventListeners.push({ value: listener, type });
+    const eventName = listener.event as keyof ClientEvents;
+
+    if(!(eventName in ModuleService.eventListeners)) {
+      ModuleService.eventListeners[eventName] = [];
+    }
+
+    ModuleService.eventListeners[eventName].push({ value: listener, type });
   }
 
   public static getEventListeners(): CommandStruct<EventListener>[] {
-    return ModuleService.eventListeners;
+    return Object.values(ModuleService.eventListeners).reduce((prev, current) => {
+      prev.push(...current);
+      return prev;
+    }, []);
   }
 
   public static registerTimer(timer: Timer, type: CTR<Module>) {
