@@ -266,6 +266,9 @@ export class ModuleService {
 
   /**
    * Calls a callback with the necessary steps first.
+   * @param type The type data for the container to resolve.
+   * @param callback The callback to be called using the resolved object.
+   * @param args Any additional arguments to be provided to the callback.
    * @private
    */
   private async callCallback(type: CTR<Module>, callback: (...args) => unknown | void, args: unknown[]): Promise<unknown> {
