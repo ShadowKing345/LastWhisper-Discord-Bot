@@ -24,7 +24,7 @@ import { SlashCommand } from "../objects/index.js";
 export class DevModule extends Module {
   protected logger: Logger = new Logger(DevModule);
 
-  public moduleName = "DevModule";
+  public static moduleName = "DevModule";
 
   public constructor(
     permissionManagerService: PermissionManagerService,

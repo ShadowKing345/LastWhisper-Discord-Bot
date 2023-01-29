@@ -11,7 +11,7 @@ import { Logger } from "../config/logger.js";
 export abstract class Module {
   protected logger: Logger = new Logger(Module);
 
-  public moduleName = "";
+  public static moduleName = "";
   public commands: SlashCommands = [];
   public eventListeners: EventListeners = [];
   public timers: Timers = [];
