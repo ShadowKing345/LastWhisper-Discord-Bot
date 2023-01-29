@@ -23,7 +23,7 @@ type CommandStruct<T> = { type: CTR<Module>, value: T }
  */
 export class ModuleService {
   private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
-  private static eventListeners: CommandStruct<EventListener<never>>[] = [];
+  private static eventListeners: CommandStruct<EventListener>[] = [];
   private static timers: CommandStruct<Timer>[] = [];
 
   private readonly intervalIds: number[] = [];
@@ -295,11 +295,11 @@ export class ModuleService {
     return Object.values(ModuleService.slashCommands);
   }
 
-  public static registerEventListener(listener: EventListener<never>, type: CTR<Module>) {
+  public static registerEventListener(listener: EventListener, type: CTR<Module>) {
     ModuleService.eventListeners.push({ value: listener, type });
   }
 
-  public static getEventListeners(): CommandStruct<EventListener<never>>[] {
+  public static getEventListeners(): CommandStruct<EventListener>[] {
     return ModuleService.eventListeners;
   }
 
