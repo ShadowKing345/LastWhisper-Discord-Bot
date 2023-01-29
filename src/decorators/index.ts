@@ -4,3 +4,5 @@ export * from "./deferReply.js";
 export * from "./module.js";
 export * from "./repository.js";
 export * from "./service.js";
+export * from "./event.js";
+export * from "./command.js";
