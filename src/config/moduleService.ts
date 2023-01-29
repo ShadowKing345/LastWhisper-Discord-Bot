@@ -119,7 +119,7 @@ export class ModuleService {
             return;
           }
 
-          await this.callCallback(commandStruct.type, commandStruct.command.callback, [interaction]);
+          await this.callCallback(commandStruct.type, commandStruct.command.callback, [ interaction ]);
         }
       } else {
         this.interactionLogger.debug("Interaction is not a command.");
@@ -276,6 +276,10 @@ export class ModuleService {
 
   public static registerCommand<T extends Module>(command: SlashCommand, type: CTR<T>) {
     ModuleService.commands[command.name] = { command, type };
+  }
+
+  public static getCommands(): CommandStruct[] {
+    return Object.values(ModuleService.commands);
   }
 
   // endregion
