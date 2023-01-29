@@ -4,6 +4,7 @@ import { Logger } from "./logger.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { Lifecycle, scoped } from "tsyringe";
+import { AllEntities } from "../entities/index.js";
 
 /**
  * Database Configuration Service file.
@@ -79,8 +80,7 @@ export class DatabaseService {
       port: config.port,
       database: config.database,
       logging: config.logging,
-      entities: ["./src/entities/**/*.ts"],
-      migrations: ["./src/migrations/*.ts"],
+      entities: AllEntities,
     } as DataSourceOptions);
   }
 }
