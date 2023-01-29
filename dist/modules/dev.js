@@ -1,19 +1,16 @@
 var DevModule_1;
 import { __decorate, __metadata } from "tslib";
-import { module } from "../decorators/index.js";
+import { module, Command, Event } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { Logger } from "../config/logger.js";
-import { Command } from "../decorators/command.js";
 import { SlashCommand } from "../objects/index.js";
-import { PermissionManagerRepository } from "../repositories/permissionManager.js";
-import { DatabaseService } from "../config/index.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
     logger = new Logger(DevModule_1);
     static moduleName = "DevModule";
-    constructor() {
-        super(new PermissionManagerService(new PermissionManagerRepository(new DatabaseService())));
+    constructor(permissionManagerService) {
+        super(permissionManagerService);
     }
     async subcommandResolverTest(interaction) {
         switch (interaction.options.getSubcommand()) {
@@ -63,6 +60,10 @@ let DevModule = DevModule_1 = class DevModule extends Module {
         modal.addComponents(firstActionRow, secondActionRow);
         return interaction.showModal(modal);
     }
+    async onReady() {
+        this.logger.debug("Hello from the other side.");
+        await Promise.resolve();
+    }
 };
 __decorate([
     Command({
@@ -111,9 +112,15 @@ __decorate([
     __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], DevModule.prototype, "testModal", null);
+__decorate([
+    Event("ready"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DevModule.prototype, "onReady", null);
 DevModule = DevModule_1 = __decorate([
     module(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [PermissionManagerService])
 ], DevModule);
 export { DevModule };
 //# sourceMappingURL=dev.js.map

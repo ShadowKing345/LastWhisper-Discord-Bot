@@ -1,1 +1,1 @@
-{"version":3,"file":"slashCommandManager.d.ts","sourceRoot":"","sources":["../src/slashCommandManager.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,gCAAgC,EAAkD,MAAM,mBAAmB,CAAC;AA0DrH,wBAAsB,cAAc,CAClC,KAAK,SAA+E,EACpF,IAAI,mCAAyC,EAC7C,QAAQ,qDAA4D,GACnE,OAAO,CAAC,IAAI,CAAC,CA0Bf"}
+{"version":3,"file":"slashCommandManager.d.ts","sourceRoot":"","sources":["../src/slashCommandManager.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,gCAAgC,EAAkD,MAAM,mBAAmB,CAAC;AA8CrH,wBAAsB,cAAc,CAClC,KAAK,SAA+E,EACpF,IAAI,mCAAyC,EAC7C,QAAQ,qDAA+D,GACtE,OAAO,CAAC,IAAI,CAAC,CA0Bf"}

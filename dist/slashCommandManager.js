@@ -1,14 +1,8 @@
 import { REST, Routes } from "discord.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
-import { deepMerge } from "./utils/index.js";
+import { deepMerge, isRejectedPromise } from "./utils/index.js";
 const logger = new Logger("CommandRegistration");
-function isRejectedPromise(obj) {
-    if (typeof obj !== "object" || Array.isArray(obj)) {
-        return false;
-    }
-    return "status" in obj && obj.status === "rejected";
-}
 async function unregister(rest, route) {
     const commands = (await rest.get(route));
     const result = await Promise.allSettled(commands.map(command => rest.delete(`${route}/${command.id}`)));
@@ -27,7 +21,7 @@ async function register(rest, route, slashCommands) {
     }
     await rest.put(route, { body: commands });
 }
-export async function manageCommands(token = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN), args = new CommandRegistrationConfiguration(), commands = ModuleService.getCommands().map(struct => struct.command)) {
+export async function manageCommands(token = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN), args = new CommandRegistrationConfiguration(), commands = ModuleService.getSlashCommands().map(struct => struct.value)) {
     logger.info("Welcome again to command registration or un-registration.");
     const commandConfigs = deepMerge(ConfigurationService.getConfiguration(CommonConfigurationKeys.COMMAND_REGISTRATION) ?? new CommandRegistrationConfiguration(), args);
     if (!commandConfigs?.isValid) {

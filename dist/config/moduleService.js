@@ -1,26 +1,39 @@
 import { ButtonInteraction, CommandInteraction, ComponentType } from "discord.js";
 import { clearInterval } from "timers";
 import { container } from "tsyringe";
-import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
 import { Logger } from "./logger.js";
 import { DatabaseService } from "./databaseService.js";
+import { isRejectedPromise } from "../utils/index.js";
 export class ModuleService {
     moduleConfiguration;
-    static commands = {};
+    static slashCommands = {};
+    static eventListeners = {};
+    static timers = [];
     intervalIds = [];
     moduleLogger = new Logger("ModuleConfiguration");
     interactionLogger = new Logger("InteractionExecution");
+    eventLogger = new Logger("EventExecution");
     constructor(moduleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration)) {
         this.moduleConfiguration = moduleConfiguration;
     }
-    get filteredModules() {
-        console.log(ModuleService.commands);
-        const modules = container.resolveAll(Module.name);
-        return modules;
+    async runEvent(listeners, client, args) {
+        const childContainer = container.createChildContainer();
+        const dbService = childContainer.resolve(DatabaseService);
+        await dbService.connect();
+        const results = await Promise.allSettled(listeners.map(struct => {
+            const obj = childContainer.resolve(struct.type);
+            return struct.value.execute.apply(obj, [client, args]);
+        }));
+        await dbService.disconnect();
+        for (const result of results) {
+            if (isRejectedPromise(result)) {
+                this.eventLogger.error(result.reason);
+            }
+        }
     }
     async interactionEvent(interaction) {
         this.interactionLogger.debug("Interaction event invoked.");
@@ -48,12 +61,12 @@ export class ModuleService {
                         this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
                         return;
                     }
-                    const commandStruct = ModuleService.commands[interaction.commandName];
+                    const commandStruct = ModuleService.slashCommands[interaction.commandName];
                     if (!commandStruct) {
                         this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
                         return;
                     }
-                    await this.callCallback(commandStruct.type, commandStruct.command.callback, [interaction]);
+                    await this.callCallback(commandStruct.type, commandStruct.value.callback, [interaction]);
                 }
             }
             else {
@@ -101,6 +114,12 @@ export class ModuleService {
     }
     configureModules(client) {
         this.moduleLogger.info("Loading modules.");
+        if (this.moduleConfiguration.enableEventListeners) {
+            this.moduleLogger.debug("Registering event.");
+            for (const eventName in ModuleService.eventListeners) {
+                client.on(eventName, (...args) => this.runEvent(ModuleService.eventListeners[eventName], client, args));
+            }
+        }
         if (this.moduleConfiguration.enableInteractions) {
             this.moduleLogger.debug("Interactions were enabled.");
             client.on("interactionCreate", this.interactionEvent.bind(this));
@@ -117,16 +136,35 @@ export class ModuleService {
         const childContainer = container.createChildContainer();
         const dbService = childContainer.resolve(DatabaseService);
         await dbService.connect();
-        const thisArg = childContainer.resolve(type);
-        const result = await callback.apply(thisArg, args);
+        const obj = childContainer.resolve(type);
+        const result = await callback.apply(obj, args);
         await dbService.disconnect();
         return result;
     }
-    static registerCommand(command, type) {
-        ModuleService.commands[command.name] = { command, type: type };
+    static registerSlashCommand(command, type) {
+        ModuleService.slashCommands[command.name] = { value: command, type };
     }
-    static getCommands() {
-        return Object.values(ModuleService.commands);
+    static getSlashCommands() {
+        return Object.values(ModuleService.slashCommands);
+    }
+    static registerEventListener(listener, type) {
+        const eventName = listener.event;
+        if (!(eventName in ModuleService.eventListeners)) {
+            ModuleService.eventListeners[eventName] = [];
+        }
+        ModuleService.eventListeners[eventName].push({ value: listener, type });
+    }
+    static getEventListeners() {
+        return Object.values(ModuleService.eventListeners).reduce((prev, current) => {
+            prev.push(...current);
+            return prev;
+        }, []);
+    }
+    static registerTimer(timer, type) {
+        ModuleService.timers.push({ value: timer, type });
+    }
+    static getTimers() {
+        return ModuleService.timers;
     }
 }
 //# sourceMappingURL=moduleService.js.map
