@@ -36,7 +36,7 @@ async function runCommandRegistration(args) {
     if ("unregister" in args && typeof args.unregister === "boolean") {
         config.unregister = args.unregister;
     }
-    return manageCommands("token" in args && typeof args.token === "string" ? args.token : null, config);
+    return manageCommands("token" in args && typeof args.token === "string" ? args.token : undefined, config);
 }
 program.name("discord-bot").description("Discord Bot.").version("0.0.1");
 program.command("deploy", { isDefault: true }).description("Runs to bot.").action(runBot);

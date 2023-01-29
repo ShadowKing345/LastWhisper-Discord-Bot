@@ -1,10 +1,14 @@
+var DatabaseService_1;
+import { __decorate } from "tslib";
 import { DatabaseConfiguration } from "./entities/index.js";
 import { DataSource } from "typeorm";
 import { Logger } from "./logger.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
-export class DatabaseService {
-    logger = new Logger(DatabaseService);
+import { Lifecycle, scoped } from "tsyringe";
+import { AllEntities } from "../entities/index.js";
+let DatabaseService = DatabaseService_1 = class DatabaseService {
+    logger = new Logger(DatabaseService_1);
     _dataSource = null;
     async connect() {
         try {
@@ -14,7 +18,7 @@ export class DatabaseService {
                 return;
             }
             if (!this._dataSource) {
-                this._dataSource = AppDataSource;
+                this._dataSource = DatabaseService_1.createDataSource();
             }
             await this._dataSource.initialize();
         }
@@ -46,10 +50,13 @@ export class DatabaseService {
             port: config.port,
             database: config.database,
             logging: config.logging,
-            entities: ["./src/entities/**/*.ts"],
-            migrations: ["./src/migrations/*.ts"],
+            entities: AllEntities,
         });
     }
-}
+};
+DatabaseService = DatabaseService_1 = __decorate([
+    scoped(Lifecycle.ContainerScoped)
+], DatabaseService);
+export { DatabaseService };
 export const AppDataSource = DatabaseService.createDataSource();
 //# sourceMappingURL=databaseService.js.map

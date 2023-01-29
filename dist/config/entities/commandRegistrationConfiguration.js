@@ -7,7 +7,10 @@ export class CommandRegistrationConfiguration {
         if (!this.clientId) {
             return false;
         }
-        return this.guildId && this.registerForGuild;
+        if (this.registerForGuild) {
+            return this.guildId != null;
+        }
+        return true;
     }
 }
 //# sourceMappingURL=commandRegistrationConfiguration.js.map

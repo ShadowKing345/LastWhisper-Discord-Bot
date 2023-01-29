@@ -1,5 +1,4 @@
 import { REST, Routes } from "discord.js";
-import { container } from "tsyringe";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
 import { deepMerge } from "./utils/index.js";
@@ -21,16 +20,14 @@ async function unregister(rest, route) {
         }
     }
 }
-async function register(rest, route, modules) {
+async function register(rest, route, slashCommands) {
     const commands = [];
-    for (const module of modules) {
-        for (const command of module.commands) {
-            commands.push(command.build().toJSON());
-        }
+    for (const slashCommand of slashCommands) {
+        commands.push(slashCommand.build().toJSON());
     }
     await rest.put(route, { body: commands });
 }
-export async function manageCommands(token = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN), args = new CommandRegistrationConfiguration(), modules = container.resolve(ModuleService)) {
+export async function manageCommands(token = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN), args = new CommandRegistrationConfiguration(), commands = ModuleService.getCommands().map(struct => struct.command)) {
     logger.info("Welcome again to command registration or un-registration.");
     const commandConfigs = deepMerge(ConfigurationService.getConfiguration(CommonConfigurationKeys.COMMAND_REGISTRATION) ?? new CommandRegistrationConfiguration(), args);
     if (!commandConfigs?.isValid) {
@@ -44,7 +41,7 @@ export async function manageCommands(token = ConfigurationService.getConfigurati
             ? Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId)
             : Routes.applicationCommands(commandConfigs.clientId);
         logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
-        await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, modules.filteredModules));
+        await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, commands));
         logger.info(`Finished ${isRegistering} for ${isGlobal}.`);
     }
     catch (error) {

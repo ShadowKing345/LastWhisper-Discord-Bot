@@ -3,15 +3,17 @@ import { __decorate, __metadata } from "tslib";
 import { module } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { Logger } from "../config/logger.js";
 import { Command } from "../decorators/command.js";
 import { SlashCommand } from "../objects/index.js";
+import { PermissionManagerRepository } from "../repositories/permissionManager.js";
+import { DatabaseService } from "../config/index.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
     logger = new Logger(DevModule_1);
     static moduleName = "DevModule";
-    constructor(permissionManagerService) {
-        super(permissionManagerService);
+    constructor() {
+        super(new PermissionManagerService(new PermissionManagerRepository(new DatabaseService())));
     }
     async subcommandResolverTest(interaction) {
         switch (interaction.options.getSubcommand()) {
@@ -111,7 +113,7 @@ __decorate([
 ], DevModule.prototype, "testModal", null);
 DevModule = DevModule_1 = __decorate([
     module(),
-    __metadata("design:paramtypes", [PermissionManagerService])
+    __metadata("design:paramtypes", [])
 ], DevModule);
 export { DevModule };
 //# sourceMappingURL=dev.js.map

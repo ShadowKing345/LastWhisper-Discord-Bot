@@ -7,6 +7,7 @@ import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
 import { Logger } from "./logger.js";
+import { DatabaseService } from "./databaseService.js";
 export class ModuleService {
     moduleConfiguration;
     static commands = {};
@@ -112,12 +113,20 @@ export class ModuleService {
             clearInterval(id);
         }
     }
-    callCallback(type, callback, args) {
-        const thisArg = container.resolve(type);
-        return callback.apply(thisArg, args);
+    async callCallback(type, callback, args) {
+        const childContainer = container.createChildContainer();
+        const dbService = childContainer.resolve(DatabaseService);
+        await dbService.connect();
+        const thisArg = childContainer.resolve(type);
+        const result = await callback.apply(thisArg, args);
+        await dbService.disconnect();
+        return result;
     }
     static registerCommand(command, type) {
-        ModuleService.commands[command.name] = { command, type };
+        ModuleService.commands[command.name] = { command, type: type };
+    }
+    static getCommands() {
+        return Object.values(ModuleService.commands);
     }
 }
 //# sourceMappingURL=moduleService.js.map

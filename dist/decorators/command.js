@@ -8,7 +8,7 @@ export function Command(command) {
             callback: descriptor.value,
             subcommands: command.subcommands,
             options: command.options,
-        }), target);
+        }), target.constructor);
         return descriptor;
     };
 }
