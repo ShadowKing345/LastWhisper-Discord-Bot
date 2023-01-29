@@ -1,14 +1,15 @@
-
 import { DatabaseConfiguration } from "./entities/index.js";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { Logger } from "./logger.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
+import { Lifecycle, scoped } from "tsyringe";
 
 /**
  * Database Configuration Service file.
  * This service acts like a wrapper to the DataSource object that can be globally accessed.
  */
+@scoped(Lifecycle.ResolutionScoped)
 export class DatabaseService {
   private readonly logger: Logger = new Logger(DatabaseService);
   private _dataSource: DataSource = null;
@@ -25,7 +26,7 @@ export class DatabaseService {
       }
 
       if (!this._dataSource) {
-        this._dataSource = AppDataSource;
+        this._dataSource = DatabaseService.createDataSource();
       }
 
       await this._dataSource.initialize();
