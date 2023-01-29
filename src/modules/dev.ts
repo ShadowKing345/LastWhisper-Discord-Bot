@@ -1,20 +1,8 @@
-import { module } from "../decorators/index.js";
+import { module, Command, Event } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ChatInputCommandInteraction,
-  CommandInteraction,
-  ModalActionRowComponentBuilder,
-  ModalBuilder,
-  SelectMenuBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import { Logger } from "../config/logger.js";
-import { Command } from "../decorators/command.js";
 import { SlashCommand } from "../objects/index.js";
 
 /**
@@ -118,5 +106,11 @@ export class DevModule extends Module {
 
     modal.addComponents(firstActionRow, secondActionRow);
     return interaction.showModal(modal);
+  }
+
+  @Event("ready")
+  public async onReady(): Promise<void> {
+    this.logger.debug("Hello from the other side.");
+    await Promise.resolve();
   }
 }
