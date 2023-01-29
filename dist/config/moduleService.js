@@ -13,35 +13,13 @@ export class ModuleService {
     intervalIds = [];
     moduleLogger = new Logger("ModuleConfiguration");
     interactionLogger = new Logger("InteractionExecution");
-    eventLogger = new Logger("EventExecution");
-    taskLogger = new Logger("TimerExecution");
     constructor(moduleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration)) {
         this.moduleConfiguration = moduleConfiguration;
     }
     get filteredModules() {
         console.log(ModuleService.commands);
         const modules = container.resolveAll(Module.name);
-        if (this.moduleConfiguration.modules?.length !== 0) {
-            return modules.filter(module => {
-                const inList = this.moduleConfiguration.modules?.includes(module.moduleName);
-                const blacklist = this.moduleConfiguration.blacklist;
-                return (!blacklist && inList) || (blacklist && !inList);
-            });
-        }
         return modules;
-    }
-    async runEvent(listeners, client, ...args) {
-        const results = await Promise.allSettled(listeners.map(listener => new Promise((resolve, reject) => {
-            try {
-                resolve(listener.execute(client, args));
-            }
-            catch (error) {
-                reject(error);
-            }
-        })));
-        for (const result of results.filter(result => result.status === "rejected")) {
-            this.eventLogger.error(result.reason instanceof Error ? result.reason.stack : result.reason);
-        }
     }
     async interactionEvent(interaction) {
         this.interactionLogger.debug("Interaction event invoked.");
@@ -69,14 +47,12 @@ export class ModuleService {
                         this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
                         return;
                     }
-                    const command = this.filteredModules
-                        .find(module => module.hasCommand(interaction.commandName))
-                        ?.getCommand(interaction.commandName);
-                    if (!command) {
+                    const commandStruct = ModuleService.commands[interaction.commandName];
+                    if (!commandStruct) {
                         this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
                         return;
                     }
-                    await command.callback(interaction);
+                    await this.callCallback(commandStruct.type, commandStruct.command.callback, [interaction]);
                 }
             }
             else {
@@ -122,52 +98,8 @@ export class ModuleService {
             }
         }
     }
-    runTimer(timer, client) {
-        try {
-            this.intervalIds.push(setInterval(() => {
-                timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-            }, timer.timeout, client));
-            timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-        }
-        catch (error) {
-            this.taskLogger.error(error instanceof Error ? error.stack : error);
-        }
-    }
     configureModules(client) {
         this.moduleLogger.info("Loading modules.");
-        const modules = this.filteredModules;
-        this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
-        if (this.moduleConfiguration.enableCommands) {
-            this.moduleLogger.debug("Commands enabled.");
-        }
-        for (const module of modules) {
-            this.moduleLogger.info(module.moduleName);
-            try {
-                if (this.moduleConfiguration.enableEventListeners) {
-                    this.moduleLogger.debug("Setting up event module events.");
-                    for (const listener of module.eventListeners) {
-                        const collection = client.events.get(listener.event) ?? [];
-                        collection.push(listener);
-                        client.events.set(listener.event, collection);
-                    }
-                }
-            }
-            catch (error) {
-                this.moduleLogger.error(error instanceof Error ? error.stack : error);
-            }
-        }
-        if (this.moduleConfiguration.enableEventListeners) {
-            this.moduleLogger.debug("Registering event.");
-            for (const [event, listeners] of client.events) {
-                client.on(event, (...args) => this.runEvent(listeners, client, ...args));
-            }
-        }
-        if (this.moduleConfiguration.enableTimers) {
-            this.moduleLogger.debug("Timers were enabled.");
-            for (const timer of modules.map(module => module.timers).flat()) {
-                this.runTimer(timer, client);
-            }
-        }
         if (this.moduleConfiguration.enableInteractions) {
             this.moduleLogger.debug("Interactions were enabled.");
             client.on("interactionCreate", this.interactionEvent.bind(this));
@@ -180,11 +112,12 @@ export class ModuleService {
             clearInterval(id);
         }
     }
+    callCallback(type, callback, args) {
+        const thisArg = container.resolve(type);
+        return callback.apply(thisArg, args);
+    }
     static registerCommand(command, type) {
-        if (!(type in ModuleService.commands)) {
-            ModuleService.commands[type] = [];
-        }
-        ModuleService.commands[type].push(command);
+        ModuleService.commands[command.name] = { command, type };
     }
 }
 //# sourceMappingURL=moduleService.js.map

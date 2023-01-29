@@ -3,41 +3,25 @@ import { __decorate, __metadata } from "tslib";
 import { module } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
 import { Logger } from "../config/logger.js";
 import { Command } from "../decorators/command.js";
 import { SlashCommand } from "../objects/index.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
     logger = new Logger(DevModule_1);
-    moduleName = "DevModule";
-    commands = [
-        new SlashCommand({
-            name: "slash_command_subcommand_test",
-            description: "Tests if subcommands are working.",
-            subcommands: {
-                ping: new SlashCommand({
-                    name: "pong",
-                    description: "Returns ping.",
-                }),
-            },
-            callback: interaction => interaction.reply({ content: "ping" }),
-        }),
-        new SlashCommand({
-            name: "test_inputs",
-            description: "Testing command.",
-            callback: interaction => this.testInteractionTypes(interaction),
-        }),
-        new SlashCommand({
-            name: "test_modal",
-            description: "Testing command.",
-            callback: interaction => this.testModal(interaction),
-        }),
-    ];
-    buttons = {
-        buttonTest1: (interaction) => this.buttonTest(interaction),
-    };
+    static moduleName = "DevModule";
     constructor(permissionManagerService) {
         super(permissionManagerService);
+    }
+    async subcommandResolverTest(interaction) {
+        switch (interaction.options.getSubcommand()) {
+            case "ping":
+                return interaction.reply("pong");
+            case "pong":
+                return interaction.reply("ping");
+            default:
+                return interaction.reply("what?");
+        }
     }
     async testChatInteractionFunction(interaction) {
         return interaction.reply({ content: "Hello World" });
@@ -53,7 +37,7 @@ let DevModule = DevModule_1 = class DevModule extends Module {
             description: "This is also a description",
             value: "second_option",
         });
-        await interaction.reply({
+        return interaction.reply({
             fetchReply: true,
             content: "Testing text",
             components: [
@@ -75,15 +59,28 @@ let DevModule = DevModule_1 = class DevModule extends Module {
         const firstActionRow = new ActionRowBuilder().addComponents(favoriteColorInput);
         const secondActionRow = new ActionRowBuilder().addComponents(hobbiesInput);
         modal.addComponents(firstActionRow, secondActionRow);
-        await interaction.showModal(modal);
-    }
-    async buttonTest(interaction) {
-        await interaction.reply({
-            content: `${interaction.member?.avatar ?? "No avatar set"} has clicked button ${interaction.commandName} ${interaction.customId}.`,
-            ephemeral: true,
-        });
+        return interaction.showModal(modal);
     }
 };
+__decorate([
+    Command({
+        name: "slash_command_subcommand_test",
+        description: "Tests if subcommands are working.",
+        subcommands: {
+            ping: new SlashCommand({
+                name: "ping",
+                description: "Returns pong.",
+            }),
+            pong: new SlashCommand({
+                name: "pong",
+                description: "Returns ping.",
+            }),
+        },
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], DevModule.prototype, "subcommandResolverTest", null);
 __decorate([
     Command({
         name: "slash_command_test",
@@ -94,6 +91,24 @@ __decorate([
     __metadata("design:paramtypes", [ChatInputCommandInteraction]),
     __metadata("design:returntype", Promise)
 ], DevModule.prototype, "testChatInteractionFunction", null);
+__decorate([
+    Command({
+        name: "test_inputs",
+        description: "Testing command.",
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CommandInteraction]),
+    __metadata("design:returntype", Promise)
+], DevModule.prototype, "testInteractionTypes", null);
+__decorate([
+    Command({
+        name: "test_modal",
+        description: "Testing command.",
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [ChatInputCommandInteraction]),
+    __metadata("design:returntype", Promise)
+], DevModule.prototype, "testModal", null);
 DevModule = DevModule_1 = __decorate([
     module(),
     __metadata("design:paramtypes", [PermissionManagerService])

@@ -1,9 +1,9 @@
-import { container, injectable } from "tsyringe";
+import { container, injectable, Lifecycle } from "tsyringe";
 import { Module } from "../modules/module.js";
 export function module() {
     return function (target) {
         injectable()(target);
-        container.registerSingleton(target);
+        container.register(target, target, { lifecycle: Lifecycle.ResolutionScoped });
         container.register(Module.name, { useClass: target });
     };
 }

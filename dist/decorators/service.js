@@ -1,9 +1,9 @@
-import { injectable, container } from "tsyringe";
+import { injectable, container, Lifecycle } from "tsyringe";
 import { Service } from "../services/service.js";
 export function service() {
     return function (target) {
         injectable()(target);
-        container.registerSingleton(target);
+        container.register(target, target, { lifecycle: Lifecycle.ResolutionScoped });
         container.register(Service.name, { useClass: target });
     };
 }

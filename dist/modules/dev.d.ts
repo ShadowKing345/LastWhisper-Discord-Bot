@@ -1,19 +1,14 @@
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { ChatInputCommandInteraction, InteractionResponse } from "discord.js";
+import { ChatInputCommandInteraction, CommandInteraction } from "discord.js";
 import { Logger } from "../config/logger.js";
-import { SlashCommands } from "../objects/index.js";
 export declare class DevModule extends Module {
     protected logger: Logger;
-    moduleName: string;
-    commands: SlashCommands;
-    buttons: {
-        buttonTest1: (interaction: ChatInputCommandInteraction) => Promise<void | InteractionResponse<boolean>>;
-    };
+    static moduleName: string;
     constructor(permissionManagerService: PermissionManagerService);
+    subcommandResolverTest(interaction: ChatInputCommandInteraction): Promise<unknown>;
     testChatInteractionFunction(interaction: ChatInputCommandInteraction): Promise<unknown>;
-    private testInteractionTypes;
-    private testModal;
-    private buttonTest;
+    testInteractionTypes(interaction: CommandInteraction): Promise<unknown>;
+    testModal(interaction: ChatInputCommandInteraction): Promise<unknown>;
 }
 //# sourceMappingURL=dev.d.ts.map

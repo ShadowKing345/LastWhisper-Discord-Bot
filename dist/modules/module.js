@@ -3,7 +3,7 @@ import { Logger } from "../config/logger.js";
 export class Module {
     permissionManagerService;
     logger = new Logger(Module);
-    moduleName = "";
+    static moduleName = "";
     commands = [];
     eventListeners = [];
     timers = [];

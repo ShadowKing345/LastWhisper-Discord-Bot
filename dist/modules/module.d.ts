@@ -6,7 +6,7 @@ import { Logger } from "../config/logger.js";
 export declare abstract class Module {
     permissionManagerService: PermissionManagerService;
     protected logger: Logger;
-    moduleName: string;
+    static moduleName: string;
     commands: SlashCommands;
     eventListeners: EventListeners;
     timers: Timers;
