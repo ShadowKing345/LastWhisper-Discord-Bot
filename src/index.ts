@@ -21,7 +21,6 @@ ConfigurationService.registerConfiguration<ApplicationConfiguration>(CommonConfi
  * Main function of application.
  * Should be used as starting point for the bot.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function runBot() {
   process.setMaxListeners(30);
   console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
