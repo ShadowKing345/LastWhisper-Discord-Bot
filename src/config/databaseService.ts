@@ -65,7 +65,11 @@ export class DatabaseService {
    * Returns if the database is connected to or not.
    */
   public get isConnected(): boolean {
-    return this._dataSource?.isInitialized;
+    if (this._dataSource){
+      return this._dataSource.isInitialized;
+    }
+
+    return false;
   }
 
   /**
