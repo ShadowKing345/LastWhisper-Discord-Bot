@@ -1,8 +1,8 @@
 import { pino } from "pino";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
-import { LOGGING_LEVELS, LoggerConfigs } from "./entities/index.js";
-import { EntityTarget, EntitySchema } from "typeorm";
+import { LoggerConfigs, LOGGING_LEVELS } from "./entities/index.js";
+import { EntitySchema, EntityTarget } from "typeorm";
 
 /**
  * Service used to handle logging calls.
@@ -33,7 +33,7 @@ export class Logger {
   }
 
   public error(message: string | object | unknown): void {
-    this.log(LOGGING_LEVELS.error, message as string | object);
+    this.log(LOGGING_LEVELS.error, message instanceof Error ? message.stack : message as string | object);
   }
 
   public log(level: LOGGING_LEVELS, message: string | object): void {
