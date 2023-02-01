@@ -1,7 +1,18 @@
-import { module, Command, Event } from "../decorators/index.js";
+import { Command, Event, module, Timer } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  ModalActionRowComponentBuilder,
+  ModalBuilder,
+  SelectMenuBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+} from "discord.js";
 import { Logger } from "../config/logger.js";
 import { SlashCommand } from "../objects/index.js";
 
@@ -10,6 +21,7 @@ import { SlashCommand } from "../objects/index.js";
  */
 @module()
 export class DevModule extends Module {
+  private static readonly logger: Logger = new Logger(DevModule);
   protected logger: Logger = new Logger(DevModule);
 
   public static moduleName = "DevModule";
@@ -110,7 +122,13 @@ export class DevModule extends Module {
 
   @Event("ready")
   public async onReady(): Promise<void> {
-    this.logger.debug("Hello from the other side.");
+    DevModule.logger.debug("Hello from the other side.");
     await Promise.resolve();
+  }
+
+  @Timer({ name: `${DevModule.name}#TimerTest`, timeout: 1000 })
+  public async timerTest(): Promise<void> {
+    DevModule.logger.debug("Timer ticked.");
+    return Promise.resolve();
   }
 }
