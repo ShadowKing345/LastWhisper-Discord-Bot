@@ -84,6 +84,3 @@ export class DatabaseService {
     } as DataSourceOptions);
   }
 }
-
-export const AppDataSource = DatabaseService.createDataSource();
-
