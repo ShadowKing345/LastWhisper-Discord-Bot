@@ -25,8 +25,8 @@ export class ModuleService {
   private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
   private static eventListeners: Record<string, CommandStruct<EventListener>[]> = {};
   private static timers: CommandStruct<Timer>[] = [];
-  private readonly intervalIds: number[] = [];
-  private readonly taskLogger: Logger = new Logger("TimerExecution");
+  private static readonly timerChildInstance = container.createChildContainer();
+  private readonly intervalIds: NodeJS.Timeout[] = [];
 
   constructor(
     private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration),
@@ -162,38 +162,63 @@ export class ModuleService {
   /**
    * Function that sets up a Javascript timer to go off.
    * Also fires the timer as well.
-   * @param timerStruct The type struct that contains the timer and module type.
+   * @param timerStructs Collection of type timer structs to create intervals for.
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    * @private
    */
-  private runTimer(timerStruct: CommandStruct<Timer>, client: Bot): void {
-    try {
-      this.intervalIds.push(
-        setInterval(() => {
-            this.callCallback(timerStruct.type, timerStruct.value.execute, [client])
-              .then()
-              .catch(error => this.taskLogger.error(error));
-          },
-          timerStruct.value.timeout,
-          client,
-        ),
-      );
+  private async runTimers(timerStructs: CommandStruct<Timer>[], client: Bot): Promise<void> {
+    const dbService = ModuleService.timerChildInstance.resolve(DatabaseService);
 
-      this.callCallback(timerStruct.type, timerStruct.value.execute, [client])
-        .then()
-        .catch(error => this.taskLogger.error(error));
-    } catch (error) {
-      this.taskLogger.error(error);
+    for (const struct of timerStructs) {
+      try {
+        const callback = struct.value.execute;
+        const thisObj = ModuleService.timerChildInstance.resolve(struct.type);
+
+        if (struct.value.timeout < 5000) {
+          if (!dbService.isConnected) {
+            await dbService.connect();
+          }
+
+          this.intervalIds.push(
+            setInterval((callback, thisObj, client) => {
+              callback.apply(thisObj, [client]).then(null, error => ModuleService.moduleServiceLogger.error(error));
+            }, struct.value.timeout, callback, thisObj, client),
+          );
+        } else {
+          this.intervalIds.push(
+            setInterval((callback, client) => {
+              this.callCallback(struct.type, callback, [client])
+                .then(null, error => ModuleService.moduleServiceLogger.error(error));
+            }, struct.value.timeout, callback, client),
+          );
+        }
+
+        await this.callCallback(struct.type, callback, [client]);
+
+      } catch (error) {
+        ModuleService.moduleServiceLogger.error(error);
+      }
     }
   }
+
 
   /**
    * Configures a client with all the necessary module and callback information.
    * Registers events, timers, commands, etc...
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    */
-  public configureModules(client: Bot): void {
+  public async configureModules(client: Bot): Promise<void> {
     ModuleService.moduleServiceLogger.info("Loading modules.");
+
+    if (this.moduleConfiguration.enableInteractions) {
+      ModuleService.moduleServiceLogger.debug("Interactions were enabled.");
+      client.on("interactionCreate", this.interactionEvent.bind(this));
+    }
+
+    if (this.moduleConfiguration.enableTimers) {
+      ModuleService.moduleServiceLogger.debug("Timers were enabled.");
+      await this.runTimers(ModuleService.timers, client);
+    }
 
     if (this.moduleConfiguration.enableEventListeners) {
       ModuleService.moduleServiceLogger.debug("Registering event.");
@@ -202,28 +227,21 @@ export class ModuleService {
       }
     }
 
-    if (this.moduleConfiguration.enableTimers) {
-      ModuleService.moduleServiceLogger.debug("Timers were enabled.");
-      for (const timer of ModuleService.timers) {
-        this.runTimer(timer, client);
-      }
-    }
-
-    if (this.moduleConfiguration.enableInteractions) {
-      ModuleService.moduleServiceLogger.debug("Interactions were enabled.");
-      client.on("interactionCreate", this.interactionEvent.bind(this));
-    }
-
     ModuleService.moduleServiceLogger.info("Done.");
   }
 
   /**
    * Cleanup function.
    */
-  public cleanup() {
+  public async cleanup() {
     ModuleService.moduleServiceLogger.info(`Cleaning up module configurations.`);
     for (const id of this.intervalIds) {
       clearInterval(id);
+    }
+
+    const dbService = ModuleService.timerChildInstance.resolve(DatabaseService);
+    if (dbService.isConnected) {
+      await dbService.disconnect();
     }
   }
 
