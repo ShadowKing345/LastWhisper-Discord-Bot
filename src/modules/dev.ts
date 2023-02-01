@@ -21,7 +21,7 @@ import { SlashCommand } from "../objects/index.js";
  */
 @module()
 export class DevModule extends Module {
-  private static readonly logger: Logger = new Logger(DevModule);
+  private static readonly logger: Logger = new Logger("DevModule");
   protected logger: Logger = new Logger(DevModule);
 
   public static moduleName = "DevModule";
