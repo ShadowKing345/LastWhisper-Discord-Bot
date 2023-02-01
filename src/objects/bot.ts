@@ -1,8 +1,7 @@
-import { Client, ClientEvents, Collection, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 import { ConfigurationService } from "../config/configurationService.js";
-import { CommonConfigurationKeys, DatabaseService, ModuleService } from "../config/index.js";
+import { CommonConfigurationKeys, ModuleService } from "../config/index.js";
 import { Logger } from "../config/logger.js";
-import { EventListeners } from "./eventListener.js";
 
 /**
  * Application class.
@@ -10,11 +9,8 @@ import { EventListeners } from "./eventListener.js";
  */
 export class Bot extends Client {
   private readonly appToken: string;
-  private readonly databaseService: DatabaseService;
   private readonly moduleService: ModuleService;
   private readonly logger: Logger = new Logger(Bot);
-
-  public readonly events: Collection<keyof ClientEvents, EventListeners> = new Collection<keyof ClientEvents, EventListeners>();
 
   constructor() {
     super({
@@ -34,17 +30,17 @@ export class Bot extends Client {
   /**
    * Main function to initialize application.
    */
-  public init(): void {
+  public async init(): Promise<void> {
     try {
-      this.moduleService.configureModules(this);
+      await this.moduleService.configureModules(this);
 
       this.once("ready", () => this.logger.info("Bot is up and ready to roll!"));
-      this.on("error", error => this.logger.error(error.stack));
+      this.on("error", error => this.logger.error(error));
 
       this.logger.info("Done loading. Ready to run.");
     } catch (error) {
       this.logger.error("An unexpected error has resulted in the application failing to start.");
-      this.logger.error(error instanceof Error ? error.stack : error);
+      this.logger.error(error);
     }
   }
 
@@ -61,13 +57,11 @@ export class Bot extends Client {
   public async stop(): Promise<void> {
     this.logger.info("Stopping application.");
 
-    this.moduleService.cleanup();
+    await this.moduleService.cleanup();
 
     if (this.isReady()) {
       this.destroy();
     }
-
-    await this.databaseService.disconnect();
 
     this.logger.info("Done. Have a nice day!");
   }
