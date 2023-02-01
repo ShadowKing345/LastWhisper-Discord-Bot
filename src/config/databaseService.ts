@@ -12,7 +12,7 @@ import { AllEntities } from "../entities/index.js";
  */
 @scoped(Lifecycle.ContainerScoped)
 export class DatabaseService {
-  private readonly logger: Logger = new Logger(DatabaseService);
+  private static readonly logger: Logger = new Logger("DatabaseService");
   private _dataSource: DataSource = null;
 
   /**
@@ -20,9 +20,9 @@ export class DatabaseService {
    */
   public async connect(): Promise<void> {
     try {
-      this.logger.info(`Connecting to Database`);
+      DatabaseService.logger.debug(`Connecting to Database`);
       if (this.isConnected) {
-        this.logger.error("Connection already active. Please disconnect first before attempting to connect.");
+        DatabaseService.logger.error("Connection already active. Please disconnect first before attempting to connect.");
         return;
       }
 
@@ -32,7 +32,7 @@ export class DatabaseService {
 
       await this._dataSource.initialize();
     } catch (error) {
-      this.logger.error(error instanceof Error ? error.stack : error);
+      DatabaseService.logger.error(error);
       this._dataSource = null;
     }
   }
@@ -42,14 +42,14 @@ export class DatabaseService {
    */
   public async disconnect(): Promise<void> {
     if (!this._dataSource) {
-      this.logger.error("Database is not connected to.");
+      DatabaseService.logger.error("Database is not connected to.");
       return;
     }
 
     await this._dataSource?.destroy();
     this._dataSource = null;
 
-    this.logger.info("Disconnecting from database.");
+    DatabaseService.logger.debug("Disconnecting from database.");
   }
 
   /**
