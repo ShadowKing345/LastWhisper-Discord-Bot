@@ -17,8 +17,6 @@ import { isRejectedPromise } from "../utils/index.js";
 type CommandStruct<T> = { type: CTR<Module>, value: T }
 
 /**
- * Todo: Remove the multiple loggers
- * Todo: Add scoped to interactions.
  * Todo: Separate concerns to the interaction function.
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
