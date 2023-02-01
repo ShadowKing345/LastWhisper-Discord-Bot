@@ -1,10 +1,10 @@
-import { ButtonInteraction, CommandInteraction, ComponentType, Interaction, ClientEvents } from "discord.js";
+import { ButtonInteraction, ClientEvents, CommandInteraction, ComponentType, Interaction } from "discord.js";
 import { clearInterval } from "timers";
 import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Bot } from "../objects/bot.js";
-import { SlashCommand, EventListener, Timer } from "../objects/index.js";
+import { EventListener, SlashCommand, Timer } from "../objects/index.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
@@ -23,16 +23,12 @@ type CommandStruct<T> = { type: CTR<Module>, value: T }
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export class ModuleService {
+  private static readonly moduleServiceLogger = new Logger(ModuleService.name);
   private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
   private static eventListeners: Record<string, CommandStruct<EventListener>[]> = {};
   private static timers: CommandStruct<Timer>[] = [];
-
   private readonly intervalIds: number[] = [];
-  private readonly moduleLogger: Logger = new Logger("ModuleConfiguration");
-  private readonly interactionLogger: Logger = new Logger("InteractionExecution");
-  private readonly eventLogger: Logger = new Logger("EventExecution");
-
-  // private readonly taskLogger: Logger = new Logger("TimerExecution");
+  private readonly taskLogger: Logger = new Logger("TimerExecution");
 
   constructor(
     private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration),
@@ -54,15 +50,15 @@ export class ModuleService {
     const results = await Promise.allSettled(
       listeners.map(struct => {
         const obj = childContainer.resolve(struct.type);
-        return struct.value.execute.apply(obj, [ client, args ]);
+        return struct.value.execute.apply(obj, [client, args]);
       }),
     );
 
     await dbService.disconnect();
 
     for (const result of results) {
-      if(isRejectedPromise(result)) {
-        this.eventLogger.error(result.reason);
+      if (isRejectedPromise(result)) {
+        ModuleService.moduleServiceLogger.error(result.reason);
       }
     }
   }
@@ -76,18 +72,18 @@ export class ModuleService {
    * @private
    */
   private async interactionEvent(interaction: Interaction): Promise<void> {
-    this.interactionLogger.debug("Interaction event invoked.");
+    ModuleService.moduleServiceLogger.debug("Interaction event invoked.");
 
     try {
-      if(interaction.isCommand()) {
-        this.interactionLogger.debug("Interaction is a command.");
+      if (interaction.isCommand()) {
+        ModuleService.moduleServiceLogger.debug("Interaction is a command.");
 
-        if(interaction.isContextMenuCommand()) {
-          this.interactionLogger.debug(
+        if (interaction.isContextMenuCommand()) {
+          ModuleService.moduleServiceLogger.debug(
             `Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`,
           );
 
-          if(interaction.isUserContextMenuCommand()) {
+          if (interaction.isUserContextMenuCommand()) {
             await interaction.reply({
               content: "Responded with a user",
               ephemeral: true,
@@ -100,31 +96,31 @@ export class ModuleService {
           }
         }
 
-        if(interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
-          this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
+        if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
+          ModuleService.moduleServiceLogger.debug("Interaction is a chat input command. (Slash command.)");
 
           // Edge case if somehow a command can be invoked inside a DM.
-          if(!interaction.guildId) {
-            this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
+          if (!interaction.guildId) {
+            ModuleService.moduleServiceLogger.debug("Warning! Command invoked outside of a guild. Exiting");
             return;
           }
 
           const commandStruct = ModuleService.slashCommands[interaction.commandName];
-          if(!commandStruct) {
-            this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
+          if (!commandStruct) {
+            ModuleService.moduleServiceLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
             return;
           }
 
-          await this.callCallback(commandStruct.type, commandStruct.value.callback, [ interaction ]);
+          await this.callCallback(commandStruct.type, commandStruct.value.callback, [interaction]);
         }
       } else {
-        this.interactionLogger.debug("Interaction is not a command.");
+        ModuleService.moduleServiceLogger.debug("Interaction is not a command.");
 
-        if(interaction.isModalSubmit()) {
+        if (interaction.isModalSubmit()) {
           await interaction.reply({ content: "Responded", ephemeral: true });
         }
 
-        if(interaction.isMessageComponent()) {
+        if (interaction.isMessageComponent()) {
           switch (interaction.componentType) {
             case ComponentType.Button:
               break;
@@ -136,14 +132,14 @@ export class ModuleService {
         }
       }
     } catch (error) {
-      this.interactionLogger.error(error instanceof Error ? error.stack : error);
+      ModuleService.moduleServiceLogger.error(error);
 
-      if(
+      if (
         interaction &&
         (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) &&
         !interaction.replied
       ) {
-        if(error instanceof CommandResolverError) {
+        if (error instanceof CommandResolverError) {
           await interaction.reply({
             content: "Sorry there was an issue resolving the command name.",
             ephemeral: true,
@@ -151,7 +147,7 @@ export class ModuleService {
           return;
         }
 
-        if(interaction.deferred) {
+        if (interaction.deferred) {
           await interaction.editReply({
             content: "There was an internal error that occurred when using this interaction.",
           });
@@ -168,26 +164,30 @@ export class ModuleService {
   /**
    * Function that sets up a Javascript timer to go off.
    * Also fires the timer as well.
-   * @param timer The timer object data used to create a timer.
+   * @param timerStruct The type struct that contains the timer and module type.
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    * @private
    */
-  // private runTimer(timer: Timer, client: Bot): void {
-  //   try {
-  //     this.intervalIds.push(
-  //       setInterval(
-  //         () => {
-  //           timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-  //         },
-  //         timer.timeout,
-  //         client,
-  //       ),
-  //     );
-  //     timer.execute(client).catch(error => this.taskLogger.error(error instanceof Error ? error.stack : error));
-  //   } catch (error) {
-  //     this.taskLogger.error(error instanceof Error ? error.stack : error);
-  //   }
-  // }
+  private runTimer(timerStruct: CommandStruct<Timer>, client: Bot): void {
+    try {
+      this.intervalIds.push(
+        setInterval(() => {
+            this.callCallback(timerStruct.type, timerStruct.value.execute, [client])
+              .then()
+              .catch(error => this.taskLogger.error(error));
+          },
+          timerStruct.value.timeout,
+          client,
+        ),
+      );
+
+      this.callCallback(timerStruct.type, timerStruct.value.execute, [client])
+        .then()
+        .catch(error => this.taskLogger.error(error));
+    } catch (error) {
+      this.taskLogger.error(error);
+    }
+  }
 
   /**
    * Configures a client with all the necessary module and callback information.
@@ -195,56 +195,35 @@ export class ModuleService {
    * @param client The main app client. Not to be confused with Discord.Js Client object.
    */
   public configureModules(client: Bot): void {
-    this.moduleLogger.info("Loading modules.");
+    ModuleService.moduleServiceLogger.info("Loading modules.");
 
-    // const modules = this.filteredModules;
-    //
-    // this.moduleLogger.debug(`Loaded modules: ${JSON.stringify(modules.map(module => module.moduleName))}.`);
-    //
-    // if (this.moduleConfiguration.enableCommands) {
-    //   this.moduleLogger.debug("Commands enabled.");
-    // }
-    //
-    // for (const module of modules) {
-    //   this.moduleLogger.info(module.moduleName);
-    //
-    //   try {
-    //     if (this.moduleConfiguration.enableEventListeners) {
-    //       this.moduleLogger.debug("Setting up event module events.");
-    //
-    //     }
-    //   } catch (error) {
-    //     this.moduleLogger.error(error instanceof Error ? error.stack : error);
-    //   }
-    // }
-    //
-    if(this.moduleConfiguration.enableEventListeners) {
-      this.moduleLogger.debug("Registering event.");
+    if (this.moduleConfiguration.enableEventListeners) {
+      ModuleService.moduleServiceLogger.debug("Registering event.");
       for (const eventName in ModuleService.eventListeners) {
         client.on(eventName, (...args) => this.runEvent(ModuleService.eventListeners[eventName], client, args));
       }
     }
-    //
-    // if (this.moduleConfiguration.enableTimers) {
-    //   this.moduleLogger.debug("Timers were enabled.");
-    //   for (const timer of modules.map(module => module.timers).flat()) {
-    //     this.runTimer(timer, client);
-    //   }
-    // }
 
-    if(this.moduleConfiguration.enableInteractions) {
-      this.moduleLogger.debug("Interactions were enabled.");
+    if (this.moduleConfiguration.enableTimers) {
+      ModuleService.moduleServiceLogger.debug("Timers were enabled.");
+      for (const timer of ModuleService.timers) {
+        this.runTimer(timer, client);
+      }
+    }
+
+    if (this.moduleConfiguration.enableInteractions) {
+      ModuleService.moduleServiceLogger.debug("Interactions were enabled.");
       client.on("interactionCreate", this.interactionEvent.bind(this));
     }
 
-    this.moduleLogger.info("Done.");
+    ModuleService.moduleServiceLogger.info("Done.");
   }
 
   /**
    * Cleanup function.
    */
   public cleanup() {
-    this.moduleLogger.info(`Cleaning up module configurations.`);
+    ModuleService.moduleServiceLogger.info(`Cleaning up module configurations.`);
     for (const id of this.intervalIds) {
       clearInterval(id);
     }
@@ -282,7 +261,7 @@ export class ModuleService {
   public static registerEventListener(listener: EventListener, type: CTR<Module>) {
     const eventName = listener.event as keyof ClientEvents;
 
-    if(!(eventName in ModuleService.eventListeners)) {
+    if (!(eventName in ModuleService.eventListeners)) {
       ModuleService.eventListeners[eventName] = [];
     }
 
