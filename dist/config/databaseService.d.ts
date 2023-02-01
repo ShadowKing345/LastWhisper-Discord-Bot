@@ -1,7 +1,7 @@
 import { DatabaseConfiguration } from "./entities/index.js";
 import { DataSource } from "typeorm";
 export declare class DatabaseService {
-    private readonly logger;
+    private static readonly logger;
     private _dataSource;
     connect(): Promise<void>;
     disconnect(): Promise<void>;
@@ -9,5 +9,4 @@ export declare class DatabaseService {
     get isConnected(): boolean;
     static createDataSource(config?: DatabaseConfiguration): DataSource;
 }
-export declare const AppDataSource: DataSource;
 //# sourceMappingURL=databaseService.d.ts.map

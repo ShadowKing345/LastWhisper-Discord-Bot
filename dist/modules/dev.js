@@ -1,12 +1,13 @@
 var DevModule_1;
 import { __decorate, __metadata } from "tslib";
-import { module, Command, Event } from "../decorators/index.js";
+import { Command, Event, module, Timer } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
 import { Logger } from "../config/logger.js";
 import { SlashCommand } from "../objects/index.js";
 let DevModule = DevModule_1 = class DevModule extends Module {
+    static logger = new Logger("DevModule");
     logger = new Logger(DevModule_1);
     static moduleName = "DevModule";
     constructor(permissionManagerService) {
@@ -61,8 +62,12 @@ let DevModule = DevModule_1 = class DevModule extends Module {
         return interaction.showModal(modal);
     }
     async onReady() {
-        this.logger.debug("Hello from the other side.");
+        DevModule_1.logger.debug("Hello from the other side.");
         await Promise.resolve();
+    }
+    async timerTest() {
+        DevModule_1.logger.debug("Timer ticked.");
+        return Promise.resolve();
     }
 };
 __decorate([
@@ -118,6 +123,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DevModule.prototype, "onReady", null);
+__decorate([
+    Timer({ name: `${DevModule_1.name}#TimerTest`, timeout: 1000 }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DevModule.prototype, "timerTest", null);
 DevModule = DevModule_1 = __decorate([
     module(),
     __metadata("design:paramtypes", [PermissionManagerService])

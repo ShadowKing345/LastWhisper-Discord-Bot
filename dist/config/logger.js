@@ -1,7 +1,7 @@
 import { pino } from "pino";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
-import { LOGGING_LEVELS, LoggerConfigs } from "./entities/index.js";
+import { LoggerConfigs, LOGGING_LEVELS } from "./entities/index.js";
 import { EntitySchema } from "typeorm";
 export class Logger {
     name;
@@ -25,7 +25,7 @@ export class Logger {
         this.log(LOGGING_LEVELS.warn, message);
     }
     error(message) {
-        this.log(LOGGING_LEVELS.error, message);
+        this.log(LOGGING_LEVELS.error, message instanceof Error ? message.stack : message);
     }
     log(level, message) {
         if (!this.pino) {

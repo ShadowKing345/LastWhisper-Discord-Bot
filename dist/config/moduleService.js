@@ -10,13 +10,12 @@ import { DatabaseService } from "./databaseService.js";
 import { isRejectedPromise } from "../utils/index.js";
 export class ModuleService {
     moduleConfiguration;
+    static moduleServiceLogger = new Logger(ModuleService.name);
     static slashCommands = {};
     static eventListeners = {};
     static timers = [];
+    static timerChildInstance = container.createChildContainer();
     intervalIds = [];
-    moduleLogger = new Logger("ModuleConfiguration");
-    interactionLogger = new Logger("InteractionExecution");
-    eventLogger = new Logger("EventExecution");
     constructor(moduleConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.MODULE, ModuleConfiguration)) {
         this.moduleConfiguration = moduleConfiguration;
     }
@@ -31,17 +30,17 @@ export class ModuleService {
         await dbService.disconnect();
         for (const result of results) {
             if (isRejectedPromise(result)) {
-                this.eventLogger.error(result.reason);
+                ModuleService.moduleServiceLogger.error(result.reason);
             }
         }
     }
     async interactionEvent(interaction) {
-        this.interactionLogger.debug("Interaction event invoked.");
+        ModuleService.moduleServiceLogger.debug("Interaction event invoked.");
         try {
             if (interaction.isCommand()) {
-                this.interactionLogger.debug("Interaction is a command.");
+                ModuleService.moduleServiceLogger.debug("Interaction is a command.");
                 if (interaction.isContextMenuCommand()) {
-                    this.interactionLogger.debug(`Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`);
+                    ModuleService.moduleServiceLogger.debug(`Interaction is a ${interaction.isUserContextMenuCommand() ? "user" : "message"} context menu.`);
                     if (interaction.isUserContextMenuCommand()) {
                         await interaction.reply({
                             content: "Responded with a user",
@@ -56,21 +55,21 @@ export class ModuleService {
                     }
                 }
                 if (interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands) {
-                    this.moduleLogger.debug("Interaction is a chat input command. (Slash command.)");
+                    ModuleService.moduleServiceLogger.debug("Interaction is a chat input command. (Slash command.)");
                     if (!interaction.guildId) {
-                        this.moduleLogger.debug("Warning! Command invoked outside of a guild. Exiting");
+                        ModuleService.moduleServiceLogger.debug("Warning! Command invoked outside of a guild. Exiting");
                         return;
                     }
                     const commandStruct = ModuleService.slashCommands[interaction.commandName];
                     if (!commandStruct) {
-                        this.interactionLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
+                        ModuleService.moduleServiceLogger.error(`No command found with name: ${interaction.commandName}. Exiting`);
                         return;
                     }
                     await this.callCallback(commandStruct.type, commandStruct.value.callback, [interaction]);
                 }
             }
             else {
-                this.interactionLogger.debug("Interaction is not a command.");
+                ModuleService.moduleServiceLogger.debug("Interaction is not a command.");
                 if (interaction.isModalSubmit()) {
                     await interaction.reply({ content: "Responded", ephemeral: true });
                 }
@@ -87,7 +86,7 @@ export class ModuleService {
             }
         }
         catch (error) {
-            this.interactionLogger.error(error instanceof Error ? error.stack : error);
+            ModuleService.moduleServiceLogger.error(error);
             if (interaction &&
                 (interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction) &&
                 !interaction.replied) {
@@ -112,24 +111,59 @@ export class ModuleService {
             }
         }
     }
-    configureModules(client) {
-        this.moduleLogger.info("Loading modules.");
+    async runTimers(timerStructs, client) {
+        const dbService = ModuleService.timerChildInstance.resolve(DatabaseService);
+        for (const struct of timerStructs) {
+            try {
+                const callback = struct.value.execute;
+                const thisObj = ModuleService.timerChildInstance.resolve(struct.type);
+                if (struct.value.timeout < 5000) {
+                    if (!dbService.isConnected) {
+                        await dbService.connect();
+                    }
+                    this.intervalIds.push(setInterval((callback, thisObj, client) => {
+                        callback.apply(thisObj, [client]).then(null, error => ModuleService.moduleServiceLogger.error(error));
+                    }, struct.value.timeout, callback, thisObj, client));
+                }
+                else {
+                    this.intervalIds.push(setInterval((callback, client) => {
+                        this.callCallback(struct.type, callback, [client])
+                            .then(null, error => ModuleService.moduleServiceLogger.error(error));
+                    }, struct.value.timeout, callback, client));
+                }
+                await this.callCallback(struct.type, callback, [client]);
+            }
+            catch (error) {
+                ModuleService.moduleServiceLogger.error(error);
+            }
+        }
+    }
+    async configureModules(client) {
+        ModuleService.moduleServiceLogger.info("Loading modules.");
+        if (this.moduleConfiguration.enableInteractions) {
+            ModuleService.moduleServiceLogger.debug("Interactions were enabled.");
+            client.on("interactionCreate", this.interactionEvent.bind(this));
+        }
+        if (this.moduleConfiguration.enableTimers) {
+            ModuleService.moduleServiceLogger.debug("Timers were enabled.");
+            await this.runTimers(ModuleService.timers, client);
+        }
         if (this.moduleConfiguration.enableEventListeners) {
-            this.moduleLogger.debug("Registering event.");
+            ModuleService.moduleServiceLogger.debug("Registering event.");
             for (const eventName in ModuleService.eventListeners) {
                 client.on(eventName, (...args) => this.runEvent(ModuleService.eventListeners[eventName], client, args));
             }
         }
-        if (this.moduleConfiguration.enableInteractions) {
-            this.moduleLogger.debug("Interactions were enabled.");
-            client.on("interactionCreate", this.interactionEvent.bind(this));
-        }
-        this.moduleLogger.info("Done.");
+        ModuleService.moduleServiceLogger.info("Done.");
     }
-    cleanup() {
-        this.moduleLogger.info(`Cleaning up module configurations.`);
+    async cleanup() {
+        ModuleService.moduleServiceLogger.info(`Cleaning up module configurations.`);
         for (const id of this.intervalIds) {
             clearInterval(id);
+        }
+        const dbService = ModuleService.timerChildInstance.resolve(DatabaseService);
+        if (dbService.isConnected) {
+            await dbService.disconnect();
         }
     }
     async callCallback(type, callback, args) {

@@ -1,0 +1,1 @@
+{"version":3,"file":"command.d.ts","sourceRoot":"","sources":["../../../src/decorators/moduleService/command.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,YAAY,EAAE,MAAM,wBAAwB,CAAC;AAGtD,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAC;AAOjD,wBAAgB,OAAO,CAAC,CAAC,SAAS,MAAM,EAAE,OAAO,EAAE,OAAO,CAAC,IAAI,CAAC,YAAY,EAAE,UAAU,CAAC,CAAC,YAChE,OAAO,KAAK,MAAM,cAAc,kBAAkB,KAAG,kBAAkB,CAWhG"}

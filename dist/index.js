@@ -3,22 +3,29 @@ import "reflect-metadata";
 import { program } from "commander";
 import { userInfo } from "os";
 import { ConfigurationService } from "./config/configurationService.js";
-import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys, } from "./config/index.js";
+import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, } from "./config/index.js";
 import "./modules/index.js";
 import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
-console.log(`Welcome ${userInfo().username}.`);
+const logger = new Logger("InitScript");
+logger.info(`Welcome ${userInfo().username}.`);
 ConfigurationService.registerConfiguration(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
+function exit(bot) {
+    bot.stop().then(null, error => console.error(error));
+}
 async function runBot() {
     process.setMaxListeners(30);
-    console.log("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
+    logger.info("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
     try {
         const bot = new Bot();
-        bot.init();
+        await bot.init();
         await bot.run();
+        process.on("exit", () => exit(bot));
+        process.on("SIGINT", () => exit(bot));
+        process.on("SIGTERM", () => exit(bot));
     }
     catch (error) {
-        console.error(error instanceof Error ? error.stack : error);
+        logger.error(error instanceof Error ? error.stack : error);
     }
 }
 async function runCommandRegistration(args) {

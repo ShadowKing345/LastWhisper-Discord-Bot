@@ -3,6 +3,7 @@ import { PermissionManagerService } from "../services/permissionManager.js";
 import { ChatInputCommandInteraction, CommandInteraction } from "discord.js";
 import { Logger } from "../config/logger.js";
 export declare class DevModule extends Module {
+    private static readonly logger;
     protected logger: Logger;
     static moduleName: string;
     constructor(permissionManagerService: PermissionManagerService);
@@ -11,5 +12,6 @@ export declare class DevModule extends Module {
     testInteractionTypes(interaction: CommandInteraction): Promise<unknown>;
     testModal(interaction: ChatInputCommandInteraction): Promise<unknown>;
     onReady(): Promise<void>;
+    timerTest(): Promise<void>;
 }
 //# sourceMappingURL=dev.d.ts.map

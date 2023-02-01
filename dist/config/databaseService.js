@@ -8,13 +8,13 @@ import { ConfigurationService } from "./configurationService.js";
 import { Lifecycle, scoped } from "tsyringe";
 import { AllEntities } from "../entities/index.js";
 let DatabaseService = DatabaseService_1 = class DatabaseService {
-    logger = new Logger(DatabaseService_1);
+    static logger = new Logger("DatabaseService");
     _dataSource = null;
     async connect() {
         try {
-            this.logger.info(`Connecting to Database`);
+            DatabaseService_1.logger.debug(`Connecting to Database`);
             if (this.isConnected) {
-                this.logger.error("Connection already active. Please disconnect first before attempting to connect.");
+                DatabaseService_1.logger.error("Connection already active. Please disconnect first before attempting to connect.");
                 return;
             }
             if (!this._dataSource) {
@@ -23,24 +23,27 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
             await this._dataSource.initialize();
         }
         catch (error) {
-            this.logger.error(error instanceof Error ? error.stack : error);
+            DatabaseService_1.logger.error(error);
             this._dataSource = null;
         }
     }
     async disconnect() {
         if (!this._dataSource) {
-            this.logger.error("Database is not connected to.");
+            DatabaseService_1.logger.error("Database is not connected to.");
             return;
         }
         await this._dataSource?.destroy();
         this._dataSource = null;
-        this.logger.info("Disconnecting from database.");
+        DatabaseService_1.logger.debug("Disconnecting from database.");
     }
     get dataSource() {
         return this._dataSource;
     }
     get isConnected() {
-        return this._dataSource?.isInitialized;
+        if (this._dataSource) {
+            return this._dataSource.isInitialized;
+        }
+        return false;
     }
     static createDataSource(config = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)) {
         return new DataSource({
@@ -58,5 +61,4 @@ DatabaseService = DatabaseService_1 = __decorate([
     scoped(Lifecycle.ContainerScoped)
 ], DatabaseService);
 export { DatabaseService };
-export const AppDataSource = DatabaseService.createDataSource();
 //# sourceMappingURL=databaseService.js.map
