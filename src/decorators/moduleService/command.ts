@@ -1,12 +1,13 @@
-import { ModuleService } from "../config/index.js";
-import { SlashCommand } from "../objects/index.js";
+import { ModuleService } from "../../config/index.js";
+import { SlashCommand } from "../../objects/index.js";
 import { ChatInputCommandInteraction } from "discord.js";
-import { CTR } from "../utils/commonTypes.js";
-import { Module } from "../modules/module.js";
+import { CTR } from "../../utils/commonTypes.js";
+import { Module } from "../../modules/module.js";
 
 /**
- * Decorator that attempts to register commands to the module service system.
+ * Decorator that attempts to register a commands to the module service system.
  * Methods decorated with this command act as the executed method.
+ * @param command A command object excluding the callback value.
  */
 export function Command<T extends Module>(command: Partial<Omit<SlashCommand, "callback">>) {
   return function(target: unknown, _: string, descriptor: PropertyDescriptor): PropertyDescriptor {
