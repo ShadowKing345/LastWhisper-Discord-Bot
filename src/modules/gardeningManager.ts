@@ -16,7 +16,7 @@ import { Logger } from "../config/logger.js";
 
 @module()
 export class GardeningManagerModule extends Module {
-  protected logger: Logger = new Logger(GardeningManagerModule);
+  protected static readonly logger: Logger = new Logger("GardeningManagerModule");
 
   public moduleName = "GardeningModule";
   public commands: SlashCommands = [
@@ -132,7 +132,10 @@ export class GardeningManagerModule extends Module {
     private gardeningManagerService: GardeningManagerService,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService);
+    super(
+      GardeningManagerModule.logger,
+      permissionManagerService,
+    );
   }
 
   private reserve(
@@ -163,22 +166,5 @@ export class GardeningManagerModule extends Module {
 
   private tick(client: Bot): Promise<void> {
     return this.gardeningManagerService.tick(client);
-  }
-
-  protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    const f = await super.commandResolver(interaction, false);
-
-    const plotNum: number = interaction.options.getInteger("plot");
-    const slotNum: number = interaction.options.getInteger("slot");
-    const player = `${interaction.user.username}#${interaction.user.discriminator}`;
-    const plant: string = interaction.options.getString("plant");
-    const duration: number = (interaction.options.getInteger("duration") ?? 0) * 360;
-    const reason: Reason = (interaction.options.getInteger("reason") ?? Reason.NONE) as Reason;
-
-    if (f instanceof Function) {
-      return f(interaction, plotNum, slotNum, player, plant, duration, reason);
-    } else {
-      return f;
-    }
   }
 }

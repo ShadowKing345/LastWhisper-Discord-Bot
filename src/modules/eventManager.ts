@@ -24,7 +24,7 @@ import { Logger } from "../config/logger.js";
  */
 @module()
 export class EventManagerModule extends Module {
-  protected logger: Logger = new Logger(EventManagerModule);
+  protected static readonly logger: Logger = new Logger("EventManagerModule");
 
   @addPermissionKeys()
   public static permissionKeys = {
@@ -164,7 +164,9 @@ export class EventManagerModule extends Module {
     private service: EventManagerService,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService);
+    super(
+      EventManagerModule.logger,
+      permissionManagerService);
   }
 
   // region Commands

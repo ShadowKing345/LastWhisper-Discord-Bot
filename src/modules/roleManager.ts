@@ -14,7 +14,7 @@ import { Logger } from "../config/logger.js";
  */
 @module()
 export class RoleManagerModule extends Module {
-  protected logger: Logger = new Logger(RoleManagerModule);
+  protected static readonly logger: Logger = new Logger("RoleManagerModule");
 
   public moduleName = "RoleManager";
   public eventListeners: EventListeners = [new EventListener("ready", async client => this.onReady(client))];
@@ -64,7 +64,7 @@ export class RoleManagerModule extends Module {
     private roleManagerService: RoleManagerService,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService);
+    super(RoleManagerModule.logger, permissionManagerService);
   }
 
   /**

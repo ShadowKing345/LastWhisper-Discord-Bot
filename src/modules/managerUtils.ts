@@ -13,11 +13,11 @@ import { CommandOption, EventListener, EventListeners, SlashCommand, SlashComman
 import { Logger } from "../config/logger.js";
 
 /**
- * Module that provides utilities for the managers..
+ * Module that provides utilities for the managers.
  */
 @module()
 export class ManagerUtilsModule extends Module {
-  protected logger: Logger = new Logger(ManagerUtilsModule);
+  private static readonly logger: Logger = new Logger("ManagerUtilsModule");
 
   public moduleName = "ManagerUtils";
   public commands: SlashCommands = [
@@ -52,7 +52,7 @@ export class ManagerUtilsModule extends Module {
     private managerUtilsService: ManagerUtilsService,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService);
+    super(ManagerUtilsModule.logger, permissionManagerService);
   }
 
   /**

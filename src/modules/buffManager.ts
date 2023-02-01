@@ -3,8 +3,8 @@ import { Bot } from "../objects/bot.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
-import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
+import { addPermissionKeys, authorize, Command, deferReply, module } from "../decorators/index.js";
+import { CommandOption, SlashCommand } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
@@ -16,7 +16,7 @@ import { Logger } from "../config/logger.js";
  */
 @module()
 export class BuffManagerModule extends Module {
-  protected logger: Logger = new Logger(BuffManagerModule);
+  protected static readonly logger: Logger = new Logger("BuffManagerModule");
 
   @addPermissionKeys()
   public static permissionKeys = {
@@ -33,52 +33,6 @@ export class BuffManagerModule extends Module {
     },
   ];
 
-  public commands: SlashCommands = [
-    new SlashCommand({
-      name: "buff_manager",
-      description: "Manages all things related to buffs",
-      subcommands: {
-        Buffs: new SlashCommand({
-          name: "buffs",
-          description: "Shows you what buffs are set.",
-          options: [
-            new CommandOption({
-              name: "tomorrow",
-              description: "Set to true if buff is for tomorrow.",
-              required: false,
-              type: ApplicationCommandOptionType.Boolean,
-            }),
-            new CommandOption({
-              name: "date",
-              description: "Get the buff for a specific date. Use ISO 8601 format.",
-              required: false,
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
-        }),
-        Weeks: new SlashCommand({
-          name: "weeks",
-          description: "Shows you what buffs for the week, are set to.",
-          options: [
-            new CommandOption({
-              name: "next_week",
-              description: "Set to true if buff is for tomorrow.",
-              required: false,
-              type: ApplicationCommandOptionType.Boolean,
-            }),
-            new CommandOption({
-              name: "date",
-              description: "Get the week for a specific date. Use ISO 8601 format.",
-              required: false,
-              type: ApplicationCommandOptionType.String,
-            }),
-          ],
-        }),
-      },
-      callback: this.commandResolver.bind(this),
-    }),
-  ];
-
   protected commandResolverKeys = {
     "buff_manager.buffs": this.postBuffCommand.bind(this),
     "buff_manager.weeks": this.postWeekCommand.bind(this),
@@ -88,7 +42,53 @@ export class BuffManagerModule extends Module {
     private service: BuffManagerService,
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService);
+    super(BuffManagerModule.logger, permissionManagerService);
+  }
+
+  @Command({
+    name: "buff_manager",
+    description: "Manages all things related to buffs",
+    subcommands: {
+      Buffs: new SlashCommand({
+        name: "buffs",
+        description: "Shows you what buffs are set.",
+        options: [
+          new CommandOption({
+            name: "tomorrow",
+            description: "Set to true if buff is for tomorrow.",
+            required: false,
+            type: ApplicationCommandOptionType.Boolean,
+          }),
+          new CommandOption({
+            name: "date",
+            description: "Get the buff for a specific date. Use ISO 8601 format.",
+            required: false,
+            type: ApplicationCommandOptionType.String,
+          }),
+        ],
+      }),
+      Weeks: new SlashCommand({
+        name: "weeks",
+        description: "Shows you what buffs for the week, are set to.",
+        options: [
+          new CommandOption({
+            name: "next_week",
+            description: "Set to true if buff is for tomorrow.",
+            required: false,
+            type: ApplicationCommandOptionType.Boolean,
+          }),
+          new CommandOption({
+            name: "date",
+            description: "Get the week for a specific date. Use ISO 8601 format.",
+            required: false,
+            type: ApplicationCommandOptionType.String,
+          }),
+        ],
+      }),
+    },
+  })
+  public async commandResolver(interaction: ChatInputCommandInteraction) {
+    return super.commandResolver(interaction);
   }
 
   /**
@@ -139,7 +139,7 @@ export class BuffManagerModule extends Module {
       });
     }
 
-    await interaction.editReply({ embeds: [ this.service.createBuffEmbed("The Buff Shall Be:", buff, date) ] });
+    await interaction.editReply({ embeds: [this.service.createBuffEmbed("The Buff Shall Be:", buff, date)] });
   }
 
   /**
@@ -185,7 +185,7 @@ export class BuffManagerModule extends Module {
     }
 
     await interaction.editReply({
-      embeds: [ this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date) ],
+      embeds: [this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)],
     });
   }
 

@@ -10,7 +10,6 @@ import { Permission, PermissionMode } from "../entities/permissionManager/index.
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { addPermissionKeys, authorize, deferReply, module } from "../decorators/index.js";
 import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
-import { BadAuthorizationKeyError } from "../utils/errors/index.js";
 import { Logger } from "../config/logger.js";
 
 /**
@@ -19,11 +18,7 @@ import { Logger } from "../config/logger.js";
  */
 @module()
 export class PermissionManagerModule extends Module {
-  protected logger: Logger = new Logger(PermissionManagerModule);
-
-
-  private readonly BadKeyErrorMessages =
-    "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.";
+  protected static readonly logger: Logger = new Logger("PermissionManagerModule");
 
   @addPermissionKeys()
   public static permissionKeys = {
@@ -114,24 +109,7 @@ export class PermissionManagerModule extends Module {
   constructor(
     private service: PermissionManagerService,
   ) {
-    super(service);
-  }
-
-  protected async commandResolver(interaction: ChatInputCommandInteraction): Promise<InteractionResponse | void> {
-    try {
-      await super.commandResolver(interaction);
-    } catch (error) {
-      if (error instanceof BadAuthorizationKeyError) {
-        this.logger.debug("Bad authorization key was given. Exiting.");
-        if (interaction.deferred) {
-          await interaction.editReply({ content: this.BadKeyErrorMessages });
-        } else if (!interaction.replied) {
-          await interaction.reply({ content: this.BadKeyErrorMessages, ephemeral: true });
-        }
-      }
-
-      throw error;
-    }
+    super(PermissionManagerModule.logger, service);
   }
 
   /**

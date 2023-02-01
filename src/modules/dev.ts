@@ -21,15 +21,16 @@ import { SlashCommand } from "../objects/index.js";
  */
 @module()
 export class DevModule extends Module {
+  public readonly moduleName: string = "DevModule";
+
   private static readonly logger: Logger = new Logger("DevModule");
   protected logger: Logger = new Logger(DevModule);
 
-  public static moduleName = "DevModule";
 
   public constructor(
     permissionManagerService: PermissionManagerService,
   ) {
-    super(permissionManagerService);
+    super(DevModule.logger, permissionManagerService);
   }
 
   @Command({
@@ -126,9 +127,11 @@ export class DevModule extends Module {
     await Promise.resolve();
   }
 
-  @Timer({ name: `${DevModule.name}#TimerTest`, timeout: 1000 })
+  @Timer({ name: `${DevModule.name}#TimerTest`, timeout: 10000 })
   public async timerTest(): Promise<void> {
     DevModule.logger.debug("Timer ticked.");
     return Promise.resolve();
   }
+
+
 }
