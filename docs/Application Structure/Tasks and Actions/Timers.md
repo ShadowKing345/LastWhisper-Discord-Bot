@@ -3,7 +3,7 @@
 Timers are tasks that relatively execute after a certain amount of time has passed.
 To create a timer a [`Timer`](src/objects/timer.ts) object is registered.
 
-The `Timer` object only has a few variables that need to be filled out. 
+The `Timer` object only has a few variables that need to be filled out.
 
 The first is the `name` of the timer. This has to
 be unique for each timer to provide some method of referencing them (even tho the name parameter is never used outside
@@ -19,6 +19,13 @@ provided here is the application object.
 
 During setup, the following occurs.
 
-The `Module Service` first creates the `setInterval` callbacks for each timer registered. After this is done then all timers are invoked one. This is done because `setInterval` only executes the first timer after the amount has passed meaning if you cannot invoke a callback on 0ms past the point of creation.
+The `Module Service` first creates the `setInterval` callbacks for each timer registered. After this is done then all
+timers are invoked one. This is done because `setInterval` only executes the first timer after the amount has passed
+meaning if you cannot invoke a callback on 0ms past the point of creation.
 
-`setInterval` will return an ID unique to itself. These IDs are stored to stop the timers during teardown of the application.
+`setInterval` will return an ID unique to itself. These IDs are stored to stop the timers during teardown of the
+application.
+
+*Note:*
+Due to a constant connecting and disconnecting of database sources, any timers that have a timeout of less than 5
+seconds will use a shared database. 
