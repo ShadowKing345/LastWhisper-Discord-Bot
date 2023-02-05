@@ -12,4 +12,4 @@ The `run` function simply runs the bot. This is all it does.
 
 Finally, `stop` as the name implies stops the application from running and begins the teardown procedure. Meaning all
 timers are stopped and any database instances if running are killed. Generally speaking NodeJs should be able to clearly
-exit after this command has been ran.
+exit after this command has been run.
