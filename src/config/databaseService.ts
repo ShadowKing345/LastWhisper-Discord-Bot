@@ -79,6 +79,8 @@ export class DatabaseService {
   public static createDataSource(config: DatabaseConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)): DataSource {
     const src = path.join(path.dirname(import.meta.url), "..");
 
+    console.log(src);
+
     return new DataSource({
       type: config.type,
       username: config.username,
@@ -86,8 +88,8 @@ export class DatabaseService {
       port: config.port,
       database: config.database,
       logging: config.logging,
-      entities: [path.join(src, "entities/**/*.[tj]s")],
-      migrations: [path.join(src, "migrations/**/*.[tj]s")],
+      entities: ["src/entities/**/*.ts", "build/entities/**/*.js"],
+      migrations: ["src/migrations/**/*.ts", "build/migrations/**/*.js"],
       migrationsTableName: "typeorm_migrations",
     } as DataSourceOptions);
   }
