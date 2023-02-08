@@ -1,7 +1,6 @@
 import {
   ApplicationCommandOptionType,
   ChatInputCommandInteraction,
-  CommandInteraction,
   InteractionResponse,
 } from "discord.js";
 import { Bot } from "../objects/bot.js";
@@ -122,7 +121,7 @@ export class GardeningManagerModule extends Module {
     },
   ];
 
-  protected commandResolverKeys = {
+  protected commandResolverKeys2 = {
     "gardening_module.reserve": this.reserve.bind(this),
     "gardening_module.list": this.list.bind(this),
     "gardening_module.cancel": this.cancel.bind(this),
@@ -139,14 +138,14 @@ export class GardeningManagerModule extends Module {
   }
 
   private reserve(
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     player: string,
     plant: string,
     duration: number,
     reason: Reason,
     plotNum: number,
     slotNum: number,
-  ): Promise<void> {
+  ): Promise<InteractionResponse | void> {
     return this.gardeningManagerService.register(interaction, player, plant, duration, reason, plotNum, slotNum);
   }
 
@@ -160,7 +159,7 @@ export class GardeningManagerModule extends Module {
     return this.gardeningManagerService.cancel(interaction, player, plant, plotNum, slotNum);
   }
 
-  private list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number) {
+  private list(interaction: ChatInputCommandInteraction, plotNum: number, slotNum: number): Promise<InteractionResponse | void> {
     return this.gardeningManagerService.list(interaction, plotNum, slotNum);
   }
 
