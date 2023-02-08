@@ -1,1 +1,0 @@
-{"version":3,"file":"migrationDataSource.js","sourceRoot":"","sources":["../../src/config/migrationDataSource.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAEvD,MAAM,CAAC,MAAM,UAAU,GAAG,eAAe,CAAC,gBAAgB,EAAE,CAAC;AAE7D,UAAU,CAAC,UAAU,CAAC;IACpB,mBAAmB,EAAE,oBAAoB;IACzC,UAAU,EAAE,CAAE,0BAA0B,CAAE;CAC3C,CAAC,CAAC"}
