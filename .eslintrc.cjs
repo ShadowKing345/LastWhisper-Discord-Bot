@@ -3,7 +3,7 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: ["./tsconfig.json"],
+    project: ["./tsconfig.build.json"],
   },
   plugins: ["@typescript-eslint"],
   extends: [
