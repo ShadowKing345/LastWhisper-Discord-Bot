@@ -6,7 +6,7 @@
     "module": "ESNext",
     "target": "ESNext",
     "lib": ["dom", "ESNext"],
-    "outDir": "./dist",
+    "outDir": "./build",
     "importHelpers": true,
     // output .d.ts declaration files.
     "declaration": true,
@@ -40,5 +40,5 @@
     "removeComments": true
   },
   "include": ["./src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "build"]
 }
