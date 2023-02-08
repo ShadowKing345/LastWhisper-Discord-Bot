@@ -17,8 +17,8 @@
     "lint-fix": "eslint --fix .",
     "pretty-check": "prettier --check .",
     "pretty": "prettier --write .",
-    "typeorm": "typeorm-ts-node-esm",
-    "apply-migrations": "typeorm-ts-node-esm migration:run -d src/config/migrationDataSource.ts"
+    "typeorm": "typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
+    "apply-migrations": "yarn typeorm migration:run"
   },
   "husky": {
     "hooks": {
