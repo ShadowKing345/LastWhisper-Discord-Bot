@@ -4,7 +4,7 @@ import { Logger } from "./logger.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { Lifecycle, scoped } from "tsyringe";
-import { AllEntities } from "../entities/index.js";
+import path from "path";
 
 /**
  * Database Configuration Service file.
@@ -65,7 +65,7 @@ export class DatabaseService {
    * Returns if the database is connected to or not.
    */
   public get isConnected(): boolean {
-    if (this._dataSource){
+    if (this._dataSource) {
       return this._dataSource.isInitialized;
     }
 
@@ -77,6 +77,8 @@ export class DatabaseService {
    * @param config Database configuration override.
    */
   public static createDataSource(config: DatabaseConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)): DataSource {
+    const src = path.join(path.dirname(import.meta.url), "..");
+
     return new DataSource({
       type: config.type,
       username: config.username,
@@ -84,7 +86,9 @@ export class DatabaseService {
       port: config.port,
       database: config.database,
       logging: config.logging,
-      entities: AllEntities,
+      entities: [path.join(src, "entities/**/*.[tj]s")],
+      migrations: [path.join(src, "migrations/**/*.[tj]s")],
+      migrationsTableName: "typeorm_migrations",
     } as DataSourceOptions);
   }
 }
