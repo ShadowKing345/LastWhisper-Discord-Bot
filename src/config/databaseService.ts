@@ -77,7 +77,7 @@ export class DatabaseService {
    * @param config Database configuration override.
    */
   public static createDataSource(config: DatabaseConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)): DataSource {
-    const src = path.join(path.dirname(import.meta.url), "..").split(path.sep).pop();
+    const src = path.basename(path.join(path.dirname(import.meta.url), ".."));
 
     return new DataSource({
       type: config.type,
