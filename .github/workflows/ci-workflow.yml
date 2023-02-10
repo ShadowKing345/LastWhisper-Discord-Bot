@@ -2,7 +2,7 @@ name: On Pull, Merge to Master
 
 on:
   pull_request:
-    branch: [ main ]
+    branch: [main]
 
 jobs:
   prepare:
