@@ -1,7 +1,7 @@
 name: CI, Merge to Master
 
 on:
-  pull:
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
   steps:
-    - uses: actions/checkout@3
+    - uses: actions/checkout@v3
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
