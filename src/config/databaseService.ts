@@ -77,9 +77,7 @@ export class DatabaseService {
    * @param config Database configuration override.
    */
   public static createDataSource(config: DatabaseConfiguration = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)): DataSource {
-    const src = path.join(path.dirname(import.meta.url), "..");
-
-    console.log(src);
+    const src = path.join(path.dirname(import.meta.url), "..").split(path.sep).pop();
 
     return new DataSource({
       type: config.type,
@@ -88,8 +86,8 @@ export class DatabaseService {
       port: config.port,
       database: config.database,
       logging: config.logging,
-      entities: ["src/entities/**/*.ts", "build/entities/**/*.js"],
-      migrations: ["src/migrations/**/*.ts", "build/migrations/**/*.js"],
+      entities: [`${src}/entities/**/*.[tj]s`],
+      migrations: [`${src}/migrations/**/*.[tj]s`],
       migrationsTableName: "typeorm_migrations",
     } as DataSourceOptions);
   }
