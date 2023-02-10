@@ -18,7 +18,8 @@
     "pretty-check": "prettier --check .",
     "pretty": "prettier --write .",
     "typeorm": "typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
-    "apply-migrations": "yarn typeorm migration:run"
+    "orm:generate": "yarn typeorm migration:generate",
+    "orm:migrate": "yarn typeorm migration:run"
   },
   "husky": {
     "hooks": {
