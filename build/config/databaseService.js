@@ -46,7 +46,7 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
         return false;
     }
     static createDataSource(config = ConfigurationService.getConfiguration(CommonConfigurationKeys.DATABASE, DatabaseConfiguration)) {
-        const src = path.join(path.dirname(import.meta.url), "..");
+        const src = path.basename(path.join(path.dirname(import.meta.url), ".."));
         return new DataSource({
             type: config.type,
             username: config.username,
@@ -54,8 +54,8 @@ let DatabaseService = DatabaseService_1 = class DatabaseService {
             port: config.port,
             database: config.database,
             logging: config.logging,
-            entities: [path.join(src, "entities/**/*.[tj]s")],
-            migrations: [path.join(src, "migrations/**/*.[tj]s")],
+            entities: [`${src}/entities/**/*.[tj]s`],
+            migrations: [`${src}/migrations/**/*.[tj]s`],
             migrationsTableName: "typeorm_migrations",
         });
     }

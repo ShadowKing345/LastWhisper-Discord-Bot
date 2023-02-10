@@ -7,7 +7,7 @@ function badSum(a: number, b: number): number {
 }
 
 describe("Testing a sum function", () => {
-  test("Testing if jest is working.", () => {
+  test("Testing if jest is working. ", () => {
     expect(true).toBe(true);
   });
 

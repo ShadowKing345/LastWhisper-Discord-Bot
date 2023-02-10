@@ -1,6 +1,6 @@
-import { DatabaseType } from "typeorm";
-export declare class DatabaseConfiguration {
-    type: DatabaseType;
+import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions.js";
+export declare class DatabaseConfiguration implements PostgresConnectionOptions {
+    readonly type = "postgres";
     username?: string;
     password?: string;
     port?: number;
