@@ -19,7 +19,7 @@ jobs:
           node-version: 19
 
       - run: yarn
-      - run: yarn build tsconfig.json
+      - run: yarn build -p tsconfig.json
       - run: yarn lint
       - run: yarn test
       - run: NODE_ENV='' yarn test
