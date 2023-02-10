@@ -1,20 +1,36 @@
-name: CI, Merge to Master
+name: On Pull, Merge to Master
 
 on:
   pull_request:
-    branches: [main]
+    branch: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  prepare:
+    runs-on: ubuntu-20.04
+
+    env:
+      NODE_ENV: development
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 19
 
-      - run: yarn
-      - run: yarn build
-      - run: yarn test
+      - name: Installing dependencies.
+        run: yarn
+
+      - name: Building project.
+        run: yarn build -p tsconfig.json
+
+      - name: Running lint checks.
+        run: yarn lint
+
+      - name: Running js tests.
+        run: NODE_ENV='' yarn test
+
+      - name: Running ts tests.
+        run: yarn test

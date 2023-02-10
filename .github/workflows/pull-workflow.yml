@@ -12,32 +12,25 @@ jobs:
       NODE_ENV: development
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 19
 
-      - run: yarn
+      - name: Installing dependencies.
+        run: yarn
 
-  linting-test:
-    needs: prepare
-    runs-on: ubuntu-20.04
+      - name: Building project.
+        run: yarn build -p tsconfig.json
 
-    steps:
-      - run: yarn lint
+      - name: Running lint checks.
+        run: yarn lint
 
-  testing-ts:
-    needs: prepare
-    runs-on: ubuntu-20.04
+      - name: Running js tests.
+        run: NODE_ENV='' yarn test
 
-    steps:
-      - run: yarn test
-
-  testing-js:
-    needs: prepare
-    runs-on: ubuntu-20.04
-
-    steps:
-      - run: yarn build -p tsconfig.json
-      - run: NODE_ENV='' yarn test
+      - name: Running ts tests.
+        run: yarn test
