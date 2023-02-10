@@ -5,8 +5,11 @@ on:
   pull_request:
 
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV:development
 
     steps:
       - uses: actions/checkout@v3
@@ -17,4 +20,17 @@ jobs:
 
       - run: yarn
       - run: yarn build
+      - run: yarn lint
       - run: yarn test
+      - run: NODE_ENV='' yarn test
+#  linting-test:
+#    needs: build
+#    runs-on: ubuntu-latest
+#
+#  testing-ts:
+#    needs: build
+#    runs-on: ubuntu-latest
+#
+#  testing-js:
+#    needs: build
+#    runs-on: ubuntu-latest
