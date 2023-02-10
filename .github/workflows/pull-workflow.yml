@@ -19,18 +19,25 @@ jobs:
           node-version: 19
 
       - run: yarn
-      - run: yarn build -p tsconfig.json
+
+  linting-test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
       - run: yarn lint
+
+  testing-ts:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
       - run: yarn test
+
+  testing-js:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: yarn build -p tsconfig.json
       - run: NODE_ENV='' yarn test
-#  linting-test:
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#  testing-ts:
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#  testing-js:
-#    needs: build
-#    runs-on: ubuntu-latest
