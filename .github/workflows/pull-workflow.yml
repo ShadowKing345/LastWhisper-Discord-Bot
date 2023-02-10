@@ -6,7 +6,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     env:
       NODE_ENV: development
@@ -22,21 +22,21 @@ jobs:
 
   linting-test:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - run: yarn lint
 
   testing-ts:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - run: yarn test
 
   testing-js:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - run: yarn build -p tsconfig.json
