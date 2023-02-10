@@ -1,0 +1,20 @@
+name: CI, Merge to Master
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on ubuntu-latest
+
+  steps:
+    - uses: actions/checkout@3
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 19
+
+    - run: yarn
+    - run: yarn build
+    - run: yarn test
