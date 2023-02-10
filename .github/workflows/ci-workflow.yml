@@ -1,7 +1,7 @@
 name: CI, Merge to Master
 
 on:
-  pull_request:
+  pull:
     branches: [ main ]
 
 jobs:

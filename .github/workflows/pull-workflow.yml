@@ -2,7 +2,7 @@ name: On Pull, Merge to Master
 
 on:
   workflow_dispatch:
-  pull_request:
+  pull:
 
 jobs:
   build:
