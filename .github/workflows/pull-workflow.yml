@@ -21,21 +21,21 @@ jobs:
       - run: yarn
 
   linting-test:
-    needs: build
+    needs: prepare
     runs-on: ubuntu-latest
 
     steps:
       - run: yarn lint
 
   testing-ts:
-    needs: build
+    needs: prepare
     runs-on: ubuntu-latest
 
     steps:
       - run: yarn test
 
   testing-js:
-    needs: build
+    needs: prepare
     runs-on: ubuntu-latest
 
     steps:
