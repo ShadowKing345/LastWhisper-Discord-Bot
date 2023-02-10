@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node build/index.js",
     "watch": "nodemon src/index.ts",
-    "build": "rimraf build && tsc --build \"$([[ $NODE_ENV = 'development' ]] && echo 'tsconfig.json' || echo 'tsconfig.build.json')\"",
+    "build": "rimraf build && tsc --build tsconfig.build.json",
     "test": "jest",
     "lint": "eslint --max-warnings 10 .",
     "lint:fix": "eslint --fix .",
