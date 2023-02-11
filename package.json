@@ -10,7 +10,9 @@
   },
   "scripts": {
     "start": "node build/index.js",
-    "watch": "nodemon src/index.ts",
+    "watch": "nodemon build/index.js",
+    "dev:start": "NODE_ENV=development ts-node src/index.ts",
+    "dev:watch": "NODE_ENV=development nodemon src/index.ts",
     "build": "rimraf build && tsc -p tsconfig.build.json",
     "test": "jest",
     "lint": "eslint --max-warnings 10 .",
