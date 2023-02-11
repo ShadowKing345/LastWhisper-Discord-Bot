@@ -1,7 +1,7 @@
 import { __decorate, __metadata } from "tslib";
 import { Days } from "./days.js";
 import { deepMerge } from "../../utils/index.js";
-import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { EntityBase } from "../entityBase.js";
 let Week = class Week extends EntityBase {
     isEnabled = false;
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", String)
 ], Week.prototype, "title", void 0);
 __decorate([
-    OneToOne(() => Days, { cascade: true, orphanedRowAction: "delete" }),
+    OneToOne(() => Days, { cascade: true, orphanedRowAction: "delete", eager: true }),
     JoinColumn({ name: "days_id" }),
     __metadata("design:type", Days)
 ], Week.prototype, "days", void 0);

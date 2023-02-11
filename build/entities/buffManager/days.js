@@ -1,5 +1,5 @@
 import { __decorate, __metadata } from "tslib";
-import { Entity, OneToOne, JoinColumn } from "typeorm";
+import { Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Buff } from "./buff.js";
 import { EntityBase } from "../entityBase.js";
 let Days = class Days extends EntityBase {
@@ -37,39 +37,39 @@ let Days = class Days extends EntityBase {
     }
 };
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "monday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "monday", void 0);
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "tuesday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "tuesday", void 0);
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "wednesday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "wednesday", void 0);
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "thursday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "thursday", void 0);
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "friday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "friday", void 0);
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "saturday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "saturday", void 0);
 __decorate([
-    OneToOne(() => Buff),
+    ManyToOne(() => Buff),
     JoinColumn({ name: "sunday_id" }),
-    __metadata("design:type", Buff)
+    __metadata("design:type", Promise)
 ], Days.prototype, "sunday", void 0);
 Days = __decorate([
     Entity()

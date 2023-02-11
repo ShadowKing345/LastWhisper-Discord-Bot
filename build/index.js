@@ -7,6 +7,8 @@ import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfi
 import "./modules/index.js";
 import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
+import { seedDb } from "./utils/seedDb.js";
+import fs from "fs";
 const logger = new Logger("InitScript");
 logger.info(`Welcome ${userInfo().username}.`);
 ConfigurationService.registerConfiguration(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
@@ -54,5 +56,10 @@ program.command("register-commands")
     .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
     .option("-u, --unregister [boolean]", "Use to unregister commands instead.")
     .action(runCommandRegistration);
+program.command("test")
+    .action(() => {
+    const data = JSON.parse(fs.readFileSync("./DataHold.json", "utf-8"));
+    return seedDb(data);
+});
 program.parse();
 //# sourceMappingURL=index.js.map

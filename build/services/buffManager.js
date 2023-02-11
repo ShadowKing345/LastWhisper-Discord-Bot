@@ -1,6 +1,6 @@
 var BuffManagerService_1;
 import { __decorate, __metadata } from "tslib";
-import { EmbedBuilder, ChannelType } from "discord.js";
+import { ChannelType, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 import { Timer } from "../objects/timer.js";
 import { Service } from "./service.js";
@@ -41,7 +41,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
                     continue;
                 }
                 const week = await this.weekRepository.getWeekOfYear(settings.guildId, now);
-                const buff = week.getBuff(now);
+                const buff = await week.getBuff(now);
                 const embeds = [];
                 if (!buff) {
                     this.logger.warn(`Invalid buff ID buffId for guild config.guildId. Skipping...`);
@@ -51,7 +51,7 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
                 embeds.push(this.createBuffEmbed(settings.buffMessage, buff, now));
                 if (!isNaN(settings.dow) && Number(settings.dow) === now.weekday) {
                     this.logger.debug(`Posting week message.`);
-                    embeds.push(this.createWeekEmbed(settings.weekMessage, week, now));
+                    embeds.push(await this.createWeekEmbed(settings.weekMessage, week, now));
                 }
                 await channel.send({ embeds });
             }
@@ -69,19 +69,23 @@ let BuffManagerService = BuffManagerService_1 = class BuffManagerService extends
             footer: { text: date.toFormat("DDDD") },
         }).setColor("Random");
     }
-    createWeekEmbed(title, week, date) {
+    async createWeekEmbed(title, week, date) {
         this.logger.debug(`Creating Week Embed.`);
         if (!week) {
             throw new Error("Cannot find a valid week.");
         }
+        const fields = [];
+        for (const [day, buff] of week.days.toArray) {
+            fields.push({
+                name: day,
+                value: (await buff)?.text ?? "No buff found.",
+                inline: true,
+            });
+        }
         return new EmbedBuilder({
             title: title,
             description: week.title,
-            fields: week.days.toArray.map(([day, buff]) => ({
-                name: day,
-                value: buff?.text ?? "No buff found.",
-                inline: true,
-            })),
+            fields: fields,
             footer: { text: `Week ${date.get("weekNumber")}.` },
         }).setColor("Random");
     }

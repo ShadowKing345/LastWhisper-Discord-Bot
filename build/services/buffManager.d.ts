@@ -15,7 +15,7 @@ export declare class BuffManagerService extends Service {
     getWeekByDate(guildId: string, date: DateTime): Promise<Week | null>;
     postDailyMessage(client: Bot): Promise<void>;
     createBuffEmbed(title: string, buff: Buff, date: DateTime): EmbedBuilder;
-    createWeekEmbed(title: string, week: Week, date: DateTime): EmbedBuilder;
+    createWeekEmbed(title: string, week: Week, date: DateTime): Promise<EmbedBuilder>;
 }
 export declare class BuffManagerTryGetError extends ServiceError {
     reason: BuffManagerTryGetErrorReasons;
