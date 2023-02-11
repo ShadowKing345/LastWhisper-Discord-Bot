@@ -1,4 +1,4 @@
-import { EmbedBuilder, Channel, ChannelType } from "discord.js";
+import { Channel, ChannelType, EmbedBuilder } from "discord.js";
 import { DateTime } from "luxon";
 
 import { Bot } from "../objects/bot.js";
@@ -10,6 +10,7 @@ import { service } from "../decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
 import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
 import { Logger } from "../config/logger.js";
+import { APIEmbedField } from "discord-api-types/v10.js";
 
 /**
  * Buff manager service.
@@ -77,7 +78,7 @@ export class BuffManagerService extends Service {
         }
 
         const week: Week = await this.weekRepository.getWeekOfYear(settings.guildId, now);
-        const buff: Buff = week.getBuff(now);
+        const buff: Buff = await week.getBuff(now);
 
         const embeds: EmbedBuilder[] = [];
         if (!buff) {
@@ -90,7 +91,7 @@ export class BuffManagerService extends Service {
 
         if (!isNaN(settings.dow) && Number(settings.dow) === now.weekday) {
           this.logger.debug(`Posting week message.`);
-          embeds.push(this.createWeekEmbed(settings.weekMessage, week, now));
+          embeds.push(await this.createWeekEmbed(settings.weekMessage, week, now));
         }
 
         await channel.send({ embeds });
@@ -123,21 +124,26 @@ export class BuffManagerService extends Service {
    * @param week A WeekDTO object ot be used.
    * @param date The date context for the week. Used to get the week and fill in footer data.
    */
-  public createWeekEmbed(title: string, week: Week, date: DateTime): EmbedBuilder {
+  public async createWeekEmbed(title: string, week: Week, date: DateTime): Promise<EmbedBuilder> {
     this.logger.debug(`Creating Week Embed.`);
 
     if (!week) {
       throw new Error("Cannot find a valid week.");
     }
 
+    const fields: APIEmbedField[] = [];
+    for (const [day, buff] of week.days.toArray) {
+      fields.push({
+        name: day,
+        value: (await buff)?.text ?? "No buff found.",
+        inline: true,
+      });
+    }
+
     return new EmbedBuilder({
       title: title,
       description: week.title,
-      fields: week.days.toArray.map(([ day, buff ]) => ({
-        name: day,
-        value: buff?.text ?? "No buff found.",
-        inline: true,
-      })),
+      fields: fields,
       footer: { text: `Week ${date.get("weekNumber")}.` },
     }).setColor("Random");
   }

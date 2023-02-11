@@ -185,7 +185,7 @@ export class BuffManagerModule extends Module {
     }
 
     await interaction.editReply({
-      embeds: [this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)],
+      embeds: [await this.service.createWeekEmbed("The Buffs For The Week Shall Be:", week, date)],
     });
   }
 
