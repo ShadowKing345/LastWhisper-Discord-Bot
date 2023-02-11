@@ -1,7 +1,7 @@
 import { Days } from "./days.js";
 import { deepMerge } from "../../utils/index.js";
 import { DateTime } from "luxon";
-import { Entity, Column, OneToOne, JoinColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { EntityBase } from "../entityBase.js";
 import { Buff } from "./buff.js";
 
@@ -16,7 +16,7 @@ export class Week extends EntityBase {
   @Column()
   public title: string = null;
 
-  @OneToOne(() => Days, { cascade: true, orphanedRowAction: "delete" })
+  @OneToOne(() => Days, { cascade: true, orphanedRowAction: "delete", eager: true })
   @JoinColumn({ name: "days_id" })
   public days: Days;
 
@@ -24,7 +24,7 @@ export class Week extends EntityBase {
    * Returns the buff ID for a given day of the week,
    * @param date The date object to get the string from.
    */
-  public getBuff(date: DateTime): Buff {
+  public getBuff(date: DateTime): Promise<Buff> {
     return Array(...this.days)[date.weekday - 1];
   }
 
