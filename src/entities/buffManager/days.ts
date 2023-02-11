@@ -1,4 +1,4 @@
-import { Entity, OneToOne, JoinColumn } from "typeorm";
+import { Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Buff } from "./buff.js";
 import { EntityBase } from "../entityBase.js";
 import { WeekDays } from "./weekDays.js";
@@ -8,33 +8,34 @@ import { WeekDays } from "./weekDays.js";
  */
 @Entity()
 export class Days extends EntityBase {
-  @OneToOne(() => Buff)
+
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "monday_id" })
-  public monday: Buff;
+  public monday: Promise<Buff>;
 
-  @OneToOne(() => Buff)
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "tuesday_id" })
-  public tuesday: Buff;
+  public tuesday: Promise<Buff>;
 
-  @OneToOne(() => Buff)
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "wednesday_id" })
-  public wednesday: Buff;
+  public wednesday: Promise<Buff>;
 
-  @OneToOne(() => Buff)
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "thursday_id" })
-  public thursday: Buff;
+  public thursday: Promise<Buff>;
 
-  @OneToOne(() => Buff)
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "friday_id" })
-  public friday: Buff;
+  public friday: Promise<Buff>;
 
-  @OneToOne(() => Buff)
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "saturday_id" })
-  public saturday: Buff;
+  public saturday: Promise<Buff>;
 
-  @OneToOne(() => Buff)
+  @ManyToOne(() => Buff)
   @JoinColumn({ name: "sunday_id" })
-  public sunday: Buff;
+  public sunday: Promise<Buff>;
 
   private current = 0;
 
@@ -55,7 +56,7 @@ export class Days extends EntityBase {
     return { done: true, value: null };
   }
 
-  public get toArray(): [ WeekDays, Buff ][] {
+  public get toArray(): [ WeekDays, Promise<Buff> ][] {
     return [
       [ "Monday", this.monday ],
       [ "Tuesday", this.tuesday ],
