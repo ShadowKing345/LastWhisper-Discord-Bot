@@ -16,9 +16,9 @@ async function unregister(rest: REST, route: RouteLike) {
   const commands = (await rest.get(route)) as { id: string }[];
   const result = await Promise.allSettled(commands.map(command => rest.delete(`${route}/${command.id}`)));
 
-  if(Array.isArray(result)) {
+  if (Array.isArray(result)) {
     for (const r of result) {
-      if(isRejectedPromise(r)) {
+      if (isRejectedPromise(r)) {
         logger.error(r.reason);
       }
     }
@@ -46,16 +46,12 @@ async function register(rest: REST, route: RouteLike, slashCommands: SlashComman
  * @param args Arguments for command registration. Same as configuration.
  * @param commands A list of commands to be registered.
  */
-export async function manageCommands(
-  token = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN),
-  args = new CommandRegistrationConfiguration(),
-  commands = ModuleService.getSlashCommands().map(struct => struct.value),
-): Promise<void> {
+export async function manageCommands(token = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN), args = new CommandRegistrationConfiguration(), commands = ModuleService.getSlashCommands().map(struct => struct.value)): Promise<void> {
   logger.info("Welcome again to command registration or un-registration.");
 
   const commandConfigs: CommandRegistrationConfiguration = deepMerge(ConfigurationService.getConfiguration(CommonConfigurationKeys.COMMAND_REGISTRATION) ?? new CommandRegistrationConfiguration(), args);
 
-  if(!commandConfigs?.isValid) {
+  if (!commandConfigs?.isValid) {
     throw new Error("Command configuration was not setup correctly.");
   }
 
