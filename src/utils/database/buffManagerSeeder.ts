@@ -1,27 +1,14 @@
-import { DatabaseService } from "../config/index.js";
 import { DataSource } from "typeorm";
-import { Buff, BuffManagerSettings, Days, Week } from "../entities/buffManager/index.js";
+import { Buff, BuffManagerSettings, Days, Week } from "../../entities/buffManager/index.js";
+import { isArray, isObject } from "../index.js";
 
-export async function seedDb(data: Record<string, unknown>) {
-  const ds = DatabaseService.createDataSource();
-
-  try {
-    await ds.initialize();
-
-    if (!("guildId" in data && typeof data.guildId === "string")) {
-      throw new Error("You must have a guildId set in the object.");
-    }
-
-    await seedBuffManager(ds, data.guildId, data.buff_manager);
-
-  } finally {
-    if (ds.isInitialized) {
-      await ds.destroy();
-    }
-  }
-}
-
-async function seedBuffManager(ds: DataSource, guildId: string, data: unknown): Promise<void> {
+/**
+ * Seeds the database using a json object.
+ * @param ds The datasource of the database.
+ * @param guildId To provide to the classes.
+ * @param data The actual json object to extract information form.
+ */
+export async function buffManagerSeeder(ds: DataSource, guildId: string, data: unknown): Promise<void> {
   const messageSettings = new BuffManagerSettings();
   messageSettings.guildId = guildId;
 
@@ -97,12 +84,4 @@ async function seedBuffManager(ds: DataSource, guildId: string, data: unknown): 
       }
     }
   }
-}
-
-function isObject(obj: unknown): obj is object {
-  return typeof obj === "object" && !Array.isArray(obj);
-}
-
-function isArray(obj: unknown): obj is Array<unknown> {
-  return typeof obj === "object" && Array.isArray(obj);
 }

@@ -13,7 +13,7 @@ import {
 import "./modules/index.js";
 import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
-import { seedDb } from "./utils/seedDb.js";
+import { seedDb } from "./utils/database/seedDb.js";
 import fs from "fs";
 
 const logger = new Logger("InitScript");

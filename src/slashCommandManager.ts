@@ -1,7 +1,7 @@
 import { REST, RouteLike, Routes } from "discord.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
-import { deepMerge, isRejectedPromise } from "./utils/index.js";
+import { deepMerge, isPromiseRejected } from "./utils/index.js";
 import { SlashCommands } from "./objects/index.js";
 
 const logger = new Logger("CommandRegistration");
@@ -18,7 +18,7 @@ async function unregister(rest: REST, route: RouteLike) {
 
   if (Array.isArray(result)) {
     for (const r of result) {
-      if (isRejectedPromise(r)) {
+      if (isPromiseRejected(r)) {
         logger.error(r.reason);
       }
     }
