@@ -25,7 +25,7 @@ export class EventManagerSettings extends EntityBase {
   @Column({ nullable: true })
   public dateTime: string = null;
 
-  @Column("character", { array: true })
+  @Column("text", { array: true })
   public exclusionList: string[] = [];
 
   @Column("text", { array: true })
