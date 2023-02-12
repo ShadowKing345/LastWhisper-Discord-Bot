@@ -9,7 +9,7 @@ __decorate([
     __metadata("design:type", String)
 ], EntityBase.prototype, "id", void 0);
 __decorate([
-    Column({ unique: false }),
+    Column({ nullable: false }),
     __metadata("design:type", String)
 ], EntityBase.prototype, "guildId", void 0);
 //# sourceMappingURL=entityBase.js.map

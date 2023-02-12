@@ -44,7 +44,7 @@ __decorate([
     __metadata("design:type", String)
 ], EventManagerSettings.prototype, "dateTime", void 0);
 __decorate([
-    Column("character", { array: true }),
+    Column("text", { array: true }),
     __metadata("design:type", Array)
 ], EventManagerSettings.prototype, "exclusionList", void 0);
 __decorate([

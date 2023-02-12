@@ -7,7 +7,7 @@ import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
 import { Logger } from "./logger.js";
 import { DatabaseService } from "./databaseService.js";
-import { isRejectedPromise } from "../utils/index.js";
+import { isPromiseRejected } from "../utils/index.js";
 export class ModuleService {
     moduleConfiguration;
     static moduleServiceLogger = new Logger(ModuleService.name);
@@ -29,7 +29,7 @@ export class ModuleService {
         }));
         await dbService.disconnect();
         for (const result of results) {
-            if (isRejectedPromise(result)) {
+            if (isPromiseRejected(result)) {
                 ModuleService.moduleServiceLogger.error(result.reason);
             }
         }

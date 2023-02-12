@@ -70,10 +70,16 @@ export function unFlattenObject(obj) {
     console.log(result);
     return result;
 }
-export function isRejectedPromise(obj) {
-    if (typeof obj !== "object" || Array.isArray(obj)) {
+export function isPromiseRejected(obj) {
+    if (!isObject(obj)) {
         return false;
     }
     return "status" in obj && obj.status === "rejected";
+}
+export function isObject(obj) {
+    return typeof obj === "object" && !Array.isArray(obj);
+}
+export function isArray(obj) {
+    return typeof obj === "object" && Array.isArray(obj);
 }
 //# sourceMappingURL=index.js.map

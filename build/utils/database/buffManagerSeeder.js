@@ -1,21 +1,6 @@
-import { DatabaseService } from "../config/index.js";
-import { Buff, BuffManagerSettings, Days, Week } from "../entities/buffManager/index.js";
-export async function seedDb(data) {
-    const ds = DatabaseService.createDataSource();
-    try {
-        await ds.initialize();
-        if (!("guildId" in data && typeof data.guildId === "string")) {
-            throw new Error("You must have a guildId set in the object.");
-        }
-        await seedBuffManager(ds, data.guildId, data.buff_manager);
-    }
-    finally {
-        if (ds.isInitialized) {
-            await ds.destroy();
-        }
-    }
-}
-async function seedBuffManager(ds, guildId, data) {
+import { Buff, BuffManagerSettings, Days, Week } from "../../entities/buffManager/index.js";
+import { isArray, isObject } from "../index.js";
+export async function buffManagerSeeder(ds, guildId, data) {
     const messageSettings = new BuffManagerSettings();
     messageSettings.guildId = guildId;
     if (isObject(data)) {
@@ -76,10 +61,4 @@ async function seedBuffManager(ds, guildId, data) {
         }
     }
 }
-function isObject(obj) {
-    return typeof obj === "object" && !Array.isArray(obj);
-}
-function isArray(obj) {
-    return typeof obj === "object" && Array.isArray(obj);
-}
-//# sourceMappingURL=seedDb.js.map
+//# sourceMappingURL=buffManagerSeeder.js.map
