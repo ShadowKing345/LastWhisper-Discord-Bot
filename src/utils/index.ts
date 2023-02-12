@@ -1,4 +1,4 @@
-import { Client, Message, Snowflake, TextChannel, Channel } from "discord.js";
+import { Channel, Client, Message, Snowflake, TextChannel } from "discord.js";
 import { IMerge } from "./IMerge.js";
 
 /**
@@ -79,9 +79,9 @@ export function deepMerge<T, O>(target: T | { new(): T }, ...sources: O[]): T {
 export function flattenObject(obj: object, includeOriginal = false): object {
   const result = new Map<string, unknown>();
 
-  for (const [ k, v ] of Object.entries(obj)) {
+  for (const [k, v] of Object.entries(obj)) {
     if (v instanceof Object && !Array.isArray(v)) {
-      for (const [ k1, v1 ] of Object.entries(flattenObject(v as object, includeOriginal))) {
+      for (const [k1, v1] of Object.entries(flattenObject(v as object, includeOriginal))) {
         result.set(`${k}.${k1}`, v1);
       }
 
@@ -117,8 +117,8 @@ export function unFlattenObject(obj: object): object {
  * Checks if an unknown is a rejected promise.
  * @param obj
  */
-export function isRejectedPromise(obj: unknown): obj is PromiseRejectedResult {
-  if (typeof obj !== "object" || Array.isArray(obj)) {
+export function isPromiseRejected(obj: unknown): obj is PromiseRejectedResult {
+  if (!isObject(obj)) {
     return false;
   }
 

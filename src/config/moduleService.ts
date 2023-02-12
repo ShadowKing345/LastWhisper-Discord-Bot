@@ -12,7 +12,7 @@ import { ModuleConfiguration } from "./entities/index.js";
 import { Logger } from "./logger.js";
 import { CTR } from "../utils/commonTypes.js";
 import { DatabaseService } from "./databaseService.js";
-import { isRejectedPromise } from "../utils/index.js";
+import { isPromiseRejected } from "../utils/index.js";
 
 type CommandStruct<T> = { type: CTR<Module>, value: T }
 
@@ -55,7 +55,7 @@ export class ModuleService {
     await dbService.disconnect();
 
     for (const result of results) {
-      if (isRejectedPromise(result)) {
+      if (isPromiseRejected(result)) {
         ModuleService.moduleServiceLogger.error(result.reason);
       }
     }
