@@ -124,3 +124,19 @@ export function isPromiseRejected(obj: unknown): obj is PromiseRejectedResult {
 
   return "status" in obj && obj.status === "rejected";
 }
+
+/**
+ * Checks to see if an object is of type object
+ * @param obj
+ */
+export function isObject(obj: unknown): obj is object {
+  return typeof obj === "object" && !Array.isArray(obj);
+}
+
+/**
+ * Checks to see if an object is of type array. Returns type Array<unknown>.
+ * @param obj
+ */
+export function isArray(obj: unknown): obj is Array<unknown> {
+  return typeof obj === "object" && Array.isArray(obj);
+}
