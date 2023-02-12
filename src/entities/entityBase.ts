@@ -4,6 +4,6 @@ export class EntityBase extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   public id: string;
 
-  @Column()
+  @Column({ nullable: false })
   public guildId: string = null;
 }
