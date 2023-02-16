@@ -1,19 +1,16 @@
 # Application Structure
 
-## Entry points
+The application is relatively complex and can be currently broken down into 2 major components and a bunch of smaller
+but still important mini components.
 
-At the moment the application handles two basic tasks. The first is the processing of Discord events and timers. The
-second is registration or un-registration of slash commands to Discord.
+They are not separate services as they do not run independently as separate application and may depend on each other,
+but they are not tightly coupled enough to be considered one unit.
 
-The [`index.ts`](src/index.ts), found at the root of the project `src` directory counts as script that can be used to
-run the various functions needed for the application to run correctly.
-Currently, you can only start the main application or manage the slash commands.
+The major components are as follows:
 
-The file uses commander as a npm module to manage the arguments and subcommands passed to the script.
-Additionally, this script manages registering additional configuration files into the dependency injection system.
-Finally, the script file contains the import reflect metadata.
-
-Further information about the entry points can be found at:
-
-- [Slash Command Manager](docs/Application%20Structure/Slash%20Command%20Manager.md)
 - [Bot Application](docs/Application%20Structure/Bot%20Application.md)
+- [Slash Command Manager](docs/Application%20Structure/Slash%20Command%20Manager.md)
+
+Some minor components that help around are the following:
+
+- [Index, Commander & The Entry Point](docs/Application%20Structure/Index%20&%20Commander.md)
