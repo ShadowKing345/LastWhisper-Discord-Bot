@@ -28,13 +28,13 @@ Each file will define and explain one system or function of the application. An 
 referred to as example or if said mentioned system or function will be affected by the system or function being defined.
 
 Subdirectories can be used to separate files and combine files that describe aspects of similar concepts such as
-configurations classes, etc. Each subdirectory will contain an `index.md` file that can be used to explain the high
+configurations classes, etc. Each subdirectory will contain an `README.md` file that can be used to explain the high
 level logic of the files contained or provide a link to them.
 
-The index file must do at least one of the previously mentioned functions or both.
+The `README.md` file must do at least one of the previously mentioned functions or both.
 
 Files names do not have any special syntax such as camel case. They should however reflect the topics being discussed
 inside as well they cannot be sentences unless strictly necessary. Folder names have a similar naming convention. The
-only exception to this is the `index.md` file which
+only exception to this is the `README.md` file which
 can be referred to by the folder name it is contained
 within.
