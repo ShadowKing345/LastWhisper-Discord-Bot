@@ -13,82 +13,185 @@ import {
 import "./modules/index.js";
 import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
-import { seedDb } from "./utils/database/seedDb.js";
+import { Commander } from "./decorators/index.js";
+import { isObject } from "./utils/index.js";
 import fs from "fs";
+import * as readline from "readline";
+import { seedDb } from "./utils/database/seedDb.js";
 
-const logger = new Logger("InitScript");
-logger.info(`Welcome ${userInfo().username}.`);
+class Index {
+  private static readonly logger = new Logger("InitScript");
 
-ConfigurationService.registerConfiguration<ApplicationConfiguration>(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
+  constructor() {
+    program.name("discord-bot").description("Discord Bot.");
+  }
 
-function exit(bot: Bot) {
-  bot.stop().then(null, error => console.error(error));
-}
+  /**
+   * The main command that will deploy the bot.
+   * Should be used as starting point for the bot as it sets up the environment.
+   * @param opts Options passed to the command. Expected to be an empty object if none were passed.
+   */
+  @Commander.addCommand({
+    name: "deploy",
+    opts: { isDefault: true },
+    description: "Runs to bot.",
+    options: [
+      { definition: "-t, --token <string>", description: "The Discord Token to be used." },
+    ],
+  })
+  public async runBot(opts: unknown) {
+    process.setMaxListeners(30);
+    Index.logger.info("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
 
-/**
- * Main function of application.
- * Should be used as starting point for the bot.
- */
-async function runBot() {
-  process.setMaxListeners(30);
-  logger.info("Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon.");
+    let bot: Bot;
+    try {
+      let token: string = undefined;
 
-  try {
-    const bot = new Bot();
-    await bot.init();
-    await bot.run();
+      if ((opts && isObject(opts)) && ("token" in opts && typeof opts.token === "string")) {
+        token = opts.token;
+      }
 
-    process.on("exit", () => exit(bot));
-    process.on("SIGINT", () => exit(bot));
-    process.on("SIGTERM", () => exit(bot));
-  } catch (error) {
-    logger.error(error instanceof Error ? error.stack : error);
+      bot = new Bot(token);
+      await bot.init();
+      await bot.run();
+
+      process.on("exit", () => this.exit(bot));
+      process.on("SIGINT", () => this.exit(bot));
+      process.on("SIGTERM", () => this.exit(bot));
+    } catch (error) {
+      if (bot) {
+        this.exit(bot);
+      }
+
+      Index.logger.error(error instanceof Error ? error.stack : error);
+    }
+  }
+
+  /**
+   * Command that manages the Discord slash commands.
+   * @param opts Options passed to the command. Expected to be an empty object if none were passed.
+   */
+  @Commander.addCommand({
+    name: "commandManager",
+    description: "Handles the various tasks relation providing slash commands to Discord.",
+    options: [
+      { definition: "-t, --token <string>", description: "Token for bot." },
+      { definition: "-c, --client <string>", description: "Client ID." },
+      {
+        definition: "-g, --guild <string>",
+        description: "Guild ID to register commands for. If this is set configuration file options will be ignored.",
+      },
+      { definition: "-u, --unregister [boolean]", description: "Use to unregister commands instead." },
+    ],
+  })
+  public async runCommandManager(opts: unknown) {
+    const config: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
+    let token: string = undefined;
+
+    if (isObject(opts)) {
+      if ("token" in opts && typeof opts.token === "string") {
+        token = opts.token;
+      }
+
+      if ("client" in opts && typeof opts.client === "string") {
+        config.clientId = opts.client;
+      }
+
+      if ("guild" in opts && typeof opts.guild === "string") {
+        config.guildId = opts.guild;
+        config.registerForGuild = true;
+      }
+
+      if ("unregister" in opts && typeof opts.unregister === "boolean") {
+        config.unregister = opts.unregister;
+      }
+    }
+
+    return manageCommands(token, config);
+  }
+
+  /**
+   * Command that attempts to process a JSON object and have a database be seeded with its values.
+   * If the file option was set then an attempt will be made to read the file.
+   * Else if the argument was passed (body) then it will use that.
+   * Else, it will look at the stdin for an input or wait for one.
+   * @param body The body text, undefined if none was set.
+   * @param opts Options passed to the command. Expected to be an empty object if none were passed.
+   */
+  @Commander.addCommand({
+    name: "seedDatabase",
+    description: "Attempts to pre-seed the database with provided data. Note that the data has to be a JSON formatted object.\n" +
+      "This uses whatever was passed in stdin if the file location was not specified.",
+    argument: ["[object]", "The JSON object to be parsed."],
+    options: [
+      { definition: "-f, --file <path>", description: "The location of the file to be read from. Uses " },
+    ],
+  })
+  public async seedDatabase(body: string, opts: Record<string, unknown>) {
+    try {
+      let str: string = null;
+
+      if ((opts && isObject(opts)) && ("file" in opts && typeof opts.file === "string")) {
+        if (!fs.existsSync(opts.file)) {
+          throw new Error("File does not exit.");
+        }
+
+        str = fs.readFileSync(opts.file, "utf-8");
+      } else if (body != undefined) {
+        str = body;
+      } else {
+        str = await new Promise((resolve) => {
+          const rl = readline.createInterface({ input: process.stdin });
+          rl.once("line", (line) => {
+            resolve(line);
+            rl.close();
+          });
+        });
+      }
+
+      if (str === null) {
+        throw new Error("Unable to find a valid JSON object to process.");
+      }
+
+      let jsonObj: object;
+      try {
+        jsonObj = JSON.parse(str) as object;
+      } catch (error) {
+        Index.logger.debug(error instanceof Error ? error.stack : error as string | object);
+        throw new Error("The JSON string was not valid. Terminating.");
+      }
+
+      await seedDb(jsonObj as Record<string, unknown>);
+    } catch (error) {
+      Index.logger.error(error);
+    }
+  }
+
+  /**
+   * Attempts to exit the application in a clean manner to prevent memory leaks.
+   * @param bot The bot application.
+   * @private
+   */
+  private exit(bot: Bot): void {
+    bot.stop().then(null, error => console.error(error));
+  }
+
+  /**
+   * Ensures the environment was set up for the commands.
+   */
+  @Commander.hook("preAction")
+  public preInit() {
+    Index.logger.info(`Welcome ${userInfo().username}.`);
+    ConfigurationService.registerConfiguration<ApplicationConfiguration>(CommonConfigurationKeys.APPLICATION, ApplicationConfiguration);
+  }
+
+  /**
+   * Starts the commander parsing tasks.
+   */
+  public parse() {
+    program.parse();
   }
 }
 
-/**
- * Function used to register commands.
- * @param args
- */
-async function runCommandRegistration(args: Record<string, unknown>) {
-  if (!args || typeof args !== "object" || Array.isArray(args)) {
-    throw new Error("Args was for some reason null. This is not correct.");
-  }
-
-  const config: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
-
-  if ("client" in args && typeof args.client === "string") {
-    config.clientId = args.client;
-  }
-
-  if ("guild" in args && typeof args.guild === "string") {
-    config.guildId = args.guild;
-    config.registerForGuild = true;
-  }
-
-  if ("unregister" in args && typeof args.unregister === "boolean") {
-    config.unregister = args.unregister;
-  }
-
-  return manageCommands("token" in args && typeof args.token === "string" ? args.token : undefined, config);
-}
-
-program.name("discord-bot").description("Discord Bot.").version("0.0.1");
-
-program.command("deploy", { isDefault: true }).description("Runs to bot.").action(runBot);
-
-program.command("register-commands")
-  .description("Runs the command register script.")
-  .option("-t, --token <string>", "Token for bot.")
-  .option("-c, --client <string>", "Client ID.")
-  .option("-g, --guild <string>", "Guild ID to register commands for. If this is set configuration file options will be ignored.")
-  .option("-u, --unregister [boolean]", "Use to unregister commands instead.")
-  .action(runCommandRegistration);
-
-program.command("test")
-  .action(() => {
-    const data = JSON.parse(fs.readFileSync("./DataHold.json", "utf-8")) as Record<string, unknown>;
-    return seedDb(data);
-  });
-
-program.parse();
+const index = new Index();
+index.parse();

@@ -8,11 +8,12 @@ import { Logger } from "../config/logger.js";
  * To simplify dependency injection this class is used and can be easily resolved.
  */
 export class Bot extends Client {
-  private readonly appToken: string;
-  private readonly moduleService: ModuleService;
   private readonly logger: Logger = new Logger(Bot);
 
-  constructor() {
+  constructor(
+    private appToken: string = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN),
+    private moduleService: ModuleService = new ModuleService(),
+  ) {
     super({
       intents: [
         GatewayIntentBits.Guilds,
@@ -23,8 +24,6 @@ export class Bot extends Client {
         GatewayIntentBits.MessageContent,
       ],
     });
-    this.appToken = ConfigurationService.getConfiguration(CommonConfigurationKeys.TOKEN);
-    this.moduleService = new ModuleService();
   }
 
   /**
