@@ -20,7 +20,7 @@ esm modules only.
 
 ## Building
 
-Compiled files are located in the `dist` directory at the project root on build and can be generated with the `build`
+Compiled files are located in the `build` directory at the project root on build and can be generated with the `build`
 command found in the [`package.json`](/package.json) file.
 
 Building primarily uses the Typescript compiler to build and so will first remove the current build directory. It is
