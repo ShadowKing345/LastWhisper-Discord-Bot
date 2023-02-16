@@ -17,4 +17,4 @@ files and folders.
 As this is a ts project the ts plugin and extensions have been added to the configuration file.
 
 To test the linter you can run `lint`. You can also tell eslint to attempt to fix the error for you where it can
-with `lint-fix`. Both commands can be found in [`package.json`](/package.json)
+with `lint:fix`. Both commands can be found in [`package.json`](/package.json)
