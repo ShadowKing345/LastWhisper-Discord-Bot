@@ -1,4 +1,4 @@
-import { Command, program as gloProgram, Option, HookEvent } from "commander";
+import { Command, CommandOptions, HookEvent, Option, program as gloProgram } from "commander";
 import { isArray } from "../utils/index.js";
 
 export class Commander {
@@ -6,16 +6,20 @@ export class Commander {
     return function(target: T, _: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor {
       let command: Command;
 
-      if(obj instanceof Command) {
+      if (obj instanceof Command) {
         command = program.addCommand(obj);
       } else {
         command = program
-          .command(obj.name)
+          .command(obj.name, obj.opts)
           .description(obj.description);
 
-        if(obj.options && isArray(obj.options)) {
+        if ("argument" in obj && isArray(obj.argument)) {
+          command.argument(obj.argument[0], obj.argument[1], obj.argument[2]);
+        }
+
+        if (obj.options && isArray(obj.options)) {
           for (const opt of obj.options) {
-            if(opt instanceof Option) {
+            if (opt instanceof Option) {
               command.addOption(opt);
             } else {
               command.option(opt.definition, opt.description);
@@ -42,5 +46,7 @@ export class Commander {
 export class CommandOpts {
   name: string;
   description: string;
-  options: Array<{ definition: string, description: string } | Option> = [];
+  argument: [string, string?, string?];
+  opts?: CommandOptions;
+  options?: Array<{ definition: string, description: string } | Option> = [];
 }
