@@ -1,0 +1,29 @@
+name: BuildAndTest
+description: Builds and tests the NodeJs application. Both TS and JS versions.
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 19
+
+    - name: Installing dependencies.
+      shell: bash
+      run: yarn
+
+    - name: Building project.
+      shell: bash
+      run: yarn build -p tsconfig.json
+
+    - name: Running lint checks.
+      shell: bash
+      run: yarn lint
+
+    - name: Running js tests.
+      shell: bash
+      run: NODE_ENV='' yarn test
+
+    - name: Running ts tests.
+      shell: bash
+      run: yarn test
