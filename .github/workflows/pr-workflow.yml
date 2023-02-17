@@ -1,4 +1,4 @@
-name: On Pull, Merge to Master
+name: On PR workflow.
 
 on:
   workflow_dispatch:

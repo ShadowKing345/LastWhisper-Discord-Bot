@@ -1,4 +1,4 @@
-name: On Merge to Master
+name: On merge to master workflow.
 
 on:
   push:
