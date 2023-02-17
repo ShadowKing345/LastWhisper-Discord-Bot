@@ -1,4 +1,4 @@
-name: On Pull, Merge to Master
+name: On Merge to Master
 
 on:
   push:
