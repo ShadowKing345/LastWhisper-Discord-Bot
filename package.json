@@ -1,13 +1,7 @@
 {
   "name": "lastwhisper-discord-bot",
-  "version": "4.8.0",
-  "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
-  "bin": "dist/index.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">=16"
-  },
+  "author": "Shadowking124",
+  "type": "module",
   "scripts": {
     "start": "node build/index.js",
     "watch": "nodemon build/index.js",
@@ -31,10 +25,6 @@
       "pre-commit": "yarn lint"
     }
   },
-  "author": "Shadowking124",
-  "license": "GPL-3.0-only",
-  "type": "module",
-  "private": true,
   "dependencies": {
     "commander": "^10.0.0",
     "discord-api-types": "^0.37.32",
