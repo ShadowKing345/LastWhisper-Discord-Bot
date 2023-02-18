@@ -1,26 +1,27 @@
 {
   "name": "lastwhisper-discord-bot",
-  "version": "4.8.0",
-  "description": "The Discord Bot for the Free Company LastWhisper of the game Final Fantasy XIV.",
-  "bin": "dist/index.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">=16"
-  },
+  "author": "Shadowking124",
+  "type": "module",
   "scripts": {
     "start": "node build/index.js",
     "watch": "nodemon build/index.js",
-    "dev:start": "NODE_ENV=development ts-node src/index.ts",
-    "dev:watch": "NODE_ENV=development nodemon src/index.ts",
-    "build": "rimraf build && tsc -p tsconfig.build.json",
+    "build": "yarn build:clean && tsc -p tsconfig.build.json",
+    "build:clean": "rimraf build",
+    "typeorm": "typeorm -d build/config/migrationDataSource.js",
+    "orm:migrate": "yarn typeorm migration:run",
+    "orm:revert": "yarn typeorm migration:revert",
+    "dev": "NODE_ENV=development",
+    "dev:start": "yarn dev ts-node src/index.ts",
+    "dev:watch": "yarn dev nodemon src/index.ts",
+    "dev:build": "yarn build:clean && yarn dev tsc -p tsconfig.json",
+    "dev:typeorm": "yarn dev typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
+    "dev:orm:generate": "yarn typeorm migration:generate",
+    "dev:orm:create": "typeorm-ts-node-esm migration:create",
+    "dev:orm:migrate": "yarn typeorm migration:run",
+    "dev:orm:revert": "yarn typeorm migration:revert",
     "test": "jest",
     "lint": "eslint --max-warnings 10 .",
     "lint:fix": "eslint --fix .",
-    "typeorm": "typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
-    "orm:generate": "yarn typeorm migration:generate",
-    "orm:create": "yarn typeorm migration:create",
-    "orm:migrate": "yarn typeorm migration:run",
     "prepare": "husky install"
   },
   "husky": {
@@ -28,10 +29,6 @@
       "pre-commit": "yarn lint"
     }
   },
-  "author": "Shadowking124",
-  "license": "GPL-3.0-only",
-  "type": "module",
-  "private": true,
   "dependencies": {
     "commander": "^10.0.0",
     "discord-api-types": "^0.37.32",
