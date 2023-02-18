@@ -11,7 +11,10 @@ const config: Config = {
   testEnvironment: "node",
   verbose: true,
 
-  testPathIgnorePatterns: ["/node_modules/", isDev ? "/build/" : "/src/"],
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    isDev ? "/build/" : "/src/",
+    isDev ? "/src/migrations/" : "/build/migrations/"],
 };
 
 export default config;
