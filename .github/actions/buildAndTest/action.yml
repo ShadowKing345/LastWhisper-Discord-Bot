@@ -22,8 +22,8 @@ runs:
 
     - name: Running js tests.
       shell: bash
-      run: NODE_ENV='' yarn test
+      run: yarn test
 
     - name: Running ts tests.
       shell: bash
-      run: yarn test
+      run: yarn dev yarn test
