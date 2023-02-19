@@ -3,8 +3,6 @@ services:
   bot:
     container_name: "Discord_Bot_Application"
     build: .
-    command: yarn start
-    tty: true
     depends_on:
       - db
     environment:

@@ -7,3 +7,5 @@ COPY ["package.json", "yarn.lock", "./"]
 RUN yarn install --production
 
 COPY build build
+
+CMD yarn start
