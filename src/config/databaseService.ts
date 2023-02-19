@@ -81,6 +81,7 @@ export class DatabaseService {
 
     return new DataSource({
       type: config.type,
+      host: config.host,
       username: config.username,
       password: config.password,
       port: config.port,
