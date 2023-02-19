@@ -4,6 +4,8 @@ node_modules
 
 # Standard files.
 /config/*
+/logs/*
+/db-data/*
 
 # Log files
 *.log
