@@ -7,4 +7,3 @@ COPY ["package.json", "yarn.lock", "./"]
 RUN yarn install --production
 
 COPY build build
-COPY config/ProjectConfiguration.json config/ProjectConfiguration.json
