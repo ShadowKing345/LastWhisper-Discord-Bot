@@ -1,10 +1,10 @@
-import { ButtonInteraction, ClientEvents, CommandInteraction, ComponentType, Interaction } from "discord.js";
+import { ButtonInteraction, ChatInputCommandInteraction, ClientEvents, CommandInteraction, ComponentType, Interaction } from "discord.js";
 import { clearInterval } from "timers";
 import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { Bot } from "../objects/bot.js";
-import { EventListener, SlashCommand, Timer } from "../objects/index.js";
+import { CommandNameDef, EventListener, SlashCommand, Timer } from "../objects/index.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { ModuleConfiguration } from "./entities/index.js";
@@ -77,9 +77,7 @@ export class ModuleService {
                 ModuleService.moduleServiceLogger.debug( "Interaction is a command." );
 
                 if( interaction.isContextMenuCommand() ) {
-                    ModuleService.moduleServiceLogger.debug(
-                        `Interaction is a ${ interaction.isUserContextMenuCommand() ? "user" : "message" } context menu.`,
-                    );
+                    ModuleService.moduleServiceLogger.debug( `Interaction is a ${ interaction.isUserContextMenuCommand() ? "user" : "message" } context menu.`, );
 
                     if( interaction.isUserContextMenuCommand() ) {
                         await interaction.reply( {
@@ -103,13 +101,20 @@ export class ModuleService {
                         return;
                     }
 
-                    const commandStruct = ModuleService.slashCommands[interaction.commandName];
-                    if( !commandStruct ) {
+                    const { type, value } = ModuleService.slashCommands[interaction.commandName];
+                    if( !value ) {
                         ModuleService.moduleServiceLogger.error( `No command found with name: ${ interaction.commandName }. Exiting` );
                         return;
                     }
+                    const command = value;
+                    const commandDef = this.getCommandDef( interaction );
+                    const callback = command.getCallback( commandDef );
 
-                    await this.callCallback( commandStruct.type, commandStruct.value.callback, [ interaction ] );
+                    if( callback ) {
+                        await this.callCallback( type, callback, [ interaction ] );
+                    } else {
+                        await interaction.reply( { content: "Could not find the command.", ephemeral: true } );
+                    }
                 }
             } else {
                 ModuleService.moduleServiceLogger.debug( "Interaction is not a command." );
@@ -132,11 +137,7 @@ export class ModuleService {
         } catch( error ) {
             ModuleService.moduleServiceLogger.error( error );
 
-            if(
-                interaction &&
-                ( interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction ) &&
-                !interaction.replied
-            ) {
+            if( interaction && ( interaction instanceof ButtonInteraction || interaction instanceof CommandInteraction ) && !interaction.replied ) {
                 if( error instanceof CommandResolverError ) {
                     await interaction.reply( {
                         content: "Sorry there was an issue resolving the command name.",
@@ -146,9 +147,7 @@ export class ModuleService {
                 }
 
                 if( interaction.deferred ) {
-                    await interaction.editReply( {
-                        content: "There was an internal error that occurred when using this interaction.",
-                    } );
+                    await interaction.editReply( { content: "There was an internal error that occurred when using this interaction.", } );
                 } else {
                     await interaction.reply( {
                         content: "There was an internal error that occurred when using this interaction.",
@@ -262,6 +261,20 @@ export class ModuleService {
         await dbService.disconnect();
 
         return result;
+    }
+
+    /**
+     * Returns an object that contains all the command name parameters.
+     * @param {ChatInputCommandInteraction} interaction The interaction to get the parameters from.
+     * @returns {CommandNameDef} An object that contains all the command names.
+     * @private
+     */
+    private getCommandDef( interaction: ChatInputCommandInteraction ): CommandNameDef {
+        return {
+            name: interaction.commandName,
+            group: interaction.options.getSubcommandGroup(),
+            sub: interaction.options.getSubcommand()
+        };
     }
 
     // region Static Method

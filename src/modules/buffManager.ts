@@ -3,18 +3,25 @@ import { Bot } from "../objects/bot.js";
 import { Module } from "./module.js";
 import { BuffManagerService, BuffManagerTryGetError, BuffManagerTryGetErrorReasons } from "../services/buffManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { addPermissionKeys, authorize, Command, deferReply, module } from "../decorators/index.js";
-import { CommandOption, SlashCommand } from "../objects/index.js";
-import { Timers } from "../objects/timer.js";
+import { addPermissionKeys, authorize, deferReply, module, SubCommand, Timer } from "../decorators/index.js";
+import { CommandOption } from "../objects/index.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
 import { Logger } from "../config/logger.js";
+
+const moduleName = "BuffManager";
 
 /**
  * Module designed to deal with requests about buffs.
  * @see BuffManagerService
  */
-@module()
+@module( {
+    moduleName: moduleName,
+    baseCommand: {
+        name: "buff_manager",
+        description: "Manages all things related to buffs",
+    }
+} )
 export class BuffManagerModule extends Module {
     protected static readonly logger: Logger = new Logger( "BuffManagerModule" );
 
@@ -23,72 +30,12 @@ export class BuffManagerModule extends Module {
         buffs: "BuffManager.buffs",
         weeks: "BuffManager.weeks",
     };
-
-    public moduleName = "BuffManager";
-    public timers: Timers = [
-        {
-            name: `${ this.moduleName }#dailyMessageTask`,
-            timeout: 60000,
-            execute: this.postDailyMessage.bind( this ),
-        },
-    ];
-
-    protected commandResolverKeys = {
-        "buff_manager.buffs": this.postBuffCommand.bind( this ),
-        "buff_manager.weeks": this.postWeekCommand.bind( this ),
-    };
-
+    
     constructor(
         private service: BuffManagerService,
         permissionManagerService: PermissionManagerService,
     ) {
-        super( BuffManagerModule.logger, permissionManagerService );
-    }
-
-    @Command( {
-        name: "buff_manager",
-        description: "Manages all things related to buffs",
-        subcommands: {
-            Buffs: new SlashCommand( {
-                name: "buffs",
-                description: "Shows you what buffs are set.",
-                options: [
-                    new CommandOption( {
-                        name: "tomorrow",
-                        description: "Set to true if buff is for tomorrow.",
-                        required: false,
-                        type: ApplicationCommandOptionType.Boolean,
-                    } ),
-                    new CommandOption( {
-                        name: "date",
-                        description: "Get the buff for a specific date. Use ISO 8601 format.",
-                        required: false,
-                        type: ApplicationCommandOptionType.String,
-                    } ),
-                ],
-            } ),
-            Weeks: new SlashCommand( {
-                name: "weeks",
-                description: "Shows you what buffs for the week, are set to.",
-                options: [
-                    new CommandOption( {
-                        name: "next_week",
-                        description: "Set to true if buff is for tomorrow.",
-                        required: false,
-                        type: ApplicationCommandOptionType.Boolean,
-                    } ),
-                    new CommandOption( {
-                        name: "date",
-                        description: "Get the week for a specific date. Use ISO 8601 format.",
-                        required: false,
-                        type: ApplicationCommandOptionType.String,
-                    } ),
-                ],
-            } ),
-        },
-    } )
-    public async commandResolver( interaction: ChatInputCommandInteraction ) {
-        return super.commandResolver( interaction );
+        super( permissionManagerService );
     }
 
     /**
@@ -97,9 +44,27 @@ export class BuffManagerModule extends Module {
      * @param interaction The interaction from Discord.
      * @private
      */
+    @SubCommand( {
+        name: "buffs",
+        description: "Shows you what buffs are set.",
+        options: [
+            new CommandOption( {
+                name: "tomorrow",
+                description: "Set to true if buff is for tomorrow.",
+                required: false,
+                type: ApplicationCommandOptionType.Boolean,
+            } ),
+            new CommandOption( {
+                name: "date",
+                description: "Get the buff for a specific date. Use ISO 8601 format.",
+                required: false,
+                type: ApplicationCommandOptionType.String,
+            } ),
+        ],
+    } )
     @authorize( BuffManagerModule.permissionKeys.buffs )
     @deferReply()
-    private async postBuffCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
+    public async postBuffCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
         const tomorrow = interaction.options.getBoolean( "tomorrow" );
         const dateString = interaction.options.getString( "date" );
 
@@ -111,7 +76,7 @@ export class BuffManagerModule extends Module {
             date = DateTime.fromISO( dateString );
         }
 
-        this.logger.debug( `Command invoked for buffs.\nPosting buff message for the date ${ date.toISO() }.` );
+        BuffManagerModule.logger.debug( `Command invoked for buffs.\nPosting buff message for the date ${ date.toISO() }.` );
         let buff: Buff;
         try {
             buff = await this.service.getBuffByDate( interaction.guildId, date );
@@ -133,7 +98,7 @@ export class BuffManagerModule extends Module {
         }
 
         if( !buff ) {
-            this.logger.debug( `Buff did not exit.` );
+            BuffManagerModule.logger.debug( `Buff did not exit.` );
             await interaction.editReply( {
                 content: `Sorry, The buff for the date ${ date.toISO() } does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
             } );
@@ -148,9 +113,27 @@ export class BuffManagerModule extends Module {
      * @param interaction The interaction from Discord.
      * @private
      */
+    @SubCommand( {
+        name: "weeks",
+        description: "Shows you what buffs for the week, are set to.",
+        options: [
+            new CommandOption( {
+                name: "next_week",
+                description: "Set to true if buff is for tomorrow.",
+                required: false,
+                type: ApplicationCommandOptionType.Boolean,
+            } ),
+            new CommandOption( {
+                name: "date",
+                description: "Get the week for a specific date. Use ISO 8601 format.",
+                required: false,
+                type: ApplicationCommandOptionType.String,
+            } ),
+        ],
+    } )
     @authorize( BuffManagerModule.permissionKeys.weeks )
     @deferReply()
-    private async postWeekCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
+    public async postWeekCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
         const nextWeek = interaction.options.getBoolean( "next_week" );
         const dateString = interaction.options.getString( "date" );
 
@@ -162,7 +145,7 @@ export class BuffManagerModule extends Module {
             date = DateTime.fromISO( dateString );
         }
 
-        this.logger.debug( `Command invoked for weeks.\nPosting week message for ${ date.toISO() }.` );
+        BuffManagerModule.logger.debug( `Command invoked for weeks.\nPosting week message for ${ date.toISO() }.` );
 
         let week: Week;
         try {
@@ -189,7 +172,11 @@ export class BuffManagerModule extends Module {
         } );
     }
 
-    private postDailyMessage( client: Bot ): Promise<void> {
+    @Timer( {
+        name: `${ moduleName }#dailyMessageTask`,
+        timeout: 60000,
+    } )
+    public postDailyMessage( client: Bot ): Promise<void> {
         return this.service.postDailyMessage( client );
     }
 }

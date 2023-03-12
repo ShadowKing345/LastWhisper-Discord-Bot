@@ -1,28 +1,20 @@
-import { Command, Event, module, Timer } from "../decorators/index.js";
+import { SubCommand, module, Event, Timer } from "../decorators/index.js";
 import { Module } from "./module.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    ChatInputCommandInteraction,
-    CommandInteraction,
-    ModalActionRowComponentBuilder,
-    ModalBuilder,
-    SelectMenuBuilder,
-    TextInputBuilder,
-    TextInputStyle,
-} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
 import { Logger } from "../config/logger.js";
-import { SlashCommand } from "../objects/index.js";
 
 /**
  * Development module used for testing features and random things.
  */
-@module()
+@module( {
+    moduleName: "DevModule",
+    baseCommand: {
+        name: "dev",
+        description: "Collection of dev commands.",
+    }
+} )
 export class DevModule extends Module {
-    public readonly moduleName: string = "DevModule";
-
     private static readonly logger: Logger = new Logger( "DevModule" );
     protected logger: Logger = new Logger( DevModule );
 
@@ -30,22 +22,22 @@ export class DevModule extends Module {
     public constructor(
         permissionManagerService: PermissionManagerService,
     ) {
-        super( DevModule.logger, permissionManagerService );
+        super( permissionManagerService );
     }
 
-    @Command( {
+    @SubCommand( {
         name: "slash_command_subcommand_test",
         description: "Tests if subcommands are working.",
-        subcommands: {
-            ping: new SlashCommand( {
+        subcommands: [
+            {
                 name: "ping",
                 description: "Returns pong.",
-            } ),
-            pong: new SlashCommand( {
+            },
+            {
                 name: "pong",
                 description: "Returns ping.",
-            } ),
-        },
+            },
+        ],
     } )
     public async subcommandResolverTest( interaction: ChatInputCommandInteraction ): Promise<unknown> {
         switch( interaction.options.getSubcommand() ) {
@@ -58,16 +50,15 @@ export class DevModule extends Module {
         }
     }
 
-    @Command( {
+    @SubCommand( {
         name: "slash_command_test",
         description: "Tests the slash command system. Returns all values placed.",
-        options: [],
     } )
     public async testChatInteractionFunction( interaction: ChatInputCommandInteraction ): Promise<unknown> {
         return interaction.reply( { content: "Hello World" } );
     }
 
-    @Command( {
+    @SubCommand( {
         name: "test_inputs",
         description: "Testing command.",
     } )
@@ -97,7 +88,7 @@ export class DevModule extends Module {
         } );
     }
 
-    @Command( {
+    @SubCommand( {
         name: "test_modal",
         description: "Testing command.",
     } )
@@ -127,7 +118,7 @@ export class DevModule extends Module {
         await Promise.resolve();
     }
 
-    @Timer( { name: `${ DevModule.name }#TimerTest`, timeout: 10000 } )
+    @Timer( { name: `DevModule#TimerTest`, timeout: 10000 } )
     public async timerTest(): Promise<void> {
         DevModule.logger.debug( "Timer ticked." );
         return Promise.resolve();
