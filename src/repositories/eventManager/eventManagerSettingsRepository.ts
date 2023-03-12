@@ -9,7 +9,7 @@ import { SelfCreatingRepository } from "../base/selfCreatingRepository.js";
  */
 @repository()
 export class EventManagerSettingsRepository extends SelfCreatingRepository<EventManagerSettings> {
-  constructor(db: DatabaseService) {
-    super(db, EventManagerSettings);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, EventManagerSettings );
+    }
 }

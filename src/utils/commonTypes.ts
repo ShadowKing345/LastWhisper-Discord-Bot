@@ -1,1 +1,1 @@
-export type CTR<T> = { new(...args: unknown[]): T }
+export type CTR<T> = { new( ...args: unknown[] ): T }

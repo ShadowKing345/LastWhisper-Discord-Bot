@@ -3,10 +3,12 @@
 ## Table of Content
 
 <!-- TOC -->
+
 * [Discord Bot Application Documentation Index](#discord-bot-application-documentation-index)
-  * [Table of Content](#table-of-content)
-  * [Introduction](#introduction)
-  * [File Structure](#file-structure)
+    * [Table of Content](#table-of-content)
+    * [Introduction](#introduction)
+    * [File Structure](#file-structure)
+
 <!-- TOC -->
 
 ## Introduction

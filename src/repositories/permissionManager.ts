@@ -9,7 +9,7 @@ import { Repository } from "./base/repository.js";
  */
 @repository()
 export class PermissionManagerRepository extends Repository<PermissionManagerConfig> {
-  constructor(db: DatabaseService) {
-    super(db, PermissionManagerConfig);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, PermissionManagerConfig );
+    }
 }

@@ -6,15 +6,15 @@ import { EntityBase } from "./entityBase.js";
  */
 @Entity()
 export class ManagerUtilsConfig extends EntityBase {
-  @Column({ nullable: true })
-  public loggingChannel: string = null;
+    @Column( { nullable: true } )
+    public loggingChannel: string = null;
 
-  @Column("text", { array: true })
-  public clearChannelBlacklist: string[];
+    @Column( "text", { array: true } )
+    public clearChannelBlacklist: string[];
 
-  constructor(guildId: string = null) {
-    super();
+    constructor( guildId: string = null ) {
+        super();
 
-    this.guildId = guildId;
-  }
+        this.guildId = guildId;
+    }
 }

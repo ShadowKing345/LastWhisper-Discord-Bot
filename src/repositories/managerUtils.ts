@@ -9,7 +9,7 @@ import { SelfCreatingRepository } from "./base/selfCreatingRepository.js";
  */
 @repository()
 export class ManagerUtilsRepository extends SelfCreatingRepository<ManagerUtilsConfig> {
-  constructor(db: DatabaseService) {
-    super(db, ManagerUtilsConfig);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, ManagerUtilsConfig );
+    }
 }

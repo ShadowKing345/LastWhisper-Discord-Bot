@@ -7,13 +7,13 @@ import { EntityBase } from "../entityBase.js";
  */
 @Entity()
 export class GardeningModuleConfig extends EntityBase {
-  @OneToMany(() => Plot, plot => plot.guildConfig, {
-    cascade: true,
-    orphanedRowAction: "delete",
-    onDelete: "CASCADE",
-  })
-  public plots: Plot[];
+    @OneToMany( () => Plot, plot => plot.guildConfig, {
+        cascade: true,
+        orphanedRowAction: "delete",
+        onDelete: "CASCADE",
+    } )
+    public plots: Plot[];
 
-  @Column({ nullable: true })
-  public messagePostingChannelId: string = null;
+    @Column( { nullable: true } )
+    public messagePostingChannelId: string = null;
 }

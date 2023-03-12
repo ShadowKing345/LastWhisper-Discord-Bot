@@ -3,10 +3,12 @@
 ## Table of Content
 
 <!-- TOC -->
+
 * [Schema Files](#schema-files)
-  * [Table of Content](#table-of-content)
-  * [Introduction](#introduction)
-  * [Structure](#structure)
+    * [Table of Content](#table-of-content)
+    * [Introduction](#introduction)
+    * [Structure](#structure)
+
 <!-- TOC -->
 
 ## Introduction

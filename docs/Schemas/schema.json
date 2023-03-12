@@ -20,5 +20,7 @@
       "$ref": "moduleConfigurationSchema.json"
     }
   },
-  "required": ["token"]
+  "required": [
+    "token"
+  ]
 }
