@@ -12,6 +12,7 @@ export async function permissionManagerSeeder( ds: DataSource, guildId: string, 
     if( isObject( data ) ) {
         const permissionManagerConfig = new PermissionManagerConfig();
         permissionManagerConfig.guildId = guildId;
+        permissionManagerConfig.permissions = [];
 
         if( "permissions" in data && isArray( data.permissions ) ) {
             for( const permission of data.permissions ) {
