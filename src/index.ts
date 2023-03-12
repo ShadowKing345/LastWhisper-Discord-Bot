@@ -177,7 +177,7 @@ class Index {
     @Commander.hook( "preAction" )
     public preInit() {
         Index.logger.info( `Welcome ${ userInfo().username }.` );
-        ConfigurationService.registerConfiguration<ApplicationConfiguration>( CommonConfigurationKeys.APPLICATION, ApplicationConfiguration );
+        ConfigurationService.registerConfiguration<ApplicationConfiguration>( CommonConfigurationKeys.APPLICATION );
     }
 
     /**
