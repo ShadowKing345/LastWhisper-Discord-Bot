@@ -15,7 +15,7 @@ export class SlashCommand {
     public callback: ( interaction: ChatInputCommandInteraction ) => Promise<unknown> | unknown = null;
     public subcommands?: ( SlashCommand | Partial<SlashCommand> )[];
 
-    public options: CommandOptions = [];
+    public options: ( CommandOptions | Partial<CommandOption> )[] = [];
 
     public constructor( data: Partial<SlashCommand> = null ) {
         if( data ) {
@@ -41,7 +41,7 @@ export class SlashCommand {
         }
 
         if( obj.options ) {
-            this.options = obj.options.map( option => option instanceof CommandOption ? option : new CommandOption( option ) );
+            this.options = obj.options.map( option => option instanceof CommandOption ? option : new CommandOption( option as Partial<CommandOption> ) );
         }
 
         return this;
@@ -66,7 +66,11 @@ export class SlashCommand {
 
         if( this.options && !( builder instanceof SlashCommandSubcommandGroupBuilder ) ) {
             for( const option of this.options ) {
-                option.build( builder );
+                if( option instanceof CommandOption ) {
+                    option.build( builder );
+                } else {
+                    new CommandOption( option as Partial<CommandOption> ).build( builder );
+                }
             }
         }
 
