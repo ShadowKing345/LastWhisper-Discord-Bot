@@ -4,67 +4,30 @@ import { Module } from "./module.js";
 import { Bot } from "../objects/bot.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../decorators/index.js";
-import { CommandOption, EventListener, EventListeners, SlashCommand, SlashCommands } from "../objects/index.js";
+import { module, SubCommand, Event } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
+
+const moduleName = "RoleManager";
 
 /**
  * Module for managing the roles of a Guild.
  * This module provides a simple apply for role scenario where users are give a role based on context.
  */
-@module()
+@module( {
+    moduleName: moduleName,
+    baseCommand: {
+        name: "role_manager",
+        description: "Manages roles within a guild.",
+    }
+} )
 export class RoleManagerModule extends Module {
     protected static readonly logger: Logger = new Logger( "RoleManagerModule" );
-
-    public moduleName = "RoleManager";
-    public eventListeners: EventListeners = [ new EventListener( "ready", async client => this.onReady( client ) ) ];
-    public commands: SlashCommands = [
-        new SlashCommand( {
-            name: "role_manager",
-            description: "Manages roles within a guild.",
-            subcommands: {
-                RevokeRole: new SlashCommand( {
-                    name: "revoke_role",
-                    description: "Revokes the role for all uses.",
-                } ),
-                RegisterMessage: new SlashCommand( {
-                    name: "register_message",
-                    description: "Registers a message to be reacted to.",
-                    options: [
-                        new CommandOption( {
-                            name: "message_id",
-                            description: "The ID for the message.",
-                            required: true,
-                        } ),
-                    ],
-                } ),
-                UnregisterMessage: new SlashCommand( {
-                    name: "unregister_message",
-                    description: "Unregisters a message to be reacted to.",
-                    options: [
-                        new CommandOption( {
-                            name: "message_id",
-                            description: "The ID for the message.",
-                            required: true,
-                        } ),
-                    ],
-                } ),
-            },
-            callback: interaction => this.commandResolver( interaction ) as Promise<InteractionResponse | void>,
-        } ),
-    ];
-
-    protected commandResolverKeys = {
-        "role_manager.revoke_role": this.revokeRole.bind( this ),
-        "role_manager.register_message": this.registerMessage.bind( this ),
-        "role_manager.unregister_message": this.unregisterMessage.bind( this ),
-    };
 
     constructor(
         private roleManagerService: RoleManagerService,
         permissionManagerService: PermissionManagerService,
     ) {
-        super( RoleManagerModule.logger, permissionManagerService );
+        super( permissionManagerService );
     }
 
     /**
@@ -72,7 +35,8 @@ export class RoleManagerModule extends Module {
      * @param client The Discord Client.
      * @private
      */
-    private onReady( client: Bot ): Promise<void> {
+    @Event( "ready" )
+    public onReady( client: Bot ): Promise<void> {
         return this.roleManagerService.onReady( client );
     }
 
@@ -81,7 +45,11 @@ export class RoleManagerModule extends Module {
      * @param interaction The Discord interaction.
      * @private
      */
-    private revokeRole( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
+    @SubCommand( {
+        name: "revoke_role",
+        description: "Revokes the role for all uses.",
+    } )
+    public revokeRole( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
         return this.roleManagerService.revokeRole( interaction );
     }
 
@@ -90,7 +58,18 @@ export class RoleManagerModule extends Module {
      * @param interaction The Discord interaction.
      * @private
      */
-    private registerMessage( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
+    @SubCommand( {
+        name: "register_message",
+        description: "Registers a message to be reacted to.",
+        options: [
+            {
+                name: "message_id",
+                description: "The ID for the message.",
+                required: true,
+            },
+        ],
+    } )
+    public registerMessage( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
         return this.roleManagerService.registerMessage( interaction );
     }
 
@@ -99,7 +78,18 @@ export class RoleManagerModule extends Module {
      * @param interaction The Discord interaction.
      * @private
      */
-    private unregisterMessage( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
+    @SubCommand( {
+        name: "unregister_message",
+        description: "Unregisters a message to be reacted to.",
+        options: [
+            {
+                name: "message_id",
+                description: "The ID for the message.",
+                required: true,
+            },
+        ],
+    } )
+    public unregisterMessage( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
         return this.roleManagerService.unregisterMessage( interaction );
     }
 }
