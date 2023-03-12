@@ -8,26 +8,26 @@ import { IMerge } from "./IMerge.js";
  * @param channelId The channel ID to look for.
  * @param messageIds A collection of messages by their IDs to fetch.
  */
-export async function fetchMessages(client: Client, channelId: Snowflake, messageIds: Snowflake[]): Promise<Message[]> {
-  const promises: Promise<Message>[] = [];
+export async function fetchMessages( client: Client, channelId: Snowflake, messageIds: Snowflake[] ): Promise<Message[]> {
+    const promises: Promise<Message>[] = [];
 
-  const channel: Channel = await client.channels.fetch(channelId);
-  if (!(channel && channel instanceof TextChannel)) return [];
+    const channel: Channel = await client.channels.fetch( channelId );
+    if( !( channel && channel instanceof TextChannel ) ) return [];
 
-  for (const id of messageIds) {
-    promises.push(channel.messages.fetch(id));
-  }
-
-  const allSettled = await Promise.allSettled(promises);
-  const results: Message[] = [];
-
-  for (const result of allSettled) {
-    if (result.status === "fulfilled") {
-      results.push(result.value);
+    for( const id of messageIds ) {
+        promises.push( channel.messages.fetch( id ) );
     }
-  }
 
-  return results;
+    const allSettled = await Promise.allSettled( promises );
+    const results: Message[] = [];
+
+    for( const result of allSettled ) {
+        if( result.status === "fulfilled" ) {
+            results.push( result.value );
+        }
+    }
+
+    return results;
 }
 
 /**
@@ -37,38 +37,38 @@ export async function fetchMessages(client: Client, channelId: Snowflake, messag
  * @param sources All sources to merge from.
  * @return The newly created object.
  */
-export function deepMerge<T, O>(target: T | { new(): T }, ...sources: O[]): T {
-  const result = typeof target === "function" ? Reflect.construct(target, []) as T : target;
-  sources = sources.filter(source => source != null);
-  if (sources.length <= 0) return result;
+export function deepMerge<T, O>( target: T | { new(): T }, ...sources: O[] ): T {
+    const result = typeof target === "function" ? Reflect.construct( target, [] ) as T : target;
+    sources = sources.filter( source => source != null );
+    if( sources.length <= 0 ) return result;
 
-  if (result instanceof IMerge<T>) {
-    let t = result;
-    for (const source of sources) {
-      t = (t as IMerge<T>).merge(source) as T & IMerge<T>;
-    }
-    return t;
-  }
-
-
-  for (const source of sources) {
-    for (const key in source) {
-      const kValue = key.valueOf();
-      if (source[key]) {
-        if (!result[kValue]) {
-          result[kValue] = source[key];
-        } else {
-          if (result[kValue] instanceof Object) {
-            deepMerge(result[kValue], source[key]);
-          } else {
-            result[kValue] = source[key];
-          }
+    if( result instanceof IMerge<T> ) {
+        let t = result;
+        for( const source of sources ) {
+            t = ( t as IMerge<T> ).merge( source ) as T & IMerge<T>;
         }
-      }
+        return t;
     }
-  }
 
-  return result;
+
+    for( const source of sources ) {
+        for( const key in source ) {
+            const kValue = key.valueOf();
+            if( source[key] ) {
+                if( !result[kValue] ) {
+                    result[kValue] = source[key];
+                } else {
+                    if( result[kValue] instanceof Object ) {
+                        deepMerge( result[kValue], source[key] );
+                    } else {
+                        result[kValue] = source[key];
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
 /**
@@ -76,67 +76,76 @@ export function deepMerge<T, O>(target: T | { new(): T }, ...sources: O[]): T {
  * @param obj Object to be flattened
  * @param includeOriginal Adds the original in the final list.
  */
-export function flattenObject(obj: object, includeOriginal = false): object {
-  const result = new Map<string, unknown>();
+export function flattenObject( obj: object, includeOriginal = false ): object {
+    const result = new Map<string, unknown>();
 
-  for (const [k, v] of Object.entries(obj)) {
-    if (v instanceof Object && !Array.isArray(v)) {
-      for (const [k1, v1] of Object.entries(flattenObject(v as object, includeOriginal))) {
-        result.set(`${k}.${k1}`, v1);
-      }
+    for( const [ k, v ] of Object.entries( obj ) ) {
+        if( v instanceof Object && !Array.isArray( v ) ) {
+            for( const [ k1, v1 ] of Object.entries( flattenObject( v as object, includeOriginal ) ) ) {
+                result.set( `${ k }.${ k1 }`, v1 );
+            }
 
-      if (!includeOriginal) {
-        continue;
-      }
+            if( !includeOriginal ) {
+                continue;
+            }
+        }
+
+        result.set( k, v );
     }
 
-    result.set(k, v);
-  }
-
-  return Object.fromEntries(result);
+    return Object.fromEntries( result );
 }
 
 /**
  * Does the opposite of flattenObject
  * @see flattenObject
  */
-export function unFlattenObject(obj: object): object {
-  const result = {};
-  Object.keys(obj).forEach(key =>
-    key.split(".").reduce(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
-      (r, e, j, array) => r[e] || (r[e] = isNaN(Number(array[j + 1])) ? (array.length - 1 == j ? obj[key] : {}) : []),
-      result,
-    ),
-  );
-  console.log(result);
-  return result;
+export function unFlattenObject( obj: object ): object {
+    const result = {};
+    Object.keys( obj ).forEach( key =>
+        key.split( "." ).reduce(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
+            ( r, e, j, array ) => r[e] || ( r[e] = isNaN( Number( array[j + 1] ) ) ? ( array.length - 1 == j ? obj[key] : {} ) : [] ),
+            result,
+        ),
+    );
+    console.log( result );
+    return result;
 }
 
 /**
  * Checks if an unknown is a rejected promise.
  * @param obj
  */
-export function isPromiseRejected(obj: unknown): obj is PromiseRejectedResult {
-  if (!isObject(obj)) {
-    return false;
-  }
+export function isPromiseRejected( obj: unknown ): obj is PromiseRejectedResult {
+    if( !isObject( obj ) ) {
+        return false;
+    }
 
-  return "status" in obj && obj.status === "rejected";
+    return "status" in obj && obj.status === "rejected";
 }
 
 /**
  * Checks to see if an object is of type object
  * @param obj
  */
-export function isObject(obj: unknown): obj is object {
-  return typeof obj === "object" && !Array.isArray(obj);
+export function isObject( obj: unknown ): obj is object {
+    return typeof obj === "object" && !Array.isArray( obj );
 }
 
 /**
  * Checks to see if an object is of type array. Returns type Array<unknown>.
  * @param obj
  */
-export function isArray(obj: unknown): obj is Array<unknown> {
-  return typeof obj === "object" && Array.isArray(obj);
+export function isArray( obj: unknown ): obj is Array<unknown> {
+    return typeof obj === "object" && Array.isArray( obj );
+}
+
+/**
+ * Checks to see if an object is part of an enum.
+ * @param obj
+ * @param e
+ */
+export function isEnum<T>( obj: unknown, e: T ): obj is string | number {
+    return ( typeof obj === "string" || typeof obj === "number" ) && Object.values( e ).includes( obj.toString() );
 }

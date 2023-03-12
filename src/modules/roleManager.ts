@@ -14,92 +14,92 @@ import { Logger } from "../config/logger.js";
  */
 @module()
 export class RoleManagerModule extends Module {
-  protected static readonly logger: Logger = new Logger("RoleManagerModule");
+    protected static readonly logger: Logger = new Logger( "RoleManagerModule" );
 
-  public moduleName = "RoleManager";
-  public eventListeners: EventListeners = [new EventListener("ready", async client => this.onReady(client))];
-  public commands: SlashCommands = [
-    new SlashCommand({
-      name: "role_manager",
-      description: "Manages roles within a guild.",
-      subcommands: {
-        RevokeRole: new SlashCommand({
-          name: "revoke_role",
-          description: "Revokes the role for all uses.",
-        }),
-        RegisterMessage: new SlashCommand({
-          name: "register_message",
-          description: "Registers a message to be reacted to.",
-          options: [
-            new CommandOption({
-              name: "message_id",
-              description: "The ID for the message.",
-              required: true,
-            }),
-          ],
-        }),
-        UnregisterMessage: new SlashCommand({
-          name: "unregister_message",
-          description: "Unregisters a message to be reacted to.",
-          options: [
-            new CommandOption({
-              name: "message_id",
-              description: "The ID for the message.",
-              required: true,
-            }),
-          ],
-        }),
-      },
-      callback: interaction => this.commandResolver(interaction) as Promise<InteractionResponse | void>,
-    }),
-  ];
+    public moduleName = "RoleManager";
+    public eventListeners: EventListeners = [ new EventListener( "ready", async client => this.onReady( client ) ) ];
+    public commands: SlashCommands = [
+        new SlashCommand( {
+            name: "role_manager",
+            description: "Manages roles within a guild.",
+            subcommands: {
+                RevokeRole: new SlashCommand( {
+                    name: "revoke_role",
+                    description: "Revokes the role for all uses.",
+                } ),
+                RegisterMessage: new SlashCommand( {
+                    name: "register_message",
+                    description: "Registers a message to be reacted to.",
+                    options: [
+                        new CommandOption( {
+                            name: "message_id",
+                            description: "The ID for the message.",
+                            required: true,
+                        } ),
+                    ],
+                } ),
+                UnregisterMessage: new SlashCommand( {
+                    name: "unregister_message",
+                    description: "Unregisters a message to be reacted to.",
+                    options: [
+                        new CommandOption( {
+                            name: "message_id",
+                            description: "The ID for the message.",
+                            required: true,
+                        } ),
+                    ],
+                } ),
+            },
+            callback: interaction => this.commandResolver( interaction ) as Promise<InteractionResponse | void>,
+        } ),
+    ];
 
-  protected commandResolverKeys = {
-    "role_manager.revoke_role": this.revokeRole.bind(this),
-    "role_manager.register_message": this.registerMessage.bind(this),
-    "role_manager.unregister_message": this.unregisterMessage.bind(this),
-  };
+    protected commandResolverKeys = {
+        "role_manager.revoke_role": this.revokeRole.bind( this ),
+        "role_manager.register_message": this.registerMessage.bind( this ),
+        "role_manager.unregister_message": this.unregisterMessage.bind( this ),
+    };
 
-  constructor(
-    private roleManagerService: RoleManagerService,
-    permissionManagerService: PermissionManagerService,
-  ) {
-    super(RoleManagerModule.logger, permissionManagerService);
-  }
+    constructor(
+        private roleManagerService: RoleManagerService,
+        permissionManagerService: PermissionManagerService,
+    ) {
+        super( RoleManagerModule.logger, permissionManagerService );
+    }
 
-  /**
-   * On ready event to set up reaction listeners.
-   * @param client The Discord Client.
-   * @private
-   */
-  private onReady(client: Bot): Promise<void> {
-    return this.roleManagerService.onReady(client);
-  }
+    /**
+     * On ready event to set up reaction listeners.
+     * @param client The Discord Client.
+     * @private
+     */
+    private onReady( client: Bot ): Promise<void> {
+        return this.roleManagerService.onReady( client );
+    }
 
-  /**
-   * Removes authorized role from all users. Effectively resetting permissions.
-   * @param interaction The Discord interaction.
-   * @private
-   */
-  private revokeRole(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    return this.roleManagerService.revokeRole(interaction);
-  }
+    /**
+     * Removes authorized role from all users. Effectively resetting permissions.
+     * @param interaction The Discord interaction.
+     * @private
+     */
+    private revokeRole( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
+        return this.roleManagerService.revokeRole( interaction );
+    }
 
-  /**
-   * Registers a message to be listened to.
-   * @param interaction The Discord interaction.
-   * @private
-   */
-  private registerMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    return this.roleManagerService.registerMessage(interaction);
-  }
+    /**
+     * Registers a message to be listened to.
+     * @param interaction The Discord interaction.
+     * @private
+     */
+    private registerMessage( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
+        return this.roleManagerService.registerMessage( interaction );
+    }
 
-  /**
-   * Unregisters a message that is being listened to.
-   * @param interaction The Discord interaction.
-   * @private
-   */
-  private unregisterMessage(interaction: ChatInputCommandInteraction): Promise<InteractionResponse> {
-    return this.roleManagerService.unregisterMessage(interaction);
-  }
+    /**
+     * Unregisters a message that is being listened to.
+     * @param interaction The Discord interaction.
+     * @private
+     */
+    private unregisterMessage( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse> {
+        return this.roleManagerService.unregisterMessage( interaction );
+    }
 }

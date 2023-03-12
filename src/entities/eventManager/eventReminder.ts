@@ -8,24 +8,24 @@ import { EntityBase } from "../entityBase.js";
 @Entity()
 export class EventReminder extends EntityBase {
 
-  @Column()
-  public message: string = null;
+    @Column()
+    public message: string = null;
 
-  @Column()
-  public timeDelta: string = null;
+    @Column()
+    public timeDelta: string = null;
 
-  constructor() {
-    super();
-  }
+    constructor() {
+        super();
+    }
 
-  /**
-   * Returns the duration equivalent of the time delta variable.
-   */
-  public get asDuration(): Duration {
-    const hold = DateTime.fromFormat(this.timeDelta, "HH:mm");
-    return Duration.fromObject({
-      hours: hold.get("hour"),
-      minutes: hold.get("minute"),
-    });
-  }
+    /**
+     * Returns the duration equivalent of the time delta variable.
+     */
+    public get asDuration(): Duration {
+        const hold = DateTime.fromFormat( this.timeDelta, "HH:mm" );
+        return Duration.fromObject( {
+            hours: hold.get( "hour" ),
+            minutes: hold.get( "minute" ),
+        } );
+    }
 }

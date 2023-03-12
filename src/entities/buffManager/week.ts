@@ -10,37 +10,37 @@ import { Buff } from "./buff.js";
  */
 @Entity()
 export class Week extends EntityBase {
-  @Column({ type: "boolean" })
-  public isEnabled = false;
+    @Column( { type: "boolean" } )
+    public isEnabled = false;
 
-  @Column()
-  public title: string = null;
+    @Column()
+    public title: string = null;
 
-  @OneToOne(() => Days, { cascade: true, orphanedRowAction: "delete", eager: true })
-  @JoinColumn({ name: "days_id" })
-  public days: Days;
+    @OneToOne( () => Days, { cascade: true, orphanedRowAction: "delete", eager: true } )
+    @JoinColumn( { name: "days_id" } )
+    public days: Days;
 
-  /**
-   * Returns the buff ID for a given day of the week,
-   * @param date The date object to get the string from.
-   */
-  public getBuff(date: DateTime): Promise<Buff> {
-    return Array(...this.days)[date.weekday - 1];
-  }
-
-  public merge(obj: Week): Week {
-    if (obj.isEnabled) {
-      this.isEnabled = obj.isEnabled;
+    /**
+     * Returns the buff ID for a given day of the week,
+     * @param date The date object to get the string from.
+     */
+    public getBuff( date: DateTime ): Promise<Buff> {
+        return Array( ...this.days )[date.weekday - 1];
     }
 
-    if (obj.title) {
-      this.title = obj.title;
-    }
+    public merge( obj: Week ): Week {
+        if( obj.isEnabled ) {
+            this.isEnabled = obj.isEnabled;
+        }
 
-    if (obj.days) {
-      this.days = deepMerge(this.days ?? new Days(), obj.days);
-    }
+        if( obj.title ) {
+            this.title = obj.title;
+        }
 
-    return this;
-  }
+        if( obj.days ) {
+            this.days = deepMerge( this.days ?? new Days(), obj.days );
+        }
+
+        return this;
+    }
 }

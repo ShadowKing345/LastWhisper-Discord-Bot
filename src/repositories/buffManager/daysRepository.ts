@@ -5,7 +5,7 @@ import { Repository } from "../base/repository.js";
 
 @repository()
 export class DaysRepository extends Repository<Days> {
-  constructor(db: DatabaseService) {
-    super(db, Days);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, Days );
+    }
 }

@@ -9,7 +9,7 @@ import { SelfCreatingRepository } from "./base/selfCreatingRepository.js";
  */
 @repository()
 export class RoleManagerRepository extends SelfCreatingRepository<RoleManagerConfig> {
-  constructor(db: DatabaseService) {
-    super(db, RoleManagerConfig);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, RoleManagerConfig );
+    }
 }

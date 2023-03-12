@@ -9,16 +9,16 @@ import { Module } from "../../modules/module.js";
  * Methods decorated with this command act as the executed method.
  * @param command A command object excluding the callback value.
  */
-export function Command<T extends Module>(command: Partial<Omit<SlashCommand, "callback">>) {
-  return function(target: unknown, _: string, descriptor: PropertyDescriptor): PropertyDescriptor {
-    ModuleService.registerSlashCommand(new SlashCommand({
-      name: command.name,
-      description: command.description,
-      callback: descriptor.value as (interaction: ChatInputCommandInteraction) => Promise<unknown>,
-      subcommands: command.subcommands,
-      options: command.options,
-    }), target.constructor as CTR<T>);
+export function Command<T extends Module>( command: Partial<Omit<SlashCommand, "callback">> ) {
+    return function( target: unknown, _: string, descriptor: PropertyDescriptor ): PropertyDescriptor {
+        ModuleService.registerSlashCommand( new SlashCommand( {
+            name: command.name,
+            description: command.description,
+            callback: descriptor.value as ( interaction: ChatInputCommandInteraction ) => Promise<unknown>,
+            subcommands: command.subcommands,
+            options: command.options,
+        } ), target.constructor as CTR<T> );
 
-    return descriptor;
-  };
+        return descriptor;
+    };
 }

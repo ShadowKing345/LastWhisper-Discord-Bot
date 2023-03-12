@@ -5,7 +5,7 @@ import { Repository } from "../base/repository.js";
 
 @repository()
 export class BuffRepository extends Repository<Buff> {
-  constructor(db: DatabaseService) {
-    super(db, Buff);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, Buff );
+    }
 }

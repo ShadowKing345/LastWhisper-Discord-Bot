@@ -4,7 +4,7 @@ import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, Modu
 import { deepMerge, isPromiseRejected } from "./utils/index.js";
 import { SlashCommands } from "./objects/index.js";
 
-const logger = new Logger("CommandRegistration");
+const logger = new Logger( "CommandRegistration" );
 
 /**
  * Unregisters commands from a route.
@@ -12,17 +12,17 @@ const logger = new Logger("CommandRegistration");
  * @param rest The rest api.
  * @param route The route to delete commands for.
  */
-async function unregister(rest: REST, route: RouteLike) {
-  const commands = (await rest.get(route)) as { id: string }[];
-  const result = await Promise.allSettled(commands.map(command => rest.delete(`${route}/${command.id}`)));
+async function unregister( rest: REST, route: RouteLike ) {
+    const commands = ( await rest.get( route ) ) as { id: string }[];
+    const result = await Promise.allSettled( commands.map( command => rest.delete( `${ route }/${ command.id }` ) ) );
 
-  if (Array.isArray(result)) {
-    for (const r of result) {
-      if (isPromiseRejected(r)) {
-        logger.error(r.reason);
-      }
+    if( Array.isArray( result ) ) {
+        for( const r of result ) {
+            if( isPromiseRejected( r ) ) {
+                logger.error( r.reason );
+            }
+        }
     }
-  }
 }
 
 /**
@@ -31,13 +31,13 @@ async function unregister(rest: REST, route: RouteLike) {
  * @param route The route.
  * @param slashCommands Collection of slash commands to be registered.
  */
-async function register(rest: REST, route: RouteLike, slashCommands: SlashCommands) {
-  const commands = [];
-  for (const slashCommand of slashCommands) {
-    commands.push(slashCommand.build().toJSON());
-  }
+async function register( rest: REST, route: RouteLike, slashCommands: SlashCommands ) {
+    const commands = [];
+    for( const slashCommand of slashCommands ) {
+        commands.push( slashCommand.build().toJSON() );
+    }
 
-  await rest.put(route, { body: commands });
+    await rest.put( route, { body: commands } );
 }
 
 /**
@@ -46,30 +46,30 @@ async function register(rest: REST, route: RouteLike, slashCommands: SlashComman
  * @param args Arguments for command registration. Same as configuration.
  * @param commands A list of commands to be registered.
  */
-export async function manageCommands(token = ConfigurationService.getConfiguration<string>(CommonConfigurationKeys.TOKEN), args = new CommandRegistrationConfiguration(), commands = ModuleService.getSlashCommands().map(struct => struct.value)): Promise<void> {
-  logger.info("Welcome again to command registration or un-registration.");
+export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), args = new CommandRegistrationConfiguration(), commands = ModuleService.getSlashCommands().map( struct => struct.value ) ): Promise<void> {
+    logger.info( "Welcome again to command registration or un-registration." );
 
-  const commandConfigs: CommandRegistrationConfiguration = deepMerge(ConfigurationService.getConfiguration(CommonConfigurationKeys.COMMAND_REGISTRATION) ?? new CommandRegistrationConfiguration(), args);
+    const commandConfigs: CommandRegistrationConfiguration = deepMerge( ConfigurationService.getConfiguration( CommonConfigurationKeys.COMMAND_REGISTRATION ) ?? new CommandRegistrationConfiguration(), args );
 
-  if (!commandConfigs?.isValid) {
-    throw new Error("Command configuration was not setup correctly.");
-  }
+    if( !commandConfigs?.isValid ) {
+        throw new Error( "Command configuration was not setup correctly." );
+    }
 
-  const rest = new REST({ version: "10" }).setToken(token);
+    const rest = new REST( { version: "10" } ).setToken( token );
 
-  const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
-  const isGlobal = commandConfigs.registerForGuild ? `guild ${commandConfigs.guildId}` : "everyone";
+    const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
+    const isGlobal = commandConfigs.registerForGuild ? `guild ${ commandConfigs.guildId }` : "everyone";
 
-  try {
-    const route: RouteLike = commandConfigs.registerForGuild
-      ? Routes.applicationGuildCommands(commandConfigs.clientId, commandConfigs.guildId)
-      : Routes.applicationCommands(commandConfigs.clientId);
+    try {
+        const route: RouteLike = commandConfigs.registerForGuild
+            ? Routes.applicationGuildCommands( commandConfigs.clientId, commandConfigs.guildId )
+            : Routes.applicationCommands( commandConfigs.clientId );
 
-    logger.info(`Beginning command ${isRegistering} for ${isGlobal}.`);
+        logger.info( `Beginning command ${ isRegistering } for ${ isGlobal }.` );
 
-    await (commandConfigs.unregister ? unregister(rest, route) : register(rest, route, commands));
-    logger.info(`Finished ${isRegistering} for ${isGlobal}.`);
-  } catch (error) {
-    logger.error(error instanceof Error ? error.stack : error);
-  }
+        await ( commandConfigs.unregister ? unregister( rest, route ) : register( rest, route, commands ) );
+        logger.info( `Finished ${ isRegistering } for ${ isGlobal }.` );
+    } catch( error ) {
+        logger.error( error instanceof Error ? error.stack : error );
+    }
 }
