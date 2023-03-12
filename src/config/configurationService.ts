@@ -14,36 +14,24 @@ export class ConfigurationService {
     /**
      * Registers a config object with a key to a container.
      * @param key The key for the config file.
-     * @param entity A constructor function to create an object from.
      * @param container Override for the global container.
      * @throws A bad configuration error when the key cannot be found.
      */
-    public static registerConfiguration<T extends object>( key: string, entity: { new(): T } = null, container: DependencyContainer = globalContainer ): void {
+    public static registerConfiguration<T extends object>( key: string, container: DependencyContainer = globalContainer ): void {
         if( ConfigurationService.flattenConfigs.size < 1 ) {
             this.createConfigMap();
         }
 
-        const map = ConfigurationService.flattenConfigs;
-
-        if( !map.has( key ) ) {
-            throw new Error( `Configuration file has no config with the key ${ key }` );
-        }
-
-        if( entity ) {
-            const e = deepMerge( new entity(), map.get( key ) );
-            container.register( entity, { useValue: e } );
-        } else {
-            container.register( key, { useValue: map.get( key ) as T } );
-        }
+        const entity = ConfigurationService.getConfiguration<T>( key );
+        container.register<T>( key, { useValue: entity } );
     }
 
     /**
      * Attempts to return a parse configuration object.
      * Throws if none can be found.
      * @param key The key in the configuration file.
-     * @param entity The object to be mapped to.
      */
-    public static getConfiguration<T>( key: string, entity: { new(): T } = null ): T {
+    public static getConfiguration<T>( key: string ): T {
         if( ConfigurationService.flattenConfigs.size < 1 ) {
             this.createConfigMap();
         }
@@ -54,7 +42,7 @@ export class ConfigurationService {
             throw new Error( `Configuration file has no config with the key ${ key }` );
         }
 
-        return entity ? deepMerge( new entity(), map.get( key ) ) : map.get( key ) as T;
+        return map.get( key ) as T;
     }
 
     /**
@@ -116,7 +104,7 @@ export class ConfigurationService {
         const config = ConfigurationService.parseConfigFile( ConfigurationService.configPath );
 
         if( process.env.NODE_ENV !== "development" ) {
-            return config ?? new ApplicationConfiguration();
+            return config;
         }
 
         const devConfig = ConfigurationService.parseConfigFile( ConfigurationService.devConfigPath );

@@ -13,6 +13,7 @@ import { Logger } from "./logger.js";
 import { CTR } from "../utils/commonTypes.js";
 import { DatabaseService } from "./databaseService.js";
 import { isPromiseRejected } from "../utils/index.js";
+import { Reflect } from "../utils/reflect.js";
 
 type CommandStruct<T> = { type: CTR<Module>, value: T }
 
@@ -29,8 +30,30 @@ export class ModuleService {
     private readonly intervalIds: NodeJS.Timeout[] = [];
 
     constructor(
-        private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.MODULE, ModuleConfiguration ),
+        private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE ),
     ) {
+    }
+
+    /**
+     * Abstraction of the set up part for the configuration method.
+     * Sets up event listeners for Discord events.
+     * @param {Bot} client The client to create the listeners with.
+     * @param {Record<string, CommandStruct<EventListener>[]>} events All the events to listen to as well as their listeners.
+     * @private
+     */
+    private setupEvents( client: Bot, events: Record<string, CommandStruct<EventListener>[]> ) {
+        for( const [ eventName, listeners ] of Object.entries( events ) ) {
+            const filteredListeners = listeners.filter( listener => {
+                if( ModuleService.isModuleBlacklisted( listener.type, this.moduleConfiguration.modules, this.moduleConfiguration.blacklist ) ) {
+                    ModuleService.moduleServiceLogger.debug( `Module ${ Reflect.getModuleName( listener.type ) } was blacklisted. Skipping event ${ eventName } registration...` );
+                    return false;
+                }
+
+                return true;
+            } );
+
+            client.on( eventName, ( ...args ) => this.runEvent( filteredListeners, client, args ) );
+        }
     }
 
     /**
@@ -169,11 +192,17 @@ export class ModuleService {
         const dbService = ModuleService.timerChildInstance.resolve( DatabaseService );
 
         for( const struct of timerStructs ) {
+            if( ModuleService.isModuleBlacklisted( struct.type, this.moduleConfiguration.modules, this.moduleConfiguration.blacklist ) ) {
+                ModuleService.moduleServiceLogger.debug( `Module ${ Reflect.getModuleName( struct.type ) } was blacklisted. Skipping timer set up...` );
+                continue;
+            }
+
+            ModuleService.moduleServiceLogger.debug( `Setting up timer for module ${ Reflect.getModuleName( struct.type ) }` );
             try {
                 const callback = struct.value.execute;
                 const thisObj = ModuleService.timerChildInstance.resolve( struct.type );
 
-                if( struct.value.timeout < 5000 ) {
+                if( struct.value.timeout <= 1000 ) {
                     if( !dbService.isConnected ) {
                         await dbService.connect();
                     }
@@ -192,8 +221,7 @@ export class ModuleService {
                     );
                 }
 
-                await this.callCallback( struct.type, callback, [ client ] );
-
+                this.callCallback( struct.type, callback, [ client ] ).then( null, error => ModuleService.moduleServiceLogger.error( error ) );
             } catch( error ) {
                 ModuleService.moduleServiceLogger.error( error );
             }
@@ -208,6 +236,7 @@ export class ModuleService {
      */
     public async configureModules( client: Bot ): Promise<void> {
         ModuleService.moduleServiceLogger.info( "Loading modules." );
+        ModuleService.moduleServiceLogger.info( `Enabled modules are [${ this.moduleConfiguration.modules.join( ',' ) }]` )
 
         if( this.moduleConfiguration.enableInteractions ) {
             ModuleService.moduleServiceLogger.debug( "Interactions were enabled." );
@@ -216,14 +245,12 @@ export class ModuleService {
 
         if( this.moduleConfiguration.enableTimers ) {
             ModuleService.moduleServiceLogger.debug( "Timers were enabled." );
-            await this.runTimers( ModuleService.timers, client );
+            await this.runTimers( ModuleService.getTimers(), client );
         }
 
         if( this.moduleConfiguration.enableEventListeners ) {
             ModuleService.moduleServiceLogger.debug( "Registering event." );
-            for( const eventName in ModuleService.eventListeners ) {
-                client.on( eventName, ( ...args ) => this.runEvent( ModuleService.eventListeners[eventName], client, args ) );
-            }
+            this.setupEvents( client, ModuleService.getEventListeners() );
         }
 
         ModuleService.moduleServiceLogger.info( "Done." );
@@ -279,12 +306,36 @@ export class ModuleService {
 
     // region Static Method
 
+    /**
+     * Checks if a module has been blacklisted.
+     * @param {CTR<Module>} module The module to check against.
+     * @param {string[]} modules Collection of modules to check against.
+     * @param {boolean} blacklist Is this a blacklist or a whitelist.
+     * @return {boolean}
+     * @private
+     */
+    private static isModuleBlacklisted( module: CTR<Module>, modules: string[], blacklist: boolean ): boolean {
+        return modules.includes( Reflect.getModuleName( module ) ) ? blacklist : !blacklist;
+    }
+
     public static registerSlashCommand( command: SlashCommand, type: CTR<Module> ) {
         ModuleService.slashCommands[command.name] = { value: command, type };
     }
 
     public static getSlashCommands(): CommandStruct<SlashCommand>[] {
-        return Object.values( ModuleService.slashCommands );
+        const objs = Object.values( ModuleService.slashCommands );
+        const config = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE );
+        console.log( config );
+
+        if( !config ) {
+            return objs;
+        }
+
+        const filtered = objs.filter( value => ModuleService.isModuleBlacklisted( value.type, config.modules, config.blacklist ) );
+
+        console.log( filtered );
+
+        return filtered;
     }
 
     public static registerEventListener( listener: EventListener, type: CTR<Module> ) {
@@ -297,11 +348,8 @@ export class ModuleService {
         ModuleService.eventListeners[eventName].push( { value: listener, type } );
     }
 
-    public static getEventListeners(): CommandStruct<EventListener>[] {
-        return Object.values( ModuleService.eventListeners ).reduce( ( prev, current ) => {
-            prev.push( ...current );
-            return prev;
-        }, [] );
+    public static getEventListeners(): Record<string, CommandStruct<EventListener>[]> {
+        return ModuleService.eventListeners;
     }
 
     public static registerTimer( timer: Timer, type: CTR<Module> ) {

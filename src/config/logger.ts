@@ -50,7 +50,7 @@ export class Logger {
 
     private createLogger(): void {
         if( !this.config ) {
-            this.config = ConfigurationService.getConfiguration( CommonConfigurationKeys.LOGGER, LoggerConfigs );
+            this.config = ConfigurationService.getConfiguration<LoggerConfigs>( CommonConfigurationKeys.LOGGER );
         }
 
         this.pino = pino( {

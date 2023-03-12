@@ -31,10 +31,7 @@ export class ApplicationConfiguration extends IMerge<ApplicationConfiguration> {
         }
 
         if( obj.commandRegistration ) {
-            this.commandRegistration = deepMerge(
-                this.commandRegistration ?? new CommandRegistrationConfiguration(),
-                obj.commandRegistration,
-            );
+            this.commandRegistration = deepMerge( this.commandRegistration ?? new CommandRegistrationConfiguration(), obj.commandRegistration );
         }
 
         if( obj.logger ) {
@@ -42,10 +39,7 @@ export class ApplicationConfiguration extends IMerge<ApplicationConfiguration> {
         }
 
         if( obj.moduleConfiguration ) {
-            this.moduleConfiguration = deepMerge(
-                this.moduleConfiguration ?? new ModuleConfiguration(),
-                obj.moduleConfiguration,
-            );
+            this.moduleConfiguration = deepMerge( this.moduleConfiguration ?? new ModuleConfiguration(), obj.moduleConfiguration );
         }
 
         return this;

@@ -30,7 +30,7 @@ export class BuffManagerModule extends Module {
         buffs: "BuffManager.buffs",
         weeks: "BuffManager.weeks",
     };
-    
+
     constructor(
         private service: BuffManagerService,
         permissionManagerService: PermissionManagerService,
@@ -172,10 +172,7 @@ export class BuffManagerModule extends Module {
         } );
     }
 
-    @Timer( {
-        name: `${ moduleName }#dailyMessageTask`,
-        timeout: 60000,
-    } )
+    @Timer( { name: `BuffManager#dailyMessageTask`, timeout: 60000, } )
     public postDailyMessage( client: Bot ): Promise<void> {
         return this.service.postDailyMessage( client );
     }

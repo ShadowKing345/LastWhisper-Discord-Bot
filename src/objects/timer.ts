@@ -9,6 +9,28 @@ export class Timer {
     public timeout: number = null;
     public execute: ( client: Bot ) => Promise<unknown> = null;
 
+    public constructor( data: Partial<Timer> = null ) {
+        if( data ) {
+            this.merge( data );
+        }
+    }
+
+    public merge( obj: Partial<Timer> ): this {
+        if( obj.name ) {
+            this.name = obj.name;
+        }
+
+        if( obj.timeout ) {
+            this.timeout = obj.timeout;
+        }
+
+        if( obj.execute ) {
+            this.execute = obj.execute;
+        }
+
+        return this;
+    }
+
     /**
      * Function that waits till the client is ready then simply exits.
      * This is meant to be a more standard way to do this wait for syntax.

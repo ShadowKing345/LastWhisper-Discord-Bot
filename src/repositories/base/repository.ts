@@ -8,7 +8,7 @@ import { RepositoryError } from "../../utils/errors/index.js";
  * Manages the majority of basic CRUD repository actions.
  */
 export abstract class Repository<T extends EntityBase> {
-    protected repo: Repo<T>;
+    private _repo: Repo<T>;
 
     protected constructor( protected db: DatabaseService, protected entityTarget: EntityTarget<T> ) {
     }
@@ -20,8 +20,6 @@ export abstract class Repository<T extends EntityBase> {
      * @return The newly created object.
      */
     public async save( obj: T ): Promise<T> {
-        this.isConnected();
-
         return this.repo.save( obj );
     }
 
@@ -31,8 +29,6 @@ export abstract class Repository<T extends EntityBase> {
      * @return The object or null if none was found.
      */
     public async findOne( filter: FindOneOptions<T> ): Promise<T> {
-        this.isConnected();
-
         return this.repo.findOne( filter );
     }
 
@@ -42,8 +38,6 @@ export abstract class Repository<T extends EntityBase> {
      * @return A collection of all the found objects if any.
      */
     public async findAll( filter: FindManyOptions<T> ): Promise<T[]> {
-        this.isConnected();
-
         return this.repo.find( filter );
     }
 
@@ -52,8 +46,6 @@ export abstract class Repository<T extends EntityBase> {
      * @return A collection of all the results.
      */
     public getAll(): Promise<T[]> {
-        this.isConnected();
-
         return this.findAll( {} );
     }
 
@@ -62,8 +54,6 @@ export abstract class Repository<T extends EntityBase> {
      * @param objs Collection of all the objects to save.
      */
     public async bulkSave( objs: T[] ): Promise<T[]> {
-        this.isConnected();
-
         return this.repo.save( objs );
     }
 
@@ -78,14 +68,13 @@ export abstract class Repository<T extends EntityBase> {
     /**
      * Checks if the database connection is working. Throws if this is not the case.
      * @private
+     * @return {Repo} The connected repository.
      */
-    private isConnected(): void {
+    protected get repo(): Repo<T> {
         if( !this.db.isConnected ) {
             throw new RepositoryError( "No valid connection to the database." );
         }
 
-        if( this.repo == null ) {
-            this.repo = this.db.dataSource.getRepository<T>( this.entityTarget );
-        }
+        return this._repo ??= this.db.dataSource.getRepository<T>( this.entityTarget );
     }
 }

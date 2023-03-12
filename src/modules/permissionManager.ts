@@ -249,6 +249,4 @@ export class PermissionManagerModule extends Module {
             } );
         }
     }
-
-
 }

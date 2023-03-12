@@ -4,15 +4,16 @@ import { ModuleService } from "../config/index.js";
 import { Module } from "../modules/module.js";
 import { SlashCommand } from "../objects/index.js";
 import { DecoratorError } from "../utils/errors/index.js";
-import { isArray, isObject } from "../utils/index.js";
+import { isArray } from "../utils/index.js";
+import { Reflect } from "../utils/reflect.js";
 
 /**
  * Decorator that registers a module base class as a singleton of its own type and of token ModuleBase.name.
  */
 export function module<T extends Module>( args: { moduleName?: string, baseCommand?: Partial<Omit<SlashCommand, "callback">> } = {} ) {
     return function( target: constructor<T> ) {
-        if( args.baseCommand && isObject( target.prototype ) ) {
-            const subCommands: unknown = Reflect.getMetadata( "module:subCommands", target );
+        if( args.baseCommand ) {
+            const subCommands: unknown = Reflect.getSubcommands( target );
             const base = args.baseCommand;
 
             if( !( subCommands && isArray( subCommands ) && subCommands.length > 0 ) ) {
@@ -29,7 +30,7 @@ export function module<T extends Module>( args: { moduleName?: string, baseComma
         }
 
         if( args.moduleName ) {
-            Reflect.defineMetadata("module:moduleName", args.moduleName, target);
+            Reflect.setModuleName(args.moduleName, target);
         }
 
         injectable()( target );
