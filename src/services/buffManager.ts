@@ -78,7 +78,7 @@ export class BuffManagerService extends Service {
                 }
 
                 const week: Week = await this.weekRepository.getWeekOfYear( settings.guildId, now );
-                const buff: Buff = await week.getBuff( now );
+                const buff: Buff = week.getBuff( now );
 
                 const embeds: EmbedBuilder[] = [];
                 if( !buff ) {
@@ -91,7 +91,7 @@ export class BuffManagerService extends Service {
 
                 if( !isNaN( settings.dow ) && Number( settings.dow ) === now.weekday ) {
                     this.logger.debug( `Posting week message.` );
-                    embeds.push( await this.createWeekEmbed( settings.weekMessage, week, now ) );
+                    embeds.push( this.createWeekEmbed( settings.weekMessage, week, now ) );
                 }
 
                 await channel.send( { embeds } );
@@ -124,7 +124,7 @@ export class BuffManagerService extends Service {
      * @param week A WeekDTO object ot be used.
      * @param date The date context for the week. Used to get the week and fill in footer data.
      */
-    public async createWeekEmbed( title: string, week: Week, date: DateTime ): Promise<EmbedBuilder> {
+    public createWeekEmbed( title: string, week: Week, date: DateTime ): EmbedBuilder {
         this.logger.debug( `Creating Week Embed.` );
 
         if( !week ) {
@@ -135,7 +135,7 @@ export class BuffManagerService extends Service {
         for( const [ day, buff ] of week.days.toArray ) {
             fields.push( {
                 name: day,
-                value: ( await buff )?.text ?? "No buff found.",
+                value: buff?.text ?? "No buff found.",
                 inline: true,
             } );
         }
