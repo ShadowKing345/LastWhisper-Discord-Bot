@@ -8,12 +8,12 @@ import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { module } from "../decorators/index.js";
+// import { module } from "../decorators/index.js";
 import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
 import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 
-@module()
+// @module({})
 export class GardeningManagerModule extends Module {
     protected static readonly logger: Logger = new Logger( "GardeningManagerModule" );
 
@@ -22,8 +22,8 @@ export class GardeningManagerModule extends Module {
         new SlashCommand( {
             name: "gardening_module",
             description: "gardening module.",
-            subcommands: {
-                Reverse: new SlashCommand( {
+            subcommands: [
+                new SlashCommand( {
                     name: "reserve",
                     description: "Reserve a slot in a plot to be used by you.",
                     options: [
@@ -63,7 +63,7 @@ export class GardeningManagerModule extends Module {
                         } ),
                     ],
                 } ),
-                Cancel: new SlashCommand( {
+                new SlashCommand( {
                     name: "cancel",
                     description: "Cancel any reservations you have made to a slot in a plot.",
                     options: [
@@ -87,7 +87,7 @@ export class GardeningManagerModule extends Module {
                         } ),
                     ],
                 } ),
-                List: new SlashCommand( {
+                new SlashCommand( {
                     name: "list",
                     description: "Shows all plots and their states.",
                     options: [
@@ -108,7 +108,7 @@ export class GardeningManagerModule extends Module {
                         } ),
                     ],
                 } ),
-            },
+            ],
             callback: async interaction => this.commandResolver( interaction ),
         } ),
     ];
