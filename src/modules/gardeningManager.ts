@@ -109,7 +109,7 @@ export class GardeningManagerModule extends Module {
                     ],
                 } ),
             ],
-            callback: async interaction => this.commandResolver( interaction ),
+            // callback: async interaction => this.commandResolver( interaction ),
         } ),
     ];
 
@@ -132,7 +132,7 @@ export class GardeningManagerModule extends Module {
         permissionManagerService: PermissionManagerService,
     ) {
         super(
-            GardeningManagerModule.logger,
+            // GardeningManagerModule.logger,
             permissionManagerService,
         );
     }

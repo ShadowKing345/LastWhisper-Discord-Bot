@@ -35,7 +35,7 @@ export class BuffManagerModule extends Module {
         private service: BuffManagerService,
         permissionManagerService: PermissionManagerService,
     ) {
-        super( BuffManagerModule.logger, permissionManagerService );
+        super( permissionManagerService );
     }
 
     /**
@@ -76,7 +76,7 @@ export class BuffManagerModule extends Module {
             date = DateTime.fromISO( dateString );
         }
 
-        this.logger.debug( `Command invoked for buffs.\nPosting buff message for the date ${ date.toISO() }.` );
+        BuffManagerModule.logger.debug( `Command invoked for buffs.\nPosting buff message for the date ${ date.toISO() }.` );
         let buff: Buff;
         try {
             buff = await this.service.getBuffByDate( interaction.guildId, date );
@@ -98,7 +98,7 @@ export class BuffManagerModule extends Module {
         }
 
         if( !buff ) {
-            this.logger.debug( `Buff did not exit.` );
+            BuffManagerModule.logger.debug( `Buff did not exit.` );
             await interaction.editReply( {
                 content: `Sorry, The buff for the date ${ date.toISO() } does not exist in the collection of buffs. Kindly contact a manager or administration to resolve this issue.`,
             } );
@@ -145,7 +145,7 @@ export class BuffManagerModule extends Module {
             date = DateTime.fromISO( dateString );
         }
 
-        this.logger.debug( `Command invoked for weeks.\nPosting week message for ${ date.toISO() }.` );
+        BuffManagerModule.logger.debug( `Command invoked for weeks.\nPosting week message for ${ date.toISO() }.` );
 
         let week: Week;
         try {

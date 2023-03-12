@@ -33,14 +33,12 @@ export class EventManagerModule extends Module {
         test: "EventManager.test",
         list: "EventManager.list",
     };
-    
+
     constructor(
         private service: EventManagerService,
         permissionManagerService: PermissionManagerService,
     ) {
-        super(
-            EventManagerModule.logger,
-            permissionManagerService );
+        super( permissionManagerService );
     }
 
     // region Commands
@@ -171,7 +169,7 @@ export class EventManagerModule extends Module {
             await this.service.cancelByIndex( interaction.guildId, index );
             await interaction.editReply( { content: "Event was successfully canceled." } );
         } catch( error ) {
-            this.logger.error( error instanceof Error ? error.stack : error );
+            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
             await interaction.editReply( { content: "Event failed to be canceled." } );
         }
     }
@@ -283,11 +281,11 @@ export class EventManagerModule extends Module {
      */
     @Event( "messageCreate" )
     public async createEvent( message: Message | PartialMessage ): Promise<void> {
-        this.logger.debug( "On Message Create fired. Creating new event." );
+        EventManagerModule.logger.debug( "On Message Create fired. Creating new event." );
 
         if( message.partial ) message = await message.fetch();
         if( message.author?.id === message.client?.application?.id || message.applicationId ) {
-            this.logger.debug( "Author is an application and message is ignored." );
+            EventManagerModule.logger.debug( "Author is an application and message is ignored." );
             return;
         }
 
@@ -299,14 +297,14 @@ export class EventManagerModule extends Module {
                 message.channelId,
             );
             await message.react( event ? "✅" : "❎" );
-            this.logger.debug( "New event created." );
+            EventManagerModule.logger.debug( "New event created." );
         } catch( error ) {
             if( error instanceof WrongChannelError ) {
-                this.logger.debug( "Channel was wrong." );
+                EventManagerModule.logger.debug( "Channel was wrong." );
                 return;
             }
 
-            this.logger.error( error instanceof Error ? error.stack : error );
+            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
             await message.react( "❓" );
         }
     }
@@ -323,7 +321,7 @@ export class EventManagerModule extends Module {
         if( oldMessage.partial ) await oldMessage.fetch();
         if( newMessage.partial ) await newMessage.fetch();
         if( newMessage.author?.id === newMessage.client?.application?.id || newMessage.applicationId ) {
-            this.logger.debug( "Author is an application and message is ignored." );
+            EventManagerModule.logger.debug( "Author is an application and message is ignored." );
             return;
         }
 
@@ -339,7 +337,7 @@ export class EventManagerModule extends Module {
 
             await newMessage.react( event ? "✅" : "❎" );
         } catch( error ) {
-            this.logger.error( error instanceof Error ? error.stack : error );
+            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
             await newMessage.react( "❓" );
         }
     }

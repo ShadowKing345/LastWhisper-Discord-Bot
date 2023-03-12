@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, GuildBan, GuildMember, InteractionResponse, PartialGuildMember, } from "discord.js";
-import { Logger } from "../config/logger.js";
+// import { Logger } from "../config/logger.js";
 import { module, SubCommand, Event } from "../decorators/index.js";
 import { ManagerUtilsService } from "../services/managerUtils.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
@@ -18,13 +18,13 @@ const moduleName = "ManagerUtils";
     }
 } )
 export class ManagerUtilsModule extends Module {
-    private static readonly logger: Logger = new Logger( "ManagerUtilsModule" );
+    // private static readonly logger: Logger = new Logger( "ManagerUtilsModule" );
     
     constructor(
         private managerUtilsService: ManagerUtilsService,
         permissionManagerService: PermissionManagerService,
     ) {
-        super( ManagerUtilsModule.logger, permissionManagerService );
+        super( permissionManagerService );
     }
 
     /**

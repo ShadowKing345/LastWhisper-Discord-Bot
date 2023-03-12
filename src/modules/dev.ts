@@ -22,7 +22,7 @@ export class DevModule extends Module {
     public constructor(
         permissionManagerService: PermissionManagerService,
     ) {
-        super( DevModule.logger, permissionManagerService );
+        super( permissionManagerService );
     }
 
     @SubCommand( {
