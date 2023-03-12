@@ -2,7 +2,6 @@ export class CommandRegistrationConfiguration {
     public clientId: string = null;
     public guildId: string = null;
     public registerForGuild?: boolean = false;
-    public unregister?: boolean = false;
 
     public get isValid(): boolean {
         if( !this.clientId ) {
@@ -25,14 +24,10 @@ export class CommandRegistrationConfiguration {
             this.guildId = obj.guildId;
         }
 
-        if( typeof obj.registerForGuild  === "boolean" ) {
+        if( typeof obj.registerForGuild === "boolean" ) {
             this.registerForGuild = obj.registerForGuild;
         }
-
-        if( typeof obj.unregister === "boolean" ) {
-            this.unregister = obj.unregister;
-        }
-
+        
         return this;
     }
 }

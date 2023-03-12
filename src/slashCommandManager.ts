@@ -42,11 +42,12 @@ async function register( rest: REST, route: RouteLike, slashCommands: SlashComma
 
 /**
  * Command that attempted to register the slash command to the bot.
- * @param token The token to be used. Overrides the configuration token.
- * @param args Arguments for command registration. Same as configuration.
- * @param commands A list of commands to be registered.
+ * @param {string} token The token to be used. Overrides the configuration token.
+ * @param {boolean} shouldUnregister Boolean flag to determine if we should unregister the commands.
+ * @param {CommandRegistrationConfiguration} args Arguments for command registration. Same as configuration.
+ * @param {SlashCommands[]} commands A list of commands to be registered.
  */
-export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), args: CommandRegistrationConfiguration = null, commands = ModuleService.getSlashCommands().map( struct => struct.value ) ): Promise<void> {
+export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), shouldUnregister = false, args: CommandRegistrationConfiguration = null, commands = ModuleService.getSlashCommands().map( struct => struct.value ) ): Promise<void> {
     logger.info( "Welcome again to command registration or un-registration." );
 
     const commandConfigs: CommandRegistrationConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.COMMAND_REGISTRATION );
@@ -60,7 +61,7 @@ export async function manageCommands( token = ConfigurationService.getConfigurat
 
     const rest = new REST( { version: "10" } ).setToken( token );
 
-    const isRegistering = commandConfigs.unregister ? "unregistering" : "registering";
+    const isRegistering = shouldUnregister ? "unregistering" : "registering";
     const isGlobal = commandConfigs.registerForGuild ? `guild ${ commandConfigs.guildId }` : "everyone";
 
     try {
@@ -70,7 +71,7 @@ export async function manageCommands( token = ConfigurationService.getConfigurat
 
         logger.info( `Beginning command ${ isRegistering } for ${ isGlobal }.` );
 
-        await ( commandConfigs.unregister ? unregister( rest, route ) : register( rest, route, commands ) );
+        await ( shouldUnregister ? unregister( rest, route ) : register( rest, route, commands ) );
         logger.info( `Finished ${ isRegistering } for ${ isGlobal }.` );
     } catch( error ) {
         logger.error( error instanceof Error ? error.stack : error );
