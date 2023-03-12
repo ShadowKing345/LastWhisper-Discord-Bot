@@ -31,7 +31,7 @@ class Index {
         opts: { isDefault: true },
         description: "Runs to bot.",
         options: [
-            { definition: "-t, --token <string>", description: "The Discord Token to be used." },
+            { flags: "-t, --token <string>", description: "The Discord Token to be used." },
         ],
     } )
     public async runBot( opts: unknown ) {
@@ -64,22 +64,26 @@ class Index {
 
     /**
      * Command that manages the Discord slash commands.
-     * @param opts Options passed to the command. Expected to be an empty object if none were passed.
+     * @param {string} subcommand The subcommand used to manage the commands. 
+     * @param {unknown} opts Options passed to the command. Expected to be an empty object if none were passed.
      */
     @Commander.addCommand( {
         name: "commandManager",
         description: "Handles the various tasks relation providing slash commands to Discord.",
+        arguments: [ { name: "[subcommand]", description: "[register, unregister]", defaultValue: "register" } ],
         options: [
-            { definition: "-t, --token <string>", description: "Token for bot." },
-            { definition: "-c, --client <string>", description: "Client ID." },
+            { flags: "-t, --token <string>", description: "Token for bot." },
+            { flags: "-c, --client <string>", description: "Client ID." },
             {
-                definition: "-g, --guild <string>",
+                flags: "-g, --guild <string>",
                 description: "Guild ID to register commands for. If this is set configuration file options will be ignored.",
             },
-            { definition: "-u, --unregister [boolean]", description: "Use to unregister commands instead." },
         ],
     } )
-    public async runCommandManager( opts: unknown ) {
+    public async runCommandManager( subcommand: "register" | "unregister", opts: unknown ) {
+        if( !( subcommand === "register" || subcommand === "unregister" ) ) {
+            throw new Error( "Invalid subcommand. You can only provide [register, unregister]" )
+        }
         const config: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
         let token: string = undefined;
 
@@ -88,21 +92,18 @@ class Index {
                 token = opts.token;
             }
 
-            if( "client" in opts && typeof opts.client === "string" ) {
-                config.clientId = opts.client;
-            }
+            config.clientId = "client" in opts && typeof opts.client === "string" ? opts.client : null;
 
             if( "guild" in opts && typeof opts.guild === "string" ) {
                 config.guildId = opts.guild;
                 config.registerForGuild = true;
-            }
-
-            if( "unregister" in opts && typeof opts.unregister === "boolean" ) {
-                config.unregister = opts.unregister;
+            } else {
+                config.guildId = null;
+                config.registerForGuild = null;
             }
         }
 
-        return manageCommands( token, config );
+        return manageCommands( token, subcommand === "unregister", config );
     }
 
     /**
@@ -117,9 +118,9 @@ class Index {
         name: "seedDatabase",
         description: "Attempts to pre-seed the database with provided data. Note that the data has to be a JSON formatted object.\n" +
             "This uses whatever was passed in stdin if the file location was not specified.",
-        argument: [ "[object]", "The JSON object to be parsed." ],
+        arguments: [ { name: "[object]", description: "The JSON object to be parsed." } ],
         options: [
-            { definition: "-f, --file <path>", description: "The location of the file to be read from. Uses " },
+            { flags: "-f, --file <path>", description: "The location of the file to be read from. Uses " },
         ],
     } )
     public async seedDatabase( body: string, opts: Record<string, unknown> ) {

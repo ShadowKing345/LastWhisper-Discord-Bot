@@ -24,7 +24,7 @@ export class Commander {
                         if( opt instanceof Option ) {
                             command.addOption( opt );
                         } else {
-                            command.option( opt.definition, opt.description );
+                            command.option( opt.flags, opt.description );
                         }
                     }
                 }
@@ -50,5 +50,5 @@ export class CommandOpts {
     description: string;
     arguments: {name: string, description?: string, defaultValue?: unknown}[];
     opts?: CommandOptions;
-    options?: Array<{ definition: string, description: string } | Option> = [];
+    options?: Array<{ flags: string, description: string } | Option> = [];
 }
