@@ -315,7 +315,7 @@ export class ModuleService {
      * @private
      */
     private static isModuleBlacklisted( module: CTR<Module>, modules: string[], blacklist: boolean ): boolean {
-        return modules.includes( Reflect.getModuleName( module ) ) ? !blacklist : blacklist;
+        return modules.includes( Reflect.getModuleName( module ) ) ? blacklist : !blacklist;
     }
 
     public static registerSlashCommand( command: SlashCommand, type: CTR<Module> ) {
