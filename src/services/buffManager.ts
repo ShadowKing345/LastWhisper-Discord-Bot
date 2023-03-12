@@ -135,7 +135,7 @@ export class BuffManagerService extends Service {
         for( const [ day, buff ] of week.days.toArray ) {
             fields.push( {
                 name: day,
-                value: ( buff )?.text ?? "No buff found.",
+                value: buff?.text ?? "No buff found.",
                 inline: true,
             } );
         }
