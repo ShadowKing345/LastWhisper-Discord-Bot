@@ -2,18 +2,18 @@ import { ButtonInteraction, ChatInputCommandInteraction, ClientEvents, CommandIn
 import { clearInterval } from "timers";
 import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
-import { CommandResolverError } from "../utils/errors/index.js";
 import { Bot } from "../objects/bot.js";
 import { CommandNameDef, EventListener, SlashCommand, Timer } from "../objects/index.js";
+import { CTR } from "../utils/commonTypes.js";
+import { CommandResolverError } from "../utils/errors/index.js";
+import { isPromiseRejected } from "../utils/index.js";
+import { Reflect } from "../utils/reflect.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
+import { DatabaseService } from "./databaseService.js";
 import { ModuleConfiguration } from "./entities/index.js";
 
 import { Logger } from "./logger.js";
-import { CTR } from "../utils/commonTypes.js";
-import { DatabaseService } from "./databaseService.js";
-import { isPromiseRejected } from "../utils/index.js";
-import { Reflect } from "../utils/reflect.js";
 
 type CommandStruct<T> = { type: CTR<Module>, value: T }
 
@@ -330,11 +330,7 @@ export class ModuleService {
             return objs;
         }
 
-        const filtered = objs.filter( value => !ModuleService.isModuleBlacklisted( value.type, config.modules, config.blacklist ) );
-
-        console.log( filtered );
-
-        return filtered;
+        return objs.filter( value => !ModuleService.isModuleBlacklisted( value.type, config.modules, config.blacklist ) );
     }
 
     public static registerEventListener( listener: EventListener, type: CTR<Module> ) {
