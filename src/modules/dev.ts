@@ -118,7 +118,7 @@ export class DevModule extends Module {
         await Promise.resolve();
     }
 
-    @Timer( { name: `DevModule#TimerTest`, timeout: 10000 } )
+    @Timer( { name: "DevModule#TimerTest", timeout: 10000 } )
     public async timerTest(): Promise<void> {
         DevModule.logger.debug( "Timer ticked." );
         return Promise.resolve();
