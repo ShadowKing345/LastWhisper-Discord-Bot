@@ -1,1 +1,0 @@
-{"version":3,"file":"timer.d.ts","sourceRoot":"","sources":["../../../src/decorators/moduleService/timer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAC;AAGjD,OAAO,EAAE,KAAK,IAAI,WAAW,EAAE,MAAM,wBAAwB,CAAC;AAQ9D,wBAAgB,KAAK,CAAC,CAAC,SAAS,MAAM,EAAE,KAAK,EAAE,IAAI,CAAC,WAAW,EAAE,SAAS,CAAC,YACjD,OAAO,KAAK,MAAM,cAAc,kBAAkB,KAAG,kBAAkB,CAShG"}

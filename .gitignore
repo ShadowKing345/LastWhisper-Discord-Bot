@@ -6,6 +6,7 @@ node_modules
 /config/*
 /logs/*
 /db-data/*
+build
 
 # Log files
 *.log

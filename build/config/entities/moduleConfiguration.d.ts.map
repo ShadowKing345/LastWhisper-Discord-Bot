@@ -1,1 +1,0 @@
-{"version":3,"file":"moduleConfiguration.d.ts","sourceRoot":"","sources":["../../../src/config/entities/moduleConfiguration.ts"],"names":[],"mappings":"AAGA,qBAAa,mBAAmB;IAEvB,cAAc,CAAC,EAAE,OAAO,CAAQ;IAEhC,oBAAoB,CAAC,EAAE,OAAO,CAAQ;IAEtC,YAAY,CAAC,EAAE,OAAO,CAAQ;IAE9B,kBAAkB,CAAC,EAAE,OAAO,CAAQ;IAGpC,OAAO,CAAC,EAAE,MAAM,EAAE,CAAmB;IAErC,SAAS,CAAC,EAAE,OAAO,CAAQ;CACnC"}
