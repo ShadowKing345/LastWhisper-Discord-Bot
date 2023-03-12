@@ -8,3 +8,4 @@ export * from "./moduleService/event.js";
 export * from "./moduleService/command.js";
 export * from "./moduleService/timer.js";
 export * from "./commander.js";
+export * from "./moduleService/subCommand.js";
