@@ -1,7 +1,10 @@
 ## Table of Content
+
 <!-- TOC -->
-  * [Table of Content](#table-of-content)
-  * [Using Injectables](#using-injectables)
+
+* [Table of Content](#table-of-content)
+* [Using Injectables](#using-injectables)
+
 <!-- TOC -->
 
 ## Using Injectables

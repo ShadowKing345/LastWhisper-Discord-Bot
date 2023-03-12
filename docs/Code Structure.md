@@ -3,10 +3,12 @@
 ## Table of Content
 
 <!-- TOC -->
+
 * [Code Structure and Building](#code-structure-and-building)
-  * [Table of Content](#table-of-content)
-  * [Code Structure](#code-structure)
-  * [Building](#building)
+    * [Table of Content](#table-of-content)
+    * [Code Structure](#code-structure)
+    * [Building](#building)
+
 <!-- TOC -->
 
 ## Code Structure

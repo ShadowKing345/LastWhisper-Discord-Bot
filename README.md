@@ -5,20 +5,20 @@ The Discord bot for the Final Fantasy XIV Last Whisper free company Discord serv
 ## Table of contents
 
 - [Getting Started](#getting-started)
-  - [Yarn](#yarn)
-  - [NPM](#npm)
-  - [Docker](#docker)
+    - [Yarn](#yarn)
+    - [NPM](#npm)
+    - [Docker](#docker)
 - [Configuration](#configuration)
 - [Commands Setup](#command-setup)
-  - [Guild Specific Command Setup](#guild-specific-command-setup)
+    - [Guild Specific Command Setup](#guild-specific-command-setup)
 - [Advanced Configuration](#advanced-configuration)
-  - [Environment Variables](#environment-variables)
-  - [Logger](#logger)
-  - [Command Arguments](#command-arguments)
+    - [Environment Variables](#environment-variables)
+    - [Logger](#logger)
+    - [Command Arguments](#command-arguments)
 - [Development](#development)
-  - [Additional Configuration](#additional-configuration-file)
-  - [Project Setup](#project-setup)
-  - [Pull Requests](#pull-requests)
+    - [Additional Configuration](#additional-configuration-file)
+    - [Project Setup](#project-setup)
+    - [Pull Requests](#pull-requests)
 - [Special Thanks](#special-thanks)
 
 ## Features of the Discord bot
@@ -110,7 +110,8 @@ mkdir config
 ```
 
 _Note: A schema file is also provided to help with configuration of the bot. It can be found under
-[`docs/schema.json`](docs/Schemas/schema.json). Presuming the text editor you are using can handle JSON schemas. Additionally,
+[`docs/schema.json`](docs/Schemas/schema.json). Presuming the text editor you are using can handle JSON schemas.
+Additionally,
 if you are having issues seeing the schema try use `../docs/schema.json` instead._
 
 ## Command Setup

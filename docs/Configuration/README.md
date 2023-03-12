@@ -3,10 +3,12 @@
 ## Table of Contents
 
 <!-- TOC -->
+
 * [Configuration and Configuration Files](#configuration-and-configuration-files)
-  * [Table of Contents](#table-of-contents)
-  * [Configuration Files](#configuration-files)
-  * [Configuration](#configuration)
+    * [Table of Contents](#table-of-contents)
+    * [Configuration Files](#configuration-files)
+    * [Configuration](#configuration)
+
 <!-- TOC -->
 
 ## Configuration Files
@@ -14,7 +16,8 @@
 Configuration files are to be stored inside the [`config`](/config) directory found in the project root.
 
 The name of the files shall be as follows, `{configuration-type}.json`. By default, the `configuration-type` placeholder
-should be `common` however you can create a development file used for development instead using the file name `development`.
+should be `common` however you can create a development file used for development instead using the file
+name `development`.
 
 *Note: You must have `NODE_ENV` environment variable set to `development` in order to have this configuration file work*
 
