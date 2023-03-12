@@ -1,16 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-    APIApplicationCommandOptionChoice,
-    ApplicationCommandOptionBase,
-    ApplicationCommandOptionType as OptionType,
-    ChatInputCommandInteraction,
-    SlashCommandStringOption,
-    SlashCommandSubcommandBuilder,
-    SlashCommandSubcommandGroupBuilder,
-} from "discord.js";
-import { deepMerge } from "../utils/index.js";
+import { APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, ApplicationCommandOptionType as OptionType, ChatInputCommandInteraction, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, } from "discord.js";
 
 type SlashCommandType = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
+
+export type CommandNameDef = { name?: string, group?: string, sub?: string };
 
 /**
  * Object that represents a slash command to be used.
@@ -20,7 +13,7 @@ export class SlashCommand {
     public description: string = null;
 
     public callback: ( interaction: ChatInputCommandInteraction ) => Promise<unknown> | unknown = null;
-    public subcommands?: { [key: string]: SlashCommand };
+    public subcommands?: ( SlashCommand | Partial<SlashCommand> )[];
 
     public options: CommandOptions = [];
 
@@ -40,13 +33,7 @@ export class SlashCommand {
         }
 
         if( obj.subcommands ) {
-            if( !this.subcommands ) {
-                this.subcommands = {};
-            }
-
-            for( const key in obj.subcommands ) {
-                this.subcommands[key] = deepMerge( this.subcommands[key] ?? new SlashCommand(), obj.subcommands[key] );
-            }
+            this.subcommands = obj.subcommands.map( item => item instanceof SlashCommand ? item : new SlashCommand( item ) );
         }
 
         if( obj.callback ) {
@@ -54,8 +41,7 @@ export class SlashCommand {
         }
 
         if( obj.options ) {
-            this.options = obj.options;
-            this.options = ( this.options ?? [] ).map( option => deepMerge( new CommandOption(), option ) );
+            this.options = obj.options.map( option => option instanceof CommandOption ? option : new CommandOption( option ) );
         }
 
         return this;
@@ -65,19 +51,15 @@ export class SlashCommand {
         builder.setName( this.name ).setDescription( this.description );
 
         if( this.subcommands ) {
-            for( const subcommand of Object.values( this.subcommands ) ) {
+            for( const subcommand of this.subcommands ) {
                 if( !subcommand ) {
                     continue;
                 }
 
-                if( Object.values( subcommand.subcommands ?? [] ).length > 0 && builder instanceof SlashCommandBuilder ) {
-                    builder.addSubcommandGroup(
-                        subcommandGroupBuilder => subcommand.build( subcommandGroupBuilder ) as SlashCommandSubcommandGroupBuilder,
-                    );
+                if( subcommand.subcommands?.length > 0 && builder instanceof SlashCommandBuilder ) {
+                    builder.addSubcommandGroup( subcommandGroupBuilder => subcommand.build( subcommandGroupBuilder ) as SlashCommandSubcommandGroupBuilder, );
                 } else if( !( builder instanceof SlashCommandSubcommandBuilder ) ) {
-                    builder.addSubcommand(
-                        subcommandBuilder => subcommand.build( subcommandBuilder ) as SlashCommandSubcommandBuilder,
-                    );
+                    builder.addSubcommand( subcommandBuilder => subcommand.build( subcommandBuilder ) as SlashCommandSubcommandBuilder, );
                 }
             }
         }
@@ -89,6 +71,36 @@ export class SlashCommand {
         }
 
         return builder;
+    }
+
+    public getCallback( def: CommandNameDef ): ( interaction: ChatInputCommandInteraction ) => Promise<unknown> | unknown {
+        if( this.callback ) {
+            return this.callback;
+        }
+
+        if( this.subcommands?.length < 1 ) {
+            throw new Error( "Command does not have subcommands." );
+        }
+
+        if( def.group ) {
+            if( !def.sub ) {
+                throw new Error( "Attempting to look for a subGroup command without a subCommand should not be possible." );
+            }
+
+            const group = this.subcommands?.find( group => group.name === def.group );
+            if( group ) {
+                return group.getCallback( { name: def.group, sub: def.sub } );
+            }
+        }
+
+        if( def.sub ) {
+            const sub = this.subcommands?.find( sub => sub.name === def.sub );
+            if( sub && sub.callback ) {
+                return sub.callback;
+            }
+        }
+
+        return null;
     }
 }
 
