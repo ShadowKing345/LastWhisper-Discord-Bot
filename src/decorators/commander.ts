@@ -4,17 +4,19 @@ import { isArray } from "../utils/index.js";
 export class Commander {
     public static addCommand<T>( obj: Partial<CommandOpts> | Command, program: Command = gloProgram ) {
         return function( target: T, _: string | symbol, descriptor: PropertyDescriptor ): PropertyDescriptor {
-            let command: Command;
 
             if( obj instanceof Command ) {
-                command = program.addCommand( obj );
+                program.addCommand( obj );
+                obj.action( ( descriptor.value as ( ...args: unknown[] ) => void | Promise<void> ).bind( target ) );
             } else {
-                command = program
+                const command = program
                     .command( obj.name, obj.opts )
                     .description( obj.description );
 
-                if( "argument" in obj && isArray( obj.argument ) ) {
-                    command.argument( obj.argument[0], obj.argument[1], obj.argument[2] );
+                if( "arguments" in obj && isArray( obj.arguments ) ) {
+                    for(const argument of obj.arguments) {
+                        command.argument( argument.name, argument.description, argument.defaultValue );
+                    }
                 }
 
                 if( obj.options && isArray( obj.options ) ) {
@@ -26,10 +28,10 @@ export class Commander {
                         }
                     }
                 }
+
+                command.action( ( descriptor.value as ( ...args: unknown[] ) => void | Promise<void> ).bind( target ) );
             }
-
-            command.action( ( descriptor.value as ( ...args: unknown[] ) => void | Promise<void> ).bind( target ) );
-
+            
             return descriptor;
         };
     }
@@ -46,7 +48,7 @@ export class Commander {
 export class CommandOpts {
     name: string;
     description: string;
-    argument: [ string, string?, string? ];
+    arguments: {name: string, description?: string, defaultValue?: unknown}[];
     opts?: CommandOptions;
     options?: Array<{ definition: string, description: string } | Option> = [];
 }
