@@ -36,11 +36,11 @@ export class Logger {
         this.log( LOGGING_LEVELS.error, message instanceof Error ? message.stack : message as string | object );
     }
 
-    public log( level: LOGGING_LEVELS, message: string | object ): void {
+    public log( level: LOGGING_LEVELS, message: string | object, more: object = {} ): void {
         if( process.env.DEV_DISABLE_LOGGING ) {
             return;
         }
-
+        
         if( !this.pino ) {
             this.createLogger();
         }
@@ -48,8 +48,8 @@ export class Logger {
         if( this.config.disable ) {
             return;
         }
-
-        this.pino[level]?.( { context: this.name }, message instanceof Object ? JSON.stringify( message ) : message );
+        
+        this.pino[level]?.( { context: this.name, ...more }, message instanceof Object ? JSON.stringify( message ) : message );
     }
 
     private createLogger(): void {
