@@ -29,7 +29,7 @@ export class ModuleService {
     private readonly intervalIds: NodeJS.Timeout[] = [];
 
     constructor(
-        private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.MODULE, ModuleConfiguration ),
+        private readonly moduleConfiguration: ModuleConfiguration = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE ),
     ) {
     }
 
@@ -216,12 +216,12 @@ export class ModuleService {
 
         if( this.moduleConfiguration.enableTimers ) {
             ModuleService.moduleServiceLogger.debug( "Timers were enabled." );
-            await this.runTimers( ModuleService.timers, client );
+            await this.runTimers( ModuleService.getTimers(), client );
         }
 
         if( this.moduleConfiguration.enableEventListeners ) {
             ModuleService.moduleServiceLogger.debug( "Registering event." );
-            for( const eventName in ModuleService.eventListeners ) {
+            for( const eventName in ModuleService.getEventListeners() ) {
                 client.on( eventName, ( ...args ) => this.runEvent( ModuleService.eventListeners[eventName], client, args ) );
             }
         }
@@ -284,7 +284,23 @@ export class ModuleService {
     }
 
     public static getSlashCommands(): CommandStruct<SlashCommand>[] {
-        return Object.values( ModuleService.slashCommands );
+        const objs = Object.values( ModuleService.slashCommands );
+        const config = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE );
+        console.log( config );
+
+        if( !config ) {
+            return objs;
+        }
+
+        const filtered = objs.filter( value => {
+            const moduleName = Reflect.getMetadata( "module:moduleName", value.type ) as string;
+            console.log(moduleName);
+            return config.modules.includes( moduleName ) ? !config.blacklist : config.blacklist;
+        } );
+
+        console.log( filtered );
+
+        return filtered;
     }
 
     public static registerEventListener( listener: EventListener, type: CTR<Module> ) {
@@ -297,11 +313,8 @@ export class ModuleService {
         ModuleService.eventListeners[eventName].push( { value: listener, type } );
     }
 
-    public static getEventListeners(): CommandStruct<EventListener>[] {
-        return Object.values( ModuleService.eventListeners ).reduce( ( prev, current ) => {
-            prev.push( ...current );
-            return prev;
-        }, [] );
+    public static getEventListeners(): Record<string, CommandStruct<EventListener>[]> {
+        return ModuleService.eventListeners;
     }
 
     public static registerTimer( timer: Timer, type: CTR<Module> ) {

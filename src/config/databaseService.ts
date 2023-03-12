@@ -76,7 +76,7 @@ export class DatabaseService {
      * Attempts to create a new datasource to be used by throughout the project.
      * @param config Database configuration override.
      */
-    public static createDataSource( config: DatabaseConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.DATABASE, DatabaseConfiguration ) ): DataSource {
+    public static createDataSource( config: DatabaseConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.DATABASE ) ): DataSource {
         const src = path.basename( path.join( path.dirname( import.meta.url ), ".." ) );
 
         return new DataSource( {
