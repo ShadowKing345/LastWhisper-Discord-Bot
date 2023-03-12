@@ -325,13 +325,12 @@ export class ModuleService {
     public static getSlashCommands(): CommandStruct<SlashCommand>[] {
         const objs = Object.values( ModuleService.slashCommands );
         const config = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE );
-        console.log( config );
 
         if( !config ) {
             return objs;
         }
 
-        const filtered = objs.filter( value => ModuleService.isModuleBlacklisted( value.type, config.modules, config.blacklist ) );
+        const filtered = objs.filter( value => !ModuleService.isModuleBlacklisted( value.type, config.modules, config.blacklist ) );
 
         console.log( filtered );
 

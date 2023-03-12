@@ -1,7 +1,7 @@
 import { REST, RouteLike, Routes } from "discord.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
-import { deepMerge, isPromiseRejected } from "./utils/index.js";
+import { isPromiseRejected } from "./utils/index.js";
 import { SlashCommands } from "./objects/index.js";
 
 const logger = new Logger( "CommandRegistration" );
@@ -46,10 +46,13 @@ async function register( rest: REST, route: RouteLike, slashCommands: SlashComma
  * @param args Arguments for command registration. Same as configuration.
  * @param commands A list of commands to be registered.
  */
-export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), args = new CommandRegistrationConfiguration(), commands = ModuleService.getSlashCommands().map( struct => struct.value ) ): Promise<void> {
+export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), args: CommandRegistrationConfiguration = null, commands = ModuleService.getSlashCommands().map( struct => struct.value ) ): Promise<void> {
     logger.info( "Welcome again to command registration or un-registration." );
 
-    const commandConfigs: CommandRegistrationConfiguration = deepMerge( ConfigurationService.getConfiguration( CommonConfigurationKeys.COMMAND_REGISTRATION ) ?? new CommandRegistrationConfiguration(), args );
+    const commandConfigs: CommandRegistrationConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.COMMAND_REGISTRATION );
+    if( args ) {
+        commandConfigs.merge( args );
+    }
 
     if( !commandConfigs?.isValid ) {
         throw new Error( "Command configuration was not setup correctly." );

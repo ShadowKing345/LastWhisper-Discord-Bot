@@ -15,4 +15,24 @@ export class CommandRegistrationConfiguration {
 
         return true;
     }
+
+    public merge( obj: Partial<CommandRegistrationConfiguration> ): this {
+        if( obj.clientId && typeof obj.clientId === "string" ) {
+            this.clientId = obj.clientId;
+        }
+
+        if( obj.guildId && typeof obj.guildId === "string" ) {
+            this.guildId = obj.guildId;
+        }
+
+        if( typeof obj.registerForGuild  === "boolean" ) {
+            this.registerForGuild = obj.registerForGuild;
+        }
+
+        if( typeof obj.unregister === "boolean" ) {
+            this.unregister = obj.unregister;
+        }
+
+        return this;
+    }
 }
