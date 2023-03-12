@@ -123,6 +123,4 @@ export class DevModule extends Module {
         DevModule.logger.debug( "Timer ticked." );
         return Promise.resolve();
     }
-
-
 }
