@@ -1,1 +1,0 @@
-{"version":3,"file":"badAuthorizationKeyError.js","sourceRoot":"","sources":["../../../src/utils/errors/badAuthorizationKeyError.ts"],"names":[],"mappings":"AAGA,MAAM,OAAO,wBAAyB,SAAQ,KAAK;IACjD,YAAY,OAAe;QACzB,KAAK,CAAC,OAAO,CAAC,CAAC;IACjB,CAAC;CACF"}

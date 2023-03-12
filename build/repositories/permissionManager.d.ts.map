@@ -1,1 +1,0 @@
-{"version":3,"file":"permissionManager.d.ts","sourceRoot":"","sources":["../../src/repositories/permissionManager.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,oBAAoB,CAAC;AACrD,OAAO,EAAE,uBAAuB,EAAE,MAAM,wCAAwC,CAAC;AAEjF,OAAO,EAAE,UAAU,EAAE,MAAM,sBAAsB,CAAC;AAMlD,qBACa,2BAA4B,SAAQ,UAAU,CAAC,uBAAuB,CAAC;gBACtE,EAAE,EAAE,eAAe;CAGhC"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"roleManager.d.ts","sourceRoot":"","sources":["../../src/entities/roleManager.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,UAAU,EAAE,MAAM,iBAAiB,CAAC;AAK7C,qBACa,iBAAkB,SAAQ,UAAU;IAExC,cAAc,EAAE,MAAM,CAAQ;IAG9B,kBAAkB,EAAE,MAAM,EAAE,CAAC;IAG7B,wBAAwB,EAAE,MAAM,CAAQ;CAChD"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/entities/eventManager/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,2BAA2B,CAAC;AACjE,OAAO,EAAE,WAAW,EAAE,MAAM,kBAAkB,CAAC;AAC/C,OAAO,EAAE,aAAa,EAAE,MAAM,oBAAoB,CAAC;AAEnD,OAAO,EAAE,oBAAoB,EAAE,WAAW,EAAE,aAAa,EAAE,CAAC;AAE5D,eAAO,MAAM,oBAAoB,6EAAuD,CAAC"}
