@@ -24,7 +24,7 @@ export class Week extends EntityBase {
      * Returns the buff ID for a given day of the week,
      * @param date The date object to get the string from.
      */
-    public getBuff( date: DateTime ): Promise<Buff> {
+    public getBuff( date: DateTime ): Buff {
         return Array( ...this.days )[date.weekday - 1];
     }
 

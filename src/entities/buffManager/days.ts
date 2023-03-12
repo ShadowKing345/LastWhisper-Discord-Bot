@@ -11,31 +11,31 @@ export class Days extends EntityBase {
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "monday_id" } )
-    public monday: Promise<Buff>;
+    public monday: Buff;
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "tuesday_id" } )
-    public tuesday: Promise<Buff>;
+    public tuesday: Buff;
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "wednesday_id" } )
-    public wednesday: Promise<Buff>;
+    public wednesday: Buff;
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "thursday_id" } )
-    public thursday: Promise<Buff>;
+    public thursday: Buff;
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "friday_id" } )
-    public friday: Promise<Buff>;
+    public friday: Buff;
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "saturday_id" } )
-    public saturday: Promise<Buff>;
+    public saturday: Buff;
 
     @ManyToOne( () => Buff )
     @JoinColumn( { name: "sunday_id" } )
-    public sunday: Promise<Buff>;
+    public sunday: Buff;
 
     private current = 0;
 
@@ -56,7 +56,7 @@ export class Days extends EntityBase {
         return { done: true, value: null };
     }
 
-    public get toArray(): [ WeekDays, Promise<Buff> ][] {
+    public get toArray(): [ WeekDays, Buff ][] {
         return [
             [ "Monday", this.monday ],
             [ "Tuesday", this.tuesday ],

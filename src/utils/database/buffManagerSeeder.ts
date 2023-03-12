@@ -68,9 +68,9 @@ export async function buffManagerSeeder( ds: DataSource, guildId: string, data: 
                 if( isObject( week ) && "title" in week && "days" in week && typeof week.title === "string" && typeof week.days === "object" && !Array.isArray( week.days ) ) {
                     const d = new Days();
                     d.guildId = guildId;
-                    for( const dKey in week.days ) {
-                        if( dKey in d && typeof week.days[dKey] === "string" ) {
-                            d[dKey] = buffKeys[week.days[dKey] as string];
+                    for( const [ dKey, buffId ] of Object.entries( week.days ) ) {
+                        if( dKey in d && typeof buffId === "string" ) {
+                            d[dKey] = buffKeys[buffId];
                         }
                     }
 
@@ -78,6 +78,10 @@ export async function buffManagerSeeder( ds: DataSource, guildId: string, data: 
                     w.guildId = guildId;
                     w.title = week.title;
                     w.days = d;
+
+                    if( "isEnabled" in week && typeof week.isEnabled === "boolean") {
+                        w.isEnabled = week.isEnabled ;
+                    }
 
                     await weekRepo.save( w );
                 }
