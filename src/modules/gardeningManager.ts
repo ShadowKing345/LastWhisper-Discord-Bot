@@ -3,14 +3,12 @@ import {
     ChatInputCommandInteraction,
     InteractionResponse,
 } from "discord.js";
-import { Bot } from "../objects/bot.js";
 import { Module } from "./module.js";
 import { GardeningManagerService } from "../services/gardeningManager.js";
 import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 // import { module } from "../decorators/index.js";
 import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
-import { Timers } from "../objects/timer.js";
 import { Logger } from "../config/logger.js";
 
 // @module({})
@@ -112,15 +110,7 @@ export class GardeningManagerModule extends Module {
             // callback: async interaction => this.commandResolver( interaction ),
         } ),
     ];
-
-    public timers: Timers = [
-        {
-            name: `${ this.moduleName }#TickTask`,
-            timeout: 60000,
-            execute: client => this.tick( client ),
-        },
-    ];
-
+    
     protected commandResolverKeys2 = {
         "gardening_module.reserve": this.reserve.bind( this ),
         "gardening_module.list": this.list.bind( this ),
@@ -163,7 +153,4 @@ export class GardeningManagerModule extends Module {
         return this.gardeningManagerService.list( interaction, plotNum, slotNum );
     }
 
-    private tick( client: Bot ): Promise<void> {
-        return this.gardeningManagerService.tick( client );
-    }
 }
