@@ -21,5 +21,6 @@ The keys of this map are the configuration variable names joined by `.`. For exa
 
 Would appear as `foo.fish.33 = false` inside object map.
 
-This service also handles the combining of the developer config and the production config if the `NODE_ENV` environment variable has been set
+This service also handles the combining of the developer config and the production config if the `NODE_ENV` environment
+variable has been set
 to `development`.

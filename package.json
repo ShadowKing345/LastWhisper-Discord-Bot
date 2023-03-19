@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node build/index.js",
     "watch": "nodemon build/index.js",
-    "build": "yarn build:clean && tsc -p tsconfig.build.json",
+    "build": "yarn build:clean && tsc -p tsconfig.json",
     "build:clean": "rimraf build",
     "lint": "eslint --max-warnings 10 .",
     "lint:fix": "eslint --fix .",
@@ -16,7 +16,7 @@
     "dev": "NODE_ENV=development",
     "dev:start": "yarn dev ts-node src/index.ts",
     "dev:watch": "yarn dev nodemon src/index.ts",
-    "dev:build": "yarn build:clean && yarn dev tsc -p tsconfig.json",
+    "dev:build": "yarn build:clean && yarn dev tsc -p tsconfig.test.json",
     "dev:test": "tap src/**/*.test.ts",
     "dev:typeorm": "yarn dev typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
     "dev:orm:generate": "yarn dev:typeorm migration:generate",
@@ -45,8 +45,11 @@
     "pg": "^8.9.0",
     "pino": "^8.10.0",
     "reflect-metadata": "^0.1.13",
+    "rimraf": "^4.4.0",
+    "tslib": "^2.5.0",
     "tsyringe": "^4.7.0",
     "typeorm": "^0.3.12",
+    "typescript": "^5.0.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -61,10 +64,8 @@
     "husky": "^8.0.0",
     "nodemon": "^2.0.20",
     "pino-pretty": "^9.2.0",
-    "rimraf": "^4.1.2",
     "tap": "^16.3.4",
     "ts-node": "^10.9.1",
-    "tslib": "^2.5.0",
-    "typescript": "^4.9.5"
-  }
+   },
+  "version": "These are not the versions you are looking for!"
 }

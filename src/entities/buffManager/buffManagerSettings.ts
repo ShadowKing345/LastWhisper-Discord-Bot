@@ -6,18 +6,18 @@ import { EntityBase } from "../entityBase.js";
  */
 @Entity()
 export class BuffManagerSettings extends EntityBase {
-  @Column({ nullable: true })
-  public channelId: string = null;
+    @Column( { nullable: true } )
+    public channelId: string = null;
 
-  @Column({ nullable: true })
-  public hour: string = null;
+    @Column( { nullable: true } )
+    public hour: string = null;
 
-  @Column({ type: "int", nullable: true })
-  public dow: number = null;
+    @Column( { type: "int", nullable: true } )
+    public dow: number = null;
 
-  @Column({ nullable: true })
-  public buffMessage: string = null;
+    @Column( { nullable: true } )
+    public buffMessage: string = null;
 
-  @Column({ nullable: true })
-  public weekMessage: string = null;
+    @Column( { nullable: true } )
+    public weekMessage: string = null;
 }

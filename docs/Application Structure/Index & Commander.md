@@ -15,7 +15,9 @@ follow and ensures that command only fire when needed as they have been abstract
 
 When the index is created the parse command will execute the processing of arguments by commander.
 
-The specifics of what each command does is not too important to be discussed here, but they will execute the following components:
+The specifics of what each command does is not too important to be discussed here, but they will execute the following
+components:
+
 - [`deploy`](docs/Application%20Structure/Bot%20Application.md)
 - [`manageCommand`](docs/Application%20Structure/Slash%20Command%20Manager.md)
 - [`seedDatabase`](docs/Application%20Structure/Seeding%20the%20Database.md)

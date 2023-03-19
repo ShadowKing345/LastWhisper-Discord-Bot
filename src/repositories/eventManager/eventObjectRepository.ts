@@ -9,11 +9,11 @@ import { Repository } from "../base/repository.js";
  */
 @repository()
 export class EventObjectRepository extends Repository<EventObject> {
-  constructor(db: DatabaseService) {
-    super(db, EventObject);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, EventObject );
+    }
 
-  public async getEventsByGuildId(guildId: string): Promise<EventObject[]> {
-    return this.repo.find({ where: { guildId } });
-  }
+    public async getEventsByGuildId( guildId: string ): Promise<EventObject[]> {
+        return this.repo.find( { where: { guildId } } );
+    }
 }

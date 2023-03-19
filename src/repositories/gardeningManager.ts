@@ -9,7 +9,7 @@ import { Repository } from "./base/repository.js";
  */
 @repository()
 export class GardeningManagerRepository extends Repository<GardeningModuleConfig> {
-  constructor(db: DatabaseService) {
-    super(db, GardeningModuleConfig);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, GardeningModuleConfig );
+    }
 }

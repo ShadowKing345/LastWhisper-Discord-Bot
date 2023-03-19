@@ -9,14 +9,14 @@ import { CTR } from "../../utils/commonTypes.js";
  * Methods decorated with this command act as the executed method.
  * @param timer Timer object, excluding the callback value.
  */
-export function Timer<T extends Module>(timer: Omit<TimerObject, "execute">) {
-  return function(target: unknown, _: string, descriptor: PropertyDescriptor): PropertyDescriptor {
-    ModuleService.registerTimer({
-      name: timer.name,
-      timeout: timer.timeout,
-      execute: descriptor.value as (client: Bot) => Promise<unknown>,
-    }, target.constructor as CTR<T>);
+export function Timer<T extends Module>( timer: Partial<Omit<TimerObject, "execute">> ) {
+    return function( target: unknown, _: string, descriptor: PropertyDescriptor ): PropertyDescriptor {
+        ModuleService.registerTimer( new TimerObject( {
+            name: timer.name,
+            timeout: timer.timeout,
+            execute: descriptor.value as ( client: Bot ) => Promise<unknown>,
+        } ), target.constructor as CTR<T> );
 
-    return descriptor;
-  };
+        return descriptor;
+    };
 }

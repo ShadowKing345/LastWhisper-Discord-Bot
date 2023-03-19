@@ -1,1 +1,0 @@
-{"version":3,"file":"gardeningModuleConfig.d.ts","sourceRoot":"","sources":["../../../src/entities/gardeningManager/gardeningModuleConfig.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,WAAW,CAAC;AAEjC,OAAO,EAAE,UAAU,EAAE,MAAM,kBAAkB,CAAC;AAK9C,qBACa,qBAAsB,SAAQ,UAAU;IAM5C,KAAK,EAAE,IAAI,EAAE,CAAC;IAGd,uBAAuB,EAAE,MAAM,CAAQ;CAC/C"}

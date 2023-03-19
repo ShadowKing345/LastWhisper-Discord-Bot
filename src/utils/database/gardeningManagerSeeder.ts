@@ -10,6 +10,6 @@ import { DataSource } from "typeorm";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function gardeningManagerSeeder(ds: DataSource, guildId: string, data: unknown): Promise<void> {
-  return Promise.resolve();
+export function gardeningManagerSeeder( ds: DataSource, guildId: string, data: unknown ): Promise<void> {
+    return Promise.resolve();
 }

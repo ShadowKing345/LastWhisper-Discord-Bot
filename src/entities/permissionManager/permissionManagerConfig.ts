@@ -7,10 +7,10 @@ import { EntityBase } from "../entityBase.js";
  */
 @Entity()
 export class PermissionManagerConfig extends EntityBase {
-  @OneToMany(() => Permission, permission => permission.guildConfig, {
-    cascade: true,
-    orphanedRowAction: "delete",
-    onDelete: "CASCADE",
-  })
-  public permissions: Permission[];
+    @OneToMany( () => Permission, permission => permission.guildConfig, {
+        cascade: true,
+        orphanedRowAction: "delete",
+        onDelete: "CASCADE",
+    } )
+    public permissions: Permission[];
 }

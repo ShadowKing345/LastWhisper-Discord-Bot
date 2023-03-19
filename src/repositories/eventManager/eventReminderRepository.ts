@@ -9,7 +9,7 @@ import { Repository } from "../base/repository.js";
  */
 @repository()
 export class EventReminderRepository extends Repository<EventReminder> {
-  constructor(db: DatabaseService) {
-    super(db, EventReminder);
-  }
+    constructor( db: DatabaseService ) {
+        super( db, EventReminder );
+    }
 }

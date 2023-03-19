@@ -25,3 +25,8 @@ command found in the [`package.json`](/package.json) file.
 
 Building primarily uses the Typescript compiler to build and so will first remove the current build directory. It is
 highly recommended to not leave anything important in there.
+
+*Note:*
+Unlike other projects this one intentionally has js as a normal dependency and not a development dependency. This is
+because you are expected to compile the application first before you run it normally.
+This is what occurs with the Dockerfile which will compile the application.

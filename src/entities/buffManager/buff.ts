@@ -6,9 +6,9 @@ import { EntityBase } from "../entityBase.js";
  */
 @Entity()
 export class Buff extends EntityBase {
-  @Column()
-  public text: string = null;
+    @Column()
+    public text: string = null;
 
-  @Column()
-  public imageUrl: string = null;
+    @Column()
+    public imageUrl: string = null;
 }

@@ -1,1 +1,0 @@
-{"version":3,"file":"event.d.ts","sourceRoot":"","sources":["../../../src/decorators/moduleService/event.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,MAAM,EAAE,MAAM,yBAAyB,CAAC;AACjD,OAAO,EAAE,YAAY,EAAE,MAAM,YAAY,CAAC;AAO1C,wBAAgB,KAAK,CAAC,CAAC,SAAS,MAAM,EAAE,CAAC,SAAS,MAAM,YAAY,EAAE,KAAK,EAAE,CAAC,YACpD,OAAO,KAAK,MAAM,cAAc,kBAAkB,KAAG,kBAAkB,CAQhG"}
