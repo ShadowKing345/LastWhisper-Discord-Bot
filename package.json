@@ -65,7 +65,7 @@
     "nodemon": "^2.0.20",
     "pino-pretty": "^9.2.0",
     "tap": "^16.3.4",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.1"
    },
   "version": "These are not the versions you are looking for!"
 }
