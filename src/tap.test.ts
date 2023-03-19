@@ -1,3 +1,3 @@
-import * as tap from "tap";
+import tap from "tap";
 
 tap.pass("Hello World");
