@@ -9,7 +9,7 @@
     "build:clean": "rimraf build",
     "lint": "eslint --max-warnings 10 .",
     "lint:fix": "eslint --fix .",
-    "test": "echo 'No tests were written'",
+    "test": "tap build/**/*.test.js",
     "typeorm": "typeorm -d build/config/migrationDataSource.js",
     "orm:migrate": "yarn typeorm migration:run",
     "orm:revert": "yarn typeorm migration:revert",
@@ -17,7 +17,7 @@
     "dev:start": "yarn dev ts-node src/index.ts",
     "dev:watch": "yarn dev nodemon src/index.ts",
     "dev:build": "yarn build:clean && yarn dev tsc -p tsconfig.test.json",
-    "dev:test": "tap src/**/*.test.ts",
+    "dev:test": "yarn dev tap src/**/*.test.[tj]s",
     "dev:typeorm": "yarn dev typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
     "dev:orm:generate": "yarn dev:typeorm migration:generate",
     "dev:orm:create": "typeorm-ts-node-esm migration:create",
@@ -27,9 +27,11 @@
   },
   "tap": {
     "node-arg": [
-      "--loader=ts-node/esm"
+      "--no-warnings",
+      "--loader", 
+      "ts-node/esm"
     ],
-    "coverage-map": "map.js"
+    "coverage-map": "map.cjs"
   },
   "husky": {
     "hooks": {
