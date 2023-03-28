@@ -14,7 +14,7 @@ runs:
 
     - name: Building project.
       shell: bash
-      run: yarn build
+      run: yarn dev:build
 
     - name: Running lint checks.
       shell: bash
