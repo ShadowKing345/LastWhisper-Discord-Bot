@@ -14,7 +14,7 @@ runs:
 
     - name: Building project.
       shell: bash
-      run: yarn build -p tsconfig.json
+      run: yarn build
 
     - name: Running lint checks.
       shell: bash
@@ -26,4 +26,4 @@ runs:
 
     - name: Running ts tests.
       shell: bash
-      run: yarn dev yarn test
+      run: yarn dev:test
