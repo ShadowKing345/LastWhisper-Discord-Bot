@@ -32,8 +32,8 @@ export class EventObject extends EntityBase {
      */
     public get isValid(): boolean {
         return (
-            this.name != "" &&
-            this.description != "" &&
+            (this.name != "" && this.name != null) &&
+            (this.description != "" && this.description != null) &&
             this.dateTime != null &&
             this.dateTime > DateTime.now().toUnixInteger()
         );
