@@ -22,8 +22,8 @@ runs:
 
     - name: Running js tests.
       shell: bash
-      run: yarn test
+      run: yarn test ./build/**/*.test.js
 
     - name: Running ts tests.
       shell: bash
-      run: yarn dev:test
+      run: yarn dev:test ./src/**/*.test.ts
