@@ -1,14 +1,15 @@
 /**
  * Event object.
  */
-import { DateTime } from "luxon";
-import { Entity, Column } from "typeorm";
-import { EntityBase } from "../entityBase.js";
+import {DateTime} from "luxon";
+import {Entity, Column} from "typeorm";
+import {EntityBase} from "../entityBase.js";
+import {isStringNullOrEmpty} from "../../utils/index.js";
 
 @Entity()
 export class EventObject extends EntityBase {
 
-    @Column( { nullable: true } )
+    @Column({nullable: true})
     public messageId: string = null;
 
     @Column()
@@ -20,11 +21,15 @@ export class EventObject extends EntityBase {
     @Column()
     public dateTime: number = null;
 
-    @Column( "text", { array: true } )
-    public additional: [ string, string ][] = [];
+    @Column("text", {array: true})
+    public additional: [string, string][] = [];
 
-    constructor() {
+    constructor(data: Partial<EventObject> = null) {
         super();
+        
+        if (data){
+            this.merge(data);
+        }
     }
 
     /**
@@ -32,18 +37,31 @@ export class EventObject extends EntityBase {
      */
     public get isValid(): boolean {
         return (
-            (this.name != "" && this.name != null) &&
-            (this.description != "" && this.description != null) &&
-            this.dateTime != null &&
+            !isStringNullOrEmpty(this.name) &&
+            !isStringNullOrEmpty(this.description) &&
             this.dateTime > DateTime.now().toUnixInteger()
         );
     }
 
-    public merge( obj: Partial<EventObject> ): EventObject {
-
-
-        if( obj.messageId ) {
+    public merge(obj: Partial<EventObject>): EventObject {
+        if (obj.messageId) {
             this.messageId = obj.messageId;
+        }
+
+        if (obj.name) {
+            this.name = obj.name;
+        }
+
+        if (obj.description) {
+            this.description = obj.description;
+        }
+
+        if (obj.dateTime) {
+            this.dateTime = obj.dateTime;
+        }
+
+        if (obj.additional) {
+            this.additional = obj.additional;
         }
 
         return this;

@@ -149,3 +149,15 @@ export function isArray( obj: unknown ): obj is Array<unknown> {
 export function isEnum<T>( obj: unknown, e: T ): obj is string | number {
     return ( typeof obj === "string" || typeof obj === "number" ) && Object.values( e ).includes( obj.toString() );
 }
+
+/**
+ * Checks if a string is null or empty.
+ * @returns {boolean}
+ */
+export function isStringNullOrEmpty(obj: string): boolean {
+    if (obj == null){
+        return true;
+    }
+    
+    return obj.trim().length === 0;
+}
