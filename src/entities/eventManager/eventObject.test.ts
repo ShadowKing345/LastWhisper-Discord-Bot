@@ -1,47 +1,40 @@
-import tap from "tap";
 import {EventObject} from "./eventObject.js";
 import {DateTime} from "luxon";
+import {describe, it} from "node:test";
+import Assert from "node:assert";
 
-tap.test("Event Object Validation", async t => {
-    await t.test("Name", t => {
+describe("Event Object Validation",  () => {
+    it("Name", () => {
         const objData = {
             description: "Hello",
             dateTime: DateTime.now().plus({day: 1}).toUnixInteger()
         };
-        t.notOk((new EventObject({...objData, name: null})).isValid, "Null");
-        t.notOk((new EventObject({...objData, name: ""})).isValid, "Empty");
-        t.notOk((new EventObject({...objData, name: "    \t\t"})).isValid, "White Space");
-        t.ok((new EventObject({...objData, name: "Correct"})).isValid, "Correct");
-        
-        t.end();
+        Assert.ok(!(new EventObject({...objData, name: null})).isValid, "Null");
+        Assert.ok(!(new EventObject({...objData, name: ""})).isValid, "Empty");
+        Assert.ok(!(new EventObject({...objData, name: "    \t\t"})).isValid, "White Space");
+        Assert.ok((new EventObject({...objData, name: "Correct"})).isValid, "Correct");
     });
 
-    await t.test("Description", t => {
+    it("Description", () => {
         const objData = {
             name: "Hello",
             dateTime: DateTime.now().plus({day: 1}).toUnixInteger()
         };
-        t.notOk((new EventObject({...objData, description: null})).isValid, "Null");
-        t.notOk((new EventObject({...objData, description: ""})).isValid, "Empty");
-        t.notOk((new EventObject({...objData, description: "    \t\t"})).isValid, "White Space");
-        t.ok((new EventObject({...objData, description: "Correct"})).isValid, "Correct");
-
-        t.end();
+        Assert.ok(!(new EventObject({...objData, description: null})).isValid, "Null");
+        Assert.ok(!(new EventObject({...objData, description: ""})).isValid, "Empty");
+        Assert.ok(!(new EventObject({...objData, description: "    \t\t"})).isValid, "White Space");
+        Assert.ok((new EventObject({...objData, description: "Correct"})).isValid, "Correct");
     }); 
     
-    await t.test("Time", t => {
+    it("Time", () => {
         const objData = {
             name: "Hello",
             description: "Hello",
         };
         const now = DateTime.now()
         
-        t.notOk((new EventObject({...objData, dateTime: now.toUnixInteger()})).isValid, "0");
-        t.notOk((new EventObject({...objData, dateTime: now.plus({day: -1}).toUnixInteger()})).isValid, "Before");
-        t.ok((new EventObject({...objData, dateTime: now.plus({day: 1}).toUnixInteger()})).isValid, "Correct");
-
-        t.end();
+        Assert.ok(!(new EventObject({...objData, dateTime: now.toUnixInteger()})).isValid, "0");
+        Assert.ok(!(new EventObject({...objData, dateTime: now.plus({day: -1}).toUnixInteger()})).isValid, "Before");
+        Assert.ok((new EventObject({...objData, dateTime: now.plus({day: 1}).toUnixInteger()})).isValid, "Correct");
     });
-
-    t.end();
-}).catch(console.error)
+})

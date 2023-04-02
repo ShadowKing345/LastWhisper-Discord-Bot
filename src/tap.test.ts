@@ -1,3 +1,6 @@
-import tap from "tap";
+import {it} from "node:test";
+import assert from "node:assert";
 
-tap.pass("Hello World");
+it("Hello World.", () => {
+    assert.ok(true, "Hello World.");
+})
