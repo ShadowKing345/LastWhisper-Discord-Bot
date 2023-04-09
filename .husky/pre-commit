@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-for file in $(git diff --cached --name-only | grep -E 'src'); do
-  if ! git show ":$file" | node_modules/.bin/eslint --stdin --stdin-filename "$file"; then
-    echo "ESLint failed on staged file '$file'. Please check your code and try again. You can run ESLint manually via npm run eslint."
+for file in $(git diff --cached --name-only | grep -E '.[tj]s'); do
+  if ! git show ":$file" | yarn lint --stdin --stdin-filename "$file"; then
+    echo "ESLint failed on staged file '$file'. Please check your code and try again."
     exit 1
   fi
 done
