@@ -1,9 +1,9 @@
-import {EventObject} from "./eventObject.js";
+import {EventObject} from "../../../src/entities/eventManager/index.js";
 import {DateTime} from "luxon";
 import {describe, it} from "node:test";
 import Assert from "node:assert";
 
-describe("Event Object Validation",  () => {
+describe("Event Object Validation", () => {
     it("Name", () => {
         const objData = {
             description: "Hello",
@@ -24,15 +24,15 @@ describe("Event Object Validation",  () => {
         Assert.ok(!(new EventObject({...objData, description: ""})).isValid, "Empty");
         Assert.ok(!(new EventObject({...objData, description: "    \t\t"})).isValid, "White Space");
         Assert.ok((new EventObject({...objData, description: "Correct"})).isValid, "Correct");
-    }); 
-    
+    });
+
     it("Time", () => {
         const objData = {
             name: "Hello",
             description: "Hello",
         };
         const now = DateTime.now()
-        
+
         Assert.ok(!(new EventObject({...objData, dateTime: now.toUnixInteger()})).isValid, "0");
         Assert.ok(!(new EventObject({...objData, dateTime: now.plus({day: -1}).toUnixInteger()})).isValid, "Before");
         Assert.ok((new EventObject({...objData, dateTime: now.plus({day: 1}).toUnixInteger()})).isValid, "Correct");
