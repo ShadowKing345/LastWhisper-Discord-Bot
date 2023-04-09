@@ -9,15 +9,20 @@ module.exports = {
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
     ],
     parser: "@typescript-eslint/parser",
-    plugins: [ "@typescript-eslint" ],
+    plugins: ["@typescript-eslint"],
     parserOptions: {
-        project: [ 
-            './tsconfig.json',
-            './tsconfig.tools.json'
+        project: [
+            '../tsconfig.json',
         ],
         tsconfigRootDir: __dirname,
         ecmaVersion: "latest",
         sourceType: "module"
     },
-    root: true
+    root: true,
+    ignorePatterns: [
+        "/build/",
+        "/node_modules/",
+        "/coverage/",
+        "/logs/",
+    ]
 };

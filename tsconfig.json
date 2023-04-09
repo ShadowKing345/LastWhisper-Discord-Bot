@@ -11,10 +11,9 @@
     ],
     "outDir": "./build",
     "importHelpers": true,
-    "declaration": true,
     "sourceMap": true,
+    "declaration": true,
     "declarationMap": true,
-    "rootDir": "./src",
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": false,
@@ -30,9 +29,6 @@
     "emitDecoratorMetadata": true,
     "removeComments": true
   },
-  "include": [
-    "./src"
-  ],
   "exclude": [
     "node_modules",
     "build",
