@@ -2,11 +2,22 @@ import "reflect-metadata";
 
 import {run} from "node:test";
 import {globSync} from "glob";
+import {program} from "commander";
 
-function main() {
+/** @typedef {{pattern : string | undefined}} Args */
+
+/**
+ * Main function called to run tests.
+ * Will parse input arguments and change its behavior based on them.
+ * @param {Args} args
+ */
+function main(args) {
+    /** @type {string[]} */
     let files;
 
-    if (process.env.NODE_ENV === "development") {
+    if (args && typeof args === "object" && "pattern" in args && typeof args.pattern === "string") {
+        files = globSync(args.pattern);
+    } else if (process.env.NODE_ENV === "development") {
         files = globSync("test/**/*.test.ts");
     } else {
         files = globSync("build/**/*.test.js");
@@ -20,4 +31,7 @@ function main() {
         .pipe(process.stdout);
 }
 
-main();
+program
+    .option("-p, --pattern <string>", "Override the default glob patterns with your own.")
+    .action((/** @type {Args} */ args) => main(args))
+    .parse();
