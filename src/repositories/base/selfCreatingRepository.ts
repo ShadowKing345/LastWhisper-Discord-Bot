@@ -13,10 +13,10 @@ export abstract class SelfCreatingRepository<T extends EntityBase> extends Repos
      * If none can be found creates said object instead.
      */
     public async findOneOrCreateByGuildId( guildId: string ): Promise<T> {
-        return await this.repo.findOne( { where: { guildId } as FindOptionsWhere<T> } )
+        return await this.findOne( { where: { guildId } as FindOptionsWhere<T> } )
             .then( result =>
                 !result
-                    ? this.repo.save( { guildId } as T )
+                    ? this.save( { guildId } as T )
                     : Promise.resolve( result ),
             );
     }
