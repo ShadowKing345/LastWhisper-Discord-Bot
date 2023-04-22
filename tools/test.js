@@ -1,6 +1,8 @@
 import "reflect-metadata";
 
+import {tap} from "node:test/reporters"
 import {run} from "node:test";
+import process from "node:process";
 import {globSync} from "glob";
 import {program} from "commander";
 
@@ -27,7 +29,9 @@ function main(args) {
         throw new Error("No tests were found.");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
     run({files})
+        .compose(tap)
         .pipe(process.stdout);
 }
 
