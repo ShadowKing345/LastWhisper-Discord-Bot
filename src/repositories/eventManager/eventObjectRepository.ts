@@ -14,6 +14,6 @@ export class EventObjectRepository extends Repository<EventObject> {
     }
 
     public async getEventsByGuildId( guildId: string ): Promise<EventObject[]> {
-        return this.repo.find( { where: { guildId } } );
+        return this.findAll( { where: { guildId } } );
     }
 }
