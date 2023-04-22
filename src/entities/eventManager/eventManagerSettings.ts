@@ -48,9 +48,7 @@ export class EventManagerSettings extends EntityBase {
     }
 
     public merge(obj: Partial<EventManagerSettings>): EventManagerSettings {
-        if (!isStringNullOrEmpty(obj.guildId)){
-            this.guildId = obj.guildId;
-        }
+        super.merge(obj);
  
         if (!isStringNullOrEmpty(obj.announcement)){
             this.announcement = obj.announcement;

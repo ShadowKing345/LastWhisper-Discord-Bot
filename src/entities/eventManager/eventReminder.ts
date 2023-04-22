@@ -17,13 +17,15 @@ export class EventReminder extends EntityBase {
 
     constructor(data: Partial<EventReminder> = null) {
         super();
-
+        
         if (data) {
             this.merge(data);
         }
     }
 
     public merge(obj: Partial<EventReminder>): EventReminder {
+        super.merge(obj);
+        
         if (!isStringNullOrEmpty(obj.message)) {
             this.message = obj.message;
         }

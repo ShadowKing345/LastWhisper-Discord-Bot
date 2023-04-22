@@ -44,6 +44,8 @@ export class EventObject extends EntityBase {
     }
 
     public merge(obj: Partial<EventObject>): EventObject {
+        super.merge(obj);
+        
         if (obj.messageId) {
             this.messageId = obj.messageId;
         }
