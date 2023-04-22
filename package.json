@@ -45,16 +45,13 @@
     "tslib": "^2.5.0",
     "tsyringe": "^4.7.0",
     "typeorm": "^0.3.12",
-    "typescript": "^5.0.4",
-    "uuid": "^9.0.0"
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/inquirer": "^9.0.3",
     "@types/luxon": "^3.2.0",
     "@types/node": "^18.15.13",
-    "@types/tap": "^15.0.8",
-    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "eslint": "^8.38.0",
@@ -62,7 +59,6 @@
     "husky": "^8.0.0",
     "nodemon": "^2.0.20",
     "pino-pretty": "^9.2.0",
-    "tap": "^16.3.4",
     "ts-node": "^10.9.1"
   },
   "version": "These are not the versions you are looking for!"
