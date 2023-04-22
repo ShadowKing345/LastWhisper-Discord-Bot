@@ -63,27 +63,38 @@ function createInterfaceFunctions<G extends EntityBase, T extends Repository<G>>
 }
 
 function overrideDefaultRepoMethods<G extends EntityBase, T extends Repository<G>>(instance: internalItems<G, T>) {
-    instance.findOne = mock.fn((filter) => {
-        if (isArray(filter.where)) {
-            const arr = filter.where.filter(item => item.guildId).map(item => item.guildId) as string[];
-            return Promise.resolve(Object.values(instance.$items).filter(obj => arr.every(guildId => obj.guildId === guildId))[0] ?? null);
-        } else if (filter.where.guildId) {
-            return Promise.resolve(instance.$findItem(filter.where.guildId as string));
+    instance.findOne = function (filter) {
+        if (filter.where) {
+            if (isArray(filter.where)) {
+                const arr = filter.where.filter(item => item.guildId).map(item => item.guildId) as string[];
+                return Promise.resolve(Object.values(this.$items).filter(obj => arr.every(guildId => obj.guildId === guildId))[0] ?? null);
+            } else if (filter.where.guildId) {
+                return Promise.resolve(this.$findItem(filter.where.guildId as string));
+            }
         }
 
-        return Promise.resolve<G>(null);
-    });
+        return Promise.resolve<G>(Object.values(this.$items)?.[0]);
+    };
 
-    instance.findAll = mock.fn((filter) => {
-        if (isArray(filter.where)) {
-            const arr = filter.where.filter(item => item.guildId).map(item => item.guildId) as string[];
-            return Promise.resolve(Object.values(instance.$items).filter(obj => arr.every(guildId => obj.guildId === guildId)));
-        } else if (filter.where.guildId) {
-            return Promise.resolve(instance.$findItems(filter.where.guildId as string));
+    instance.findAll = function (filter) {
+        if (filter.where) {
+            let items: G[];
+
+            if (isArray(filter.where)) {
+                const filterArray = filter.where.filter(item => item.guildId).map(item => item.guildId as string);
+                items = filterArray.map(guildId => this.$findItems(guildId)).reduce((prev, current) => {
+                    prev.push(...current);
+                    return prev
+                }, []);
+            } else if (filter.where.guildId) {
+                items = this.$findItems(filter.where.guildId as string);
+            }
+
+            return Promise.resolve(items);
         }
 
-        return Promise.resolve<G[]>([]);
-    });
+        return Promise.resolve<G[]>(Object.values(this.$items));
+    };
 
     instance.save = mock.fn((obj) => Promise.resolve(obj));
 

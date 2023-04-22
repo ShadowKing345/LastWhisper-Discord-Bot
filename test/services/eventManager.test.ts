@@ -7,6 +7,8 @@ import {test} from "node:test";
 import Assert from "node:assert";
 import {mockRepository} from "../utils/mockRepository.js";
 import {EventManagerSettings} from "../../src/entities/eventManager/index.js";
+import {ChannelType, Client} from "discord.js";
+import {EventObject, EventReminder} from "../../src/entities/eventManager/index.js";
 
 
 test("Testing the parser.", async t => {
@@ -49,6 +51,52 @@ test("Testing the parser.", async t => {
         Assert.ok(!(await service.parseEvent("0", `[announcement]\nHello World\n[description]\nTesting`)).isValid, "Bad time")
         Assert.ok(!(await service.parseEvent("0", `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${0}:f>`)).isValid, "Time is before now");
     });
+}).catch(console.error);
 
-    t.todo("Event ticked");
+test("Testing the event reminder loop", async t => {
+    const settingsRepo = mockRepository(EventManagerSettingsRepository);
+    const eventObjRepo = mockRepository(EventObjectRepository);
+    const reminderRepo = mockRepository(EventReminderRepository);
+
+    t.beforeEach(() => {
+        settingsRepo._clear();
+        eventObjRepo._clear();
+        reminderRepo._clear();
+    });
+
+    await t.test("Event ticked", async t => {
+        const postingChannel = {
+            type: ChannelType.GuildText,
+            guildId: "0",
+            send: t.mock.fn(() => Promise.resolve())
+        };
+
+        const client = {
+            isReady: () => true,
+            channels: {
+                fetch: () => Promise.resolve(postingChannel)
+            }
+        } as unknown as Client;
+
+        settingsRepo._addItem("0", new EventManagerSettings({
+            guildId: "0",
+            announcement: "announcement",
+            description: "description",
+            dateTime: "time"
+        }));
+        eventObjRepo._addItem("0", new EventObject({
+            guildId: "0",
+            dateTime: DateTime.now().plus({minute: 1}).toUnixInteger()
+        }));
+        reminderRepo._addItem("0", new EventReminder({
+            guildId: "0",
+            message: "Hello World",
+            timeDelta: "00:01"
+        }));
+
+        const service = new EventManagerService(settingsRepo, eventObjRepo, reminderRepo);
+
+        await service.reminderLoop(client);
+        Assert.strictEqual(postingChannel.send.mock.callCount(), 1);
+    });
 }).catch(console.error);
