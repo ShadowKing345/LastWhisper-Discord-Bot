@@ -20,5 +20,3 @@ services:
       - POSTGRES_DB=Bot
     ports:
       - "5432:5432"
-    volumes:
-      - ./db-data:/var/lib/postgresql/data
