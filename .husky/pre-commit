@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 . "$(dirname -- "$0")/_/husky.sh"
 
 for file in $(git diff --cached --name-only | grep -E '.[tj]s$'); do
