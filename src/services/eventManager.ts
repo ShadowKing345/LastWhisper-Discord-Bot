@@ -134,7 +134,7 @@ export class EventManagerService extends Service {
     public async update(guildId: string | null, messageId: string, content: string): Promise<EventObject | null> {
         const config = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
 
-        const oldEvent = await this.eventObjectRepository.findOne({where: {guildId, id: messageId}});
+        const oldEvent = await this.eventObjectRepository.findOne({where: {guildId, messageId: messageId}});
         if (!oldEvent) {
             throw new Error("Event does not exist.");
         }
@@ -144,7 +144,8 @@ export class EventManagerService extends Service {
             return null;
         }
 
-        return this.eventObjectRepository.save(event);
+        oldEvent.merge(event);
+        return this.eventObjectRepository.save(oldEvent);
     }
 
     /**
@@ -162,8 +163,9 @@ export class EventManagerService extends Service {
         if (!event.isValid) {
             return null;
         }
-
-        return this.eventObjectRepository.save(event);
+        
+        oldEvent.merge(event);
+        return this.eventObjectRepository.save(oldEvent);
     }
 
     /**
