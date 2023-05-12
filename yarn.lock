@@ -77,6 +77,11 @@
   resolved "https://registry.npmjs.org/@eslint/js/-/js-8.38.0.tgz"
   integrity sha512-IoD2MfUnOV58ghIHCiil01PcohxjbYR/qCxsoC+xNgUwh1EY8jOOrYmu3d3a71+tJJ23uscEV4X2HJWMsPJu4g==
 
+"@faker-js/faker@^7.6.0":
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-7.6.0.tgz#9ea331766084288634a9247fcd8b84f16ff4ba07"
+  integrity sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==
+
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.8.tgz"
@@ -664,6 +669,11 @@ defaults@^1.0.3:
   dependencies:
     clone "^1.0.2"
 
+destr@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/destr/-/destr-1.2.2.tgz#7ba9befcafb645a50e76b260449c63927b51e22f"
+  integrity sha512-lrbCJwD9saUQrqUfXvl6qoM+QN3W7tLV5pAOs+OqOmopCCz/JkE05MHedJR1xfk4IAnZuJXPVuN5+7jNA2ZCiA==
+
 diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.npmjs.org/diff/-/diff-4.0.2.tgz"
@@ -715,6 +725,13 @@ eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
+
+ebec@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ebec/-/ebec-1.0.0.tgz#e05c067818688a29ff359f138d43b4f5786b7f4f"
+  integrity sha512-tPS/jSTrzChdC/EkxGcHRHvLZYnEbEepqvnOr8PnwsHlOpoKsQbQv8VZf6NmdR1AXyj+6suiq+1AoOXrKtKkTw==
+  dependencies:
+    smob "^1.0.0"
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -972,6 +989,11 @@ flat-cache@^3.0.4:
     flatted "^3.1.0"
     rimraf "^3.0.2"
 
+flat@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/flat/-/flat-5.0.2.tgz#8ca6fe332069ffa9d324c327198c598259ceb241"
+  integrity sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==
+
 flatted@^3.1.0:
   version "3.2.7"
   resolved "https://registry.npmjs.org/flatted/-/flatted-3.2.7.tgz"
@@ -1036,6 +1058,16 @@ glob@^9.2.0:
   dependencies:
     fs.realpath "^1.0.0"
     minimatch "^7.4.1"
+    minipass "^4.2.4"
+    path-scurry "^1.6.1"
+
+glob@^9.3.2:
+  version "9.3.5"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-9.3.5.tgz#ca2ed8ca452781a3009685607fdf025a899dfe21"
+  integrity sha512-e1LleDykUz2Iu+MTYdkSsuWX8lvAjAcs0Xef0lNIu0S2wOAzuTxCJtcd9S3cijlwYF18EsU3rzb8jPVobxDh9Q==
+  dependencies:
+    fs.realpath "^1.0.0"
+    minimatch "^8.0.2"
     minipass "^4.2.4"
     path-scurry "^1.6.1"
 
@@ -1219,6 +1251,11 @@ isexe@^2.0.0:
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
+jiti@^1.18.2:
+  version "1.18.2"
+  resolved "https://registry.yarnpkg.com/jiti/-/jiti-1.18.2.tgz#80c3ef3d486ebf2450d9335122b32d121f2a83cd"
+  integrity sha512-QAdOptna2NYiSSpv0O/BwoHBSmz4YhpzJHyi+fnMRTXFjp7B8i/YG5Z8IfusxB1ufjcD2Sre1F3R+nX3fvy7gg==
+
 joycon@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/joycon/-/joycon-3.1.1.tgz"
@@ -1261,6 +1298,17 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+locter@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/locter/-/locter-1.1.0.tgz#b66f650945ebe7f54704e068e3b59750620e1805"
+  integrity sha512-dZD6T3CSeVtJ+37ZArPtk/QROvwpZAfydBDP5qDpITBPoAd3EBm/SKPmzkSRiHhkZbvB2BrW0kj/QglYXVT4Zw==
+  dependencies:
+    destr "^1.2.2"
+    ebec "^1.0.0"
+    flat "^5.0.2"
+    glob "^9.3.2"
+    jiti "^1.18.2"
+
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz"
@@ -1283,6 +1331,13 @@ log-symbols@^5.1.0:
   dependencies:
     chalk "^5.0.0"
     is-unicode-supported "^1.1.0"
+
+lower-case@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-2.0.2.tgz#6fa237c63dbdc4a82ca0fd882e4722dc5e634e28"
+  integrity sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==
+  dependencies:
+    tslib "^2.0.3"
 
 lru-cache@^6.0.0:
   version "6.0.0"
@@ -1400,6 +1455,14 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
+
+no-case@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/no-case/-/no-case-3.0.4.tgz#d361fd5c9800f558551a8369fc0dcd4662b6124d"
+  integrity sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==
+  dependencies:
+    lower-case "^2.0.2"
+    tslib "^2.0.3"
 
 nodemon@^2.0.20:
   version "2.0.20"
@@ -1527,6 +1590,14 @@ parse5@^6.0.1:
   version "6.0.1"
   resolved "https://registry.npmjs.org/parse5/-/parse5-6.0.1.tgz"
   integrity sha512-Ofn/CTFzRGTTxwpNEs9PP93gXShHcTq255nzRYSKe8AkVpZY7e1fpmTfOyoIvjP5HG7Z2ZM7VS9PPhQGW2pOpw==
+
+pascal-case@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/pascal-case/-/pascal-case-3.1.2.tgz#b48e0ef2b98e205e7c1dae747d0b1508237660eb"
+  integrity sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==
+  dependencies:
+    no-case "^3.0.4"
+    tslib "^2.0.3"
 
 path-exists@^4.0.0:
   version "4.0.0"
@@ -1732,6 +1803,13 @@ quick-format-unescaped@^4.0.3:
   resolved "https://registry.npmjs.org/quick-format-unescaped/-/quick-format-unescaped-4.0.4.tgz"
   integrity sha512-tYC1Q1hgyRuHgloV/YXs2w15unPVh8qfu/qCTfhTYamaw7fyhumKa2yGpdSo87vY32rIclj+4fWYQXUMs9EHvg==
 
+rapiq@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/rapiq/-/rapiq-0.8.0.tgz#f9eee0bf5bf41b92916750cc6b066c0928a8c2b9"
+  integrity sha512-qAWUHJP++IDKE9ul9mwXoix45a6Hne3wDiqTd7BhoRNVOQv2gQvAlCOWCQCNTbQA/Ia9jW5ugcOmbd4eRGklSQ==
+  dependencies:
+    smob "^0.1.0"
+
 readable-stream@^3.4.0, readable-stream@^3.6.0:
   version "3.6.0"
   resolved "https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.0.tgz"
@@ -1910,6 +1988,16 @@ slash@^3.0.0:
   resolved "https://registry.npmjs.org/slash/-/slash-3.0.0.tgz"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
+smob@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/smob/-/smob-0.1.0.tgz#d61b307208d2510b3faf98c166ffe4e9e94f17a2"
+  integrity sha512-u6ezVF7hN3AxA1onkbMsl46XZr1HYrtMksmckSVpkLI8bYJ5I34kHMvDZk8qNCfA0y54VnhWqCoU6DQMMStzpw==
+
+smob@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/smob/-/smob-1.0.0.tgz#f4e7df1292dce83981ffc651b49a7823c4a4f77c"
+  integrity sha512-fnePEPpgGjAdBDk0nV7L9jcStbbcUsKS5TC+RYambCSU9Dm1k2rqDivdg5LBRVWF/NXe0Rq8yfnKKQI08kSXIg==
+
 sonic-boom@^3.0.0, sonic-boom@^3.1.0:
   version "3.2.1"
   resolved "https://registry.npmjs.org/sonic-boom/-/sonic-boom-3.2.1.tgz"
@@ -2082,7 +2170,7 @@ tslib@^1.8.1, tslib@^1.9.3:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.1.0, tslib@^2.4.1, tslib@^2.5.0:
+tslib@^2.0.3, tslib@^2.1.0, tslib@^2.4.1, tslib@^2.5.0:
   version "2.5.0"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.5.0.tgz"
   integrity sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==
@@ -2117,6 +2205,19 @@ type-fest@^3.0.0:
   version "3.5.7"
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-3.5.7.tgz"
   integrity sha512-6J4bYzb4sdkcLBty4XW7F18VPI66M4boXNE+CY40532oq2OJe6AVMB5NmjOp6skt/jw5mRjz/hLRpuglz0U+FA==
+
+typeorm-extension@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/typeorm-extension/-/typeorm-extension-2.8.0.tgz#ce9cef4790293baf61a6a6bd53849cecb5b4c406"
+  integrity sha512-CdBW2VPDtmvjQ9lTDF26JG06VBwKxPZeYBEkzsZV3Ue2omU6A2rsh6HtydP4KxWhYcpb9WB6IV+gzrx6sNQ20g==
+  dependencies:
+    "@faker-js/faker" "^7.6.0"
+    locter "^1.1.0"
+    pascal-case "^3.1.2"
+    rapiq "^0.8.0"
+    reflect-metadata "^0.1.13"
+    smob "^1.0.0"
+    yargs "^17.7.2"
 
 typeorm@^0.3.12:
   version "0.3.12"
@@ -2282,6 +2383,19 @@ yargs@^17.6.2:
   version "17.6.2"
   resolved "https://registry.npmjs.org/yargs/-/yargs-17.6.2.tgz"
   integrity sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==
+  dependencies:
+    cliui "^8.0.1"
+    escalade "^3.1.1"
+    get-caller-file "^2.0.5"
+    require-directory "^2.1.1"
+    string-width "^4.2.3"
+    y18n "^5.0.5"
+    yargs-parser "^21.1.1"
+
+yargs@^17.7.2:
+  version "17.7.2"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.2.tgz#991df39aca675a192b816e1e0363f9d75d2aa269"
+  integrity sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==
   dependencies:
     cliui "^8.0.1"
     escalade "^3.1.1"
