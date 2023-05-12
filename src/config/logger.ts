@@ -37,6 +37,10 @@ export class Logger {
     }
 
     public log( level: LOGGING_LEVELS, message: string | object ): void {
+        if( process.env.DEV_DISABLE_LOGGING ) {
+            return;
+        }
+
         if( !this.pino ) {
             this.createLogger();
         }
