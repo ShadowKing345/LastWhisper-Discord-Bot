@@ -120,7 +120,7 @@ export async function eventManagerSeeder( ds: DataSource, guildId: string, data:
                     r.message = reminder.message;
                 }
 
-                if( "timeDelta" in reminder && typeof reminder.timeDelta === "string" ) {
+                if( "timeDelta" in reminder && typeof reminder.timeDelta === "number" ) {
                     r.timeDelta = reminder.timeDelta;
                 }
 
