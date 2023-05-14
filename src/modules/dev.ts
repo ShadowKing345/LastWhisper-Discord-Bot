@@ -1,8 +1,20 @@
-import { SubCommand, module, Event, Timer } from "../decorators/index.js";
-import { Module } from "./module.js";
-import { PermissionManagerService } from "../services/permissionManager.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
-import { Logger } from "../config/logger.js";
+import {ContextMenuCommand, Event, module, SubCommand, Timer} from "../decorators/index.js";
+import {Module} from "./module.js";
+import {PermissionManagerService} from "../services/permissionManager.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ChatInputCommandInteraction,
+    CommandInteraction,
+    ContextMenuCommandInteraction,
+    ModalActionRowComponentBuilder,
+    ModalBuilder,
+    SelectMenuBuilder,
+    TextInputBuilder,
+    TextInputStyle,
+} from "discord.js";
+import {Logger} from "../config/logger.js";
 
 /**
  * Development module used for testing features and random things.
@@ -122,5 +134,11 @@ export class DevModule extends Module {
     public async timerTest(): Promise<void> {
         DevModule.logger.debug( "Timer ticked." );
         return Promise.resolve();
+    }
+    
+    @ContextMenuCommand({name: "DebugMSG", description: "Prints message to debug shell."})
+    public async printMessageInfo(interaction: ContextMenuCommandInteraction): Promise<void>{
+        console.log(interaction);
+        await interaction.reply({content: "True", ephemeral: true});
     }
 }

@@ -1,5 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { APIApplicationCommandOptionChoice, ApplicationCommandOptionBase, ApplicationCommandOptionType as OptionType, ChatInputCommandInteraction, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, } from "discord.js";
+import {
+    APIApplicationCommandOptionChoice,
+    ApplicationCommandOptionBase,
+    ApplicationCommandOptionType as OptionType,
+    ChatInputCommandInteraction,
+    SlashCommandStringOption,
+    SlashCommandSubcommandBuilder,
+    SlashCommandSubcommandGroupBuilder,
+} from "discord.js";
+import {Command} from "./command.js";
 
 type SlashCommandType = SlashCommandBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandBuilder;
 
@@ -8,36 +17,27 @@ export type CommandNameDef = { name?: string, group?: string, sub?: string };
 /**
  * Object that represents a slash command to be used.
  */
-export class SlashCommand {
+export class SlashCommand extends Command {
     public name: string = null;
     public description: string = null;
 
-    public callback: ( interaction: ChatInputCommandInteraction ) => Promise<unknown> | unknown = null;
     public subcommands?: ( SlashCommand | Partial<SlashCommand> )[];
 
     public options: ( CommandOptions | Partial<CommandOption> )[] = [];
 
     public constructor( data: Partial<SlashCommand> = null ) {
+        super();
+        
         if( data ) {
             this.merge( data );
         }
     }
 
     public merge( obj: Partial<SlashCommand> ): SlashCommand {
-        if( obj.name ) {
-            this.name = obj.name;
-        }
-
-        if( obj.description ) {
-            this.description = obj.description;
-        }
-
+        super.merge(obj);
+        
         if( obj.subcommands ) {
             this.subcommands = obj.subcommands.map( item => item instanceof SlashCommand ? item : new SlashCommand( item ) );
-        }
-
-        if( obj.callback ) {
-            this.callback = obj.callback;
         }
 
         if( obj.options ) {
