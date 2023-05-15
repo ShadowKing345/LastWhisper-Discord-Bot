@@ -21,7 +21,7 @@ export class GardeningManagerModule extends Module {
             name: "gardening_module",
             description: "gardening module.",
             subcommands: [
-                new SlashCommand( {
+                {
                     name: "reserve",
                     description: "Reserve a slot in a plot to be used by you.",
                     options: [
@@ -60,8 +60,8 @@ export class GardeningManagerModule extends Module {
                             } ) ),
                         } ),
                     ],
-                } ),
-                new SlashCommand( {
+                },
+                {
                     name: "cancel",
                     description: "Cancel any reservations you have made to a slot in a plot.",
                     options: [
@@ -84,8 +84,8 @@ export class GardeningManagerModule extends Module {
                             required: true,
                         } ),
                     ],
-                } ),
-                new SlashCommand( {
+                },
+                {
                     name: "list",
                     description: "Shows all plots and their states.",
                     options: [
@@ -105,12 +105,12 @@ export class GardeningManagerModule extends Module {
                             type: ApplicationCommandOptionType.Boolean,
                         } ),
                     ],
-                } ),
+                },
             ],
             // callback: async interaction => this.commandResolver( interaction ),
         } ),
     ];
-    
+
     protected commandResolverKeys2 = {
         "gardening_module.reserve": this.reserve.bind( this ),
         "gardening_module.list": this.list.bind( this ),

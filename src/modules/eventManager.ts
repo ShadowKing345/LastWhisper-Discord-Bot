@@ -1,12 +1,12 @@
-import { ApplicationCommandOptionType, ChatInputCommandInteraction, Client, EmbedBuilder, Events, InteractionResponse, Message, PartialMessage } from "discord.js";
-import { Module } from "./module.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Client, EmbedBuilder, Events, InteractionResponse, Message, MessageContextMenuCommandInteraction, PartialMessage } from "discord.js";
+import { DateTime } from "luxon";
+import { Logger } from "../config/logger.js";
+import { addPermissionKeys, authorize, ContextMenuCommand, deferReply, Event, module, SubCommand, Timer } from "../decorators/index.js";
+import { EventObject } from "../entities/eventManager/index.js";
 import { EventManagerService, EventObjCommandArgs } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { EventObject } from "../entities/eventManager/index.js";
 import { WrongChannelError } from "../utils/errors/index.js";
-import { DateTime } from "luxon";
-import { addPermissionKeys, authorize, deferReply, module, SubCommand, Event, Timer } from "../decorators/index.js";
-import { Logger } from "../config/logger.js";
+import { Module } from "./module.js";
 
 const moduleName = "EventManager";
 
@@ -274,6 +274,79 @@ export class EventManagerModule extends Module {
 
     // endregion
 
+    // region ContextMenu
+
+    @ContextMenuCommand( {
+        name: "Create Event from Message",
+        description: "Creates an event from a given message.",
+        type: ApplicationCommandType.Message
+    } )
+    @deferReply( true )
+    public async createMessageByContextMenu( interaction: MessageContextMenuCommandInteraction ): Promise<void> {
+        EventManagerModule.logger.debug( "Context menu fired. Creating new event." );
+        
+        const args: EventObjCommandArgs = {
+            messageId: interaction.targetMessage.id,
+            text: interaction.targetMessage.content,
+        }
+
+        try {
+            const event = await this.service.create( interaction.guildId, interaction.channelId, args );
+            await Promise.allSettled( [
+                interaction.targetMessage.react( event ? "✅" : "❎" ),
+                interaction.editReply( { content: `Event was${ event ? ' ' : ' was not ' }created.` } )
+            ] );
+        } catch( error: unknown | Error ) {
+            if( error instanceof WrongChannelError ) {
+                EventManagerModule.logger.debug( "Channel was wrong." );
+                await interaction.editReply( { content: "The channel for this message is not valid and so the event will be ignored." } );
+            }
+
+            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
+            await interaction.editReply( { content: "An unknown error has occured." } );
+        }
+    }
+
+    @ContextMenuCommand( {
+        name: "Test Message for Event",
+        description: "Tests a message to see if it's a valid event.",
+        type: ApplicationCommandType.Message
+    })
+    @deferReply( true )
+    public async testEventByContextMenu( interaction: MessageContextMenuCommandInteraction ): Promise<void> {
+        const args: EventObjCommandArgs = {
+            text: interaction.targetMessage.content
+        };
+
+        const event = await this.service.parseEventGuildId( interaction.guildId, args );
+
+        await interaction.editReply( {
+            embeds: [
+                new EmbedBuilder( {
+                    title: event.isValid ? "Event is valid." : "Event is not valid.",
+                    fields: [
+                        { name: "Name", value: event.name ?? "Name cannot be null." },
+                        { name: "Description", value: event.description ?? "Description cannot be null." },
+                        {
+                            name: "Time",
+                            value: event.dateTime
+                                ? event.dateTime < DateTime.now().toUnixInteger()
+                                    ? `<t:${ event.dateTime }:F>`
+                                    : "Time is before the present."
+                                : "The format for the time was not correct. Use the Hammer time syntax to help.",
+                        },
+                        {
+                            name: "Additional",
+                            value: event.additional.map( pair => `[${ pair[0] }]\n${ pair[1] }` ).join( "\n" )
+                        },
+                    ],
+                } ).setColor( event.isValid ? "Green" : "Red" ),
+            ],
+        } );
+    }
+
+    // endregion
+
     // region Events
 
     /**
@@ -297,7 +370,7 @@ export class EventManagerModule extends Module {
             text: message.content,
             messageId: message.id,
         };
-        
+
         try {
             const event: EventObject = await this.service.create( message.guildId, message.channelId, args );
             await message.react( event ? "✅" : "❎" );

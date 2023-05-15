@@ -12,6 +12,8 @@ export class ModuleConfiguration {
     public enableTimers?: boolean = true;
     // Disables all interactions with the application. Will also disable commands as a result.
     public enableInteractions?: boolean = true;
+    // Disables all context menu interactions.
+    public enableContextMenus?: boolean = true;
 
     // A collection of module names to be filtered.
     public modules?: string[] = [ "DevModule" ];
@@ -33,6 +35,10 @@ export class ModuleConfiguration {
 
         if( obj.enableInteractions !== undefined ) {
             this.enableInteractions = obj.enableInteractions;
+        }
+        
+        if( obj.enableContextMenus !== undefined ) {
+            this.enableContextMenus = obj.enableContextMenus;
         }
 
         if( isArray( obj.modules ) ) {

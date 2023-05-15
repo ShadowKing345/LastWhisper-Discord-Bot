@@ -1,8 +1,8 @@
 import { REST, RouteLike, Routes } from "discord.js";
 import { ConfigurationService } from "./config/configurationService.js";
 import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
+import { Commands } from "./objects/index.js";
 import { isPromiseRejected } from "./utils/index.js";
-import { SlashCommands } from "./objects/index.js";
 
 const logger = new Logger( "CommandRegistration" );
 
@@ -29,15 +29,15 @@ async function unregister( rest: REST, route: RouteLike ) {
  * Registers commands for a route.
  * @param rest The REST object.
  * @param route The route.
- * @param slashCommands Collection of slash commands to be registered.
+ * @param commands Collection of commands to build.
  */
-async function register( rest: REST, route: RouteLike, slashCommands: SlashCommands ) {
-    const commands = [];
-    for( const slashCommand of slashCommands ) {
-        commands.push( slashCommand.build().toJSON() );
+async function register( rest: REST, route: RouteLike, commands: Commands ) {
+    const builtCommands = [];
+    for( const command of commands ) {
+        builtCommands.push( command.build() );
     }
 
-    await rest.put( route, { body: commands } );
+    await rest.put( route, { body: builtCommands } );
 }
 
 /**
@@ -45,9 +45,11 @@ async function register( rest: REST, route: RouteLike, slashCommands: SlashComma
  * @param {string} token The token to be used. Overrides the configuration token.
  * @param {boolean} shouldUnregister Boolean flag to determine if we should unregister the commands.
  * @param {CommandRegistrationConfiguration} args Arguments for command registration. Same as configuration.
- * @param {SlashCommands[]} commands A list of commands to be registered.
  */
-export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), shouldUnregister = false, args: CommandRegistrationConfiguration = null, commands = ModuleService.getSlashCommands().map( struct => struct.value ) ): Promise<void> {
+export async function manageCommands( token = ConfigurationService.getConfiguration<string>( CommonConfigurationKeys.TOKEN ), shouldUnregister = false, args: CommandRegistrationConfiguration = null ): Promise<void> {
+    const slashCommands = ModuleService.getSlashCommands().map( struct => struct.value );
+    const contextMenuCommands = ModuleService.getContextMenuCommands().map( struct => struct.value );
+    const commands = [ ...slashCommands, ...contextMenuCommands ];
     logger.info( "Welcome again to command registration or un-registration." );
 
     const commandConfigs: CommandRegistrationConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.COMMAND_REGISTRATION );

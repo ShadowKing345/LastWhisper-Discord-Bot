@@ -1,4 +1,4 @@
-import { SlashCommand } from "../objects/index.js";
+import { SlashGroupCommand, SlashSubCommand } from "../objects/index.js";
 
 const reflect = globalThis.Reflect;
 
@@ -15,11 +15,11 @@ export const Reflect = {
     setModuleName: function( name: string, module: object ): void {
         return reflect.defineMetadata( ReflectConstants.MODULE_NAME, name, module );
     },
-    getSubcommands: function( module: object ): SlashCommand[] {
+    getSubcommands: function( module: object ): ( SlashSubCommand | SlashGroupCommand )[] {
         if( !reflect.hasMetadata( ReflectConstants.MODULE_SUBCOMMANDS, module ) ) {
             reflect.defineMetadata( ReflectConstants.MODULE_SUBCOMMANDS, [], module );
         }
 
-        return reflect.getMetadata( ReflectConstants.MODULE_SUBCOMMANDS, module ) as SlashCommand[];
+        return reflect.getMetadata( ReflectConstants.MODULE_SUBCOMMANDS, module ) as ( SlashSubCommand | SlashGroupCommand )[];
     }
 };

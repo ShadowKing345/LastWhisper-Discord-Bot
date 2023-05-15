@@ -1,8 +1,8 @@
-import {Module} from "../../modules/module.js";
-import {ContextMenuCommand as TContextMenuCommand} from "../../objects/index.js";
-import {ModuleService} from "../../config/index.js";
-import {CommandInteraction} from "discord.js";
-import {CTR} from "../../utils/commonTypes.js";
+import { Module } from "../../modules/module.js";
+import { ContextMenuCommand as TContextMenuCommand } from "../../objects/index.js";
+import { ModuleService } from "../../config/index.js";
+import { CommandInteraction } from "discord.js";
+import { CTR } from "../../utils/commonTypes.js";
 
 /**
  * Decorator that attempts to register a context menu commands to the module service system.
@@ -15,6 +15,7 @@ export function ContextMenuCommand<T extends Module>( command: Partial<Omit<TCon
             name: command.name,
             description: command.description,
             callback: descriptor.value as ( interaction: CommandInteraction ) => Promise<unknown>,
+            type: command.type,
         } ), target.constructor as CTR<T> );
 
         return descriptor;
