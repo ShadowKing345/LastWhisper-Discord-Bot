@@ -1,9 +1,16 @@
-import { ButtonInteraction, ChatInputCommandInteraction, ClientEvents, CommandInteraction, ComponentType, Interaction } from "discord.js";
+import {
+    ButtonInteraction,
+    ChatInputCommandInteraction,
+    ClientEvents,
+    CommandInteraction,
+    ComponentType,
+    Interaction
+} from "discord.js";
 import { clearInterval } from "timers";
 import { container } from "tsyringe";
 import { Module } from "../modules/module.js";
 import { Bot } from "../objects/bot.js";
-import { CommandNameDef, EventListener, SlashCommand, Timer } from "../objects/index.js";
+import { CommandNameDef, ContextMenuCommand, EventListener, SlashCommand, Timer } from "../objects/index.js";
 import { CTR } from "../utils/commonTypes.js";
 import { CommandResolverError } from "../utils/errors/index.js";
 import { isPromiseRejected } from "../utils/index.js";
@@ -24,6 +31,7 @@ type CommandStruct<T> = { type: CTR<Module>, value: T }
 export class ModuleService {
     private static readonly moduleServiceLogger = new Logger( ModuleService.name );
     private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
+    private static contextMenuCommands: Record<string, CommandStruct<ContextMenuCommand>> = {};
     private static eventListeners: Record<string, CommandStruct<EventListener>[]> = {};
     private static timers: CommandStruct<Timer>[] = [];
     private static readonly timerChildInstance = container.createChildContainer();
@@ -95,25 +103,21 @@ export class ModuleService {
     private async interactionEvent( interaction: Interaction ): Promise<void> {
         ModuleService.moduleServiceLogger.debug( "Interaction event invoked." );
 
+        if( interaction.isContextMenuCommand() && this.moduleConfiguration.enableContextMenus ) {
+            ModuleService.moduleServiceLogger.debug( `Interaction is a ${ interaction.isUserContextMenuCommand() ? "user" : "message" } context menu.` );
+
+            const { type, value } = ModuleService.contextMenuCommands[interaction.commandName];
+            if( !value ) {
+                ModuleService.moduleServiceLogger.error( `No context menu command found with name: ${ interaction.commandName }. Exiting` );
+                throw new Error( "Hello World" );
+            }
+
+            await this.callCallback( type, value.callback, [ interaction ] );
+        }
+
         try {
             if( interaction.isCommand() ) {
                 ModuleService.moduleServiceLogger.debug( "Interaction is a command." );
-
-                if( interaction.isContextMenuCommand() ) {
-                    ModuleService.moduleServiceLogger.debug( `Interaction is a ${ interaction.isUserContextMenuCommand() ? "user" : "message" } context menu.`, );
-
-                    if( interaction.isUserContextMenuCommand() ) {
-                        await interaction.reply( {
-                            content: "Responded with a user",
-                            ephemeral: true,
-                        } );
-                    } else {
-                        await interaction.reply( {
-                            content: "Responded with a message",
-                            ephemeral: true,
-                        } );
-                    }
-                }
 
                 if( interaction.isChatInputCommand() && this.moduleConfiguration.enableCommands ) {
                     ModuleService.moduleServiceLogger.debug( "Interaction is a chat input command. (Slash command.)" );
@@ -324,6 +328,21 @@ export class ModuleService {
 
     public static getSlashCommands(): CommandStruct<SlashCommand>[] {
         const objs = Object.values( ModuleService.slashCommands );
+        const config = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE );
+
+        if( !config ) {
+            return objs;
+        }
+
+        return objs.filter( value => !ModuleService.isModuleBlacklisted( value.type, config.modules, config.blacklist ) );
+    }
+
+    public static registerContextMenuCommand( command: ContextMenuCommand, type: CTR<Module> ) {
+        ModuleService.contextMenuCommands[command.name] = { value: command, type };
+    }
+
+    public static getContextMenuCommands(): CommandStruct<ContextMenuCommand>[] {
+        const objs = Object.values( ModuleService.contextMenuCommands );
         const config = ConfigurationService.getConfiguration<ModuleConfiguration>( CommonConfigurationKeys.MODULE );
 
         if( !config ) {

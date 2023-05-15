@@ -39,7 +39,7 @@ export class ApplicationConfiguration extends IMerge<ApplicationConfiguration> {
         }
 
         if( obj.moduleConfiguration ) {
-            this.moduleConfiguration = deepMerge( this.moduleConfiguration ?? new ModuleConfiguration(), obj.moduleConfiguration );
+            this.moduleConfiguration = ( this.moduleConfiguration ?? new ModuleConfiguration() ).merge( obj.moduleConfiguration );
         }
 
         return this;

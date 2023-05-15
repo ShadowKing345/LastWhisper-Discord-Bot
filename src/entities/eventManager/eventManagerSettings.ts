@@ -14,7 +14,7 @@ export class EventManagerSettings extends EntityBase {
     @Column({nullable: true})
     public postingChannelId: string = null;
 
-    @Column("character", {array: true})
+    @Column("character", {array: true, default: ["[", "]"]})
     public delimiterCharacters: [string, string] = ["[", "]"];
 
     @Column({nullable: true})
@@ -26,10 +26,10 @@ export class EventManagerSettings extends EntityBase {
     @Column({nullable: true})
     public dateTime: string = null;
 
-    @Column("text", {array: true})
+    @Column("text", {array: true, default: []})
     public exclusionList: string[] = [];
 
-    @Column("text", {array: true})
+    @Column("text", {array: true, default: []})
     public dateTimeFormat: string[] = [];
 
     constructor(

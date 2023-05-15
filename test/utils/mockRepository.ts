@@ -1,139 +1,61 @@
+import * as crypto from "crypto";
+import path from "path";
+import { constructor } from "tsyringe/dist/typings/types/index.js";
+import { DataSource, DataSourceOptions, EntityTarget } from "typeorm";
+import { createDatabase, dropDatabase } from "typeorm-extension";
+import { DatabaseService } from "../../src/config/index.js";
 import { EntityBase } from "../../src/entities/entityBase.js";
 import { Repository } from "../../src/repositories/base/repository.js";
-import { constructor } from "tsyringe/dist/typings/types/index.js";
-import { isArray } from "../../src/utils/index.js";
-import { mock } from "node:test";
 
-const _ = mock.fn<() => Promise<unknown>>( () => Promise.resolve() );
-type MockFunction = typeof _;
+function createDataSourceConfigs(): DataSourceOptions {
+    const src = path.basename( path.join( path.dirname( import.meta.url ), "../../src" ) );
 
-export interface IMockRepository<T extends EntityBase> {
-    _addItem( key: string, obj: T );
-
-    _removeItem( key: string );
-
-    _addItems( objs: [ string, T ][] );
-
-    _removeItems( keys: string[] );
-
-    _getItem( key: string );
-
-    _clear();
+    return {
+        database: `test-${ crypto.randomUUID() }`,
+        type: "postgres",
+        host: "127.0.0.1",
+        port: 5432,
+        username: "postgresql",
+        password: "postgresql",
+        entities: [ `${ src }/entities/**/*.[tj]s` ],
+        migrations: [ `${ src }/migrations/**/*.[tj]s` ],
+        migrationsTableName: "typeorm_migrations",
+    } as DataSourceOptions;
 }
 
-export type MockRepository<G extends EntityBase, T extends Repository<G>> = T & IMockRepository<G>;
-
-type internalItems<G extends EntityBase, T extends Repository<G>> =
-    MockRepository<G, T>
-    &
-    {
-        $items: { [key: string]: G },
-        $findItem: ( filter: Partial<G> ) => G
-        $findItems: ( filters: Partial<G>[] ) => G[]
-    }
-
-/**
- * Helper function used to check if a item matches the filter.
- * @param {Object} item Item to check.
- * @param {Object} filter The object to check against.
- * @return {boolean}
- */
-function filterCall( item: object, filter: object ) {
-    return Object.entries(item)
-        .filter(item => Object.keys(filter).includes(item[0]))
-        .every(item => filter[item[0]] === item[1]);
+export type MockRepository<G extends EntityBase, T extends Repository<G>> = T & {
+    $tearUp: () => Promise<unknown>;
+    $tearDown: () => Promise<unknown>;
+    $clear: () => Promise<unknown>;
 }
 
-function createInterfaceFunctions<G extends EntityBase, T extends Repository<G>>( instance: internalItems<G, T> ) {
-    instance.$items = {};
+export function mockRepository<G extends EntityBase, T extends Repository<G>>( construct: constructor<T>, entityTarget: EntityTarget<T> ): MockRepository<G, T> {
+    const dbOpts = createDataSourceConfigs();
+    const db = new DatabaseService();
+    db['_dataSource'] = new DataSource( dbOpts );
 
+    const instance = new construct( db, entityTarget ) as unknown as MockRepository<G, T>;
 
-    instance.$findItem = function( filter ) {
-        return Object.values( this.$items ).find( item => filterCall( item, filter ) );
+    instance.$tearUp = async function() {
+        return createDatabase( {
+            options: dbOpts,
+            initialDatabase: 'Bot',
+            synchronize: true,
+            ifNotExist: true
+        } ).then( () => db.connect() );
     }
 
-    instance.$findItems = function( filters ) {
-        return Object.values( this.$items ).filter( item => filters.some( filter => filterCall( item, filter ) ) );
+    instance.$tearDown = async function() {
+        return db.disconnect().then( () => dropDatabase( {
+            options: dbOpts,
+            initialDatabase: 'Bot',
+            ifExist: true
+        } ) );
     }
 
-    instance._clear = function() {
-        this.$items = {};
-
-        ( this.findOne as unknown as MockFunction ).mock?.resetCalls();
-        ( this.findAll as unknown as MockFunction ).mock?.resetCalls();
-        ( this.save as unknown as MockFunction ).mock?.resetCalls();
-        ( this.bulkSave as unknown as MockFunction ).mock?.resetCalls();
-        ( this.delete as unknown as MockFunction ).mock?.resetCalls();
+    instance.$clear = async function() {
+        return this['repo'].clear();
     }
-
-    instance._addItem = function( key, obj ) {
-        this.$items[key] = obj;
-    }
-
-    instance._addItems = function( objs ) {
-        for( const [ k, v ] of objs ) {
-            this._addItem( k, v );
-        }
-    }
-
-    instance._getItem = function( key ) {
-        return this.$items[key];
-    }
-
-    instance._removeItem = function( key ) {
-        delete this.$items[key];
-    }
-
-    instance._removeItem = function( keys ) {
-        for( const k of keys ) {
-            this._removeItem( k );
-        }
-    }
-}
-
-function overrideDefaultRepoMethods<G extends EntityBase, T extends Repository<G>>( instance: internalItems<G, T> ) {
-    instance.findOne = function( filter ) {
-        if( filter.where ) {
-            if( isArray( filter.where ) ) {
-                const result = this.$findItems( filter.where as G[] );
-                return Promise.resolve( result[0] ?? null );
-            } else if( filter.where.guildId ) {
-                const result = this.$findItem( filter.where as G );
-                return Promise.resolve( result );
-            }
-        }
-
-        return Promise.resolve<G>( Object.values( this.$items )?.[0] );
-    };
-
-    instance.findAll = function( filter ) {
-        if( filter.where ) {
-            let items: G[];
-
-            if( isArray( filter.where ) ) {
-                items = this.$findItems( filter.where as G[] );
-            } else if( filter.where.guildId ) {
-                items = this.$findItems( [filter.where as G] );
-            }
-
-            return Promise.resolve( items );
-        }
-
-        return Promise.resolve<G[]>( Object.values( this.$items ) );
-    };
-
-    instance.save = mock.fn( ( obj ) => Promise.resolve( obj ) );
-
-    instance.bulkSave = mock.fn( ( objs ) => Promise.resolve( objs ) );
-
-    instance.delete = mock.fn( () => Promise.resolve() );
-}
-
-export function mockRepository<G extends EntityBase, T extends Repository<G>>( construct: constructor<T>, ...args ): MockRepository<G, T> {
-    const instance = new construct( args ) as internalItems<G, T>;
-
-    createInterfaceFunctions( instance );
-    overrideDefaultRepoMethods( instance );
 
     return instance;
 }

@@ -1,13 +1,12 @@
-import { ApplicationCommandOptionType, ChatInputCommandInteraction, Client, EmbedBuilder, InteractionResponse, Message, PartialMessage } from "discord.js";
-import { Module } from "./module.js";
-import { EventManagerService } from "../services/eventManager.js";
-import { PermissionManagerService } from "../services/permissionManager.js";
-import { CommandOption } from "../objects/index.js";
-import { EventObject } from "../entities/eventManager/index.js";
-import { WrongChannelError } from "../utils/errors/index.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Client, EmbedBuilder, Events, InteractionResponse, Message, MessageContextMenuCommandInteraction, PartialMessage } from "discord.js";
 import { DateTime } from "luxon";
-import { addPermissionKeys, authorize, deferReply, module, SubCommand, Event, Timer } from "../decorators/index.js";
 import { Logger } from "../config/logger.js";
+import { addPermissionKeys, authorize, ContextMenuCommand, deferReply, Event, module, SubCommand, Timer } from "../decorators/index.js";
+import { EventObject } from "../entities/eventManager/index.js";
+import { EventManagerService, EventObjCommandArgs } from "../services/eventManager.js";
+import { PermissionManagerService } from "../services/permissionManager.js";
+import { WrongChannelError } from "../utils/errors/index.js";
+import { Module } from "./module.js";
 
 const moduleName = "EventManager";
 
@@ -52,40 +51,39 @@ export class EventManagerModule extends Module {
         name: "create",
         description: "Creates a new event. Note no message will be posted only the data saved.",
         options: [
-            new CommandOption( {
+            {
                 name: "text",
                 description: "The new message you want to use instead. (Will not update the exiting message)",
                 type: ApplicationCommandOptionType.String,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "name",
                 description: "Name of event.",
                 type: ApplicationCommandOptionType.String,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "description",
                 description: "Description of event.",
                 type: ApplicationCommandOptionType.String,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "time",
                 description: "Time of event.",
                 type: ApplicationCommandOptionType.String,
-            } ),
+            },
         ],
     } )
     @authorize( EventManagerModule.permissionKeys.create )
     @deferReply( true )
     public async createEventCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
-        const name = interaction.options.getString( "name" );
-        const description = interaction.options.getString( "description" );
-        const time = interaction.options.getString( "time" );
+        const args: EventObjCommandArgs = {
+            name: interaction.options.getString( "name" ),
+            description: interaction.options.getString( "description" ),
+            dateTime: interaction.options.getString( "time" ),
+            text: interaction.options.getString( "text" ),
+        };
 
-        const text =
-            interaction.options.getString( "text" ) ??
-            ( await this.service.createContent( interaction.guildId, name, description, time ) );
-
-        const event = await this.service.create( interaction.guildId, null, text );
+        const event = await this.service.create( interaction.guildId, interaction.channelId, args );
         await interaction.editReply( { content: event ? "Event was successfully created." : "Event failed to be created." } );
     }
 
@@ -99,47 +97,47 @@ export class EventManagerModule extends Module {
         name: "update",
         description: "Updates event information with new one.",
         options: [
-            new CommandOption( {
+            {
                 name: "index",
                 description: "The index for the event, starting at 0.",
                 type: ApplicationCommandOptionType.Integer,
                 required: true,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "text",
                 description: "The new message you want to use instead. (Will not update the exiting message)",
                 type: ApplicationCommandOptionType.String,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "name",
                 description: "Name of event.",
                 type: ApplicationCommandOptionType.String,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "description",
                 description: "Description of event.",
                 type: ApplicationCommandOptionType.String,
-            } ),
-            new CommandOption( {
+            },
+            {
                 name: "time",
                 description: "Time of event.",
                 type: ApplicationCommandOptionType.String,
-            } ),
+            },
         ],
     } )
     @authorize( EventManagerModule.permissionKeys.update )
     @deferReply( true )
     public async updateEventCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
         const index = interaction.options.getNumber( "index", true );
-        const name = interaction.options.getString( "name" );
-        const description = interaction.options.getString( "description" );
-        const time = interaction.options.getString( "time" );
 
-        const event = await this.service.updateByIndex(
-            interaction.guildId,
-            index,
-            await this.service.createContent( interaction.guildId, name, description, time ),
-        );
+        const args: EventObjCommandArgs = {
+            text: interaction.options.getString( "text" ),
+            name: interaction.options.getString( "name" ),
+            description: interaction.options.getString( "description" ),
+            dateTime: interaction.options.getString( "time" ),
+        }
+
+        const event = await this.service.updateByIndex( interaction.guildId, index, args );
         await interaction.editReply( { content: event ? "Event was successfully updated." : "Event failed to be updated." } );
     }
 
@@ -152,12 +150,12 @@ export class EventManagerModule extends Module {
         name: "cancel",
         description: "Cancels an event. This is will effectively stop it.",
         options: [
-            new CommandOption( {
+            {
                 name: "index",
                 description: "The index for the event, starting at 0.",
                 type: ApplicationCommandOptionType.Integer,
                 required: true,
-            } ),
+            },
         ],
     } )
     @authorize( EventManagerModule.permissionKeys.cancel )
@@ -184,18 +182,23 @@ export class EventManagerModule extends Module {
         description:
             "Tests a given string with the event parser. Checking if it's valid and returning event details.",
         options: [
-            new CommandOption( {
+            {
                 name: "text",
                 description: "The message you wish to check against.",
                 type: ApplicationCommandOptionType.String,
                 required: true,
-            } ),
+            },
         ],
     } )
     @authorize( EventManagerModule.permissionKeys.test )
     @deferReply()
     public async testEventCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
-        const event = await this.service.parseEvent( interaction.guildId, interaction.options.getString( "text", true ) );
+        const args: EventObjCommandArgs = {
+            text: interaction.options.getString( "text", true )
+        };
+
+        const event = await this.service.parseEventGuildId( interaction.guildId, args );
+
         await interaction.editReply( {
             embeds: [
                 new EmbedBuilder( {
@@ -230,11 +233,11 @@ export class EventManagerModule extends Module {
         name: "list",
         description: "Displays events.",
         options: [
-            new CommandOption( {
+            {
                 name: "index",
                 description: "The index for the event, starting at 0.",
                 type: ApplicationCommandOptionType.Integer,
-            } ),
+            },
         ],
     } )
     @authorize( EventManagerModule.permissionKeys.list )
@@ -271,31 +274,105 @@ export class EventManagerModule extends Module {
 
     // endregion
 
+    // region ContextMenu
+
+    @ContextMenuCommand( {
+        name: "Create Event from Message",
+        description: "Creates an event from a given message.",
+        type: ApplicationCommandType.Message
+    } )
+    @deferReply( true )
+    public async createMessageByContextMenu( interaction: MessageContextMenuCommandInteraction ): Promise<void> {
+        EventManagerModule.logger.debug( "Context menu fired. Creating new event." );
+        
+        const args: EventObjCommandArgs = {
+            messageId: interaction.targetMessage.id,
+            text: interaction.targetMessage.content,
+        }
+
+        try {
+            const event = await this.service.create( interaction.guildId, interaction.channelId, args );
+            await Promise.allSettled( [
+                interaction.targetMessage.react( event ? "✅" : "❎" ),
+                interaction.editReply( { content: `Event was${ event ? ' ' : ' was not ' }created.` } )
+            ] );
+        } catch( error: unknown | Error ) {
+            if( error instanceof WrongChannelError ) {
+                EventManagerModule.logger.debug( "Channel was wrong." );
+                await interaction.editReply( { content: "The channel for this message is not valid and so the event will be ignored." } );
+            }
+
+            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
+            await interaction.editReply( { content: "An unknown error has occured." } );
+        }
+    }
+
+    @ContextMenuCommand( {
+        name: "Test Message for Event",
+        description: "Tests a message to see if it's a valid event.",
+        type: ApplicationCommandType.Message
+    })
+    @deferReply( true )
+    public async testEventByContextMenu( interaction: MessageContextMenuCommandInteraction ): Promise<void> {
+        const args: EventObjCommandArgs = {
+            text: interaction.targetMessage.content
+        };
+
+        const event = await this.service.parseEventGuildId( interaction.guildId, args );
+
+        await interaction.editReply( {
+            embeds: [
+                new EmbedBuilder( {
+                    title: event.isValid ? "Event is valid." : "Event is not valid.",
+                    fields: [
+                        { name: "Name", value: event.name ?? "Name cannot be null." },
+                        { name: "Description", value: event.description ?? "Description cannot be null." },
+                        {
+                            name: "Time",
+                            value: event.dateTime
+                                ? event.dateTime < DateTime.now().toUnixInteger()
+                                    ? `<t:${ event.dateTime }:F>`
+                                    : "Time is before the present."
+                                : "The format for the time was not correct. Use the Hammer time syntax to help.",
+                        },
+                        {
+                            name: "Additional",
+                            value: event.additional.map( pair => `[${ pair[0] }]\n${ pair[1] }` ).join( "\n" )
+                        },
+                    ],
+                } ).setColor( event.isValid ? "Green" : "Red" ),
+            ],
+        } );
+    }
+
+    // endregion
+
     // region Events
 
     /**
      * Event fired when a message is created.
      * Will attempt to create an event from the message and react.
+     * @param _
      * @param message The message or partial message to be parsed.
      * @private
      */
-    @Event( "messageCreate" )
-    public async createEvent( message: Message | PartialMessage ): Promise<void> {
+    @Event( Events.MessageCreate )
+    public async createEvent( _, [ message ]: [ Message | PartialMessage ] ): Promise<void> {
         EventManagerModule.logger.debug( "On Message Create fired. Creating new event." );
 
         if( message.partial ) message = await message.fetch();
-        if( message.author?.id === message.client?.application?.id || message.applicationId ) {
+        if( message.applicationId ) {
             EventManagerModule.logger.debug( "Author is an application and message is ignored." );
             return;
         }
 
+        const args: EventObjCommandArgs = {
+            text: message.content,
+            messageId: message.id,
+        };
+
         try {
-            const event: EventObject = await this.service.create(
-                message.guildId,
-                message.id,
-                message.content,
-                message.channelId,
-            );
+            const event: EventObject = await this.service.create( message.guildId, message.channelId, args );
             await message.react( event ? "✅" : "❎" );
             EventManagerModule.logger.debug( "New event created." );
         } catch( error ) {
@@ -316,7 +393,7 @@ export class EventManagerModule extends Module {
      * @param newMessage The message or partial new message to be parsed.
      * @private
      */
-    @Event( "messageUpdate" )
+    @Event( Events.MessageUpdate )
     public async updateEvent( oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage ): Promise<void> {
         if( oldMessage.partial ) await oldMessage.fetch();
         if( newMessage.partial ) await newMessage.fetch();
@@ -329,8 +406,12 @@ export class EventManagerModule extends Module {
             return;
         }
 
+        const args: EventObjCommandArgs = {
+            text: newMessage.content,
+        };
+
         try {
-            const event = await this.service.update( oldMessage.guildId, oldMessage.id, newMessage.content );
+            const event = await this.service.update( oldMessage.guildId, oldMessage.id, args );
 
             const reaction = newMessage.reactions.cache.find( reaction => reaction.me );
             if( reaction ) await reaction.users.remove( oldMessage.client.user?.id );
@@ -348,7 +429,7 @@ export class EventManagerModule extends Module {
      * @param message
      * @private
      */
-    @Event( "messageDelete" )
+    @Event( Events.MessageDelete )
     public async deleteEvent( message: Message | PartialMessage ): Promise<void> {
         if( message.partial ) message = await message.fetch();
 
@@ -360,7 +441,7 @@ export class EventManagerModule extends Module {
      * @param client The Bot client.
      * @private
      */
-    @Event( "ready" )
+    @Event( Events.ClientReady )
     public onReady( client: Client ): Promise<void> {
         return this.service.onReady( client );
     }

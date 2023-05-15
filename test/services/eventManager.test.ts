@@ -3,7 +3,7 @@ import { EventManagerService } from "../../src/services/eventManager.js";
 import { EventObjectRepository } from "../../src/repositories/eventManager/eventObjectRepository.js";
 import { EventReminderRepository } from "../../src/repositories/eventManager/eventReminderRepository.js";
 import { DateTime } from "luxon";
-import { test, mock } from "node:test";
+import { mock, before, after, describe, beforeEach, it, afterEach } from "node:test";
 import Assert from "node:assert";
 import { mockRepository } from "../utils/mockRepository.js";
 import { EventManagerSettings } from "../../src/entities/eventManager/index.js";
@@ -11,57 +11,99 @@ import { ChannelType, Client } from "discord.js";
 import { EventObject, EventReminder } from "../../src/entities/eventManager/index.js";
 
 const _ = mock.fn<() => Promise<unknown>>( () => Promise.resolve() );
-type MockFunction = typeof _;
+type MockFunction = typeof _
 
-test( "Testing the parser.", async t => {
-    const settingsRepo = mockRepository( EventManagerSettingsRepository );
-    const eventObjRepo = mockRepository( EventObjectRepository );
-    const reminderRepo = mockRepository( EventReminderRepository );
+function testEventObjectEquality( actual: EventObject, expected: EventObject ) {
+    Assert.deepStrictEqual( actual.additional, expected.additional );
+    Assert.deepStrictEqual( actual.dateTime, expected.dateTime );
+    Assert.deepStrictEqual( actual.description, expected.description );
+    Assert.deepStrictEqual( actual.guildId, expected.guildId );
+    Assert.deepStrictEqual( actual.messageId, expected.messageId );
+    Assert.deepStrictEqual( actual.name, expected.name );
+}
 
-    t.beforeEach( () => {
-        settingsRepo._clear();
-        eventObjRepo._clear();
-        reminderRepo._clear();
+afterEach( () => {
+    mock.restoreAll();
+} );
+
+describe( "Testing the parser.", () => {
+    const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
+
+    before( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearUp(),
+        ] );
     } );
 
-    await t.test( "Message got parsed correctly.", async () => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+    after( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearDown(),
+        ] );
+    } );
+
+    beforeEach( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$clear(),
+        ] );
+    } );
+
+    it( "Message got parsed correctly.", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             announcement: "announcement",
             description: "description",
             dateTime: "time"
         } ) );
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
+        const service = new EventManagerService( settingsRepo, null, null );
 
-        const result = await service.parseEvent( "0", `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ DateTime.now().plus( { days: 1 } ).toUnixInteger() }:f>` );
+        const result = await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ DateTime.now().plus( { days: 1 } ).toUnixInteger() }:f>` } );
         Assert.ok( result );
         Assert.ok( result?.isValid );
     } );
 
-    await t.test( "Message is wrong", async () => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+    it( "Message is wrong", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             announcement: "announcement",
             description: "description",
             dateTime: "time"
         } ) );
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
+        const service = new EventManagerService( settingsRepo, null, null );
         const now = DateTime.now().plus( { days: 1 } ).toUnixInteger();
 
-        Assert.ok( !( await service.parseEvent( "0", `[description]\nTesting\n[time]\n<t:${ now }:f>` ) ).isValid, "Bad event name" )
-        Assert.ok( !( await service.parseEvent( "0", `[announcement]\nHello World\n[time]\n<t:${ now }:f>` ) ).isValid, "Bad event description" )
-        Assert.ok( !( await service.parseEvent( "0", `[announcement]\nHello World\n[description]\nTesting` ) ).isValid, "Bad time" )
-        Assert.ok( !( await service.parseEvent( "0", `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ 0 }:f>` ) ).isValid, "Time is before now" );
+        Assert.ok( !( await service.parseEventGuildId( "0", { text: `[description]\nTesting\n[time]\n<t:${ now }:f>` } ) ).isValid, "Bad event name" )
+        Assert.ok( !( await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[time]\n<t:${ now }:f>` } ) ).isValid, "Bad event description" )
+        Assert.ok( !( await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[description]\nTesting` } ) ).isValid, "Bad time" )
+        Assert.ok( !( await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ 0 }:f>` } ) ).isValid, "Time is before now" );
     } );
-} ).catch( console.error );
+} );
 
-test( "Event was successfully created.", async t => {
-    const settingsRepo = mockRepository( EventManagerSettingsRepository );
-    const eventObjRepo = mockRepository( EventObjectRepository );
-    const reminderRepo = mockRepository( EventReminderRepository );
+describe( "Event was successfully created.", () => {
+    const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
+    const eventObjRepo = mockRepository( EventObjectRepository, EventObject );
+
+    before( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearUp(),
+            eventObjRepo.$tearUp(),
+        ] );
+    } );
+
+    after( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearDown(),
+            eventObjRepo.$tearDown(),
+        ] );
+    } );
+
+    beforeEach( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$clear(),
+            eventObjRepo.$clear(),
+        ] );
+    } );
 
     const now = DateTime.now().plus( { days: 1 } ).toUnixInteger();
-
     const expectedObj = new EventObject( {
         guildId: "0",
         name: "Hello World",
@@ -69,14 +111,8 @@ test( "Event was successfully created.", async t => {
         dateTime: now
     } );
 
-    t.beforeEach( () => {
-        settingsRepo._clear();
-        eventObjRepo._clear();
-        reminderRepo._clear();
-    } );
-
-    await t.test( "Saved a new event with text.", async () => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+    it( "Saved a new event with text.", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             listenerChannelId: "1",
             announcement: "announcement",
@@ -84,15 +120,17 @@ test( "Event was successfully created.", async t => {
             dateTime: "time",
         } ) );
 
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
-        
-        await service.create( "0", null, `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` );
-        Assert.strictEqual( ( eventObjRepo.save as unknown as MockFunction ).mock.callCount(), 1 );
+        mock.method( eventObjRepo, "save" );
 
-        const result = (( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown>)[0];
-        Assert.deepStrictEqual( result, expectedObj );
+        const service = new EventManagerService( settingsRepo, eventObjRepo, null );
+
+        await service.create( "0", "1", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` } );
+        Assert.strictEqual( ( eventObjRepo.save as unknown as MockFunction ).mock.callCount(), 1 );
+        const result = ( ( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown> )[0] as EventObject;
+
+        testEventObjectEquality( result, expectedObj );
     } );
-    
+
     // Todo: Use one function for creating with arguments or creating with text.
     // await t.test( "Saved a new event with arguments.", async () => {
     //     settingsRepo._addItem( "0", new EventManagerSettings( {
@@ -111,12 +149,32 @@ test( "Event was successfully created.", async t => {
     //     const result = (( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown>)[0];
     //     Assert.deepStrictEqual( result, expectedObj );
     // } );
-} ).catch( console.error );
+} );
 
-test("Testing updating an event", async t => {
-    const settingsRepo = mockRepository( EventManagerSettingsRepository );
-    const eventObjRepo = mockRepository( EventObjectRepository );
-    const reminderRepo = mockRepository( EventReminderRepository );
+describe( "Testing updating an event", () => {
+    const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
+    const eventObjRepo = mockRepository( EventObjectRepository, EventObject );
+
+    before( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearUp(),
+            eventObjRepo.$tearUp(),
+        ] );
+    } );
+
+    after( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearDown(),
+            eventObjRepo.$tearDown(),
+        ] );
+    } );
+
+    beforeEach( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$clear(),
+            eventObjRepo.$clear(),
+        ] );
+    } );
 
     const now = DateTime.now().plus( { days: 1 } ).toUnixInteger();
 
@@ -128,14 +186,8 @@ test("Testing updating an event", async t => {
         dateTime: now
     } );
 
-    t.beforeEach( () => {
-        settingsRepo._clear();
-        eventObjRepo._clear();
-        reminderRepo._clear();
-    } );
-
-    await t.test("Update by message Id", async () => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+    it( "Update by message Id", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             listenerChannelId: "1",
             announcement: "announcement",
@@ -143,24 +195,26 @@ test("Testing updating an event", async t => {
             dateTime: "time",
         } ) );
 
-        eventObjRepo._addItems([
-            ["0", new EventObject({guildId: "0", messageId: "0"})],
-            ["1", new EventObject({guildId: "0", messageId: "1"})],
-            ["2", new EventObject({guildId: "0", messageId: "2"})],
-        ]);
+        await eventObjRepo.bulkSave( [
+            new EventObject( { guildId: "0", messageId: "0", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "1", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "2", name: "test", description: "testing", dateTime: 300 } ),
+        ] );
 
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
-        await service.update("0", "1", `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>`);
+        mock.method( eventObjRepo, "save" );
+
+        const service = new EventManagerService( settingsRepo, eventObjRepo, null );
+        await service.update( "0", "1", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` } );
         Assert.strictEqual( ( eventObjRepo.save as unknown as MockFunction ).mock.callCount(), 1 );
 
-        const result = (( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown>)[0];
-        Assert.deepStrictEqual( result, expectedObj );
+        const result = ( ( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown> )[0] as EventObject;
+        testEventObjectEquality( result, expectedObj );
 
-        await Assert.rejects(() => service.update("0", "44", `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>`));
-    });
-    
-    await t.test("Update by message index", async () => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+        await Assert.rejects( () => service.update( "0", "44", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` } ) );
+    } );
+
+    it( "Update by message index", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             listenerChannelId: "1",
             announcement: "announcement",
@@ -168,55 +222,50 @@ test("Testing updating an event", async t => {
             dateTime: "time",
         } ) );
 
-        eventObjRepo._addItems([
-            ["0", new EventObject({guildId: "0", messageId: "0"})],
-            ["1", new EventObject({guildId: "0", messageId: "1"})],
-            ["2", new EventObject({guildId: "0", messageId: "2"})],
-        ]);
+        await eventObjRepo.bulkSave( [
+            new EventObject( { guildId: "0", messageId: "0", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "1", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "2", name: "test", description: "testing", dateTime: 300 } ),
+        ] );
 
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
-        await service.updateByIndex("0", 1, `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>`);
+        mock.method( eventObjRepo, "save" );
+
+        const service = new EventManagerService( settingsRepo, eventObjRepo, null );
+        await service.updateByIndex( "0", 1, { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` } );
         Assert.strictEqual( ( eventObjRepo.save as unknown as MockFunction ).mock.callCount(), 1 );
 
-        const result = (( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown>)[0];
-        Assert.deepStrictEqual( result, expectedObj );
-    });
-}).catch(console.error);
-
-test("Testing canceling an event", async t => {
-    const settingsRepo = mockRepository( EventManagerSettingsRepository );
-    const eventObjRepo = mockRepository( EventObjectRepository );
-    const reminderRepo = mockRepository( EventReminderRepository );
-    
-    t.beforeEach( () => {
-        settingsRepo._clear();
-        eventObjRepo._clear();
-        reminderRepo._clear();
+        const result = ( ( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown> )[0] as EventObject;
+        testEventObjectEquality( result, expectedObj );
     } );
-    
-    await t.test("Cancel by message Id", async() => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
-            guildId: "0",
-            listenerChannelId: "1",
-            announcement: "announcement",
-            description: "description",
-            dateTime: "time",
-        } ) );
-        
-        eventObjRepo._addItems([
-            ["0", new EventObject({guildId: "0", messageId: "0"})],
-            ["1", new EventObject({guildId: "0", messageId: "1"})],
-            ["2", new EventObject({guildId: "0", messageId: "2"})],
-        ]);
+} );
 
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
-        await service.cancel("0", "1");
-        
-        Assert.strictEqual((eventObjRepo.delete as unknown as MockFunction).mock.callCount(), 1);
-    });
-    
-    await t.test("Cancel by message index", async() => {
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+describe( "Testing canceling an event", () => {
+    const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
+    const eventObjRepo = mockRepository( EventObjectRepository, EventObject );
+
+    before( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearUp(),
+            eventObjRepo.$tearUp(),
+        ] );
+    } );
+
+    after( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearDown(),
+            eventObjRepo.$tearDown(),
+        ] );
+    } );
+
+    beforeEach( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$clear(),
+            eventObjRepo.$clear(),
+        ] );
+    } );
+
+    it( "Cancel by message Id", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             listenerChannelId: "1",
             announcement: "announcement",
@@ -224,58 +273,107 @@ test("Testing canceling an event", async t => {
             dateTime: "time",
         } ) );
 
-        eventObjRepo._addItems([
-            ["0", new EventObject({guildId: "0", messageId: "0"})],
-            ["1", new EventObject({guildId: "0", messageId: "1"})],
-            ["2", new EventObject({guildId: "0", messageId: "2"})],
-        ]);
+        await eventObjRepo.bulkSave( [
+            new EventObject( { guildId: "0", messageId: "0", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "1", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "2", name: "test", description: "testing", dateTime: 300 } ),
+        ] );
 
-        const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
-        await service.cancelByIndex("0", 1);
+        mock.method( eventObjRepo, "delete" );
 
-        Assert.strictEqual((eventObjRepo.delete as unknown as MockFunction).mock.callCount(), 1);
-    });
-}).catch(console.error);
+        const service = new EventManagerService( settingsRepo, eventObjRepo, null );
+        await service.cancel( "0", "1" );
 
-test( "Testing the event reminder loop", async t => {
-    const settingsRepo = mockRepository( EventManagerSettingsRepository );
-    const eventObjRepo = mockRepository( EventObjectRepository );
-    const reminderRepo = mockRepository( EventReminderRepository );
-
-    t.beforeEach( () => {
-        settingsRepo._clear();
-        eventObjRepo._clear();
-        reminderRepo._clear();
+        Assert.strictEqual( ( eventObjRepo.delete as unknown as MockFunction ).mock.callCount(), 1 );
     } );
 
-    await t.test( "Event ticked", async t => {
+    it( "Cancel by message index", async () => {
+        await settingsRepo.save( new EventManagerSettings( {
+            guildId: "0",
+            listenerChannelId: "1",
+            announcement: "announcement",
+            description: "description",
+            dateTime: "time",
+        } ) );
+
+        await eventObjRepo.bulkSave( [
+            new EventObject( { guildId: "0", messageId: "0", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "1", name: "test", description: "testing", dateTime: 300 } ),
+            new EventObject( { guildId: "0", messageId: "2", name: "test", description: "testing", dateTime: 300 } ),
+        ] );
+
+        mock.method( eventObjRepo, "delete" );
+
+        const service = new EventManagerService( settingsRepo, eventObjRepo, null );
+        await service.cancelByIndex( "0", 1 );
+
+        Assert.strictEqual( ( eventObjRepo.delete as unknown as MockFunction ).mock.callCount(), 1 );
+    } );
+} );
+
+describe( "Testing the event reminder loop", () => {
+    const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
+    const eventObjRepo = mockRepository( EventObjectRepository, EventObject );
+    const reminderRepo = mockRepository( EventReminderRepository, EventReminder );
+
+    before( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearUp(),
+            eventObjRepo.$tearUp(),
+            reminderRepo.$tearUp(),
+        ] );
+    } );
+
+    after( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearDown(),
+            eventObjRepo.$tearDown(),
+            reminderRepo.$tearDown(),
+        ] );
+    } );
+
+    beforeEach( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$clear(),
+            eventObjRepo.$clear(),
+            reminderRepo.$clear(),
+        ] );
+    } )
+
+    it( "Event ticked", async () => {
         const postingChannel = {
             type: ChannelType.GuildText,
             guildId: "0",
-            send: t.mock.fn( () => Promise.resolve() )
+            channelId: "0",
+            send: mock.fn( () => Promise.resolve() )
         };
 
         const client = {
             isReady: () => true,
             channels: {
                 fetch: () => Promise.resolve( postingChannel )
-            }
+            },
+            guilds: {
+                fetch: () => true
+            },
         } as unknown as Client;
 
-        settingsRepo._addItem( "0", new EventManagerSettings( {
+        await settingsRepo.save( new EventManagerSettings( {
             guildId: "0",
             announcement: "announcement",
             description: "description",
             dateTime: "time"
         } ) );
-        eventObjRepo._addItem( "0", new EventObject( {
+        await eventObjRepo.save( new EventObject( {
             guildId: "0",
-            dateTime: DateTime.now().plus( { minute: 1 } ).toUnixInteger()
+            dateTime: DateTime.now().plus( { minute: 1 } ).toUnixInteger(),
+            name: "test",
+            description: "testing",
         } ) );
-        reminderRepo._addItem( "0", new EventReminder( {
+        await reminderRepo.save( new EventReminder( {
             guildId: "0",
             message: "Hello World",
-            timeDelta: "00:01"
+            timeDelta: 60
         } ) );
 
         const service = new EventManagerService( settingsRepo, eventObjRepo, reminderRepo );
@@ -283,4 +381,4 @@ test( "Testing the event reminder loop", async t => {
         await service.reminderLoop( client );
         Assert.strictEqual( postingChannel.send.mock.callCount(), 1 );
     } );
-} ).catch( console.error );
+} );

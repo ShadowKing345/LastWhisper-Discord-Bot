@@ -35,7 +35,7 @@
   "dependencies": {
     "commander": "^10.0.0",
     "discord-api-types": "^0.37.32",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.11.0",
     "inquirer": "^9.1.4",
     "luxon": "^3.2.1",
     "pg": "^8.9.0",
@@ -59,7 +59,8 @@
     "husky": "^8.0.0",
     "nodemon": "^2.0.20",
     "pino-pretty": "^9.2.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typeorm-extension": "^2.8.0"
   },
   "version": "These are not the versions you are looking for!"
 }
