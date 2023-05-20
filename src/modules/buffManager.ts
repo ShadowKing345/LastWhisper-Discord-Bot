@@ -7,7 +7,7 @@ import { addPermissionKeys, authorize, deferReply, module, SubCommand, Timer } f
 import { CommandOption } from "../objects/index.js";
 import { DateTime } from "luxon";
 import { Buff, Week } from "../entities/buffManager/index.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 const moduleName = "BuffManager";
 

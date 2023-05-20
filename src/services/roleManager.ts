@@ -7,7 +7,7 @@ import { RoleManagerConfig } from "../entities/roleManager.js";
 import { RoleManagerRepository } from "../repositories/roleManager.js";
 import { Service } from "./service.js";
 import { service } from "../decorators/index.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 /**
  * Service used to manage roles in the server.

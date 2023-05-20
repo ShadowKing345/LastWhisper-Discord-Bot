@@ -7,5 +7,4 @@ export class DatabaseConfiguration implements PostgresConnectionOptions {
   public host?: string = "127.0.0.1";
   public port?: number = 5432;
   public database?: string = "Bot";
-  public logging?: boolean = false;
 }

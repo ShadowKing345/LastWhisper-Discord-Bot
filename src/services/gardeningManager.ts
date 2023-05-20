@@ -7,7 +7,7 @@ import { GardeningModuleConfig, Plot, Reason, Reservation, Slot } from "../entit
 import { InvalidArgumentError } from "../utils/errors/index.js";
 import { Service } from "./service.js";
 import { service } from "../decorators/index.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 @service()
 export class GardeningManagerService extends Service {

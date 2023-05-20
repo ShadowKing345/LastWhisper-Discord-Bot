@@ -20,7 +20,7 @@ import { ConfigurationService } from "./configurationService.js";
 import { DatabaseService } from "./databaseService.js";
 import { ModuleConfiguration } from "./entities/index.js";
 
-import { Logger } from "./logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 type CommandStruct<T> = { type: CTR<Module>, value: T }
 

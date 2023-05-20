@@ -1,4 +1,4 @@
-import { DatabaseService } from "../../config/index.js";
+import { createDataSource } from "../../config/migrationDataSource.js";
 import { buffManagerSeeder } from "./buffManagerSeeder.js";
 import { eventManagerSeeder } from "./eventManagerSeeder.js";
 import { isPromiseRejected } from "../index.js";
@@ -8,7 +8,7 @@ import { managerUtilsSeeder } from "./managerUtilsSeeder.js";
 import { roleManagerSeeder } from "./roleManagerSeeder.js";
 
 export async function seedDb( data: Record<string, unknown> ) {
-    const ds = DatabaseService.createDataSource();
+    const ds = createDataSource();
 
     try {
         await ds.initialize();

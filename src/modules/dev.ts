@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, ContextMenuCommandInteraction, ModalActionRowComponentBuilder, ModalBuilder, SelectMenuBuilder, TextInputBuilder, TextInputStyle, } from "discord.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 import { ContextMenuCommand, Event, module, SubCommand, Timer } from "../decorators/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { Module } from "./module.js";

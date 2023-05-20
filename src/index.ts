@@ -4,7 +4,7 @@ import "reflect-metadata";
 import { program } from "commander";
 import { userInfo } from "os";
 import { ConfigurationService } from "./config/configurationService.js";
-import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, } from "./config/index.js";
+import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys } from "./config/index.js";
 import "./modules/index.js";
 import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
@@ -13,6 +13,8 @@ import { isObject } from "./utils/index.js";
 import fs from "fs";
 import * as readline from "readline";
 import { seedDb } from "./utils/database/seedDb.js";
+import { Logger } from "./utils/logger/logger.js";
+
 
 class Index {
     private static readonly logger = new Logger( "InitScript" );
