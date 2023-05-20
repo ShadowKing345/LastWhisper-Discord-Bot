@@ -9,7 +9,7 @@ import { ServiceError } from "../utils/errors/index.js";
 import { service } from "../decorators/index.js";
 import { WeekRepository } from "../repositories/buffManager/weekRepository.js";
 import { BuffManagerSettingsRepository } from "../repositories/buffManager/buffManagerSettingsRepository.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 import { APIEmbedField } from "discord-api-types/v10.js";
 
 /**

@@ -1,7 +1,7 @@
 import { Channel, ChannelType, Client, EmbedBuilder } from "discord.js";
 import { DateTime, Duration } from "luxon";
 import { Between, LessThanOrEqual } from "typeorm";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 import { service } from "../decorators/index.js";
 import { EventManagerSettings, EventObject } from "../entities/eventManager/index.js";
 

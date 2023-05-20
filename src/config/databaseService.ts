@@ -1,10 +1,7 @@
-import { Logger, TypeORMLogger } from "../utils/logger/index.js";
-import { DatabaseConfiguration } from "./entities/index.js";
-import { DataSource, DataSourceOptions } from "typeorm";
-import { CommonConfigurationKeys } from "./configurationKeys.js";
-import { ConfigurationService } from "./configurationService.js";
+import { DataSource } from "typeorm";
 import { Lifecycle, scoped } from "tsyringe";
-import path from "path";
+import { Logger } from "../utils/logger/logger.js";
+import { createDataSource } from "./migrationDataSource.js";
 
 /**
  * Database Configuration Service file.
@@ -27,7 +24,7 @@ export class DatabaseService {
             }
 
             if( !this._dataSource ) {
-                this._dataSource = DatabaseService.createDataSource();
+                this._dataSource = createDataSource();
             }
 
             await this._dataSource.initialize();
@@ -72,24 +69,4 @@ export class DatabaseService {
         return false;
     }
 
-    /**
-     * Attempts to create a new datasource to be used by throughout the project.
-     * @param config Database configuration override.
-     */
-    public static createDataSource( config: DatabaseConfiguration = ConfigurationService.getConfiguration( CommonConfigurationKeys.DATABASE ) ): DataSource {
-        const src = path.basename( path.join( path.dirname( import.meta.url ), ".." ) );
-
-        return new DataSource( {
-            type: config.type,
-            host: config.host,
-            username: config.username,
-            password: config.password,
-            port: config.port,
-            database: config.database,
-            entities: [ `${ src }/entities/**/*.[tj]s` ],
-            migrations: [ `${ src }/migrations/**/*.[tj]s` ],
-            migrationsTableName: "typeorm_migrations",
-            logger: new TypeORMLogger(),
-        } as DataSourceOptions );
-    }
 }

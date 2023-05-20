@@ -9,7 +9,7 @@ import { Reason } from "../entities/gardeningManager/index.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 // import { module } from "../decorators/index.js";
 import { CommandOption, SlashCommand, SlashCommands } from "../objects/index.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 // @module({})
 export class GardeningManagerModule extends Module {

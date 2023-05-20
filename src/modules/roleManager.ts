@@ -5,7 +5,7 @@ import { Bot } from "../objects/bot.js";
 import { RoleManagerService } from "../services/roleManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { module, SubCommand, Event } from "../decorators/index.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 const moduleName = "RoleManager";
 

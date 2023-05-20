@@ -4,7 +4,7 @@ import { Permission, PermissionMode } from "../entities/permissionManager/index.
 import { PermissionManagerService } from "../services/permissionManager.js";
 import { addPermissionKeys, authorize, deferReply, module, SubCommand } from "../decorators/index.js";
 import { CommandOption } from "../objects/index.js";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 
 /**
  * Internal method used to help with creating options.

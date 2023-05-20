@@ -1,8 +1,9 @@
 import { REST, RouteLike, Routes } from "discord.js";
 import { ConfigurationService } from "./config/configurationService.js";
-import { CommandRegistrationConfiguration, CommonConfigurationKeys, Logger, ModuleService } from "./config/index.js";
+import { CommandRegistrationConfiguration, CommonConfigurationKeys, ModuleService } from "./config/index.js";
 import { Commands } from "./objects/index.js";
 import { isPromiseRejected } from "./utils/index.js";
+import { Logger } from "./utils/logger/logger.js";
 
 const logger = new Logger( "CommandRegistration" );
 

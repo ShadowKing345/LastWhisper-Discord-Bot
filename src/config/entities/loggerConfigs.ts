@@ -37,9 +37,9 @@ export class LoggerConfigs {
 
 export class DatabaseLoggerConfigs {
     public isEnabled?: boolean = false;
-    public levels: LogLevel[] = [];
+    public levels: LogLevel[] | "all" = "all";
 
-    public constructor( data: Partial<DatabaseLoggerConfigs> = null) {
+    public constructor( data: Partial<DatabaseLoggerConfigs> = null ) {
         if( data ) {
             this.merge( data );
         }
@@ -50,8 +50,14 @@ export class DatabaseLoggerConfigs {
             this.isEnabled = obj.isEnabled;
         }
 
-        if( obj.levels && isArray( obj.levels ) ) {
-            this.levels = obj.levels.filter( item => typeof item === "string" );
+        if( obj.levels ) {
+            if( isArray( obj.levels ) ) {
+                this.levels = obj.levels.filter( item => typeof item === "string" );
+            }
+
+            if( obj.levels === "all" ) {
+                this.levels = "all";
+            }
         }
 
         return this;

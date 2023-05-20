@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Client, EmbedBuilder, Events, InteractionResponse, Message, MessageContextMenuCommandInteraction, PartialMessage } from "discord.js";
 import { DateTime } from "luxon";
-import { Logger } from "../config/logger.js";
+import { Logger } from "../utils/logger/logger.js";
 import { addPermissionKeys, authorize, ContextMenuCommand, deferReply, Event, module, SubCommand, Timer } from "../decorators/index.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { EventManagerService, EventObjCommandArgs } from "../services/eventManager.js";
