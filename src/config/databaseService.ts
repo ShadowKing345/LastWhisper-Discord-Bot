@@ -1,11 +1,10 @@
+import { Logger, TypeORMLogger } from "../utils/logger/index.js";
 import { DatabaseConfiguration } from "./entities/index.js";
 import { DataSource, DataSourceOptions } from "typeorm";
-import { Logger } from "./logger.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { Lifecycle, scoped } from "tsyringe";
 import path from "path";
-import { TypeORMLogger } from "./typeORMLogger.js";
 
 /**
  * Database Configuration Service file.
@@ -90,7 +89,7 @@ export class DatabaseService {
             entities: [ `${ src }/entities/**/*.[tj]s` ],
             migrations: [ `${ src }/migrations/**/*.[tj]s` ],
             migrationsTableName: "typeorm_migrations",
-            logger: new TypeORMLogger(config.logging, DatabaseService.logger),
+            logger: new TypeORMLogger(),
         } as DataSourceOptions );
     }
 }

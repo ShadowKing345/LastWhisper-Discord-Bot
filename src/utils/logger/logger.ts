@@ -1,8 +1,7 @@
 import { pino } from "pino";
-import { CommonConfigurationKeys } from "./configurationKeys.js";
-import { ConfigurationService } from "./configurationService.js";
-import { LoggerConfigs, LOGGING_LEVELS } from "./entities/index.js";
 import { EntitySchema, EntityTarget } from "typeorm";
+import { ConfigurationService } from "../../config/configurationService.js";
+import { CommonConfigurationKeys, LoggerConfigs, LOGGING_LEVELS } from "../../config/index.js";
 
 /**
  * Service used to handle logging calls.
