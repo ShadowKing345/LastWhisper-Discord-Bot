@@ -1,26 +1,221 @@
 {
-  "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "title": "Last Whisper Discord Bot Configuration Schema",
-  "description": "The application configuration json schema",
-  "type": "object",
-  "properties": {
-    "token": {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "CommandRegistration": {
+      "description": "This schema defines the configuration properties for command registration.",
+      "properties": {
+        "clientId": {
+          "default": null,
+          "description": "Discord client ID for the bot.",
+          "type": "string"
+        },
+        "guildId": {
+          "default": null,
+          "description": "Guid ID for when you want to register commands to a single guild. Does not do anything on its own without register for guild.",
+          "type": "string"
+        },
+        "registerForGuild": {
+          "default": false,
+          "description": "Boolean flag to set if you want to register commands for a guild instead.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "clientId"
+      ],
+      "title": "Command Registration Configuration Schema",
+      "type": "object"
+    },
+    "DatabaseConfiguration": {
+      "description": "Configuration settings for the database service.",
+      "properties": {
+        "database": {
+          "default": "Bot",
+          "description": "Database name to connect to.",
+          "type": "string"
+        },
+        "host": {
+          "default": "127.0.0.1",
+          "description": "Database host.",
+          "type": "string"
+        },
+        "password": {
+          "default": "postgresql",
+          "description": "Database password.",
+          "type": "string"
+        },
+        "port": {
+          "default": 5432,
+          "description": "Database host port.",
+          "type": "number"
+        },
+        "username": {
+          "default": "postgresql",
+          "description": "Database username.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "host",
+        "username",
+        "password",
+        "database"
+      ],
+      "title": "Database Configuration Schema",
+      "type": "object"
+    },
+    "DatabaseLogLevels": {
+      "enum": [
+        "error",
+        "info",
+        "log",
+        "migration",
+        "query",
+        "schema",
+        "warn"
+      ],
       "type": "string"
     },
-    "database": {
-      "$ref": "databaseSchema.json"
+    "DatabaseLoggerConfigs": {
+      "properties": {
+        "isEnabled": {
+          "default": false,
+          "description": "Enables the logger for any database commands.",
+          "type": "boolean"
+        },
+        "levels": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/DatabaseLogLevels"
+              },
+              "type": "array"
+            },
+            {
+              "enum": [
+                "all"
+              ],
+              "type": "string"
+            }
+          ],
+          "default": "all",
+          "description": "The level outputs to be logged. Note there is no ranking."
+        }
+      },
+      "type": "object"
     },
+    "LogLevel": {
+      "enum": [
+        "debug",
+        "error",
+        "fatal",
+        "info",
+        "trace",
+        "warn"
+      ],
+      "type": "string"
+    },
+    "LoggerConfiguration": {
+      "description": "Configuration for the logging service in the application.",
+      "properties": {
+        "database": {
+          "$ref": "#/definitions/DatabaseLoggerConfigs"
+        },
+        "disable": {
+          "default": false,
+          "description": "Disables all log messages.",
+          "type": "boolean"
+        },
+        "level": {
+          "$ref": "#/definitions/LogLevel",
+          "description": "The level the debugger will output to."
+        },
+        "transports": {
+          "description": "The configuration for pino transports.",
+          "items": {
+            "type": "object"
+          },
+          "type": [
+            "array",
+            "object"
+          ]
+        }
+      },
+      "title": "Logger Service Configuration Schema",
+      "type": "object",
+      "required": [
+        "level"
+      ]
+    },
+    "ModuleConfiguration": {
+      "description": "Configuration for the module service.",
+      "properties": {
+        "blacklist": {
+          "default": true,
+          "description": "Should the modules list be treated as a blacklist instead?",
+          "type": "boolean"
+        },
+        "enableCommands": {
+          "default": true,
+          "description": "Enables the use of discord commands.",
+          "type": "boolean"
+        },
+        "enableContextMenus": {
+          "default": true,
+          "descriptions": "Enables the use of context menus.",
+          "type": "boolean"
+        },
+        "enableEventListeners": {
+          "default": true,
+          "description": "Enables event listeners.",
+          "type": "boolean"
+        },
+        "enableInteractions": {
+          "default": true,
+          "descriptions": "Controls all interactions. This includes commands and responses to buttons and other interaction-ables in discord.",
+          "type": "boolean"
+        },
+        "enableTimers": {
+          "default": true,
+          "description": "Enables timers.",
+          "type": "boolean"
+        },
+        "modules": {
+          "description": "Collection of modules to be either ignored or only used.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "title": "Module Configuration Schema",
+      "type": "object"
+    }
+  },
+  "description": "The application configuration json schema",
+  "properties": {
     "commandRegistration": {
-      "$ref": "commandRegistrationSchema.json"
+      "$ref": "#/definitions/CommandRegistration"
+    },
+    "database": {
+      "$ref": "#/definitions/DatabaseConfiguration"
     },
     "logger": {
-      "$ref": "loggerSchema.json"
+      "$ref": "#/definitions/LoggerConfiguration"
     },
     "moduleConfiguration": {
-      "$ref": "moduleConfigurationSchema.json"
+      "$ref": "#/definitions/ModuleConfiguration"
+    },
+    "token": {
+      "default": null,
+      "type": "string"
     }
   },
   "required": [
-    "token"
-  ]
+    "token",
+    "commandRegistration",
+    "database"
+  ],
+  "title": "Last Whisper Discord Bot Configuration Schema",
+  "type": "object"
 }

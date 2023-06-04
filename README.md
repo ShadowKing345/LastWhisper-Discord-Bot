@@ -29,10 +29,7 @@ The Discord bot for the Final Fantasy XIV Last Whisper free company Discord serv
 
 ## Getting Started
 
-You will need to have Node.js version 16 and up in order to be able to run this application. For the database a MongoDB
-database is needed.
-
-Clone, Download/unzip this project into your desired location.
+To begin with, clone / Download / unzip this project to your desired location.
 
 ```shell
 git clone https://github.com/ShadowKing345/LastWhisper-Discord-Bot.git Discord-Bot
@@ -40,149 +37,106 @@ git clone https://github.com/ShadowKing345/LastWhisper-Discord-Bot.git Discord-B
 
 _Note: The folder name was used in later command examples._
 
-### Yarn
+### Local runs
 
-From here simply enter the folder downloaded(cloned) and download the node packages used for production.
+_You will need to have Node.js version 19 to be able to run this application safely. For the database, the application
+was created with postgresql in mind._
+
+You can run the application locally. This may be the simplest but also requires you to build the application as by
+default it comes in the raw TS code (to save space and ensure everyone get the latest build)
+
+_Note: This project uses mainly yarn as its package manager but you can also use npm. Keep in mind the command syntax is
+different for npm compared to yarn._
 
 ```shell
-yarn --production
+yarn --production # To install the production packages.
+yarn build # To build the application.
 ```
 
-Once all the packages are installed simply run the start script.
+Once everything has been installed and compiled / build. You will need to create the [configuration](#configuration) and
+run the application with.
 
 ```shell
 yarn run start
 ```
 
-The bot will begin setting up internal variables and start running. _Note: Assuming you have not configured the bot it
-will defiantly fail and throw errors._ However, this is done to just confirm that the environment is set up correctly.
-
-### NPM
-
-If you are using node package manager instead of yarn you can run the following instead
-
-```shell
-npm install --production
-npm run start
-```
+For more information about all the command you can look through the help documentation with the `--help` argument.
 
 ### Docker
 
-For a more simplified and straight forward installation a [`docker-compose.yml`](docker-compose.yml) and
-[`Dockerfile`](Dockerfile) can be found in the root of the project. The docker configuration is a minimal setup with as
-few commands as possible. For additional features such as volumes in case of storing logs, you can use
-[docker volumes](https://docs.docker.com/storage/volumes/).
+Docker provides one of the simplest ways to get a running version of the application running. This project wont be
+making it simple. We have include a [Dockerfile](./Dockerfile) that you can use to make a container image to use but we
+do not provide a container file or run command for how to run the application.
+
+We found it rather error prone to attempt to explain this. We can say that you need to have a volume setup for
+the `config` directory in `/var/app/config` for the container. Additionally, this docker file does not contain a run
+command by default so you will need to create one yourself.
 
 ## Configuration
 
-The bot uses a standard JSON file for its configuration. For separation from all the other configuration files for the
-project application configuration files are stored under the `config` directory root of the project. For the most basic
-of configuration a token and MongoDB database url. (It feels redundant to call say database twice)
+All configurations can be found under the config directory. This folder is ignored by git so you can put anything in
+there that may be useful to you. The main configuration file for the application is called `common.json` it is a json
+file containing all the configurations needed for the application.
 
-The token can be acquired by going to [Discord Developer Applications](https://discord.com/developers/applications) and
-creating a new application getting the token from there. _See:
-[Discord.js guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) for a more
-detailed guide_
+Normally, most of the default configuration should be fine but there are some you have to provide. The bot token and
+application ID are needed for command registration and general bot configuration.
 
-The MongoDB can be acquired with a local database instance or using the database cloud services provided by MongoDB or
-other cloud hosting services. Sadly I am not confident enough to provide a definitive guide to getting this url.
-
-Once you have acquired this information you can create a `ProjectConfiguration.json` file in the `config` folder root of
-the project. Simply provide the following.
+Below you can find an example json configuration including a schema path.
 
 ```json
 {
-  "$schema": "docs/Schemas/schema.json",
-  "token": "[Your Discord bot token]",
-  "database": {
-    "url": "[The MongoDB DB url]"
+  "$schema": "./docs/Schemas/schema.json",
+  "token": "[Your token]",
+  "commandRegistration": {
+    "clientId": "[Your bots client ID]"
   }
 }
 ```
 
-Assuming everything is configured correctly you can simply run the bot application without any issues.
+_Note: The schema path may be pointing in the wrong directory._
 
-_Note: It is possible that the `config` folder is not created at the root at the project. You can simply create it if
-this is the case._
-
-```shell
-mkdir config
-```
-
-_Note: A schema file is also provided to help with configuration of the bot. It can be found under
-[`docs/schema.json`](docs/Schemas/schema.json). Presuming the text editor you are using can handle JSON schemas.
-Additionally,
-if you are having issues seeing the schema try use `../docs/schema.json` instead._
+Obviously, this is the most bare bones configuration to ensure the application can at least connect to Discord. You will
+need to provide configuration for the database and ensure that the commands are set up correctly.
 
 ## Command Setup
 
-The bot uses slash commands which require manual registration. For this to work you will need the application ID for the
-bot. In the configuration file add the following or use the configuration script.
+To register all the commands needed for the users to interact with the application you will need to have the command
+registration set correctly with the client ID. From there simply run the `commandManager` subcommand with a optional
+unregister to unregister the commands
 
-```json
-{
-  "commandRegistration": {
-    "clientId": "[Bot Application Id]",
-    "unregister": false
-  }
-}
+```shell
+yarn run start commandManager register
 ```
 
-_Note: Unregister is actually not needed, but I would recommend keeping it so that you can easily toggle it without
-having to look through documentation or dealing with configuration tool._
-
-Once the configuration file has been saved you can simply run.
-
-```bash
-yarn run register-commands
-
-npm run register-commands
-```
-
-After this wait and the slash commands will be updates. It may take a long amount of time for the commands to be
-registered globally.
-
-Unregistering the commands are as simple as setting unregister to true and running the command again. It will unregister
-all the commands.
+You can run `--help` as an argument to see what else the command can do.
 
 ### Guild Specific Command Setup
 
-If you don't want to have the global commands or wish to have them instantly available, you can set up the slash
-commands for a specific guild. You will need the guild ID for the guild you wish to add the slash commands for.
-
-In the application configuration inside commandRegistration add the following.
-
-```json
-{
-  "guildId": "[Guild ID]",
-  "registerForGuild": true
-}
-```
-
-_Note: The guild ID does nothing by itself, so you can leave it there. Only the `registerForGuild` setting will trigger
-the register for guild procedure._
-
-One thing to mention is that guild command and global commands do not stack so if you have registered both of them you
-will see two entries in the slash command.
+For registering commands specific to a guild you will need to set the `guildId` and `registerForGuild` under
+the `commandRegistration` section for the configuration files. Simply run the command again and it should register it.
 
 ## Advanced configuration
 
 Things to note:
 
 - While a majority of configuration can be done you may have to manually enter the database and edit config files.
-- The project uses pino for its logger library. Pino has the ability to add additional transports which can be
-  configured by editing the `logger.transports` object in `ProjectConfiguration.json`.
+- Advanced configuration is still an on going project as we try to add various method to configure the application. If
+  something is missing it stands to reason we have not gotten around to it yet.
 
 ### Environment Variables
 
-There are special environment variables that can be set to change how the application handles certain tasks. For example
-the `CONFIG_PATH` variable sets the file path for the `ProjectConfiguration.json` file. \*Note: It's the file path and
-not the folder path.
+Environment variables are used to configure the application and change small behaviors.
 
 ### Logger
 
-I recommend reading the page on transports found ( here)[https://github.com/pinojs/pino/blob/master/docs/transports.md]
-as a majority of the important information can be found there.
+This project uses pino logger to structure the logs in a way that can be easily parsed. You can use the configurations
+to easily add a file logger transport and or pretty print logger.
+
+I recommend reading the page on transports found (here)[https://github.com/pinojs/pino/blob/master/docs/transports.md]
+as a majority of the important information can be found there about transports.
+
+The ORM also uses the logger to print out information about the database. This is a separate configuration to the normal
+logger as there are more options to dynamically change what is logged.
 
 ### Command arguments
 
@@ -197,9 +151,8 @@ note.
 
 ### Additional Configuration File
 
-The `ProjectConfiguration.json` has a sister file which can be used when developing the project.
-`ProjectConfiguration.dev.json` is a special file that will overwrite all options found in the regular configuration
-file.
+The `common.json` has a sister file which can be used when developing the project. `development.json` is a special file
+that will overwrite all options found in the regular configuration file.
 
 ### Project setup
 

@@ -3,11 +3,9 @@
 ## Table of Content
 
 <!-- TOC -->
-
 * [Code Styles and Prettier](#code-styles-and-prettier)
-    * [Table of Content](#table-of-content)
-    * [Code Styles](#code-styles)
-
+  * [Table of Content](#table-of-content)
+  * [Code Styles](#code-styles)
 <!-- TOC -->
 
 ## Code Styles
