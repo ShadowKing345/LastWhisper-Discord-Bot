@@ -3,12 +3,10 @@
 ## Table of Contents
 
 <!-- TOC -->
-
 * [Configuration and Configuration Files](#configuration-and-configuration-files)
-    * [Table of Contents](#table-of-contents)
-    * [Configuration Files](#configuration-files)
-    * [Configuration](#configuration)
-
+  * [Table of Contents](#table-of-contents)
+  * [Configuration Files](#configuration-files)
+  * [Configuration](#configuration)
 <!-- TOC -->
 
 ## Configuration Files
