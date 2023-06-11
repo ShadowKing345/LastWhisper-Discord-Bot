@@ -23,7 +23,7 @@ const moduleName = "BuffManager";
     }
 } )
 export class BuffManagerModule extends Module {
-    protected static readonly logger: Logger = new Logger( "BuffManagerModule" );
+    protected static readonly logger = Logger.build( "BuffManagerModule" );
 
     @addPermissionKeys()
     public static permissionKeys = {

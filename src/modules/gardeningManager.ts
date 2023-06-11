@@ -13,7 +13,7 @@ import { Logger } from "../utils/logger/logger.js";
 
 // @module({})
 export class GardeningManagerModule extends Module {
-    protected static readonly logger: Logger = new Logger( "GardeningManagerModule" );
+    protected static readonly logger = Logger.build( "GardeningManagerModule" );
 
     public moduleName = "GardeningModule";
     public commands: SlashCommands = [

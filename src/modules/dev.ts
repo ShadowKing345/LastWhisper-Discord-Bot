@@ -15,9 +15,7 @@ import { Module } from "./module.js";
     }
 } )
 export class DevModule extends Module {
-    private static readonly logger: Logger = new Logger( "DevModule" );
-    protected logger: Logger = new Logger( DevModule );
-
+    private static readonly logger = Logger.build( "DevModule" );
 
     public constructor(
         permissionManagerService: PermissionManagerService,

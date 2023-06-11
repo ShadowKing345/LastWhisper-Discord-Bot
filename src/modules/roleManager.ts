@@ -21,7 +21,7 @@ const moduleName = "RoleManager";
     }
 } )
 export class RoleManagerModule extends Module {
-    protected static readonly logger: Logger = new Logger( "RoleManagerModule" );
+    protected static readonly logger = Logger.build( "RoleManagerModule" );
 
     constructor(
         private roleManagerService: RoleManagerService,

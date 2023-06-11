@@ -11,7 +11,7 @@ import { Logger } from "../utils/logger/logger.js";
 
 @service()
 export class GardeningManagerService extends Service {
-    private logger: Logger = new Logger( GardeningManagerService );
+    private static LOGGER = Logger.build( "GardeningManagerService" );
 
     constructor(
         private repository: GardeningManagerRepository
@@ -295,7 +295,7 @@ export class GardeningManagerService extends Service {
         }
 
         for( const config of altered ) {
-            this.repository.save( config ).catch( err => this.logger.error( err ) );
+            this.repository.save( config ).catch( err => GardeningManagerService.LOGGER.error( err ) );
             await this.postChannelMessage( client, config, {} as unknown as MessagePostArgs );
         }
     }

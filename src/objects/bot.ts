@@ -8,7 +8,7 @@ import { Logger } from "../utils/logger/logger.js";
  * To simplify dependency injection this class is used and can be easily resolved.
  */
 export class Bot extends Client {
-    private readonly logger: Logger = new Logger( Bot );
+    private static readonly LOGGER = Logger.build( "Bot" );
 
     constructor(
         private appToken: string = ConfigurationService.getConfiguration( CommonConfigurationKeys.TOKEN ),
@@ -33,13 +33,13 @@ export class Bot extends Client {
         try {
             await this.moduleService.configureModules( this );
 
-            this.once( "ready", () => this.logger.info( "Bot is up and ready to roll!" ) );
-            this.on( "error", error => this.logger.error( error ) );
+            this.once( "ready", () => Bot.LOGGER.info( "Bot is up and ready to roll!" ) );
+            this.on( "error", error => Bot.LOGGER.error( error ) );
 
-            this.logger.info( "Done loading. Ready to run." );
+            Bot.LOGGER.info( "Done loading. Ready to run." );
         } catch( error ) {
-            this.logger.error( "An unexpected error has resulted in the application failing to start." );
-            this.logger.error( error );
+            Bot.LOGGER.error( "An unexpected error has resulted in the application failing to start." );
+            Bot.LOGGER.error( error );
         }
     }
 
@@ -54,7 +54,7 @@ export class Bot extends Client {
      * Stops everything and cleans up.
      */
     public async stop(): Promise<void> {
-        this.logger.info( "Stopping application." );
+        Bot.LOGGER.info( "Stopping application." );
 
         await this.moduleService.cleanup();
 
@@ -62,6 +62,6 @@ export class Bot extends Client {
             this.destroy();
         }
 
-        this.logger.info( "Done. Have a nice day!" );
+        Bot.LOGGER.info( "Done. Have a nice day!" );
     }
 }

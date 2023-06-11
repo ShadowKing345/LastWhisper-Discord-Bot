@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
-import { Lifecycle, scoped } from "tsyringe";
 import { Logger } from "../utils/logger/logger.js";
+import { Lifecycle, scoped } from "tsyringe";
 import { createDataSource } from "./migrationDataSource.js";
 
 /**
@@ -9,7 +9,7 @@ import { createDataSource } from "./migrationDataSource.js";
  */
 @scoped( Lifecycle.ContainerScoped )
 export class DatabaseService {
-    private static readonly logger: Logger = new Logger( "DatabaseService" );
+    private static readonly logger = Logger.build( "DatabaseService" );
     private _dataSource: DataSource = null;
 
     /**

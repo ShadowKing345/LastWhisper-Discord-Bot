@@ -14,7 +14,7 @@ import { Logger } from "../utils/logger/logger.js";
  */
 @service()
 export class PermissionManagerService extends Service {
-    private readonly logger: Logger = new Logger( PermissionManagerService );
+    private static readonly LOGGER = Logger.build( "PermissionManagerService" );
     private static readonly keys: string[] = [];
     private static _keysFormatted: string = null;
 
@@ -60,7 +60,7 @@ export class PermissionManagerService extends Service {
      */
     public async isAuthorized( interaction: ChatInputCommandInteraction, key: string ): Promise<boolean> {
         if( !PermissionManagerService.keyExists( key ) ) {
-            ( this as PermissionManagerService ).logger.debug( "Key did not exist. Exiting out." );
+             PermissionManagerService.LOGGER.debug( "Key did not exist. Exiting out." );
             await interaction.reply( {
                 content:
                     "The authorization key for the command could not be found.\nThis is a critical error and the developer of the application should be informed.\nKindly create an issue on the github page and indicate the command you were trying to use as well as the options.",
@@ -69,27 +69,27 @@ export class PermissionManagerService extends Service {
             return false;
         }
 
-        this.logger.debug( `Attempting to authorize for key ${ key }` );
+        PermissionManagerService.LOGGER.debug( `Attempting to authorize for key ${ key }` );
         if( !interaction ) {
-            this.logger.error( "An interaction was null that should not be. Throwing." );
+            PermissionManagerService.LOGGER.error( "An interaction was null that should not be. Throwing." );
             throw new InvalidArgumentError( "Interaction was null. This is not allowed." );
         }
 
         // The guild owner should always be allowed to use commands to prevent a lockout scenario.
         if( interaction.guild?.ownerId === interaction.user.id ) {
-            this.logger.debug( "User is owner. Returning true." );
+            PermissionManagerService.LOGGER.debug( "User is owner. Returning true." );
             return true;
         }
 
         const permission: Permission = await this.getPermission( interaction.guildId, key );
         if( !permission ) {
-            this.logger.debug( "Permissions do not exist. Defaulting to true." );
+            PermissionManagerService.LOGGER.debug( "Permissions do not exist. Defaulting to true." );
             return true;
         }
 
         let result: boolean;
         if( permission.roles.length === 0 ) {
-            this.logger.debug( `Length is 0. Flag set to true.` );
+            PermissionManagerService.LOGGER.debug( `Length is 0. Flag set to true.` );
             result = true;
         } else {
             const user = await interaction.guild?.members.fetch( interaction.user.id );
@@ -111,7 +111,7 @@ export class PermissionManagerService extends Service {
 
         const authorized: boolean = ( !permission.blackList && result ) || ( permission.blackList && !result );
 
-        this.logger.debug( `User is ${ authorized ? "Authenticated" : "Unauthenticated" }.` );
+        PermissionManagerService.LOGGER.debug( `User is ${ authorized ? "Authenticated" : "Unauthenticated" }.` );
         return authorized;
     }
 
@@ -195,7 +195,7 @@ export class PermissionManagerService extends Service {
                 const key = args[index];
 
                 if( !( key && typeof key === "string" ) ) {
-                    ( this as PermissionManagerService ).logger.error( "Argument index resulted in null or not a string." );
+                    PermissionManagerService.LOGGER.error( "Argument index resulted in null or not a string." );
                     throw new DecoratorError( "Argument index resulted in null or not a string." );
                 }
 
@@ -203,7 +203,7 @@ export class PermissionManagerService extends Service {
                     return originalMethod.apply( this, args );
                 }
 
-                ( this as PermissionManagerService ).logger.debug( "Key did not exist. Exiting out." );
+                PermissionManagerService.LOGGER.debug( "Key did not exist. Exiting out." );
                 throw new BadAuthorizationKeyError(
                     "Cannot find key. Please input a correct key. Use the list command to find out which keys are available.",
                 );
