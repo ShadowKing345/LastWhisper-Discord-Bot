@@ -17,7 +17,7 @@ import { Logger } from "./utils/logger/logger.js";
 
 
 class Index {
-    private static readonly logger = new Logger( "InitScript" );
+    private static readonly logger = Logger.build( "InitScript" );
 
     constructor() {
         program.name( "discord-bot" ).description( "Discord Bot." );

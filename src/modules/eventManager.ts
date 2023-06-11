@@ -1,11 +1,11 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, ChatInputCommandInteraction, Client, EmbedBuilder, Events, InteractionResponse, Message, MessageContextMenuCommandInteraction, PartialMessage } from "discord.js";
 import { DateTime } from "luxon";
+import { EventManagerServiceFailures } from "../utils/failures/eventManagerService.js";
 import { Logger } from "../utils/logger/logger.js";
 import { addPermissionKeys, authorize, ContextMenuCommand, deferReply, Event, module, SubCommand, Timer } from "../decorators/index.js";
 import { EventObject } from "../entities/eventManager/index.js";
 import { EventManagerService, EventObjCommandArgs } from "../services/eventManager.js";
 import { PermissionManagerService } from "../services/permissionManager.js";
-import { WrongChannelError } from "../utils/errors/index.js";
 import { Module } from "./module.js";
 
 const moduleName = "EventManager";
@@ -22,7 +22,7 @@ const moduleName = "EventManager";
     }
 } )
 export class EventManagerModule extends Module {
-    protected static readonly logger: Logger = new Logger( "EventManagerModule" );
+    protected static readonly logger = Logger.build( "EventManagerModule" );
 
     @addPermissionKeys()
     public static permissionKeys = {
@@ -83,8 +83,26 @@ export class EventManagerModule extends Module {
             text: interaction.options.getString( "text" ),
         };
 
-        const event = await this.service.create( interaction.guildId, interaction.channelId, args );
-        await interaction.editReply( { content: event ? "Event was successfully created." : "Event failed to be created." } );
+        const eventResponse = await this.service.create( interaction.guildId, interaction.channelId, args );
+
+        if( eventResponse.isError ) {
+            throw eventResponse.error;
+        }
+
+        if( eventResponse.isFailure ) {
+            switch( eventResponse.reason ) {
+                case EventManagerServiceFailures.InvalidEventObjectFailure:
+                case EventManagerServiceFailures.EventObjectValidationFailure:
+                    await interaction.editReply( { content: "Event failed to be created. It was invalid." } );
+                    break;
+                default:
+                    throw new Error( "Unknown Failure" );
+            }
+        }
+
+        if( eventResponse.isSuccess ) {
+            await interaction.editReply( { content: "Event was successfully created." } );
+        }
     }
 
     /**
@@ -137,8 +155,26 @@ export class EventManagerModule extends Module {
             dateTime: interaction.options.getString( "time" ),
         }
 
-        const event = await this.service.updateByIndex( interaction.guildId, index, args );
-        await interaction.editReply( { content: event ? "Event was successfully updated." : "Event failed to be updated." } );
+        const eventResponse = await this.service.updateByIndex( interaction.guildId, index, args );
+
+        if( eventResponse.isError ) {
+            throw eventResponse.error;
+        }
+
+        if( eventResponse.isFailure ) {
+            switch( eventResponse.reason ) {
+                case EventManagerServiceFailures.InvalidEventObjectFailure:
+                case EventManagerServiceFailures.EventObjectValidationFailure:
+                    await interaction.editReply( { content: "Event failed to be updated. It was invalid." } );
+                    break;
+                default:
+                    throw new Error( "Unknown Failure" );
+            }
+        }
+
+        if( eventResponse.isSuccess ) {
+            await interaction.editReply( { content: "Event was successfully updated." } );
+        }
     }
 
     /**
@@ -163,13 +199,8 @@ export class EventManagerModule extends Module {
     public async cancelEventCommand( interaction: ChatInputCommandInteraction ): Promise<InteractionResponse | void> {
         const index = interaction.options.getNumber( "index", true );
 
-        try {
-            await this.service.cancelByIndex( interaction.guildId, index );
-            await interaction.editReply( { content: "Event was successfully canceled." } );
-        } catch( error ) {
-            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
-            await interaction.editReply( { content: "Event failed to be canceled." } );
-        }
+        await this.service.cancelByIndex( interaction.guildId, index );
+        await interaction.editReply( { content: "Event was successfully canceled." } );
     }
 
     /**
@@ -202,13 +233,13 @@ export class EventManagerModule extends Module {
         await interaction.editReply( {
             embeds: [
                 new EmbedBuilder( {
-                    title: event.isValid ? "Event is valid." : "Event is not valid.",
+                    title: event?.isValid ? "Event is valid." : "Event is not valid.",
                     fields: [
-                        { name: "Name", value: event.name ?? "Name cannot be null." },
-                        { name: "Description", value: event.description ?? "Description cannot be null." },
+                        { name: "Name", value: event?.name ?? "Name cannot be null." },
+                        { name: "Description", value: event?.description ?? "Description cannot be null." },
                         {
                             name: "Time",
-                            value: event.dateTime
+                            value: event?.dateTime
                                 ? event.dateTime < DateTime.now().toUnixInteger()
                                     ? `<t:${ event.dateTime }:F>`
                                     : "Time is before the present."
@@ -216,10 +247,10 @@ export class EventManagerModule extends Module {
                         },
                         {
                             name: "Additional",
-                            value: event.additional.map( pair => `[${ pair[0] }]\n${ pair[1] }` ).join( "\n" )
+                            value: event?.additional.map( pair => `[${ pair[0] }]\n${ pair[1] }` ).join( "\n" ) ?? "<Empty>"
                         },
                     ],
-                } ).setColor( event.isValid ? "Green" : "Red" ),
+                } ).setColor( event?.isValid ? "Green" : "Red" ),
             ],
         } );
     }
@@ -284,26 +315,40 @@ export class EventManagerModule extends Module {
     @deferReply( true )
     public async createMessageByContextMenu( interaction: MessageContextMenuCommandInteraction ): Promise<void> {
         EventManagerModule.logger.debug( "Context menu fired. Creating new event." );
-        
+
         const args: EventObjCommandArgs = {
             messageId: interaction.targetMessage.id,
             text: interaction.targetMessage.content,
         }
 
-        try {
-            const event = await this.service.create( interaction.guildId, interaction.channelId, args );
+        const event = await this.service.create( interaction.guildId, interaction.channelId, args );
+
+        if( event.isError ) {
+            throw event.error;
+        }
+
+        if( event.isFailure ) {
+            switch( event.reason ) {
+                case EventManagerServiceFailures.InvalidEventObjectFailure:
+                    EventManagerModule.logger.debug( "Event Object was invalid." );
+                    await interaction.editReply( { content: "The event is not valid." } );
+                    break;
+
+                case EventManagerServiceFailures.WrongListeningChannelFailure:
+                    EventManagerModule.logger.debug( "Channel was wrong." );
+                    await interaction.editReply( { content: "The channel for this message is not valid and so the event will be ignored." } );
+                    break;
+
+                default:
+                    throw new Error( "Unknown Failure" );
+            }
+        }
+
+        if( event.isSuccess ) {
             await Promise.allSettled( [
                 interaction.targetMessage.react( event ? "✅" : "❎" ),
                 interaction.editReply( { content: `Event was${ event ? ' ' : ' was not ' }created.` } )
             ] );
-        } catch( error: unknown | Error ) {
-            if( error instanceof WrongChannelError ) {
-                EventManagerModule.logger.debug( "Channel was wrong." );
-                await interaction.editReply( { content: "The channel for this message is not valid and so the event will be ignored." } );
-            }
-
-            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
-            await interaction.editReply( { content: "An unknown error has occured." } );
         }
     }
 
@@ -311,7 +356,7 @@ export class EventManagerModule extends Module {
         name: "Test Message for Event",
         description: "Tests a message to see if it's a valid event.",
         type: ApplicationCommandType.Message
-    })
+    } )
     @deferReply( true )
     public async testEventByContextMenu( interaction: MessageContextMenuCommandInteraction ): Promise<void> {
         const args: EventObjCommandArgs = {
@@ -323,13 +368,13 @@ export class EventManagerModule extends Module {
         await interaction.editReply( {
             embeds: [
                 new EmbedBuilder( {
-                    title: event.isValid ? "Event is valid." : "Event is not valid.",
+                    title: event?.isValid ? "Event is valid." : "Event is not valid.",
                     fields: [
-                        { name: "Name", value: event.name ?? "Name cannot be null." },
-                        { name: "Description", value: event.description ?? "Description cannot be null." },
+                        { name: "Name", value: event?.name ?? "Name cannot be null." },
+                        { name: "Description", value: event?.description ?? "Description cannot be null." },
                         {
                             name: "Time",
-                            value: event.dateTime
+                            value: event?.dateTime
                                 ? event.dateTime < DateTime.now().toUnixInteger()
                                     ? `<t:${ event.dateTime }:F>`
                                     : "Time is before the present."
@@ -337,10 +382,10 @@ export class EventManagerModule extends Module {
                         },
                         {
                             name: "Additional",
-                            value: event.additional.map( pair => `[${ pair[0] }]\n${ pair[1] }` ).join( "\n" )
+                            value: event?.additional.map( pair => `[${ pair[0] }]\n${ pair[1] }` ).join( "\n" ) ?? "<Empty>"
                         },
                     ],
-                } ).setColor( event.isValid ? "Green" : "Red" ),
+                } ).setColor( event?.isValid ? "Green" : "Red" ),
             ],
         } );
     }
@@ -371,18 +416,25 @@ export class EventManagerModule extends Module {
             messageId: message.id,
         };
 
-        try {
-            const event: EventObject = await this.service.create( message.guildId, message.channelId, args );
-            await message.react( event ? "✅" : "❎" );
-            EventManagerModule.logger.debug( "New event created." );
-        } catch( error ) {
-            if( error instanceof WrongChannelError ) {
-                EventManagerModule.logger.debug( "Channel was wrong." );
-                return;
+        const eventResponse = await this.service.create( message.guildId, message.channelId, args );
+
+        if( eventResponse.isError ) {
+            throw eventResponse.error;
+        }
+
+        if( eventResponse.isFailure ) {
+            EventManagerModule.logger.debug( `A failure has occured. \`${ eventResponse.reason }\`` );
+
+            if( eventResponse.reason === EventManagerServiceFailures.EventObjectValidationFailure ) {
+                await message.react( "❎" );
             }
 
-            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
-            await message.react( "❓" );
+            return;
+        }
+
+        if( eventResponse.isSuccess ) {
+            EventManagerModule.logger.debug( "New event created." );
+            await message.react( "✅" );
         }
     }
 
@@ -410,16 +462,29 @@ export class EventManagerModule extends Module {
             text: newMessage.content,
         };
 
-        try {
-            const event = await this.service.update( oldMessage.guildId, oldMessage.id, args );
+        const eventResponse = await this.service.update( oldMessage.guildId, oldMessage.id, args );
 
-            const reaction = newMessage.reactions.cache.find( reaction => reaction.me );
-            if( reaction ) await reaction.users.remove( oldMessage.client.user?.id );
+        if( eventResponse.isError ) {
+            throw eventResponse.error;
+        }
 
-            await newMessage.react( event ? "✅" : "❎" );
-        } catch( error ) {
-            EventManagerModule.logger.error( error instanceof Error ? error.stack : error );
-            await newMessage.react( "❓" );
+        const reaction = newMessage.reactions.cache.find( reaction => reaction.me );
+        if( reaction ) {
+            await reaction.users.remove( oldMessage.client.user?.id );
+        }
+
+        if( eventResponse.isFailure ) {
+            EventManagerModule.logger.debug( `A failure has occured. \`${ eventResponse.reason }\`` );
+
+            if( eventResponse.reason === EventManagerServiceFailures.EventObjectValidationFailure ) {
+                await oldMessage.react( "❎" );
+            }
+
+            return;
+        }
+
+        if( eventResponse.isSuccess ) {
+            await newMessage.react( "✅" );
         }
     }
 
@@ -433,7 +498,11 @@ export class EventManagerModule extends Module {
     public async deleteEvent( message: Message | PartialMessage ): Promise<void> {
         if( message.partial ) message = await message.fetch();
 
-        return this.service.cancel( message.guildId, message.id );
+        const response = await this.service.cancel( message.guildId, message.id );
+
+        if( response.isError ) {
+            throw response.error;
+        }
     }
 
     /**
