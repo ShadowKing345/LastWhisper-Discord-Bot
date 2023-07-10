@@ -23,6 +23,10 @@ export class Bot extends Client {
                 GatewayIntentBits.GuildMessageReactions,
                 GatewayIntentBits.MessageContent,
             ],
+            rest: {
+                api: "http://localhost:8081",
+                cdn: "http://localhost:8081"
+            }
         } );
     }
 
