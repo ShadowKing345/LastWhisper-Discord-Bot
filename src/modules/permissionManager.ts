@@ -33,7 +33,7 @@ function commandKeyHelperBuilder( boolOverride = true ): CommandOption {
     }
 } )
 export class PermissionManagerModule extends Module {
-    protected static readonly logger: Logger = new Logger( "PermissionManagerModule" );
+    protected static readonly logger = Logger.build( "PermissionManagerModule" );
 
     @addPermissionKeys()
     public static permissionKeys = {

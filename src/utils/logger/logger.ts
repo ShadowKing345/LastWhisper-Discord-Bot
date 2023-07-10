@@ -1,28 +1,16 @@
-import { pino, Logger as L, Level, LogFn } from "pino";
 import { ConfigurationService } from "../../config/configurationService.js";
 import { CommonConfigurationKeys, LoggerConfigs, LOGGING_LEVELS } from "../../config/index.js";
 import { isArray, isObject, isStringNullOrEmpty } from "../index.js";
+import { pino, Logger as L, Level, LogFn } from "pino";
 
 /**
  * Service used to handle logging calls.
  */
 export class Logger {
-    private readonly name: string;
+    private name: string;
     private config: LoggerConfigs;
     private pino: L = null;
-
-    constructor( name: unknown ) {
-        if( typeof name === "string" ) {
-            this.name = name;
-        } else if( typeof name === "object" ) {
-            if( name.constructor ) {
-                this.name = name.constructor.name;
-            } else if( "name" in name && typeof name.name === "string" && !isStringNullOrEmpty( name.name ) ) {
-                this.name = name.name
-            }
-        }
-    }
-
+    
     public debug( message: unknown, additional: Record<string, unknown> = undefined, ...args: unknown[] ): void {
         this.log( LOGGING_LEVELS.debug, message, additional, ...args );
     }
@@ -102,5 +90,21 @@ export class Logger {
             level: this.config?.level ?? LOGGING_LEVELS.info,
             transport: this.config?.transports,
         } );
+    }
+
+    public static build( name: unknown ) {
+        const logger = new Logger();
+
+        if( typeof name === "string" ) {
+            logger.name = name;
+        } else if( typeof name === "object" ) {
+            if( name.constructor ) {
+                logger.name = name.constructor.name;
+            } else if( "name" in name && typeof name.name === "string" && !isStringNullOrEmpty( name.name ) ) {
+                logger.name = name.name
+            }
+        }
+        
+        return logger;
     }
 }

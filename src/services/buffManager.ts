@@ -19,7 +19,7 @@ import { APIEmbedField } from "discord-api-types/v10.js";
  */
 @service()
 export class BuffManagerService extends Service {
-    private logger: Logger = new Logger( BuffManagerService );
+    private static LOGGER = Logger.build( "BuffManagerService" );
     private readonly weekRepository: WeekRepository;
     private readonly buffManagerSettingsRepository: BuffManagerSettingsRepository;
 
@@ -60,7 +60,7 @@ export class BuffManagerService extends Service {
      */
     public async postDailyMessage( client: Bot ): Promise<void> {
         await Timer.waitTillReady( client );
-        this.logger.debug( "Posting daily buff message." );
+        BuffManagerService.LOGGER.debug( "Posting daily buff message." );
 
         const messageSettings = await this.buffManagerSettingsRepository.getActiveSettings();
         const now: DateTime = DateTime.now();
@@ -73,7 +73,7 @@ export class BuffManagerService extends Service {
 
                 const channel: Channel = await client.channels.fetch( settings.channelId );
                 if( !( channel?.type === ChannelType.GuildText && channel.guildId === settings.guildId ) ) {
-                    this.logger.warn( `Invalid channel ID for a guild. Skipping...` );
+                    BuffManagerService.LOGGER.warn( `Invalid channel ID for a guild. Skipping...` );
                     continue;
                 }
 
@@ -82,21 +82,21 @@ export class BuffManagerService extends Service {
 
                 const embeds: EmbedBuilder[] = [];
                 if( !buff ) {
-                    this.logger.warn( `Invalid buff ID buffId for guild config.guildId. Skipping...` );
+                    BuffManagerService.LOGGER.warn( `Invalid buff ID buffId for guild config.guildId. Skipping...` );
                     continue;
                 }
 
-                this.logger.debug( `Posting buff message.` );
+                BuffManagerService.LOGGER.debug( `Posting buff message.` );
                 embeds.push( this.createBuffEmbed( settings.buffMessage, buff, now ) );
 
                 if( !isNaN( settings.dow ) && Number( settings.dow ) === now.weekday ) {
-                    this.logger.debug( `Posting week message.` );
+                    BuffManagerService.LOGGER.debug( `Posting week message.` );
                     embeds.push( this.createWeekEmbed( settings.weekMessage, week, now ) );
                 }
 
                 await channel.send( { embeds } );
             } catch( error ) {
-                this.logger.error( error instanceof Error ? error.stack : error );
+                BuffManagerService.LOGGER.error( error instanceof Error ? error.stack : error );
             }
         }
     }
@@ -108,7 +108,7 @@ export class BuffManagerService extends Service {
      * @param date The date context for the buff. Used for footer data, etc.
      */
     public createBuffEmbed( title: string, buff: Buff, date: DateTime ): EmbedBuilder {
-        this.logger.debug( `Creating Buff Embed.` );
+        BuffManagerService.LOGGER.debug( `Creating Buff Embed.` );
         return new EmbedBuilder( {
             title: title,
             description: buff.text,
@@ -125,7 +125,7 @@ export class BuffManagerService extends Service {
      * @param date The date context for the week. Used to get the week and fill in footer data.
      */
     public createWeekEmbed( title: string, week: Week, date: DateTime ): EmbedBuilder {
-        this.logger.debug( `Creating Week Embed.` );
+        BuffManagerService.LOGGER.debug( `Creating Week Embed.` );
 
         if( !week ) {
             throw new Error( "Cannot find a valid week." );

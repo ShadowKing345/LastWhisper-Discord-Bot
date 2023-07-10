@@ -15,8 +15,8 @@ function createDataSourceConfigs(): DataSourceOptions {
         type: "postgres",
         host: "127.0.0.1",
         port: 5432,
-        username: "postgresql",
-        password: "postgresql",
+        username: "Admin",
+        password: "Admin",
         entities: [ `${ src }/entities/**/*.[tj]s` ],
         migrations: [ `${ src }/migrations/**/*.[tj]s` ],
         migrationsTableName: "typeorm_migrations",
@@ -39,7 +39,7 @@ export function mockRepository<G extends EntityBase, T extends Repository<G>>( c
     instance.$tearUp = async function() {
         return createDatabase( {
             options: dbOpts,
-            initialDatabase: 'Bot',
+            initialDatabase: 'Admin',
             synchronize: true,
             ifNotExist: true
         } ).then( () => db.connect() );
@@ -48,7 +48,7 @@ export function mockRepository<G extends EntityBase, T extends Repository<G>>( c
     instance.$tearDown = async function() {
         return db.disconnect().then( () => dropDatabase( {
             options: dbOpts,
-            initialDatabase: 'Bot',
+            initialDatabase: 'Admin',
             ifExist: true
         } ) );
     }

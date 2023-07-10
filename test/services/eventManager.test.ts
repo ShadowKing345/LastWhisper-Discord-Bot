@@ -1,14 +1,18 @@
+import "reflect-metadata";
+
+import { mock, before, after, describe, beforeEach, it, afterEach } from "node:test";
+import Assert from "node:assert";
+import { mockRepository } from "../utils/mockRepository.js";
 import { EventManagerSettingsRepository } from "../../src/repositories/eventManager/eventManagerSettingsRepository.js";
 import { EventManagerService } from "../../src/services/eventManager.js";
 import { EventObjectRepository } from "../../src/repositories/eventManager/eventObjectRepository.js";
 import { EventReminderRepository } from "../../src/repositories/eventManager/eventReminderRepository.js";
 import { DateTime } from "luxon";
-import { mock, before, after, describe, beforeEach, it, afterEach } from "node:test";
-import Assert from "node:assert";
-import { mockRepository } from "../utils/mockRepository.js";
 import { EventManagerSettings } from "../../src/entities/eventManager/index.js";
-import { ChannelType, Client } from "discord.js";
+import { ChannelType, Client, Message } from "discord.js";
 import { EventObject, EventReminder } from "../../src/entities/eventManager/index.js";
+import { EventManagerModule } from "../../src/modules/eventManager.js";
+import { PermissionManagerService } from "../../src/services/permissionManager.js";
 
 const _ = mock.fn<() => Promise<unknown>>( () => Promise.resolve() );
 type MockFunction = typeof _
@@ -71,7 +75,7 @@ describe( "Testing the parser.", () => {
         const service = new EventManagerService( settingsRepo, null, null );
         const now = DateTime.now().plus( { days: 1 } ).toUnixInteger();
 
-        Assert.ok( !( await service.parseEventGuildId( "0", { text: `[description]\nTesting\n[time]\n<t:${ now }:f>` } ) ).isValid, "Bad event name" )
+        Assert.ok( !( await service.parseEventGuildId( "0", { text: `[description]\nTesting\n[time]\n<t:${ now }:f>` } ) )?.isValid, "Bad event name" )
         Assert.ok( !( await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[time]\n<t:${ now }:f>` } ) ).isValid, "Bad event description" )
         Assert.ok( !( await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[description]\nTesting` } ) ).isValid, "Bad time" )
         Assert.ok( !( await service.parseEventGuildId( "0", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ 0 }:f>` } ) ).isValid, "Time is before now" );
@@ -151,6 +155,51 @@ describe( "Event was successfully created.", () => {
     // } );
 } );
 
+describe( "Ignore event with no announcement tag.", () => {
+    const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
+
+    before( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearUp(),
+        ] );
+    } );
+
+    after( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$tearDown(),
+        ] );
+    } );
+
+    beforeEach( async () => {
+        await Promise.allSettled( [
+            settingsRepo.$clear(),
+        ] );
+    } );
+
+    it( async () => {
+        const message: Message = {
+            id: "Test",
+            content: "Test",
+            channelId: "3",
+            guildId: "0",
+            react: mock.fn()
+        } as unknown as Message;
+
+        await settingsRepo.save( new EventManagerSettings( {
+            guildId: "0",
+            announcement: "announcement",
+            description: "description",
+            dateTime: "time",
+            listenerChannelId: "3"
+        } ) );
+
+        const eventManagerModule = new EventManagerModule( new EventManagerService( settingsRepo, null, null ), new PermissionManagerService( null ) );
+
+        await eventManagerModule.createEvent( null, [ message ] );
+        Assert.strictEqual( ( message.react as unknown as MockFunction ).mock.callCount(), 0 );
+    } );
+} );
+
 describe( "Testing updating an event", () => {
     const settingsRepo = mockRepository( EventManagerSettingsRepository, EventManagerSettings );
     const eventObjRepo = mockRepository( EventObjectRepository, EventObject );
@@ -210,7 +259,7 @@ describe( "Testing updating an event", () => {
         const result = ( ( eventObjRepo.save as unknown as MockFunction ).mock.calls[0].arguments as Array<unknown> )[0] as EventObject;
         testEventObjectEquality( result, expectedObj );
 
-        await Assert.rejects( () => service.update( "0", "44", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` } ) );
+        Assert.ok( (await service.update( "0", "44", { text: `[announcement]\nHello World\n[description]\nTesting\n[time]\n<t:${ now }:f>` } )).isFailure );
     } );
 
     it( "Update by message index", async () => {

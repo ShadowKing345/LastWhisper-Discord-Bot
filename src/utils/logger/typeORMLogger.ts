@@ -3,7 +3,7 @@ import { DatabaseLoggerConfigs } from "../../config/index.js";
 import { Logger } from "./logger.js";
 
 export class TypeORMLogger extends AbstractLogger {
-    private static readonly LOGGER: Logger = new Logger( "DatabaseConnection" );
+    private static readonly LOGGER = Logger.build( "DatabaseConnection" );
     private static readonly LEVELS: LogLevel[] = [ "query", "schema", "error", "warn", "info", "log", "migration" ];
     private readonly isEnabled: boolean;
     private readonly levels: LogLevel[] | "all";

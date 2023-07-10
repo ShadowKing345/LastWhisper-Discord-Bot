@@ -5,7 +5,7 @@ import { Commands } from "./objects/index.js";
 import { isPromiseRejected } from "./utils/index.js";
 import { Logger } from "./utils/logger/logger.js";
 
-const logger = new Logger( "CommandRegistration" );
+const logger = Logger.build( "CommandRegistration" );
 
 /**
  * Unregisters commands from a route.

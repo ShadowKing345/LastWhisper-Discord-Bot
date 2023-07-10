@@ -29,7 +29,7 @@ type CommandStruct<T> = { type: CTR<Module>, value: T }
  * Configuration service that manages the creation and registration of the different modules in the application.
  */
 export class ModuleService {
-    private static readonly moduleServiceLogger = new Logger( ModuleService.name );
+    private static readonly moduleServiceLogger = Logger.build( "ModuleService" );
     private static slashCommands: Record<string, CommandStruct<SlashCommand>> = {};
     private static contextMenuCommands: Record<string, CommandStruct<ContextMenuCommand>> = {};
     private static eventListeners: Record<string, CommandStruct<EventListener>[]> = {};

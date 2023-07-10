@@ -15,7 +15,7 @@ import { Logger } from "../utils/logger/logger.js";
  */
 @service()
 export class RoleManagerService extends Service {
-    private logger: Logger = new Logger( RoleManagerService );
+    private static LOGGER = Logger.build( "RoleManagerService" );
     private collectors: { [key: string]: ReactionCollector } = {};
 
     constructor( private repository: RoleManagerRepository ) {
@@ -93,7 +93,7 @@ export class RoleManagerService extends Service {
                     this.registerReactionCollector( message, config );
                 }
             } catch( error ) {
-                this.logger.error( error instanceof Error ? error.stack : error );
+                RoleManagerService.LOGGER.error( error instanceof Error ? error.stack : error );
             }
         }
     }
@@ -155,7 +155,7 @@ export class RoleManagerService extends Service {
         ) ) as TextChannel;
 
         if( !channel ) {
-            this.logger.debug( `Expected failure: Could not find channel.` );
+            RoleManagerService.LOGGER.debug( `Expected failure: Could not find channel.` );
             return interaction.reply( {
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true,
@@ -165,7 +165,7 @@ export class RoleManagerService extends Service {
         const message: Message = await channel.messages.fetch( message_id );
 
         if( !message ) {
-            this.logger.debug( `Expected failure: Could not find message.` );
+            RoleManagerService.LOGGER.debug( `Expected failure: Could not find message.` );
             return interaction.reply( {
                 content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
                 ephemeral: true,
@@ -191,7 +191,7 @@ export class RoleManagerService extends Service {
         const channel: Channel = await interaction.guild?.channels.fetch( config.reactionListeningChannel );
 
         if( !channel ) {
-            this.logger.debug( `Expected failure: Could not find channel.` );
+            RoleManagerService.LOGGER.debug( `Expected failure: Could not find channel.` );
             return interaction.reply( {
                 content: "Listening channel was not set. Kindly set the channel before you attempt to register a message.",
                 ephemeral: true,
@@ -208,7 +208,7 @@ export class RoleManagerService extends Service {
         const message: Message = await channel.messages.fetch( message_id );
 
         if( !message ) {
-            this.logger.debug( `Expected failure: Could not find message.` );
+            RoleManagerService.LOGGER.debug( `Expected failure: Could not find message.` );
             return interaction.reply( {
                 content: "Failed to find the message with id ${message_id}. Make sure the message is inside the same channel.",
                 ephemeral: true,
