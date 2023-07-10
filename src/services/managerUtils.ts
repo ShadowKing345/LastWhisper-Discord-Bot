@@ -26,12 +26,17 @@ export class ManagerUtilsService extends Service {
      */
     private async getLoggingChannel( guild: Guild ): Promise<TextChannel> {
         const config: ManagerUtilsConfig = await this.repository.findOneOrCreateByGuildId( guild.id );
+        const channel = await guild.channels.fetch( config.loggingChannel );
 
-        if( config.loggingChannel && guild.channels.cache.has( config.loggingChannel ) ) {
-            return ( await guild.channels.fetch( config.loggingChannel ) ) as TextChannel;
+        if( !channel ) {
+            return null;
         }
 
-        return null;
+        if( !channel.isTextBased ) {
+            return null;
+        }
+
+        return channel as TextChannel;
     }
 
     /**
@@ -42,6 +47,8 @@ export class ManagerUtilsService extends Service {
         if( member.partial ) {
             await member.fetch();
         }
+        
+        console.log(member);
 
         const loggingChannel: TextChannel | null = await this.getLoggingChannel( member.guild );
         if( !loggingChannel ) return;

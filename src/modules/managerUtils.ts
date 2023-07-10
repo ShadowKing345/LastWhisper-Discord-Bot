@@ -19,7 +19,7 @@ const moduleName = "ManagerUtils";
 } )
 export class ManagerUtilsModule extends Module {
     // private static readonly logger: Logger = new Logger( "ManagerUtilsModule" );
-    
+
     constructor(
         private managerUtilsService: ManagerUtilsService,
         permissionManagerService: PermissionManagerService,
@@ -29,22 +29,24 @@ export class ManagerUtilsModule extends Module {
 
     /**
      * Event that posts a message to a given channel if a user leaves the guild for any reason.
+     * @param _
      * @param member Guild member that has left.
      * @private
      */
-    @Event("guildMemberRemove")
-    public onMemberRemoved( member: GuildMember | PartialGuildMember ): Promise<void> {
+    @Event( "guildMemberRemove" )
+    public onMemberRemoved( _, [ member ]: [ GuildMember | PartialGuildMember ] ): Promise<void> {
         return this.managerUtilsService.onMemberRemoved( member );
     }
 
     /**
      * Event that posts a message when the user is banned from the guild.
      * @see onMemberRemoved
+     * @param _
      * @param ban The guild ban object.
      * @private
      */
-    @Event("guildBanAdd")
-    public onMemberBanned( ban: GuildBan ): Promise<void> {
+    @Event( "guildBanAdd" )
+    public onMemberBanned( _, [ ban ]: [ GuildBan ] ): Promise<void> {
         return this.managerUtilsService.onMemberBanned( ban );
     }
 
