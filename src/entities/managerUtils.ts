@@ -10,7 +10,7 @@ export class ManagerUtilsConfig extends EntityBase {
     public loggingChannel: string = null;
 
     @Column( "text", { array: true } )
-    public clearChannelBlacklist: string[];
+    public clearChannelBlacklist: string[] = [];
 
     constructor( guildId: string = null ) {
         super();
