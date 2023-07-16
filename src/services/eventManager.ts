@@ -136,9 +136,16 @@ export class EventManagerService extends Service {
     /**
      * Attempts to cancel an event if it exists.
      * @param guildId Guild ID to ge the configuration from.
+     * @param channelId The channel ID of the event.
      * @param messageId ID of the event.
      */
-    public async cancel( guildId: string | null, messageId: string ): Promise<ServiceResponse<boolean>> {
+    public async cancel( guildId: string | null, channelId: string, messageId: string ): Promise<ServiceResponse<boolean>> {
+        const configs = await this.eventManagerSettingsRepository.findOneOrCreateByGuildId(guildId);
+        
+        if( configs.listenerChannelId !== channelId ) {
+            return ServiceResponse.failure(EventManagerServiceFailures.WrongListeningChannelFailure);
+        }
+        
         const index = await this.eventObjectRepository.findOne( { where: { guildId, messageId: messageId } } );
         if( !index ) {
             return ServiceResponse.failure( EventManagerServiceFailures.EventObjectDoesNotExistFailure );

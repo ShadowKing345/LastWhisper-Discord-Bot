@@ -498,7 +498,7 @@ export class EventManagerModule extends Module {
     public async deleteEvent( message: Message | PartialMessage ): Promise<void> {
         if( message.partial ) message = await message.fetch();
 
-        const response = await this.service.cancel( message.guildId, message.id );
+        const response = await this.service.cancel( message.guildId, message.channelId, message.id );
 
         if( response.isError ) {
             throw response.error;
