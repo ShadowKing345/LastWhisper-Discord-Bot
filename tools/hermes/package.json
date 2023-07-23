@@ -1,0 +1,29 @@
+{
+  "name": "hermies",
+  "author": "Shadowking124",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "dev:start": "ts-node src/index.ts"
+  },
+  "version": "0.0.0",
+  "dependencies": {
+    "express": "^4.18.2",
+    "discord-api-types": "^0.37.32",
+    "discord.js": "^14.11.0",
+    "pino": "^8.10.0",
+    "reflect-metadata": "^0.1.13",
+    "typescript": "^5.0.4",
+    "tslib": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.13",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
+    "eslint": "^8.38.0",
+    "husky": "^8.0.0",
+    "pino-pretty": "^9.2.0",
+    "ts-node": "^10.9.1"
+  }
+}

@@ -1,3 +1,4 @@
+import { APIGuildTextChannel, ChannelType } from "discord-api-types/payloads/v10";
 import { ApplicationCommandOptionType, ApplicationCommandType, ApplicationFlags, GatewayDispatchEvents, GatewayHello, GatewayInteractionCreateDispatch, GatewayOpcodes, GatewayReadyDispatch, GuildMemberFlags, InteractionType } from "discord-api-types/v10";
 import { RawData, WebSocket, WebSocketServer } from "ws";
 import config from "./config.js";
@@ -25,6 +26,7 @@ const readyResponse: GatewayReadyDispatch = {
             username: "Test user",
             discriminator: "3333",
             avatar: null,
+            global_name: "test"
         },
         guilds: [],
         session_id: "133",
@@ -41,10 +43,10 @@ const interactionResponse: GatewayInteractionCreateDispatch = {
     s: 0,
     op: GatewayOpcodes.Dispatch,
     d: {
-        channel_id: undefined,
-        app_permissions: undefined,
+        channel_id: "",
+        app_permissions: '',
         application_id: "test",
-        channel: undefined,
+        channel: {} as APIGuildTextChannel<ChannelType.GuildText>,
         guild_id: "3",
         member: {
             user: {
@@ -52,6 +54,7 @@ const interactionResponse: GatewayInteractionCreateDispatch = {
                 username: "TestUser",
                 avatar: "Test",
                 discriminator: "1135",
+                global_name: "test"
             },
             flags: GuildMemberFlags.CompletedOnboarding,
             roles: [],
@@ -75,7 +78,7 @@ const interactionResponse: GatewayInteractionCreateDispatch = {
             id: "771825006014889984"
         },
         id: "",
-        locale: undefined,
+        locale: "en-US",
         token: "",
         type: InteractionType.ApplicationCommand,
         version: 1
@@ -85,7 +88,7 @@ const interactionResponse: GatewayInteractionCreateDispatch = {
 
 
 export class FakeApiWebSocketServer {
-    private ws: WebSocketServer;
+    private ws?: WebSocketServer;
 
     private onConnect( socket: WebSocket ): void {
         console.log( "Client has connect to socket server." );
@@ -105,7 +108,7 @@ export class FakeApiWebSocketServer {
     }
 
     private attach(): void {
-        this.ws.on( "connection", socket => this.onConnect( socket ) );
+        this.ws?.on( "connection", socket => this.onConnect( socket ) );
     }
 
     private attachSocket( socket: WebSocket ): void {
@@ -126,7 +129,7 @@ export class FakeApiWebSocketServer {
 
     public disconnect() {
         console.log( "Disconnecting websocket server." );
-        this.ws.close();
-        this.ws = null;
+        this.ws?.close();
+        this.ws = undefined;
     }
 }

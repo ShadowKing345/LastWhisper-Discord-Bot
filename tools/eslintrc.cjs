@@ -24,5 +24,6 @@ module.exports = {
         "/node_modules/",
         "/coverage/",
         "/logs/",
+        "/tools/hermes"
     ]
 };
