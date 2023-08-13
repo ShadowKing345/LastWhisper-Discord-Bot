@@ -31,7 +31,6 @@ function main( args ) {
         throw new Error( "No tests were found." );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
     run( { files } )
         .compose( tap )
         .pipe( process.stdout );
