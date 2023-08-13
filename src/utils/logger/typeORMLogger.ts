@@ -1,5 +1,5 @@
 import { AbstractLogger, LogLevel, LogMessage, LogMessageType } from "typeorm";
-import { DatabaseLoggerConfigs } from "../../config/index.js";
+import { DatabaseLoggerConfigs } from "../../configurations/index.js";
 import { Logger } from "./logger.js";
 
 export class TypeORMLogger extends AbstractLogger {

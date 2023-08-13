@@ -1,4 +1,4 @@
-import { ModuleService } from "../../config/index.js";
+import { ModuleService } from "../../configurations/index.js";
 import { EventListener, Bot } from "../../objects/index.js";
 import { CTR } from "../../utils/commonTypes.js";
 import { Module } from "../../modules/module.js";

@@ -1,4 +1,4 @@
-import { ModuleService } from "../../config/index.js";
+import { ModuleService } from "../../configurations/index.js";
 import { SlashCommand } from "../../objects/index.js";
 import {CommandInteraction} from "discord.js";
 import { CTR } from "../../utils/commonTypes.js";

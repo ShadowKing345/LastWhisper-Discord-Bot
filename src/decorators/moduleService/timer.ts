@@ -1,5 +1,5 @@
 import { Module } from "../../modules/module.js";
-import { ModuleService } from "../../config/index.js";
+import { ModuleService } from "../../configurations/index.js";
 import { Bot } from "../../objects/index.js";
 import { Timer as TimerObject } from "../../objects/timer.js";
 import { CTR } from "../../utils/commonTypes.js";

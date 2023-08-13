@@ -2,9 +2,11 @@ import { SlashGroupCommand, SlashSubCommand } from "../objects/index.js";
 
 const reflect = globalThis.Reflect;
 
+export const applicationReflectPrefix = "__DiscordBotApplication";
+
 export class ReflectConstants {
-    public static readonly MODULE_NAME = "Module:ModuleName";
-    public static readonly MODULE_SUBCOMMANDS = "Module:Subcommands";
+    public static readonly MODULE_NAME = applicationReflectPrefix + ":Module:ModuleName";
+    public static readonly MODULE_SUBCOMMANDS = applicationReflectPrefix + ":Module:Subcommands";
 }
 
 export const Reflect = {

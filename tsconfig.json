@@ -3,8 +3,8 @@
     "esm": true
   },
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
+    "module": "ES2022",
+    "target": "ES2022",
     "lib": [
       "dom",
       "ESNext"

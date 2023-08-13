@@ -1,4 +1,4 @@
-import { DatabaseService } from "../../config/index.js";
+import { DatabaseService } from "../../configurations/index.js";
 import { Days } from "../../entities/buffManager/index.js";
 import { repository } from "../../decorators/index.js";
 import { Repository } from "../base/repository.js";

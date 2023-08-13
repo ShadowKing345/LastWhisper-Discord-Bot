@@ -18,7 +18,7 @@ import { Reflect } from "../utils/reflect.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
 import { DatabaseService } from "./databaseService.js";
-import { ModuleConfiguration } from "./entities/index.js";
+import { ModuleConfiguration } from "./classes/index.js";
 
 import { Logger } from "../utils/logger/logger.js";
 

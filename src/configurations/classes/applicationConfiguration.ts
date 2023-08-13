@@ -1,5 +1,5 @@
-import { IMerge } from "../../utils/IMerge.js";
 import { deepMerge } from "../../utils/index.js";
+import { Mergeable } from "../../utils/mergable.js";
 import { CommandRegistrationConfiguration } from "./commandRegistrationConfiguration.js";
 import { DatabaseConfiguration } from "./databaseConfiguration.js";
 import { LoggerConfigs } from "./loggerConfigs.js";
@@ -8,20 +8,15 @@ import { ModuleConfiguration } from "./moduleConfiguration.js";
 /**
  * Default configuration object for the application.
  */
-export class ApplicationConfiguration extends IMerge<ApplicationConfiguration> {
+export class ApplicationConfiguration implements Mergeable<ApplicationConfiguration> {
 
-    // Discord application token.
     public token: string = null;
-    // Database settings.
     public database?: DatabaseConfiguration = new DatabaseConfiguration();
-    // Configuration for command registration.
-    public commandRegistration?: CommandRegistrationConfiguration = null;
-    // Configuration for logger.
+    public commandRegistration?: CommandRegistrationConfiguration = new CommandRegistrationConfiguration();
     public logger?: LoggerConfigs = new LoggerConfigs();
-    // Configuration for module service.
     public moduleConfiguration?: ModuleConfiguration = new ModuleConfiguration();
 
-    public merge( obj: ApplicationConfiguration ): ApplicationConfiguration {
+    public merge( obj: Partial<ApplicationConfiguration> ): ApplicationConfiguration {
         if( obj.token ) {
             this.token = obj.token;
         }

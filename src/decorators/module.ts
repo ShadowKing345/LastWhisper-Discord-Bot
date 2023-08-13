@@ -1,6 +1,6 @@
 import { constructor } from "tsyringe/dist/typings/types/index.js";
 import { container, injectable, Lifecycle } from "tsyringe";
-import { ModuleService } from "../config/index.js";
+import { ModuleService } from "../configurations/index.js";
 import { Module } from "../modules/module.js";
 import { SlashCommand } from "../objects/index.js";
 import { DecoratorError } from "../utils/errors/index.js";

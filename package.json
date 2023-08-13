@@ -16,10 +16,10 @@
     "orm:migrate": "yarn typeorm migration:run",
     "orm:revert": "yarn typeorm migration:revert",
     "dev": "NODE_ENV=development",
-    "dev:start": "yarn dev ts-node src/index.ts",
+    "dev:start": "yarn dev node --loader ts-node/esm src/index.ts",
     "dev:watch": "yarn dev nodemon src/index.ts",
     "dev:build": "yarn build:clean && yarn dev tsc -p tsconfig.json",
-    "dev:test": "yarn dev ts-node ./tools/test.js",
+    "dev:test": "yarn dev node --loader ts-node/esm ./tools/test.js",
     "dev:typeorm": "yarn dev typeorm-ts-node-esm -d src/config/migrationDataSource.ts",
     "dev:orm:generate": "yarn dev:typeorm migration:generate",
     "dev:orm:create": "typeorm-ts-node-esm migration:create",
@@ -61,6 +61,9 @@
     "pino-pretty": "^10.2.0",
     "ts-node": "^10.9.1",
     "typeorm-extension": "^3.0.1"
+  },
+  "optionalDependencies": {
+    "yaml": "^2.3.1"
   },
   "version": "These are not the versions you are looking for!"
 }

@@ -20,7 +20,7 @@ export function authorize<T extends Module>( key: string ) {
             ) {
                 if( interaction.deferred ) {
                     await interaction.editReply( { content: "Sorry you do not have the permissions to use this command." } );
-                    return;
+                    return undefined;
                 }
 
                 return interaction.isRepliable()

@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { ConfigurationService } from "../config/configurationService.js";
-import { CommonConfigurationKeys, ModuleService } from "../config/index.js";
+import { ConfigurationService } from "../configurations/configurationService.js";
+import { CommonConfigurationKeys, ModuleService } from "../configurations/index.js";
 import { Logger } from "../utils/logger/logger.js";
 
 /**

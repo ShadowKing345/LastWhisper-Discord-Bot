@@ -1,7 +1,7 @@
 import fs from "fs";
 import { container as globalContainer, DependencyContainer } from "tsyringe";
 import { deepMerge, flattenObject } from "../utils/index.js";
-import { ApplicationConfiguration } from "./entities/index.js";
+import { ApplicationConfiguration } from "./classes/index.js";
 
 /**
  * A Service class used to register configuration objects into the dependency tree.

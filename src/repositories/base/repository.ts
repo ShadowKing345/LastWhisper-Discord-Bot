@@ -1,5 +1,5 @@
 import { EntityTarget, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository as Repo } from "typeorm";
-import { DatabaseService } from "../../config/index.js";
+import { DatabaseService } from "../../configurations/index.js";
 import { EntityBase } from "../../entities/entityBase.js";
 import { RepositoryError } from "../../utils/errors/index.js";
 

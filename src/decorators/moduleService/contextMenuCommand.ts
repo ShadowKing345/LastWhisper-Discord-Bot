@@ -1,6 +1,6 @@
 import { Module } from "../../modules/module.js";
 import { ContextMenuCommand as TContextMenuCommand } from "../../objects/index.js";
-import { ModuleService } from "../../config/index.js";
+import { ModuleService } from "../../configurations/index.js";
 import { CommandInteraction } from "discord.js";
 import { CTR } from "../../utils/commonTypes.js";
 

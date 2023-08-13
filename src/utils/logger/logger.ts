@@ -1,5 +1,5 @@
-import { ConfigurationService } from "../../config/configurationService.js";
-import { CommonConfigurationKeys, LoggerConfigs, LOGGING_LEVELS } from "../../config/index.js";
+import { ConfigurationService } from "../../configurations/configurationService.js";
+import { CommonConfigurationKeys, LoggerConfigs, LOGGING_LEVELS } from "../../configurations/index.js";
 import { isArray, isObject, isStringNullOrEmpty } from "../index.js";
 import { pino, Logger as L, Level, LogFn } from "pino";
 
@@ -10,7 +10,7 @@ export class Logger {
     private name: string;
     private config: LoggerConfigs;
     private pino: L = null;
-    
+
     public debug( message: unknown, additional: Record<string, unknown> = undefined, ...args: unknown[] ): void {
         this.log( LOGGING_LEVELS.debug, message, additional, ...args );
     }
@@ -104,7 +104,7 @@ export class Logger {
                 logger.name = name.name
             }
         }
-        
+
         return logger;
     }
 }

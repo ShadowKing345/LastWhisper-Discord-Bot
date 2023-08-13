@@ -1,4 +1,4 @@
-import { createDataSource } from "../../config/migrationDataSource.js";
+import { createDataSource } from "../../configurations/migrationDataSource.js";
 import { buffManagerSeeder } from "./buffManagerSeeder.js";
 import { eventManagerSeeder } from "./eventManagerSeeder.js";
 import { isPromiseRejected } from "../index.js";

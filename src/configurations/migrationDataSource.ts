@@ -4,7 +4,7 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import { TypeORMLogger } from "../utils/logger/typeORMLogger.js";
 import { CommonConfigurationKeys } from "./configurationKeys.js";
 import { ConfigurationService } from "./configurationService.js";
-import { DatabaseConfiguration, DatabaseLoggerConfigs } from "./entities/index.js";
+import { DatabaseConfiguration, DatabaseLoggerConfigs } from "./classes/index.js";
 
 /**
  * Attempts to create a new datasource to be used by throughout the project.

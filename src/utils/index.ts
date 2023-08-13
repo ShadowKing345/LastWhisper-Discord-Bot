@@ -1,5 +1,5 @@
 import { Channel, Client, Message, Snowflake, TextChannel } from "discord.js";
-import { IMerge } from "./IMerge.js";
+import { Mergeable } from "./mergable.js";
 
 /**
  * Fetches the messages from a channel.
@@ -37,15 +37,15 @@ export async function fetchMessages( client: Client, channelId: Snowflake, messa
  * @param sources All sources to merge from.
  * @return The newly created object.
  */
-export function deepMerge<T, O>( target: T | { new(): T }, ...sources: O[] ): T {
-    const result = typeof target === "function" ? Reflect.construct( target, [] ) as T : target;
+export function deepMerge<T extends object, O extends T>( target: T | { new(): T }, ...sources: O[] ): T {
+    const result = typeof target === "function" ? Reflect.construct( target, [] ) : target;
     sources = sources.filter( source => source != null );
     if( sources.length <= 0 ) return result;
 
-    if( result instanceof IMerge<T> ) {
+    if( "merge" in result && typeof result.merge === "function" ) {
         let t = result;
         for( const source of sources ) {
-            t = ( t as IMerge<T> ).merge( source ) as T & IMerge<T>;
+            t = ( t as Mergeable<T> ).merge( source ) as T & Mergeable<T>;
         }
         return t;
     }
@@ -154,10 +154,10 @@ export function isEnum<T>( obj: unknown, e: T ): obj is string | number {
  * Checks if a string is null or empty.
  * @returns {boolean}
  */
-export function isStringNullOrEmpty(obj: string): boolean {
-    if (obj == null){
+export function isStringNullOrEmpty( obj: string ): boolean {
+    if( obj == null ) {
         return true;
     }
-    
+
     return obj.trim().length === 0;
 }
