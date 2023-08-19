@@ -1,23 +1,40 @@
+import { Mergeable } from "../../utils/mergable.js";
+import Configuration from "../decorators/configuration.js";
 import { isArray } from "../../utils/index.js";
+
+function parseModues( obj: unknown ): unknown {
+    if( !isArray( obj ) ) {
+        obj = String( obj ).split( ";" )
+    }
+
+    return ( obj as [] ).filter( item => typeof item === "string" );
+}
 
 /**
  * Configuration object for the module configuration service.
  */
-export class ModuleConfiguration {
-    // Disables all commands.
+@Configuration( "module" )
+export class ModuleConfiguration implements Mergeable<ModuleConfiguration> {
+
+    @Configuration.property( { parser: Boolean } )
     public enableCommands?: boolean = true;
-    // Disables all event listeners.
+
+    @Configuration.property( { parser: Boolean } )
     public enableEventListeners?: boolean = true;
-    // Disables all timers.
+
+    @Configuration.property( { parser: Boolean } )
     public enableTimers?: boolean = true;
-    // Disables all interactions with the application. Will also disable commands as a result.
+
+    @Configuration.property( { parser: Boolean } )
     public enableInteractions?: boolean = true;
-    // Disables all context menu interactions.
+
+    @Configuration.property( { parser: Boolean } )
     public enableContextMenus?: boolean = true;
 
-    // A collection of module names to be filtered.
+    @Configuration.property( { parser: parseModues } )
     public modules?: string[] = [ "DevModule" ];
-    // Should the list be treated as a blacklist.
+
+    @Configuration.property( { parser: Boolean } )
     public blacklist?: boolean = true;
 
     public merge( obj: Partial<ModuleConfiguration> ): ModuleConfiguration {
@@ -36,7 +53,7 @@ export class ModuleConfiguration {
         if( obj.enableInteractions !== undefined ) {
             this.enableInteractions = obj.enableInteractions;
         }
-        
+
         if( obj.enableContextMenus !== undefined ) {
             this.enableContextMenus = obj.enableContextMenus;
         }

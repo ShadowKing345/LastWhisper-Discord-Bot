@@ -1,12 +1,19 @@
 import "reflect-metadata";
 
+import "./configurations/parsers/jsonParser.js";
+import "./configurations/parsers/yamlParser.js";
+import "./configurations/parsers/javascriptParser.js";
+import "./configurations/parsers/envParser.js";
+
+import "./configurations/classes/commandRegistrationConfiguration.js";
+import "./configurations/classes/databaseConfiguration.js";
+import "./configurations/classes/loggerConfigs.js";
+import "./configurations/classes/moduleConfiguration.js";
+
 import { program } from "commander";
 import { userInfo } from "os";
-import { getConfigurations } from "./configuration.js";
 import { ConfigurationService } from "./configurations/configurationService.js";
 import { ApplicationConfiguration, CommandRegistrationConfiguration, CommonConfigurationKeys } from "./configurations/index.js";
-import "./modules/index.js";
-import "./configurations/classes/commandRegistrationConfiguration.js"
 import { Bot } from "./objects/index.js";
 import { manageCommands } from "./slashCommandManager.js";
 import { Commander } from "./decorators/index.js";
@@ -15,7 +22,12 @@ import fs from "fs";
 import * as readline from "readline";
 import { seedDb } from "./utils/database/seedDb.js";
 import { Logger } from "./utils/logger/logger.js";
+import { ConfigurationRegistry } from "./configurations/registration/configurationRegistry.js";
 
+const configurationRegistry = new ConfigurationRegistry();
+await configurationRegistry.postInit();
+configurationRegistry.registerConfigurations();
+configurationRegistry.registerToDependencyInjector();
 
 class Index {
     private static readonly logger = Logger.build( "InitScript" );
@@ -40,38 +52,34 @@ class Index {
     public async runBot( opts: unknown ) {
         process.setMaxListeners( 30 );
         Index.logger.info( "Welcome again to the main bot application.\nWe are currently setting up some things so sit tight and we will begin soon." );
-        
-        console.log(opts);
-        await getConfigurations();
-        
+
         let bot: Bot;
-        console.log(bot);
-        // try {
-        //     // let token: string = undefined;
-        //     //
-        //     // if( ( opts && isObject( opts ) ) && ( "token" in opts && typeof opts.token === "string" ) ) {
-        //     //     token = opts.token;
-        //     // }
-        //     //
-        //     // bot = new Bot( token );
-        //     // await bot.init();
-        //     // await bot.run();
-        //     //
-        //     // process.on( "exit", () => this.exit( bot ) );
-        //     // process.on( "SIGINT", () => this.exit( bot ) );
-        //     // process.on( "SIGTERM", () => this.exit( bot ) );
-        // } catch( error ) {
-        //     if( bot ) {
-        //         this.exit( bot );
-        //     }
-        //
-        //     Index.logger.error( error instanceof Error ? error.stack : error );
-        // }
+        try {
+            let token: string = undefined;
+
+            if( ( opts && isObject( opts ) ) && ( "token" in opts && typeof opts.token === "string" ) ) {
+                token = opts.token;
+            }
+
+            bot = new Bot( token );
+            await bot.init();
+            await bot.run();
+
+            process.on( "exit", () => this.exit( bot ) );
+            process.on( "SIGINT", () => this.exit( bot ) );
+            process.on( "SIGTERM", () => this.exit( bot ) );
+        } catch( error ) {
+            if( bot ) {
+                this.exit( bot );
+            }
+
+            Index.logger.error( error instanceof Error ? error.stack : error );
+        }
     }
 
     /**
      * Command that manages the Discord slash commands.
-     * @param {string} subcommand The subcommand used to manage the commands. 
+     * @param {string} subcommand The subcommand used to manage the commands.
      * @param {unknown} opts Options passed to the command. Expected to be an empty object if none were passed.
      */
     @Commander.addCommand( {
@@ -175,9 +183,9 @@ class Index {
     //  * @param bot The bot application.
     //  * @private
     //  */
-    // private exit( bot: Bot ): void {
-    //     bot.stop().then( null, error => console.error( error ) );
-    // }
+    private exit( bot: Bot ): void {
+        bot.stop().then( null, error => console.error( error ) );
+    }
 
     /**
      * Ensures the environment was set up for the commands.

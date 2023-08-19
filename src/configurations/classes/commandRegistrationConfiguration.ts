@@ -1,13 +1,17 @@
-import Configuration from "../../decorators/configurations/configuration.js";
+import Configuration from "../decorators/configuration.js";
 import { Mergeable } from "../../utils/mergable.js";
 
 @Configuration( "commandRegistration" )
 export class CommandRegistrationConfiguration implements Mergeable<CommandRegistrationConfiguration> {
-    public clientId: string = null;
-    public guildId: string = null;
 
-    @Configuration.property( "register.for.guild" )
-    public registerForGuild?: boolean = false;
+    @Configuration.property( { parser: String } )
+    public clientId?: string;
+
+    @Configuration.property( { parser: String } )
+    public guildId?: string;
+
+    @Configuration.property( { parser: Boolean } )
+    public registerForGuild: boolean = false;
 
     public get isValid(): boolean {
         if( !this.clientId ) {

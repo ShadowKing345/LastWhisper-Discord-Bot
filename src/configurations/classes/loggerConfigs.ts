@@ -1,15 +1,30 @@
-import { TransportSingleOptions, TransportMultiOptions, TransportPipelineOptions, Level } from "pino";
-import { LogLevel } from "typeorm";
-import { isArray, isStringNullOrEmpty } from "../../utils/index.js";
+import { Level, TransportMultiOptions, TransportPipelineOptions, TransportSingleOptions } from "pino";
+import { isStringNullOrEmpty } from "../../utils/index.js";
+import Configuration from "../decorators/configuration.js";
+import { DatabaseLoggerConfigs } from "./databaseLoggerConfigs.js";
+
+export class LOGGING_LEVELS {
+    public static readonly debug: Level = "debug";
+    public static readonly info: Level = "info";
+    public static readonly warn: Level = "warn";
+    public static readonly error: Level = "error";
+}
 
 /**
  * Configuration object for the logger service.
  */
+@Configuration( "logger" )
 export class LoggerConfigs {
+    @Configuration.property()
     public level: Level = LOGGING_LEVELS.info;
+
+    @Configuration.property()
     public transports: TransportSingleOptions | TransportMultiOptions | TransportPipelineOptions = null;
+
+    @Configuration.property()
     public disable = false;
 
+    @Configuration.property()
     public database: DatabaseLoggerConfigs = new DatabaseLoggerConfigs();
 
     public constructor( data: Partial<LoggerConfigs> = null ) {
@@ -33,40 +48,4 @@ export class LoggerConfigs {
 
         return this;
     }
-}
-
-export class DatabaseLoggerConfigs {
-    public isEnabled?: boolean = false;
-    public levels: LogLevel[] | "all" = "all";
-
-    public constructor( data: Partial<DatabaseLoggerConfigs> = null ) {
-        if( data ) {
-            this.merge( data );
-        }
-    }
-
-    public merge( obj: Partial<DatabaseLoggerConfigs> ): DatabaseLoggerConfigs {
-        if( obj.isEnabled != null ) {
-            this.isEnabled = obj.isEnabled;
-        }
-
-        if( obj.levels ) {
-            if( isArray( obj.levels ) ) {
-                this.levels = obj.levels.filter( item => typeof item === "string" );
-            }
-
-            if( obj.levels === "all" ) {
-                this.levels = "all";
-            }
-        }
-
-        return this;
-    }
-}
-
-export class LOGGING_LEVELS {
-    public static readonly debug: Level = "debug";
-    public static readonly info: Level = "info";
-    public static readonly warn: Level = "warn";
-    public static readonly error: Level = "error";
 }

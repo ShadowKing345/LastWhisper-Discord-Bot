@@ -31,7 +31,11 @@ function main( args ) {
         throw new Error( "No tests were found." );
     }
 
-    run( { files } )
+    run( {
+        files, setup: async () => {
+            await import("reflect-metadata");
+        }
+    } )
         .compose( tap )
         .pipe( process.stdout );
 }
